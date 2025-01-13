@@ -108,6 +108,23 @@
                 </div>
             </div>      
         </div>
+        <div style="margin: 20px;">
+          <a 
+            href="https://github.com/ParisNeo/lollms-webui"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200 my-4 mx-2"
+          >
+            <svg 
+              class="w-5 h-5" 
+              viewBox="0 0 16 16"
+              fill="currentColor"
+            >
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+            </svg>
+            <span class="font-medium" v-if="starCount">{{ starCount }}</span>
+          </a>
+        </div>
         <div v-if="is_fun_mode" 
                 title="Fun mode is on, press to turn off" 
                 class="w-8 h-8 cursor-pointer btn-on transition-colors duration-300"
@@ -143,23 +160,73 @@
             <i data-feather="moon"></i>
         </div>               
         <div class="relative ml-2">
-            <button @click="toggleLanguageMenu" class="svg-button">
-            {{ $store.state.language.slice(0, 2) }}
-            </button>
-            <div v-if="isLanguageMenuVisible" ref="languageMenu" class="container context-menu absolute left-0 mt-1 rounded shadow-lg z-10 overflow-y-auto scrollbar-thin" style="position: absolute; top: 100%; width: 200px; max-height: 300px; overflow-y: auto;">
-              <ul style="list-style-type: none; padding-left: 0; margin-left: 0;">
-                  <li v-for="language in languages" :key="language" class="relative flex items-center" style="padding-left: 0; margin-left: 0;">
-                  <button @click="deleteLanguage(language)" class="mr-2 ml-2 text-red-500 hover:text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 rounded-full">✕</button>
-                  <div @click="selectLanguage(language)" :class="{'cursor-pointer hover:bg-blue-500 hover:text-white py-2 px-4 block whitespace-no-wrap': true, 'bg-blue-500 text-white': language === $store.state.language, 'flex-grow': true}">
-                      {{ language }}
-                  </div>
-                  </li>
-                  <li class="cursor-pointer py-0 px-0 block whitespace-no-wrap">
-                  <input type="text" v-model="customLanguage" @keyup.enter.prevent="addCustomLanguage" placeholder="Enter language..." class="bg-transparent mr-2 ml-2 border border-gray-300 rounded py-0 px-0 mx-0 my-1 w-full">
-                  </li>
-              </ul>
-            </div>
-        </div>
+          <button 
+              @click="toggleLanguageMenu" 
+              class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 transition-colors"
+              aria-haspopup="true"
+              :aria-expanded="isLanguageMenuVisible"
+          >
+              <span class="font-medium">{{ $store.state.language.slice(0, 2) }}</span>
+              <svg 
+                  class="w-4 h-4 transition-transform" 
+                  :class="{ 'rotate-180': isLanguageMenuVisible }"
+                  viewBox="0 0 24 24"
+              >
+                  <path d="M7 10l5 5 5-5z" fill="currentColor" />
+              </svg>
+          </button>
+
+          <Transition
+              enter-active-class="transition duration-200 ease-out"
+              enter-from-class="transform scale-95 opacity-0"
+              enter-to-class="transform scale-100 opacity-100"
+              leave-active-class="transition duration-150 ease-in"
+              leave-from-class="transform scale-100 opacity-100"
+              leave-to-class="transform scale-95 opacity-0"
+          >
+              <div 
+                  v-if="isLanguageMenuVisible" 
+                  ref="languageMenu" 
+                  class="absolute left-0 mt-1 w-64 rounded-lg shadow-lg bg-white border border-gray-200 z-10"
+                  role="menu"
+              >
+                  <ul class="py-2 max-h-72 overflow-y-auto">
+                      <li 
+                          v-for="language in languages" 
+                          :key="language" 
+                          class="group flex items-center px-3 py-2 hover:bg-gray-50"
+                      >
+                          <button 
+                              @click="deleteLanguage(language)" 
+                              class="p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 hover:bg-red-50"
+                              :aria-label="`Delete ${language}`"
+                          >
+                              <svg class="w-4 h-4" viewBox="0 0 24 24">
+                                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" fill="currentColor" />
+                              </svg>
+                          </button>
+                          <div 
+                              @click="selectLanguage(language)" 
+                              class="flex-grow px-3 py-1 cursor-pointer rounded-md transition-colors"
+                              :class="language === $store.state.language ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-100'"
+                              role="menuitem"
+                          >
+                              {{ language }}
+                          </div>
+                      </li>
+                      <li class="px-3 py-2 border-t border-gray-100">
+                          <input 
+                              type="text" 
+                              v-model="customLanguage" 
+                              @keyup.enter.prevent="addCustomLanguage"
+                              placeholder="Add new language..." 
+                              class="w-full px-3 py-2 rounded-md border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+                          >
+                      </li>
+                  </ul>
+              </div>
+          </Transition>
+      </div>
 
         <div class="relative inline-flex ml-2">
           <!-- Enhanced custom button -->
@@ -288,6 +355,7 @@ export default {
   },
   data() {
     return {
+      starCount:null,
       themeDropdownOpen: false,
       currentTheme: localStorage.getItem('preferred-theme') || 'default',
       availableThemes: [],
@@ -367,6 +435,14 @@ export default {
     } catch (err) {
       this.error = 'Failed to initialize theme system'
       console.error(err)
+    }
+
+    try {
+      const response = await fetch('https://api.github.com/repos/ParisNeo/lollms-webui')
+      const data = await response.json()
+      this.starCount = data.stargazers_count
+    } catch (error) {
+      console.error('Error fetching GitHub stars:', error)
     }
   },  
   beforeUnmount() {

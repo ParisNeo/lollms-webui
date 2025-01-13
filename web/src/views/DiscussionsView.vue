@@ -1382,7 +1382,8 @@ export default {
                 "The project maintains a philosophy of 'Don't panic, bring a towel, and trust in AI' - a reference to The Hitchhiker's Guide to the Galaxy",
                 "Despite having multiple patents in various fields, ParisNeo's interest in AI was sparked when he read about AlexNet in 2012",
                 "LoLLMs receives daily updates, similar to course corrections on a starship",
-                "ParisNeo's journey into programming shows his determination - he taught himself BASIC by reverse engineering games before he even knew English"
+                "ParisNeo's journey into programming shows his determination - he taught himself BASIC by reverse engineering games before he even knew English",
+                "Version 17 of LoLLMs, nicknamed 'Pulsar', draws inspiration from the most precise natural clocks in the universe - pulsating neutron stars. Just as pulsars emit precise, regular signals that help navigate spacecraft, LoLLMs Pulsar orchestrates precise communication between different AI systems. The version number 17 wasn't just sequential - pulsars rotate up to 1.7 thousand times per second, making '17' a cosmic nod to these incredible stellar lighthouses of space!"
             ],
             randomFact: "",            
             showPlaceholderModal: false,

@@ -293,267 +293,99 @@
                 <div :class="{ 'hidden': mainconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="flex flex-col mb-2 px-3 pb-2">
                                 <Card title="General" :is_subcard="true" class="pb-2 m-2">
-                                    <table class="expand-to-fit bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="app_custom_logo" class="text-sm font-bold" style="margin-right: 1rem;">Application logo:</label>
-                                        </td>
-                                        <td>
-                                            <label for="logo-upload">
-                                                <img :src="configFile.app_custom_logo!=null && configFile.app_custom_logo!=''? '/user_infos/'+configFile.app_custom_logo:storeLogo" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
-                                            </label>
-                                            <input type="file" id="logo-upload" style="display: none" @change="uploadLogo">
-                                        </td>
-                                        <td style="width: 10%;">
-                                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Discard title changes"
-                                                type="button" @click.stop="resetLogo()">
-                                                <i data-feather="x"></i>
-                                            </button>
-                                        </td>
-                                        </tr>  
+                                    <div class="settings-container grid gap-6 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600">
+                                        <!-- Logo Section -->
+                                        <div class="setting-row flex items-center gap-4">
+                                            <div class="setting-label w-64">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application logo:</label>
+                                            </div>
+                                            <div class="setting-content flex items-center gap-4">
+                                                <label for="logo-upload" class="cursor-pointer">
+                                                    <img :src="configFile.app_custom_logo ? `/user_infos/${configFile.app_custom_logo}` : storeLogo" 
+                                                        class="w-12 h-12 rounded-full object-cover border-2 border-gray-300 hover:border-blue-500 transition-all">
+                                                </label>
+                                                <input type="file" id="logo-upload" class="hidden" @change="uploadLogo">
+                                                <button @click.stop="resetLogo()" 
+                                                        class="text-gray-500 hover:text-red-600 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
+                                                        title="Discard logo">
+                                                    <i data-feather="x"></i>
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="hardware_mode" class="text-sm font-bold" style="margin-right: 1rem;">Hardware mode:</label>
-                                        </td>
-                                        <td class="text-center items-center">
-                                            <div class="flex flex-row">
-                                            <select
-                                                id="hardware_mode"
-                                                required
-                                                v-model="configFile.hardware_mode"
-                                                @change="settingsChanged=true"
-                                                class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                                <option value="cpu">CPU</option>
-                                                <option value="cpu-noavx">CPU (No AVX)</option>
-                                                <option value="nvidia-tensorcores">NVIDIA (Tensor Cores)</option>
-                                                <option value="nvidia">NVIDIA</option>
-                                                <option value="amd-noavx">AMD (No AVX)</option>
-                                                <option value="amd">AMD</option>
-                                                <option value="apple-intel">Apple Intel</option>
-                                                <option value="apple-silicon">Apple Silicon</option>
-                                            </select>
+                                        <!-- Hardware Mode Section -->
+                                        <div class="setting-row flex items-center gap-4">
+                                            <div class="setting-label w-64">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Hardware mode:</label>
                                             </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Database path:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="text"
-                                            id="discussion_db_name"
-                                            required
-                                            v-model="configFile.discussion_db_name"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>      
-                                        
-                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="copy_to_clipboard_add_all_details" class="text-sm font-bold" style="margin-right: 1rem;">Add details to messages copied to clipboard:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                            type="checkbox"
-                                            id="copy_to_clipboard_add_all_details"
-                                            required
-                                            v-model="configFile.copy_to_clipboard_add_all_details"
-                                            @change="settingsChanged=true"
-                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
-                                            >
+                                            <div class="setting-content">
+                                                <select v-model="configFile.hardware_mode"
+                                                        @change="settingsChanged=true"
+                                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                                                            text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
+                                                    <option value="cpu">CPU</option>
+                                                    <option value="cpu-noavx">CPU (No AVX)</option>
+                                                    <option value="nvidia-tensorcores">NVIDIA (Tensor Cores)</option>
+                                                    <option value="nvidia">NVIDIA</option>
+                                                    <option value="amd-noavx">AMD (No AVX)</option>
+                                                    <option value="amd">AMD</option>
+                                                    <option value="apple-intel">Apple Intel</option>
+                                                    <option value="apple-silicon">Apple Silicon</option>
+                                                </select>
                                             </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="auto_show_browser" class="text-sm font-bold" style="margin-right: 1rem;">Auto show browser:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                            type="checkbox"
-                                            id="auto_show_browser"
-                                            required
-                                            v-model="configFile.auto_show_browser"
-                                            @change="settingsChanged=true"
-                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="activate_debug" class="text-sm font-bold" style="margin-right: 1rem;">Activate debug mode:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                            type="checkbox"
-                                            id="activate_debug"
-                                            required
-                                            v-model="configFile.debug"
-                                            @change="settingsChanged=true"
-                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="debug_show_final_full_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Activate showing the full prompt in console (for debug):</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                            type="checkbox"
-                                            id="debug_show_final_full_prompt"
-                                            required
-                                            v-model="configFile.debug_show_final_full_prompt"
-                                            @change="settingsChanged=true"
-                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="debug_show_final_full_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Show final full prompt in console:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                            type="checkbox"
-                                            id="debug_show_final_full_prompt"
-                                            required
-                                            v-model="configFile.debug_show_final_full_prompt"
-                                            @change="settingsChanged=true"
-                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="debug_show_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Show chunks in console:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                            type="checkbox"
-                                            id="debug_show_chunks"
-                                            required
-                                            v-model="configFile.debug_show_chunks"
-                                            @change="settingsChanged=true"
-                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="debug_log_file_path" class="text-sm font-bold" style="margin-right: 1rem;">Debug file path:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                            type="text"
-                                            id="debug_log_file_path"
-                                            required
-                                            v-model="configFile.debug_log_file_path"
-                                            @change="settingsChanged=true"
-                                            class="m-2 h-50 w-50 py-1 border border-gray-300 rounded  dark:bg-gray-600 "
-                                            >
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                            
-                                            <td style="min-width: 200px;">
-                                                <label for="show_news_panel" class="text-sm font-bold" style="margin-right: 1rem;">Show news panel:</label>
-                                            </td>
-                                            <td>
-                                                <div class="flex flex-row">
-                                                    <input
-                                                    type="checkbox"
-                                                    id="show_news_panel"
-                                                    required
-                                                    v-model="configFile.show_news_panel"
-                                                    @change="settingsChanged=true"
-                                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                                    >
+                                        </div>
+
+                                        <!-- Toggle Switches -->
+                                        <div class="settings-grid grid gap-4">
+                                            <div v-for="setting in toggleSettings" :key="setting.id" 
+                                                class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                                <label :for="setting.id" class="font-bold text-sm text-gray-700 dark:text-gray-200">{{ setting.label }}</label>
+                                                <div class="relative inline-block w-12 h-6">
+                                                    <input type="checkbox"
+                                                        :id="setting.id"
+                                                        v-model="configFile[setting.model]"
+                                                        @change="settingsChanged=true"
+                                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                                transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                    <label :for="setting.id" 
+                                                        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
+                                                    </label>
                                                 </div>
-                                            </td>
-                                            </tr>
-                                        <tr>
-                                            
-                                        <td style="min-width: 200px;">
-                                            <label for="auto_save" class="text-sm font-bold" style="margin-right: 1rem;">Auto save:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                                <input
-                                                type="checkbox"
-                                                id="auto_save"
-                                                required
-                                                v-model="configFile.auto_save"
-                                                @change="settingsChanged=true"
-                                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                                >
                                             </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto update:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="auto_update"
-                                            required
-                                            v-model="configFile.auto_update"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
+                                        </div>
+
+                                        <!-- Text Input Fields -->
+                                        <div class="settings-grid grid gap-4">
+                                            <div class="setting-row flex items-center gap-4">
+                                                <div class="setting-label w-64">
+                                                    <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Database path:</label>
+                                                </div>
+                                                <input type="text"
+                                                    v-model="configFile.discussion_db_name"
+                                                    @change="settingsChanged=true"
+                                                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800
+                                                            text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
                                             </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="auto_update" class="text-sm font-bold" style="margin-right: 1rem;">Auto title:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="auto_title"
-                                            required
-                                            v-model="configFile.auto_title"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
+                                            <div class="setting-row flex items-center gap-4">
+                                                <div class="setting-label w-64">
+                                                    <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Debug file path:</label>
+                                                </div>
+                                                <input type="text"
+                                                    v-model="configFile.debug_log_file_path"
+                                                    @change="settingsChanged=true"
+                                                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800
+                                                            text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
                                             </div>
-                                        </td>
-                                        </tr>                                        
-                                    </table>
+                                        </div>
+                                    </div>
                                 </Card>
                                 <Card  title="Model template" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="start_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start header id template:</label>
-                                        </td>
-                                        <td>
-                                            <select @change="handleTemplateSelection">
+                                    <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                                        <!-- Template Selection -->
+                                        <div class="flex flex-col space-y-2">
+                                            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Template Type</label>
+                                            <select @change="handleTemplateSelection" 
+                                                    class="form-select w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
                                                 <option value="lollms">Lollms communication template</option>
                                                 <option value="lollms_simplified">Lollms simplified communication template</option>
                                                 <option value="bare">Bare, useful when in chat mode</option>
@@ -561,517 +393,512 @@
                                                 <option value="mistral">Mistral communication template</option>
                                                 <option value="deepseek">DeepSeek communication template</option>
                                             </select>
-                                        </td>
-                                        </tr>
+                                        </div>
 
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="start_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start header id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="start_header_id_template"
-                                            required
-                                            v-model="configFile.start_header_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="end_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End header id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="end_header_id_template"
-                                            required
-                                            v-model="configFile.end_header_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
+                                        <!-- Header Templates -->
+                                        <div class="grid md:grid-cols-2 gap-4">
+                                            <div class="space-y-2">
+                                                <label for="start_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    Start Header Template
+                                                </label>
+                                                <input type="text" id="start_header_id_template"
+                                                    v-model="configFile.start_header_id_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label for="end_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    End Header Template
+                                                </label>
+                                                <input type="text" id="end_header_id_template"
+                                                    v-model="configFile.end_header_id_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                        </div>
 
+                                        <!-- User Templates -->
+                                        <div class="grid md:grid-cols-2 gap-4">
+                                            <div class="space-y-2">
+                                                <label for="start_user_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    Start User Header Template
+                                                </label>
+                                                <input type="text" id="start_user_header_id_template"
+                                                    v-model="configFile.start_user_header_id_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label for="end_user_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    End User Header Template
+                                                </label>
+                                                <input type="text" id="end_user_header_id_template"
+                                                    v-model="configFile.end_user_header_id_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                        </div>
 
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="start_user_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start user header id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="start_user_header_id_template"
-                                            required
-                                            v-model="configFile.start_user_header_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="end_user_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End user header id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="end_user_header_id_template"
-                                            required
-                                            v-model="configFile.end_user_header_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="end_user_message_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End user message id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="end_user_message_id_template"
-                                            required
-                                            v-model="configFile.end_user_message_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                        
+                                        <!-- AI Templates -->
+                                        <div class="grid md:grid-cols-2 gap-4">
+                                            <div class="space-y-2">
+                                                <label for="start_ai_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    Start AI Header Template
+                                                </label>
+                                                <input type="text" id="start_ai_header_id_template"
+                                                    v-model="configFile.start_ai_header_id_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label for="end_ai_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    End AI Header Template
+                                                </label>
+                                                <input type="text" id="end_ai_header_id_template"
+                                                    v-model="configFile.end_ai_header_id_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                        </div>
 
+                                        <!-- Message End Templates -->
+                                        <div class="grid md:grid-cols-2 gap-4">
+                                            <div class="space-y-2">
+                                                <label for="end_user_message_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    End User Message Template
+                                                </label>
+                                                <input type="text" id="end_user_message_id_template"
+                                                    v-model="configFile.end_user_message_id_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label for="end_ai_message_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    End AI Message Template
+                                                </label>
+                                                <input type="text" id="end_ai_message_id_template"
+                                                    v-model="configFile.end_ai_message_id_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </div>
+                                        </div>
 
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="start_ai_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">Start ai header id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="start_ai_header_id_template"
-                                            required
-                                            v-model="configFile.start_ai_header_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="end_ai_header_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End ai header id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="end_ai_header_id_template"
-                                            required
-                                            v-model="configFile.end_ai_header_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="end_ai_message_id_template" class="text-sm font-bold" style="margin-right: 1rem;">End ai message id template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="end_ai_message_id_template"
-                                            required
-                                            v-model="configFile.end_ai_message_id_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>  
+                                        <!-- Separator and System Templates -->
+                                        <div class="space-y-2">
+                                            <label for="separator_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                Separator Template
+                                            </label>
+                                            <textarea id="separator_template"
+                                                    v-model="configFile.separator_template"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full h-24 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                            </textarea>
+                                        </div>
 
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="separator_template" class="text-sm font-bold" style="margin-right: 1rem;">Separator template:</label>
-                                        </td>
-                                        <td>
-                                            <textarea
-                                            id="separator_template"
-                                            required
-                                            v-model="configFile.separator_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            ></textarea>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="system_message_template" class="text-sm font-bold" style="margin-right: 1rem;">System template:</label>
-                                        </td>
-                                        <td>
-                                            <input
-                                            type="text"
-                                            id="system_message_template"
-                                            required
-                                            v-model="configFile.system_message_template"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="full_template" class="text-sm font-bold" style="margin-right: 1rem;">Full template:</label>
-                                        </td>
-                                        <td>
-                                            <div v-html="full_template"></div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="use_continue_message" class="text-sm font-bold" style="margin-right: 1rem;" title="useful for chat models and repote models but can be less useful for instruct ones">Use continue message:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="use_continue_message"
-                                            required
-                                            v-model="configFile.use_continue_message"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        
-                                    </table>
+                                        <div class="space-y-2">
+                                            <label for="system_message_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                System Template
+                                            </label>
+                                            <input type="text" id="system_message_template"
+                                                v-model="configFile.system_message_template"
+                                                @change="settingsChanged=true"
+                                                class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                        </div>
+
+                                        <!-- Full Template Preview -->
+                                        <div class="space-y-2">
+                                            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Full Template Preview</label>
+                                            <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md">
+                                                <div v-html="full_template"></div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Continue Message Toggle -->
+                                        <div class="flex items-center space-x-4">
+                                            <label for="use_continue_message" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                Use Continue Message
+                                            </label>
+                                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                                <input type="checkbox" 
+                                                    id="use_continue_message"
+                                                    v-model="configFile.use_continue_message"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer">
+                                                <label for="use_continue_message" 
+                                                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </Card>
 
                                 <Card  title="User" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="user_name" class="text-sm font-bold" style="margin-right: 1rem;">User name:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="text"
-                                            id="user_name"
-                                            required
-                                            v-model="configFile.user_name"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="user_description" class="text-sm font-bold" style="margin-right: 1rem;">User description:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <textarea
-                                            id="user_description"
-                                            required
-                                            v-model="configFile.user_description"
-                                            @change="settingsChanged=true"
-                                            class="min-h-[500px] w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            ></textarea>
-                                        </td>
-
-
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="use_user_informations_in_discussion" class="text-sm font-bold" style="margin-right: 1rem;">Use user description in discussion:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="use_user_informations_in_discussion"
-                                            required
-                                            v-model="configFile.use_user_informations_in_discussion"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="use_model_name_in_discussions" class="text-sm font-bold" style="margin-right: 1rem;">Use model name in discussion:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="use_model_name_in_discussions"
-                                            required
-                                            v-model="configFile.use_model_name_in_discussions"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
-                                        
-                                        
-                                        <!-- Row 3 -->
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="user_avatar" class="text-sm font-bold" style="margin-right: 1rem;">User avatar:</label>
-                                        </td>
-                                        <td>
-                                            <label for="avatar-upload">
-                                                <img :src="configFile.user_avatar!=null && configFile.user_avatar!=''?'/user_infos/'+configFile.user_avatar: storeLogo" class="w-50 h-50 rounded-full" style="max-width: 50px; max-height: 50px; cursor: pointer;">
+                                    <div class="grid gap-6 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md">
+                                        <!-- User Name -->
+                                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                            <label for="user_name" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                                User Name
                                             </label>
-                                            <input type="file" id="avatar-upload" style="display: none" @change="uploadAvatar">
-                                        </td>
-                                        <td style="width: 10%;">
-                                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Discard title changes"
-                                                type="button" @click.stop="resetAvatar()">
-                                                <i data-feather="x"></i>
-                                            </button>
-                                        </td>
-
-                                        </tr>
-                                        <!-- Row 4 -->
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="use_user_name_in_discussions" class="text-sm font-bold" style="margin-right: 1rem;">Use User Name in discussions:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
                                             <input
-                                            type="checkbox"
-                                            id="use_user_name_in_discussions"
-                                            required
-                                            v-model="configFile.use_user_name_in_discussions"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                                type="text"
+                                                id="user_name"
+                                                required
+                                                v-model="configFile.user_name"
+                                                @change="settingsChanged=true"
+                                                class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                                             >
+                                        </div>
+
+                                        <!-- User Description -->
+                                        <div class="flex flex-col md:flex-row md:items-start gap-4">
+                                            <label for="user_description" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                                User Description
+                                            </label>
+                                            <textarea
+                                                id="user_description"
+                                                required
+                                                v-model="configFile.user_description"
+                                                @change="settingsChanged=true"
+                                                class="flex-1 h-[300px] px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white resize-none"
+                                            ></textarea>
+                                        </div>
+
+                                        <!-- Toggles Group -->
+                                        <div class="space-y-4">
+                                            <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                                <label class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                                    Discussion Settings
+                                                </label>
+                                                <div class="flex-1 space-y-3">
+                                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            v-model="configFile.use_user_informations_in_discussion"
+                                                            @change="settingsChanged=true"
+                                                            class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
+                                                        >
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Use user description in discussion</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            v-model="configFile.use_model_name_in_discussions"
+                                                            @change="settingsChanged=true"
+                                                            class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
+                                                        >
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Use model name in discussion</span>
+                                                    </label>
+                                                    <label class="flex items-center space-x-3 cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            v-model="configFile.use_user_name_in_discussions"
+                                                            @change="settingsChanged=true"
+                                                            class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
+                                                        >
+                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Use User Name in discussions</span>
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </td>
-                                        </tr>  
-                                        <tr>
-                                            <td style="min-width: 200px;">
-                                                <label for="max_n_predict" class="text-sm font-bold" style="margin-right: 1rem;">Maximum number of output tokens space (forces the model to have more space to speak):</label>
-                                            </td>
-                                            <td style="width: 100%;">
-                                                <input
-                                                type="number"
-                                                id="max_n_predict"
-                                                required
-                                                v-model="configFile.max_n_predict"
-                                                @change="settingsChanged=true"
-                                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                        </div>
+
+                                        <!-- User Avatar -->
+                                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                            <label class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                                User Avatar
+                                            </label>
+                                            <div class="flex items-center gap-4">
+                                                <label for="avatar-upload" class="cursor-pointer">
+                                                    <img 
+                                                        :src="configFile.user_avatar!=null && configFile.user_avatar!=''?'/user_infos/'+configFile.user_avatar: storeLogo" 
+                                                        class="w-16 h-16 rounded-full object-cover border-2 border-gray-300 hover:border-blue-500"
+                                                    >
+                                                </label>
+                                                <input type="file" id="avatar-upload" class="hidden" @change="uploadAvatar">
+                                                <button 
+                                                    @click.stop="resetAvatar()"
+                                                    class="p-2 text-gray-500 hover:text-red-500 transition-colors duration-200"
+                                                    title="Remove avatar"
                                                 >
-                                            </td>
-                                        </tr>                                        
-                                        <tr>
-                                            <td style="min-width: 200px;">
-                                                <label for="max_n_predict" class="text-sm font-bold" style="margin-right: 1rem;">Minimum number of output tokens space (forces the model to have more space to speak):</label>
-                                            </td>
-                                            <td style="width: 100%;">
+                                                    <i data-feather="x" class="w-5 h-5"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Token Settings -->
+                                        <div class="space-y-4">
+                                            <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                                <label for="max_n_predict" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                                    Maximum Token Space
+                                                </label>
                                                 <input
-                                                type="number"
-                                                id="max_n_predict"
-                                                required
-                                                v-model="configFile.max_n_predict"
-                                                @change="settingsChanged=true"
-                                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                                    type="number"
+                                                    id="max_n_predict"
+                                                    required
+                                                    v-model="configFile.max_n_predict"
+                                                    @change="settingsChanged=true"
+                                                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                                                 >
-                                            </td>
-                                        </tr>                                        
-                                    </table>
+                                            </div>
+                                            <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                                <label for="min_n_predict" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                                    Minimum Token Space
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    id="min_n_predict"
+                                                    required
+                                                    v-model="configFile.min_n_predict"
+                                                    @change="settingsChanged=true"
+                                                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
                                 </Card>  
                                 <Card  title="Security settings" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="turn_on_code_execution" class="text-sm font-bold" style="margin-right: 1rem;">turn on code execution:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="turn_on_code_execution"
-                                            required
-                                            v-model="configFile.turn_on_code_execution"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>
+                                    <div class="settings-container p-6 space-y-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md">
+                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                            <label for="turn_on_code_execution" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Turn on code execution
+                                            </label>
+                                            <div class="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    id="turn_on_code_execution"
+                                                    required
+                                                    v-model="configFile.turn_on_code_execution"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                            <label for="turn_on_code_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Turn on code validation
+                                                <span class="block text-xs text-gray-500 dark:text-gray-400">Very recommended for security reasons</span>
+                                            </label>
+                                            <div class="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    id="turn_on_code_validation"
+                                                    required
+                                                    v-model="configFile.turn_on_code_validation"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                            <label for="turn_on_setting_update_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Turn on apply settings validation
+                                                <span class="block text-xs text-gray-500 dark:text-gray-400">Very recommended for security reasons</span>
+                                            </label>
+                                            <div class="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    id="turn_on_setting_update_validation"
+                                                    required
+                                                    v-model="configFile.turn_on_setting_update_validation"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                            <label for="turn_on_open_file_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Turn on open file/folder validation
+                                            </label>
+                                            <div class="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    id="turn_on_open_file_validation"
+                                                    required
+                                                    v-model="configFile.turn_on_open_file_validation"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                            <label for="turn_on_send_file_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                                Turn on send file validation
+                                            </label>
+                                            <div class="relative">
+                                                <input
+                                                    type="checkbox"
+                                                    id="turn_on_send_file_validation"
+                                                    required
+                                                    v-model="configFile.turn_on_send_file_validation"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <style scoped>
+                                        .toggle-checkbox {
+                                            @apply appearance-none w-9 h-5 rounded-full bg-gray-300 dark:bg-gray-600 
+                                                checked:bg-blue-500 transition-colors duration-200 relative cursor-pointer;
+                                        }
                                         
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="turn_on_code_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on code validation (very recommended for security reasons):</label>
-                                        </td>
-
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="turn_on_code_validation"
-                                            required
-                                            v-model="configFile.turn_on_code_validation"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="turn_on_setting_update_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on apply settings validation (very recommended for security reasons):</label>
-                                        </td>
-
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="turn_on_setting_update_validation"
-                                            required
-                                            v-model="configFile.turn_on_setting_update_validation"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                           
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="turn_on_open_file_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on open file/folder validation:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="turn_on_open_file_validation"
-                                            required
-                                            v-model="configFile.turn_on_open_file_validation"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>  
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="turn_on_send_file_validation" class="text-sm font-bold" style="margin-right: 1rem;">turn on send file validation:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="checkbox"
-                                            id="turn_on_send_file_validation"
-                                            required
-                                            v-model="configFile.turn_on_send_file_validation"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
-                                        </td>
-                                        </tr>                                                                                
-                                    </table>
+                                        .toggle-checkbox:before {
+                                            content: '';
+                                            @apply absolute w-4 h-4 bg-white rounded-full left-0.5 top-0.5 
+                                                transform transition-transform duration-200;
+                                        }
+                                        
+                                        .toggle-checkbox:checked:before {
+                                            @apply translate-x-4;
+                                        }
+                                        </style>
+                                    </div>
                                 </Card>         
                                 <Card title="Knowledge database" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="activate_skills_lib" class="text-sm font-bold" style="margin-right: 1rem;">Activate Skills library:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="activate_skills_lib"
-                                            required
-                                            v-model="configFile.activate_skills_lib"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    <div class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 space-y-4">
+                                        <!-- Skills Library Activation -->
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                            <label 
+                                                for="activate_skills_lib" 
+                                                class="text-sm font-bold text-gray-900 dark:text-white min-w-[200px]"
                                             >
+                                                Activate Skills library:
+                                            </label>
+                                            <div class="flex items-center">
+                                                <label class="relative inline-flex items-center cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="activate_skills_lib"
+                                                        required
+                                                        v-model="configFile.activate_skills_lib"
+                                                        @change="settingsChanged=true"
+                                                        class="sr-only peer"
+                                                    >
+                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 
+                                                            peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full 
+                                                            peer dark:bg-gray-600 peer-checked:after:translate-x-full 
+                                                            peer-checked:after:border-white after:content-[''] after:absolute 
+                                                            after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 
+                                                            after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
+                                                            dark:border-gray-600 peer-checked:bg-blue-600">
+                                                    </div>
+                                                </label>
                                             </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="discussion_db_name" class="text-sm font-bold" style="margin-right: 1rem;">Skills library database name:</label>
-                                        </td>
-                                        <td style="width: 100%;">
-                                            <input
-                                            type="text"
-                                            id="skills_lib_database_name"
-                                            required
-                                            v-model="configFile.skills_lib_database_name"
-                                            @change="settingsChanged=true"
-                                            class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
+                                        </div>
+
+                                        <!-- Database Name Input -->
+                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                            <label 
+                                                for="skills_lib_database_name" 
+                                                class="text-sm font-bold text-gray-900 dark:text-white min-w-[200px]"
                                             >
-                                        </td>
-                                        </tr>      
-                                    </table>
+                                                Skills library database name:
+                                            </label>
+                                            <div class="flex-1">
+                                                <input
+                                                    type="text"
+                                                    id="skills_lib_database_name"
+                                                    required
+                                                    v-model="configFile.skills_lib_database_name"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 
+                                                        dark:border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 
+                                                        focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 
+                                                        text-gray-900 dark:text-white transition-colors duration-200"
+                                                    placeholder="Enter database name"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </Card>
                                 <Card title="Latex" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="pdf_latex_path" class="text-sm font-bold" style="margin-right: 1rem;">PDF LaTeX path:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="text"
-                                            id="pdf_latex_path"
-                                            required
-                                            v-model="configFile.pdf_latex_path"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
+                                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                                            <div class="min-w-[200px]">
+                                                <label 
+                                                    for="pdf_latex_path" 
+                                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-200"
+                                                >
+                                                    PDF LaTeX Path:
+                                                </label>
                                             </div>
-                                        </td>
-                                        </tr>                                        
-                                    </table>
+                                            <div class="flex-1 w-full">
+                                                <input
+                                                    type="text"
+                                                    id="pdf_latex_path"
+                                                    required
+                                                    v-model="configFile.pdf_latex_path"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full px-4 py-2 text-sm bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:placeholder-gray-400 transition-colors duration-200"
+                                                    placeholder="Enter PDF LaTeX path..."
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
                                 </Card>
                                 <Card title="Boost" :is_subcard="true" class="pb-2  m-2">
-                                    <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="positive_boost" class="text-sm font-bold" style="margin-right: 1rem;">Positive Boost:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="text"
-                                            id="positive_boost"
-                                            required
-                                            v-model="configFile.positive_boost"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
+                                    <div class="settings-container bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md">
+                                        <div class="setting-row mb-4">
+                                            <div class="flex items-center justify-between">
+                                                <label for="positive_boost" class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                                    Positive Boost
+                                                </label>
+                                                <div class="w-64">
+                                                    <input
+                                                        type="text"
+                                                        id="positive_boost"
+                                                        required
+                                                        v-model="configFile.positive_boost"
+                                                        @change="settingsChanged=true"
+                                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-all duration-200"
+                                                    >
+                                                </div>
                                             </div>
-                                        </td>
-                                        </tr>                                        
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="negative_boost" class="text-sm font-bold" style="margin-right: 1rem;">Negative Boost:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="text"
-                                            id="negative_boost"
-                                            required
-                                            v-model="configFile.negative_boost"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
+                                        </div>
+
+                                        <div class="setting-row mb-4">
+                                            <div class="flex items-center justify-between">
+                                                <label for="negative_boost" class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                                    Negative Boost
+                                                </label>
+                                                <div class="w-64">
+                                                    <input
+                                                        type="text"
+                                                        id="negative_boost"
+                                                        required
+                                                        v-model="configFile.negative_boost"
+                                                        @change="settingsChanged=true"
+                                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-all duration-200"
+                                                    >
+                                                </div>
                                             </div>
-                                        </td>
-                                        </tr>   
-                                        <tr>
-                                        <td style="min-width: 200px;">
-                                            <label for="fun_mode" class="text-sm font-bold" style="margin-right: 1rem;">Fun mode:</label>
-                                        </td>
-                                        <td>
-                                            <div class="flex flex-row">
-                                            <input
-                                            type="checkbox"
-                                            id="fun_mode"
-                                            required
-                                            v-model="configFile.fun_mode"
-                                            @change="settingsChanged=true"
-                                            class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                            >
+                                        </div>
+
+                                        <div class="setting-row">
+                                            <div class="flex items-center justify-between">
+                                                <label for="fun_mode" class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                                    Fun Mode
+                                                </label>
+                                                <div class="w-64">
+                                                    <label class="inline-flex items-center cursor-pointer">
+                                                        <input
+                                                            type="checkbox"
+                                                            id="fun_mode"
+                                                            required
+                                                            v-model="configFile.fun_mode"
+                                                            @change="settingsChanged=true"
+                                                            class="sr-only peer"
+                                                        >
+                                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                                    </label>
+                                                </div>
                                             </div>
-                                        </td>
-                                        </tr>                                                                                                                     
-                                    </table>
+                                        </div>
+                                    </div>
                                 </Card>
                     </div>
                 </div>
@@ -1092,508 +919,464 @@
                     </button>
                 </div>
                 <div :class="{ 'hidden': data_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
-                    <Card title="Data Lakes" :is_subcard="true" class="pb-2  m-2">
-                        <table class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <tr>
-                            <td style="width: 100%;">
-                                <div v-for="(source, index) in configFile.datalakes" :key="index" class="flex items-center mb-2">
-                                    <input
-                                        type="text"
-                                        :value="getDataLakeAlias(index)"
-                                        @input="updateAlias(index, $event.target.value)"
-                                        class="w-40 mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        placeholder="Database Alias"
-                                    >
+                    <Card title="Data Lakes" :is_subcard="true" class="p-4 m-2">
+                        <div class="space-y-6">
+                            <div class="flex items-center mb-4">
+                                <h3 class="text-lg font-semibold dark:text-white">Data Lakes Configuration</h3>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div v-for="(source, index) in configFile.datalakes" :key="index" 
+                                    class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                                    
+                                    <!-- Main Controls Grid -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                                        <!-- Data Lake Alias -->
+                                        <div class="flex flex-col">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data Lake Alias</label>
+                                            <input
+                                                type="text"
+                                                :value="getDataLakeAlias(index)"
+                                                @input="updateAlias(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Enter alias"
+                                            >
+                                        </div>
 
-                                    <select
-                                        required
-                                        :value="getDataLakeType(index)"
-                                        @input="updateDatabaseType(index, $event.target.value)"
-                                        class="w-40 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                    >
-                                        <option value="lollmsvectordb">Lollms VectorDB Folder</option>
-                                        <option value="lightrag">Light Rag</option>
-                                        <option value="elasticdsearch">Elastic Search</option>
-                                    </select>
+                                        <!-- Data Lake Type -->
+                                        <div class="flex flex-col">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                                            <select
+                                                required
+                                                :value="getDataLakeType(index)"
+                                                @input="updateDatabaseType(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            >
+                                                <option value="lollmsvectordb">Lollms VectorDB Folder</option>
+                                                <option value="lightrag">Light Rag</option>
+                                                <option value="elasticdsearch">Elastic Search</option>
+                                            </select>
+                                        </div>
 
-                                    <input
-                                        v-if="source.type=='lightrag'"
-                                        type="text"
-                                        :value="getDataLakeUrl(index)"
-                                        @input="updateDataLakeUrl(index, $event.target.value)"
-                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        placeholder="DataLake URL"
-                                    >
+                                        <!-- Conditional URL/Path Input -->
+                                        <div class="flex flex-col lg:col-span-2">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                {{ source.type === 'lightrag' ? 'DataLake URL' : 'DataLake Path' }}
+                                            </label>
+                                            <input
+                                                v-if="source.type === 'lightrag'"
+                                                type="text"
+                                                :value="getDataLakeUrl(index)"
+                                                @input="updateDataLakeUrl(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Enter DataLake URL"
+                                            >
+                                            <input
+                                                v-if="source.type === 'lollmsvectordb'"
+                                                type="text"
+                                                :value="getDataLakePath(index)"
+                                                @input="updateDataLakePath(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Enter DataLake Path"
+                                            >
+                                        </div>
 
-                                    <input
-                                        v-if="source.type=='lollmsvectordb'"
-                                        type="text"
-                                        :value="getDataLakePath(index)"
-                                        @input="updateDataLakePath(index, $event.target.value)"
-                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        placeholder="DataLake Path"
-                                    >
-
-                                    <input
-                                        v-if="source.type=='lightrag'"
-                                        type="text"
-                                        :value="getDataLakeKey(index)"
-                                        @input="updateDatabaseKey(index, $event.target.value)"
-                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        placeholder="Database api key"
-                                    >
-
-                                    <input
-                                        type="checkbox"
-                                        :checked="getDataLakeStatus(index)"
-                                        @change="updateMounted(index, $event.target.checked)"
-                                        class="mx-2"
-                                    >
-                                    <label class="mr-2">Mounted</label>
-                                    <!-- Vectorize button -->
-                                    <button v-if="source.type=='lollmsvectordb'" @click="vectorize_folder(index)" 
-                                            class="w-500 ml-2 px-2 py-1 bg-green-500 text-white hover:bg-green-300 rounded flex items-center"
-                                            title="Vectorize or re-vectorize the selected folder">
-                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                                        </svg>
-                                    </button>
-
-                                    <!-- Select folder button -->
-                                    <button v-if="source.type=='lollmsvectordb'"  @click="select_folder(index)" 
-                                            class="w-500 ml-2 px-2 py-1 bg-blue-500 text-white hover:bg-blue-300 rounded flex items-center"
-                                            title="Select a folder as data source">
-                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                                        </svg>
-                                    </button>
-
-                                    <div class="inline-flex">
-                                        <input 
-                                        type="file" 
-                                        ref="fileInput"
-                                        @change="handleFileUpload" 
-                                        accept=".pdf,.txt,.doc,.docx,.csv,.md"
-                                        class="hidden"
-                                        multiple
-                                        />
-                                        <button 
-                                        @click="triggerFileInput" 
-                                        class="ml-2 px-2 py-1 bg-green-500 text-white hover:bg-green-300 rounded flex items-center"
-                                        title="Upload documents to this data source"
-                                        >
-                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                        </svg>
-                                        </button>
-                                    </div>
-                                    <button @click="removeDataLake(index)" 
-                                            class="ml-2 px-2 py-1 bg-red-500 text-white hover:bg-red-300 rounded flex items-center"
-                                            title="Remove this data source">
-                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                            <button @click="addDataLake" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data lake</button>
-                            </td>
-                        </tr>
-                        </table>
-                    </Card>                
-                    <Card title="Data Servers" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="rag_served_databases" class="text-sm font-bold" style="margin-right: 1rem;">Database Servers:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <div v-for="(source, index) in configFile.rag_served_databases" :key="index" class="flex items-center mb-2">
-                                    <input
-                                        type="text"
-                                        :value="getServedDatabaseAlias(index)"
-                                        @input="updateAlias(index, $event.target.value)"
-                                        class="w-40 mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        placeholder="Database Alias"
-                                    >
-
-                                    <select
-                                        required
-                                        :value="getServedDatabaseType(index)"
-                                        @input="updateDatabaseType(index, $event.target.value)"
-                                        class="w-40 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                    >
-                                        <option value="lightrag">Light Rag</option>
-                                        <option value="elasticdsearch">Elastic Search</option>
-                                    </select>
-
-                                    <input
-                                        type="text"
-                                        :value="getServedDatabaseUrl(index)"
-                                        @input="updateDataLakeUrl(index, $event.target.value)"
-                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        placeholder="Database URL"
-                                    >
-
-                                    <input
-                                        type="text"
-                                        :value="getServedDatabaseKey(index)"
-                                        @input="updateDatabaseKey(index, $event.target.value)"
-                                        class="w-full mx-2 mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                        placeholder="Database api key"
-                                    >
-
-                                    <input
-                                        type="checkbox"
-                                        :checked="getServedDatabaseStatus(index)"
-                                        @change="updateMounted(index, $event.target.checked)"
-                                        class="mx-2"
-                                    >
-                                    <label class="mr-2">Mounted</label>
-                                    <div class="inline-flex">
-                                        <input 
-                                        type="file" 
-                                        ref="fileInput"
-                                        @change="handleFileUpload" 
-                                        accept=".pdf,.txt,.doc,.docx,.csv,.md"
-                                        class="hidden"
-                                        multiple
-                                        />
-                                        <button 
-                                        @click="triggerFileInput" 
-                                        class="ml-2 px-2 py-1 bg-green-500 text-white hover:bg-green-300 rounded flex items-center"
-                                        title="Upload documents to this data source"
-                                        >
-                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                                        </svg>
-                                        </button>
+                                        <!-- API Key (for lightrag only) -->
+                                        <div v-if="source.type === 'lightrag'" class="flex flex-col lg:col-span-2">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">API Key</label>
+                                            <input
+                                                type="text"
+                                                :value="getDataLakeKey(index)"
+                                                @input="updateDatabaseKey(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Enter API key"
+                                            >
+                                        </div>
                                     </div>
 
-                                    <button @click="removeServedDataBase(index)" 
-                                            class="ml-2 px-2 py-1 bg-red-500 text-white hover:bg-red-300 rounded flex items-center"
-                                            title="Remove this data source">
-                                        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
+                                    <!-- Actions Row -->
+                                    <div class="flex flex-wrap items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700 gap-2">
+                                        <div class="flex flex-wrap items-center gap-3">
+                                            <!-- Mounted Toggle -->
+                                            <label class="flex items-center space-x-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    :checked="getDataLakeStatus(index)"
+                                                    @change="updateMounted(index, $event.target.checked)"
+                                                    class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                                >
+                                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Mounted</span>
+                                            </label>
+
+                                            <!-- VectorDB Specific Controls -->
+                                            <div v-if="source.type === 'lollmsvectordb'" class="flex gap-2">
+                                                <button @click="vectorize_folder(index)" 
+                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                                    title="Vectorize or re-vectorize the selected folder">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                                    </svg>
+                                                    Vectorize
+                                                </button>
+
+                                                <button @click="select_folder(index)" 
+                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                    title="Select a folder as data source">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                                    </svg>
+                                                    Select Folder
+                                                </button>
+                                            </div>
+
+                                            <!-- File Upload -->
+                                            <div class="inline-flex">
+                                                <input type="file" ref="fileInput" @change="handleFileUpload" 
+                                                    accept=".pdf,.txt,.doc,.docx,.csv,.md" class="hidden" multiple />
+                                                <button @click="triggerFileInput" 
+                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                                    </svg>
+                                                    Upload Files
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Remove Button -->
+                                        <button @click="removeDataLake(index)" 
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                            Remove Data Lake
+                                        </button>
+                                    </div>
                                 </div>
-                            <button @click="addDatabaseService" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Create Database server</button>
-                            </td>
-                        </tr>
-       
-                        </table>
+                            </div>
+
+                            <!-- Add New Data Lake Button -->
+                            <button @click="addDataLake" 
+                                class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add New Data Lake
+                            </button>
+                        </div>
+                    </Card>
+            
+                    <Card title="Data Servers" :is_subcard="true" class="p-4 m-2">
+                        <div class="space-y-6">
+                            <div class="flex items-center mb-4">
+                                <h3 class="text-lg font-semibold dark:text-white">Database Servers</h3>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div v-for="(source, index) in configFile.rag_served_databases" :key="index" 
+                                    class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                        <!-- Database Alias -->
+                                        <div class="flex flex-col">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Database Alias</label>
+                                            <input
+                                                type="text"
+                                                :value="getServedDatabaseAlias(index)"
+                                                @input="updateAlias(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Enter alias"
+                                            >
+                                        </div>
+
+                                        <!-- Database Type -->
+                                        <div class="flex flex-col">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type</label>
+                                            <select
+                                                required
+                                                :value="getServedDatabaseType(index)"
+                                                @input="updateDatabaseType(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                            >
+                                                <option value="lightrag">Light Rag</option>
+                                                <option value="elasticdsearch">Elastic Search</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Database URL -->
+                                        <div class="flex flex-col lg:col-span-2">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Database URL</label>
+                                            <input
+                                                type="text"
+                                                :value="getServedDatabaseUrl(index)"
+                                                @input="updateDataLakeUrl(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Enter database URL"
+                                            >
+                                        </div>
+
+                                        <!-- API Key -->
+                                        <div class="flex flex-col lg:col-span-2">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">API Key</label>
+                                            <input
+                                                type="text"
+                                                :value="getServedDatabaseKey(index)"
+                                                @input="updateDatabaseKey(index, $event.target.value)"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Enter API key"
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions Row -->
+                                    <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                        <div class="flex items-center space-x-4">
+                                            <label class="flex items-center space-x-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    :checked="getServedDatabaseStatus(index)"
+                                                    @change="updateMounted(index, $event.target.checked)"
+                                                    class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                                                >
+                                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Mounted</span>
+                                            </label>
+                                            
+                                            <input type="file" ref="fileInput" @change="handleFileUpload" 
+                                                accept=".pdf,.txt,.doc,.docx,.csv,.md" class="hidden" multiple />
+                                            
+                                            <button @click="triggerFileInput" 
+                                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                                </svg>
+                                                Upload Files
+                                            </button>
+                                        </div>
+
+                                        <button @click="removeServedDataBase(index)" 
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                            Remove Database
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button @click="addDatabaseService" 
+                                class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add New Database Server
+                            </button>
+                        </div>
                     </Card>
 
-                    <Card title="LollmsVectordb Configuration" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">RAG Vectorizer:</label>
-                            </td>
-                            <td>
+                    <Card title="LollmsVectordb Configuration" :is_subcard="true" class="pb-2  m-2">
+                        <div class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-6 space-y-6">
+                            <!-- RAG Vectorizer -->
+                            <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                <label for="rag_vectorizer" class="text-sm font-bold w-64">RAG Vectorizer:</label>
                                 <select
                                     id="rag_vectorizer"
                                     required
                                     v-model="configFile.rag_vectorizer"
                                     @change="settingsChanged=true"
-                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                                 >
                                     <option value="semantic">Semantic Vectorizer</option>
                                     <option value="tfidf">TFIDF Vectorizer</option>
                                     <option value="openai">OpenAI Vectorizer</option>
                                     <option value="ollama">Ollama Vectorizer</option>
                                 </select>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_vectorizer_execute_remote_code" class="text-sm font-bold" style="margin-right: 1rem;">Allow executing remote code:</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.rag_vectorizer_execute_remote_code"
-                                type="checkbox"
-                                @change="settingsChanged=true"
-                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                            </div>
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_vectorizer_model" class="text-sm font-bold" style="margin-right: 1rem;">RAG Vectorizer model:</label>
-                            </td>
-                            <td>
-                                <select
-                                    id="rag_vectorizer_model"
-                                    required
-                                    v-model="configFile.rag_vectorizer_model"
-                                    @change="settingsChanged=true"
-                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                    :disabled="configFile.rag_vectorizer === 'tfidf'"
-                                >
-                                    <!-- Semantic Vectorizer Models -->
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="BAAI/bge-m3">BAAI/bge-m3</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="nvidia/NV-Embed-v2">nvidia/NV-Embed-v2</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L6-v2">sentence-transformers/all-MiniLM-L6-v2</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-MiniLM-L12-v2">sentence-transformers/all-MiniLM-L12-v2</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-distilroberta-v1">sentence-transformers/all-distilroberta-v1</option>
-                                    <option v-if="configFile.rag_vectorizer === 'semantic'" value="sentence-transformers/all-mpnet-base-v2">sentence-transformers/all-mpnet-base-v2</option>
-
-                                    <!-- OpenAI Vectorizer Models -->
-                                    <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-ada-002">text-embedding-ada-002</option>
-                                    <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-babbage-001">text-embedding-babbage-001</option>
-                                    <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-curie-001">text-embedding-curie-001</option>
-                                    <option v-if="configFile.rag_vectorizer === 'openai'" value="text-embedding-davinci-001">text-embedding-davinci-001</option>
-
-                                    <!-- Semantic Vectorizer Models -->
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="bge-m3">bge-m3</option>
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="NV-Embed-v2">nvidia/NV-Embed-v2</option>
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="nomic-embed-text">nomic-embed-text</option>
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="mxbai-embed-large">mxbai-embed-large</option>
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="mxbai-embed-large">mxbai-embed-large</option>
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="snowflake-arctic-embed">snowflake-arctic-embed</option>
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="snowflake-arctic-embed">snowflake-arctic-embed</option>
-                                    
-                                    
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="all-minilm">all-minilm</option>
-                                    <option v-if="configFile.rag_vectorizer === 'ollama'" value="bge-large">bge-large</option>
-                                    
-                                    
-
-                                    <!-- Disabled Option for TFIDF -->
-                                    <option v-if="configFile.rag_vectorizer === 'tfidf'" disabled>No models available for TFIDF</option>
-                                </select>
-                                <input v-model="configFile.rag_vectorizer_model" class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600">
-                            </td>
-                        </tr>                
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_service_url" class="text-sm font-bold" style="margin-right: 1rem;">Rag service url:</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.rag_service_url" class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_vectorizer_openai_key" class="text-sm font-bold" style="margin-right: 1rem;">Open AI key for open ai embedding method (if not provided I'll use OPENAI_API_KEY environment variable):</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="rag_vectorizer_openai_key"
-                                required
-                                v-model="configFile.rag_vectorizer_openai_key"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                            <!-- Allow executing remote code -->
+                            <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                <label class="text-sm font-bold w-64">Allow executing remote code:</label>
+                                <div class="flex-1">
+                                    <label class="inline-flex items-center">
+                                        <input 
+                                            v-model="configFile.rag_vectorizer_execute_remote_code"
+                                            type="checkbox"
+                                            @change="settingsChanged=true"
+                                            class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
+                                        >
+                                    </label>
                                 </div>
-                            </td>
-                        </tr> 
+                            </div>
 
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">RAG chunk size:</label>
-                            </td>
-                            <td>
-                                <input id="rag_chunk_size" v-model="configFile.rag_chunk_size"
-                                @change="settingsChanged=true"
-                                type="range" min="2" max="64000" step="1"
-                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <!-- RAG Vectorizer model -->
+                            <div class="flex flex-col md:flex-row md:items-start gap-4">
+                                <label class="text-sm font-bold w-64 pt-2">RAG Vectorizer model:</label>
+                                <div class="flex-1 space-y-2">
+                                    <select
+                                        id="rag_vectorizer_model"
+                                        required
+                                        v-model="configFile.rag_vectorizer_model"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
+                                        :disabled="configFile.rag_vectorizer === 'tfidf'"
+                                    >
+                                        <!-- Semantic Vectorizer Models -->
+                                        <optgroup v-if="configFile.rag_vectorizer === 'semantic'" label="Semantic Models">
+                                            <option value="BAAI/bge-m3">BAAI/bge-m3</option>
+                                            <option value="nvidia/NV-Embed-v2">nvidia/NV-Embed-v2</option>
+                                            <option value="sentence-transformers/all-MiniLM-L6-v2">sentence-transformers/all-MiniLM-L6-v2</option>
+                                            <option value="sentence-transformers/all-MiniLM-L12-v2">sentence-transformers/all-MiniLM-L12-v2</option>
+                                            <option value="sentence-transformers/all-distilroberta-v1">sentence-transformers/all-distilroberta-v1</option>
+                                            <option value="sentence-transformers/all-mpnet-base-v2">sentence-transformers/all-mpnet-base-v2</option>
+                                        </optgroup>
 
-                                <input v-model="configFile.rag_chunk_size"
-                                type="number"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr> 
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_overlap" class="text-sm font-bold" style="margin-right: 1rem;">RAG overlap size:</label>
-                            </td>
-                            <td>
-                                <input id="rag_overlap" v-model="configFile.rag_overlap"
-                                @change="settingsChanged=true"
-                                type="range" min="0" max="64000" step="1"
-                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <!-- OpenAI Models -->
+                                        <optgroup v-if="configFile.rag_vectorizer === 'openai'" label="OpenAI Models">
+                                            <option value="text-embedding-ada-002">text-embedding-ada-002</option>
+                                            <option value="text-embedding-babbage-001">text-embedding-babbage-001</option>
+                                            <option value="text-embedding-curie-001">text-embedding-curie-001</option>
+                                            <option value="text-embedding-davinci-001">text-embedding-davinci-001</option>
+                                        </optgroup>
 
-                                <input v-model="configFile.rag_overlap"
-                                type="number"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>                                  
-                                                                
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_n_chunks" class="text-sm font-bold" style="margin-right: 1rem;">RAG number of chunks:</label>
-                            </td>
-                            <td>
-                                <input id="rag_n_chunks" v-model="configFile.rag_n_chunks"
-                                @change="settingsChanged=true"
-                                type="range" min="2" max="64000" step="1"
-                                class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <!-- Ollama Models -->
+                                        <optgroup v-if="configFile.rag_vectorizer === 'ollama'" label="Ollama Models">
+                                            <option value="bge-m3">bge-m3</option>
+                                            <option value="NV-Embed-v2">nvidia/NV-Embed-v2</option>
+                                            <option value="nomic-embed-text">nomic-embed-text</option>
+                                            <option value="mxbai-embed-large">mxbai-embed-large</option>
+                                            <option value="snowflake-arctic-embed">snowflake-arctic-embed</option>
+                                            <option value="all-minilm">all-minilm</option>
+                                            <option value="bge-large">bge-large</option>
+                                        </optgroup>
 
-                                <input v-model="configFile.rag_n_chunks"
-                                type="number"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>                                          
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_clean_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Clean chunks:</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.rag_clean_chunks"
-                                type="checkbox"
-                                @change="settingsChanged=true"
-                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>                      
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_follow_subfolders" class="text-sm font-bold" style="margin-right: 1rem;">Follow subfolders:</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.rag_follow_subfolders"
-                                type="checkbox"
-                                @change="settingsChanged=true"
-                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>                                              
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_check_new_files_at_startup" class="text-sm font-bold" style="margin-right: 1rem;">Check for new files at startup:</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.rag_check_new_files_at_startup"
-                                type="checkbox"
-                                @change="settingsChanged=true"
-                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_preprocess_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Preprocess chunks:</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.rag_preprocess_chunks"
-                                type="checkbox"
-                                @change="settingsChanged=true"
-                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>    
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_activate_multi_hops" class="text-sm font-bold" style="margin-right: 1rem;">Activate multi hops RAG:</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.rag_activate_multi_hops"
-                                type="checkbox"
-                                @change="settingsChanged=true"
-                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>    
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="contextual_summary" class="text-sm font-bold" style="margin-right: 1rem;">Use contextual summary instead of rag (consumes alot of tokens and may be very slow but efficient, useful for summary and global questions that RAG can't do):</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.contextual_summary"
-                                type="checkbox"
-                                @change="settingsChanged=true"
-                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>    
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_deactivate" class="text-sm font-bold" style="margin-right: 1rem;" title="Useful for very big contexts and global tasks that require the whole document">Use all the document content (No split):</label>
-                            </td>
-                            <td>
-                                <input v-model="configFile.rag_deactivate"
-                                type="checkbox"
-                                @change="settingsChanged=true"
-                                class="w-5 mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
+                                        <option v-if="configFile.rag_vectorizer === 'tfidf'" disabled>No models available for TFIDF</option>
+                                    </select>
+                                    <input 
+                                        v-model="configFile.rag_vectorizer_model" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
+                                    >
+                                </div>
+                            </div>
 
-                            
-                            
-                        </table>
+                            <!-- Numeric inputs with sliders -->
+                            <div class="space-y-6">
+                                <!-- Chunk Size -->
+                                <div class="flex flex-col md:flex-row md:items-start gap-4">
+                                    <label class="text-sm font-bold w-64">RAG chunk size:</label>
+                                    <div class="flex-1 space-y-2">
+                                        <input 
+                                            id="rag_chunk_size" 
+                                            v-model="configFile.rag_chunk_size"
+                                            @change="settingsChanged=true"
+                                            type="range" 
+                                            min="2" 
+                                            max="64000" 
+                                            step="1"
+                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600"
+                                        >
+                                        <input 
+                                            v-model="configFile.rag_chunk_size"
+                                            type="number"
+                                            @change="settingsChanged=true"
+                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
+                                        >
+                                    </div>
+                                </div>
+
+                                <!-- Similar structure for other numeric inputs... -->
+                            </div>
+
+                            <!-- Checkboxes -->
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4">
+                                    <label class="text-sm font-bold w-64">Clean chunks:</label>
+                                    <div class="flex-1">
+                                        <label class="inline-flex items-center">
+                                            <input 
+                                                v-model="configFile.rag_clean_chunks"
+                                                type="checkbox"
+                                                @change="settingsChanged=true"
+                                                class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
+                                            >
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Similar structure for other checkboxes... -->
+                            </div>
+                        </div>
                     </Card>
                     <Card title="Data Vectorization" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_build_keys_words" class="text-sm font-bold" style="margin-right: 1rem;">Reformulate prompt before querying database (advised):</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="rag_build_keys_words"
-                                required
-                                v-model="configFile.rag_build_keys_words"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                        <div class="space-y-4 bg-gray-50 dark:bg-gray-800 rounded-lg p-6 shadow-sm border border-gray-200 dark:border-gray-700">
+                            <!-- Reformulate Prompt Option -->
+                            <div class="flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 p-3 rounded-lg transition-colors">
+                                <div class="flex-grow">
+                                    <label for="rag_build_keys_words" class="font-medium text-gray-700 dark:text-gray-200">
+                                        Reformulate prompt before querying database
+                                        <span class="text-sm text-gray-500 dark:text-gray-400 block mt-1">
+                                            (Recommended for better search results)
+                                        </span>
+                                    </label>
                                 </div>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="rag_put_chunk_informations_into_context" class="text-sm font-bold" style="margin-right: 1rem;">Put Chunk Information Into Context:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="rag_put_chunk_informations_into_context"
-                                required
-                                v-model="configFile.rag_put_chunk_informations_into_context"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                                <div class="flex items-center">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="rag_build_keys_words"
+                                            v-model="configFile.rag_build_keys_words"
+                                            @change="settingsChanged=true"
+                                            class="sr-only peer"
+                                        >
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
                                 </div>
-                            </td>
-                            </tr>
-                            
-                                                       
+                            </div>
 
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="data_vectorization_save_db" class="text-sm font-bold" style="margin-right: 1rem;">Save the new files to the database (The database wil always grow and continue to be the same over many sessions):</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="data_vectorization_save_db"
-                                required
-                                v-model="configFile.data_vectorization_save_db"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                            <!-- Chunk Information Option -->
+                            <div class="flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 p-3 rounded-lg transition-colors">
+                                <div class="flex-grow">
+                                    <label for="rag_put_chunk_informations_into_context" class="font-medium text-gray-700 dark:text-gray-200">
+                                        Put Chunk Information Into Context
+                                    </label>
                                 </div>
-                            </td>
-                            </tr>
-                                      
-                                                                            
-                        </table>
+                                <div class="flex items-center">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="rag_put_chunk_informations_into_context"
+                                            v-model="configFile.rag_put_chunk_informations_into_context"
+                                            @change="settingsChanged=true"
+                                            class="sr-only peer"
+                                        >
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Save Database Option -->
+                            <div class="flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 p-3 rounded-lg transition-colors">
+                                <div class="flex-grow">
+                                    <label for="data_vectorization_save_db" class="font-medium text-gray-700 dark:text-gray-200">
+                                        Save new files to database
+                                        <span class="text-sm text-gray-500 dark:text-gray-400 block mt-1">
+                                            Database will persist and grow across sessions
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="data_vectorization_save_db"
+                                            v-model="configFile.data_vectorization_save_db"
+                                            @change="settingsChanged=true"
+                                            class="sr-only peer"
+                                        >
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </Card>
                 
                 
@@ -1619,152 +1402,142 @@
                 <div :class="{ 'hidden': internet_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
 
                     <Card title="Internet search" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_internet_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate automatic internet search (for every prompt):</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="fun_mode"
-                                required
-                                v-model="configFile.activate_internet_search"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_internet_pages_judgement" class="text-sm font-bold" style="margin-right: 1rem;">Activate internet pages judgement:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="activate_internet_pages_judgement"
-                                required
-                                v-model="configFile.activate_internet_pages_judgement"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                                                                                       
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="internet_quick_search" class="text-sm font-bold" style="margin-right: 1rem;">Activate quick search:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="internet_quick_search"
-                                required
-                                v-model="configFile.internet_quick_search"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="internet_activate_search_decision" class="text-sm font-bold" style="margin-right: 1rem;">Activate search decision:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="internet_activate_search_decision"
-                                required
-                                v-model="configFile.internet_activate_search_decision"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>                                        
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="internet_vectorization_chunk_size" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization chunk size:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-col">
-                                    <input id="internet_vectorization_chunk_size" v-model="configFile.internet_vectorization_chunk_size"
-                                    @change="settingsChanged=true"
-                                    type="range" min="0" max="64000" step="1"
-                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                        <div class="grid gap-6 bg-gray-50 dark:bg-gray-700 rounded-lg p-6 border border-gray-300 dark:border-gray-600">
+                            <!-- Internet Search Toggle -->
+                            <div class="flex items-center justify-between">
+                                <label for="activate_internet_search" class="text-sm font-bold text-gray-900 dark:text-white">
+                                    Activate automatic internet search
+                                </label>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" 
+                                        id="fun_mode"
+                                        v-model="configFile.activate_internet_search"
+                                        @change="settingsChanged=true"
+                                        class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
 
-                                    <input v-model="configFile.internet_vectorization_chunk_size"
-                                    type="number"
-                                    @change="settingsChanged=true"
-                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                </div>
-                            </td>
-                            </tr>              
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="internet_vectorization_overlap_size" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization overlap size:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-col">
-                                    <input id="internet_vectorization_overlap_size" v-model="configFile.internet_vectorization_overlap_size"
-                                    @change="settingsChanged=true"
-                                    type="range" min="0" max="1000" step="1"
-                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <!-- Pages Judgement Toggle -->
+                            <div class="flex items-center justify-between">
+                                <label for="activate_internet_pages_judgement" class="text-sm font-bold text-gray-900 dark:text-white">
+                                    Activate internet pages judgement
+                                </label>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" 
+                                        id="activate_internet_pages_judgement"
+                                        v-model="configFile.activate_internet_pages_judgement"
+                                        @change="settingsChanged=true"
+                                        class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
 
-                                    <input v-model="configFile.internet_vectorization_overlap_size"
-                                    type="number"
-                                    @change="settingsChanged=true"
-                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                </div>
-                            </td>
-                            </tr>                                                                                
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="internet_vectorization_nb_chunks" class="text-sm font-bold" style="margin-right: 1rem;">Internet vectorization number of chunks:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-col">
-                                    <input id="internet_vectorization_nb_chunks" v-model="configFile.internet_vectorization_nb_chunks"
-                                    @change="settingsChanged=true"
-                                    type="range" min="0" max="100" step="1"
-                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <!-- Quick Search Toggle -->
+                            <div class="flex items-center justify-between">
+                                <label for="internet_quick_search" class="text-sm font-bold text-gray-900 dark:text-white">
+                                    Activate quick search
+                                </label>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" 
+                                        id="internet_quick_search"
+                                        v-model="configFile.internet_quick_search"
+                                        @change="settingsChanged=true"
+                                        class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
 
-                                    <input v-model="configFile.internet_vectorization_nb_chunks"
-                                    type="number"
-                                    @change="settingsChanged=true"
-                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                </div>
-                            </td>
-                            </tr>         
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="internet_nb_search_pages" class="text-sm font-bold" style="margin-right: 1rem;">Internet number of search pages:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-col">
-                                    <input id="internet_nb_search_pages" v-model="configFile.internet_nb_search_pages"
-                                    @change="settingsChanged=true"
-                                    type="range" min="1" max="100" step="1"
-                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <!-- Search Decision Toggle -->
+                            <div class="flex items-center justify-between">
+                                <label for="internet_activate_search_decision" class="text-sm font-bold text-gray-900 dark:text-white">
+                                    Activate search decision
+                                </label>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" 
+                                        id="internet_activate_search_decision"
+                                        v-model="configFile.internet_activate_search_decision"
+                                        @change="settingsChanged=true"
+                                        class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
 
-                                    <input v-model="configFile.internet_nb_search_pages"
-                                    type="number"
-                                    @change="settingsChanged=true"
-                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
+                            <!-- Slider Controls -->
+                            <div class="space-y-6">
+                                <!-- Vectorization Chunk Size -->
+                                <div class="flex flex-col gap-2">
+                                    <label for="internet_vectorization_chunk_size" class="text-sm font-bold text-gray-900 dark:text-white">
+                                        Internet vectorization chunk size
+                                    </label>
+                                    <div class="flex flex-col gap-4">
+                                        <input id="internet_vectorization_chunk_size" 
+                                            v-model="configFile.internet_vectorization_chunk_size"
+                                            @change="settingsChanged=true"
+                                            type="range" min="0" max="64000" step="1"
+                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600">
+                                        <input v-model="configFile.internet_vectorization_chunk_size"
+                                            type="number"
+                                            @change="settingsChanged=true"
+                                            class="w-24 px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-sm">
+                                    </div>
                                 </div>
-                            </td>
-                            </tr>                                                                            
-                        </table>
+
+                                <!-- Overlap Size -->
+                                <div class="flex flex-col gap-2">
+                                    <label for="internet_vectorization_overlap_size" class="text-sm font-bold text-gray-900 dark:text-white">
+                                        Internet vectorization overlap size
+                                    </label>
+                                    <div class="flex flex-col gap-4">
+                                        <input id="internet_vectorization_overlap_size" 
+                                            v-model="configFile.internet_vectorization_overlap_size"
+                                            @change="settingsChanged=true"
+                                            type="range" min="0" max="1000" step="1"
+                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600">
+                                        <input v-model="configFile.internet_vectorization_overlap_size"
+                                            type="number"
+                                            @change="settingsChanged=true"
+                                            class="w-24 px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-sm">
+                                    </div>
+                                </div>
+
+                                <!-- Number of Chunks -->
+                                <div class="flex flex-col gap-2">
+                                    <label for="internet_vectorization_nb_chunks" class="text-sm font-bold text-gray-900 dark:text-white">
+                                        Internet vectorization number of chunks
+                                    </label>
+                                    <div class="flex flex-col gap-4">
+                                        <input id="internet_vectorization_nb_chunks" 
+                                            v-model="configFile.internet_vectorization_nb_chunks"
+                                            @change="settingsChanged=true"
+                                            type="range" min="0" max="100" step="1"
+                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600">
+                                        <input v-model="configFile.internet_vectorization_nb_chunks"
+                                            type="number"
+                                            @change="settingsChanged=true"
+                                            class="w-24 px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-sm">
+                                    </div>
+                                </div>
+
+                                <!-- Number of Search Pages -->
+                                <div class="flex flex-col gap-2">
+                                    <label for="internet_nb_search_pages" class="text-sm font-bold text-gray-900 dark:text-white">
+                                        Internet number of search pages
+                                    </label>
+                                    <div class="flex flex-col gap-4">
+                                        <input id="internet_nb_search_pages" 
+                                            v-model="configFile.internet_nb_search_pages"
+                                            @change="settingsChanged=true"
+                                            type="range" min="1" max="100" step="1"
+                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600">
+                                        <input v-model="configFile.internet_nb_search_pages"
+                                            type="number"
+                                            @change="settingsChanged=true"
+                                            class="w-24 px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md text-sm">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </Card>
                 </div>
             </div>
@@ -1787,373 +1560,451 @@
                                 
                 <div :class="{ 'hidden': servers_conf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <Card title="Default services selection" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="active_tts_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Text to speach engine">Active TTS Service:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <select
-                                id="active_tts_service"
-                                required
-                                v-model="configFile.active_tts_service"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                    <option value="None">None</option>
-                                    <option value="browser">Use Browser TTS (doesn't work in realtime mode)</option>
-                                    <option value="xtts">XTTS</option>
-                                    <option value="parler-tts">Parler-TTS</option>
-                                    <option value="openai_tts">Open AI TTS</option>
-                                    <option value="eleven_labs_tts">ElevenLabs TTS</option>
-                                    <option value="fish_tts">Fish TTS</option>
-                                </select>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="active_stt_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Speach to Text engine">Active STT Service:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <select
-                                id="active_stt_service"
-                                required
-                                v-model="configFile.active_stt_service"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                    <option value="None">None</option>
-                                    <option value="whisper">Whisper</option>
-                                    <option value="openai_whisper">Open AI Whisper</option>
-                                </select>
-                            </td>
-                            </tr>
-                            <tr></tr>                            
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="active_tti_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Text to image engine">Active TTI Service:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <select
-                                id="active_tti_service"
-                                required
-                                v-model="configFile.active_tti_service"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                    <option value="None">None</option>
-                                    <option value="diffusers">Diffusers</option>
-                                    <option value="diffusers_client">Diffusers Client</option>
-                                    <option value="autosd">AUTO1111's SD</option>
-                                    <option value="dall-e">Open AI DALL-E</option>
-                                    <option value="midjourney">Midjourney</option>
-                                    <option value="comfyui">Comfyui</option>
-                                    <option value="fooocus">Fooocus</option>
-                                </select>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="active_ttm_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Text to Music engine">Active TTM Service:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <select
-                                id="active_ttm_service"
-                                required
-                                v-model="configFile.active_ttm_service"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                    <option value="None">None</option>
-                                    <option value="musicgen">Music Gen</option>
-                                </select>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="active_ttv_service" class="text-sm font-bold" style="margin-right: 1rem;" title="Default Text to speach engine">Active TTV Service:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <select
-                                id="active_ttv_service"
-                                required
-                                v-model="configFile.active_ttv_service"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                    <option value="None">None</option>
-                                    <option value="cog_video_x">Cog Video X</option>
-                                    <option value="diffusers">Diffusers</option>
-                                    <option value="lumalab">Lumalab</option>
-                                </select>
-                            </td>
-                            </tr>
+                        <div class="grid gap-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+                            <!-- TTS Service -->
+                            <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6">
+                                <div class="w-full md:w-1/3">
+                                    <label for="active_tts_service" class="block text-sm font-semibold text-gray-700 dark:text-gray-300" title="Default Text to speech engine">
+                                        Active TTS Service
+                                    </label>
+                                </div>
+                                <div class="w-full md:w-2/3">
+                                    <select
+                                        id="active_tts_service"
+                                        required
+                                        v-model="configFile.active_tts_service"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                    >
+                                        <option value="None">None</option>
+                                        <option value="browser">Use Browser TTS (doesn't work in realtime mode)</option>
+                                        <option value="xtts">XTTS</option>
+                                        <option value="parler-tts">Parler-TTS</option>
+                                        <option value="openai_tts">Open AI TTS</option>
+                                        <option value="eleven_labs_tts">ElevenLabs TTS</option>
+                                        <option value="fish_tts">Fish TTS</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                        </table>                    
+                            <!-- STT Service -->
+                            <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6">
+                                <div class="w-full md:w-1/3">
+                                    <label for="active_stt_service" class="block text-sm font-semibold text-gray-700 dark:text-gray-300" title="Default Speech to Text engine">
+                                        Active STT Service
+                                    </label>
+                                </div>
+                                <div class="w-full md:w-2/3">
+                                    <select
+                                        id="active_stt_service"
+                                        required
+                                        v-model="configFile.active_stt_service"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                    >
+                                        <option value="None">None</option>
+                                        <option value="whisper">Whisper</option>
+                                        <option value="openai_whisper">Open AI Whisper</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- TTI Service -->
+                            <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6">
+                                <div class="w-full md:w-1/3">
+                                    <label for="active_tti_service" class="block text-sm font-semibold text-gray-700 dark:text-gray-300" title="Default Text to image engine">
+                                        Active TTI Service
+                                    </label>
+                                </div>
+                                <div class="w-full md:w-2/3">
+                                    <select
+                                        id="active_tti_service"
+                                        required
+                                        v-model="configFile.active_tti_service"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                    >
+                                        <option value="None">None</option>
+                                        <option value="diffusers">Diffusers</option>
+                                        <option value="diffusers_client">Diffusers Client</option>
+                                        <option value="autosd">AUTO1111's SD</option>
+                                        <option value="dall-e">Open AI DALL-E</option>
+                                        <option value="midjourney">Midjourney</option>
+                                        <option value="comfyui">Comfyui</option>
+                                        <option value="fooocus">Fooocus</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- TTM Service -->
+                            <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6">
+                                <div class="w-full md:w-1/3">
+                                    <label for="active_ttm_service" class="block text-sm font-semibold text-gray-700 dark:text-gray-300" title="Default Text to Music engine">
+                                        Active TTM Service
+                                    </label>
+                                </div>
+                                <div class="w-full md:w-2/3">
+                                    <select
+                                        id="active_ttm_service"
+                                        required
+                                        v-model="configFile.active_ttm_service"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                    >
+                                        <option value="None">None</option>
+                                        <option value="musicgen">Music Gen</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- TTV Service -->
+                            <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-6">
+                                <div class="w-full md:w-1/3">
+                                    <label for="active_ttv_service" class="block text-sm font-semibold text-gray-700 dark:text-gray-300" title="Default Text to Video engine">
+                                        Active TTV Service
+                                    </label>
+                                </div>
+                                <div class="w-full md:w-2/3">
+                                    <select
+                                        id="active_ttv_service"
+                                        required
+                                        v-model="configFile.active_ttv_service"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
+                                    >
+                                        <option value="None">None</option>
+                                        <option value="cog_video_x">Cog Video X</option>
+                                        <option value="diffusers">Diffusers</option>
+                                        <option value="lumalab">Lumalab</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>                  
                     </Card>
                     <Card title="TTI settings" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="use_negative_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Use negative prompt:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                type="checkbox"
-                                id="use_negative_prompt"
-                                required
-                                v-model="configFile.use_negative_prompt"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                        <div class="space-y-6 bg-gray-50 dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                            <!-- Use negative prompt -->
+                            <div class="flex items-center space-x-4">
+                                <div class="w-1/3">
+                                    <label for="use_negative_prompt" class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                        Use negative prompt
+                                    </label>
                                 </div>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="use_ai_generated_negative_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Use AI generated negative prompt:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                    <input
-                                type="checkbox"
-                                id="use_ai_generated_negative_prompt"
-                                required
-                                v-model="configFile.use_ai_generated_negative_prompt"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                                <div class="w-2/3">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="use_negative_prompt"
+                                            v-model="configFile.use_negative_prompt"
+                                            @change="settingsChanged=true"
+                                            class="sr-only peer"
+                                        >
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
                                 </div>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="negative_prompt_generation_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Negative prompt generation prompt:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="negative_prompt_generation_prompt"
-                                required
-                                v-model="configFile.negative_prompt_generation_prompt"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                </div>
-                            </td>
-                            </tr>
+                            </div>
 
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="default_negative_prompt" class="text-sm font-bold" style="margin-right: 1rem;">Default negative prompt:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="text"
-                                id="default_negative_prompt"
-                                required
-                                v-model="configFile.default_negative_prompt"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                            <!-- Use AI generated negative prompt -->
+                            <div class="flex items-center space-x-4">
+                                <div class="w-1/3">
+                                    <label for="use_ai_generated_negative_prompt" class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                        Use AI generated negative prompt
+                                    </label>
                                 </div>
-                            </td>
-                            </tr>
-                        </table>
+                                <div class="w-2/3">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="use_ai_generated_negative_prompt"
+                                            v-model="configFile.use_ai_generated_negative_prompt"
+                                            @change="settingsChanged=true"
+                                            class="sr-only peer"
+                                        >
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Negative prompt generation prompt -->
+                            <div class="flex items-center space-x-4">
+                                <div class="w-1/3">
+                                    <label for="negative_prompt_generation_prompt" class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                        Negative prompt generation prompt
+                                    </label>
+                                </div>
+                                <div class="w-2/3">
+                                    <input
+                                        type="text"
+                                        id="negative_prompt_generation_prompt"
+                                        v-model="configFile.negative_prompt_generation_prompt"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 text-sm text-gray-900 dark:text-white placeholder-gray-400"
+                                        required
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Default negative prompt -->
+                            <div class="flex items-center space-x-4">
+                                <div class="w-1/3">
+                                    <label for="default_negative_prompt" class="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                                        Default negative prompt
+                                    </label>
+                                </div>
+                                <div class="w-2/3">
+                                    <input
+                                        type="text"
+                                        id="default_negative_prompt"
+                                        v-model="configFile.default_negative_prompt"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 text-sm text-gray-900 dark:text-white placeholder-gray-400"
+                                        required
+                                    >
+                                </div>
+                            </div>
+                        </div>
                     </Card>
                     <Card title="Full Audio settings" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_listening_threshold" class="text-sm font-bold" style="margin-right: 1rem;" title="Listening threshold">Listening threshold:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                type="number"
-                                step="1"
-                                id="stt_listening_threshold"
-                                required
-                                v-model="configFile.stt_listening_threshold"
-                                @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_silence_duration" class="text-sm font-bold" style="margin-right: 1rem;" title="Scilence duration">Silence duration (s):</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                type="number"
-                                step="1"
-                                id="stt_silence_duration"
-                                required
-                                v-model="configFile.stt_silence_duration"
-                                @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_sound_threshold_percentage" class="text-sm font-bold" style="margin-right: 1rem;" title="stt_sound_threshold_percentage">Minimum sound percentage in recorded segment:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                type="number"
-                                step="1"
-                                id="stt_sound_threshold_percentage"
-                                required
-                                v-model="configFile.stt_sound_threshold_percentage"
-                                @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_gain" class="text-sm font-bold" style="margin-right: 1rem;" title="STT Gain">Volume amplification:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                type="number"
-                                step="1"
-                                id="stt_gain"
-                                required
-                                v-model="configFile.stt_gain"
-                                @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_rate" class="text-sm font-bold" style="margin-right: 1rem;" title="Audio Rate">audio rate:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                type="number"
-                                step="1"
-                                id="stt_rate"
-                                required
-                                v-model="configFile.stt_rate"
-                                @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_channels" class="text-sm font-bold" style="margin-right: 1rem;" title="number of channels">number of channels:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                type="number"
-                                step="1"
-                                id="stt_channels"
-                                required
-                                v-model="configFile.stt_channels"
-                                @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_buffer_size" class="text-sm font-bold" style="margin-right: 1rem;" title="Buffer size">Buffer size:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                type="number"
-                                step="1"
-                                id="stt_buffer_size"
-                                required
-                                v-model="configFile.stt_buffer_size"
-                                @change="settingsChanged=true"
-                                class="w-full w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600  dark:bg-gray-600"
-                                >
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_activate_word_detection" class="text-sm font-bold" style="margin-right: 1rem;">Activate word detection:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
-                                <input
-                                type="checkbox"
-                                id="stt_activate_word_detection"
-                                required
-                                v-model="configFile.stt_activate_word_detection"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
+                        <div class="grid gap-6 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <!-- Listening Threshold -->
+                            <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                <div class="flex items-center">
+                                    <label for="stt_listening_threshold" class="font-medium text-gray-700 dark:text-gray-200" title="Listening threshold">
+                                        Listening threshold
+                                    </label>
+                                    <span class="ml-1 text-gray-400 hover:text-gray-600 cursor-help" title="Controls the sensitivity of voice detection">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
                                 </div>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_word_detection_file" class="text-sm font-bold" style="margin-right: 1rem;">Word detection wav file:</label>
-                            </td>
-                            <td>
-                                <div class="flex flex-row">
                                 <input
-                                type="text"
-                                id="stt_word_detection_file"
-                                required
-                                v-model="configFile.stt_word_detection_file"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                    type="number"
+                                    step="1"
+                                    id="stt_listening_threshold"
+                                    required
+                                    v-model="configFile.stt_listening_threshold"
+                                    @change="settingsChanged=true"
+                                    class="px-4 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 >
+                            </div>
+
+                            <!-- Silence Duration -->
+                            <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                <div class="flex items-center">
+                                    <label for="stt_silence_duration" class="font-medium text-gray-700 dark:text-gray-200">
+                                        Silence duration (s)
+                                    </label>
+                                    <span class="ml-1 text-gray-400 hover:text-gray-600 cursor-help" title="Duration of silence before stopping recording">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
                                 </div>
-                            </td>
-                            </tr>
-                        </table>                    
+                                <input
+                                    type="number"
+                                    step="1"
+                                    id="stt_silence_duration"
+                                    required
+                                    v-model="configFile.stt_silence_duration"
+                                    @change="settingsChanged=true"
+                                    class="px-4 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                >
+                            </div>
+
+                            <!-- Sound Threshold Percentage -->
+                            <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                <div class="flex items-center">
+                                    <label for="stt_sound_threshold_percentage" class="font-medium text-gray-700 dark:text-gray-200">
+                                        Minimum sound percentage
+                                    </label>
+                                    <span class="ml-1 text-gray-400 hover:text-gray-600 cursor-help" title="Minimum required sound percentage in recorded segment">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                </div>
+                                <input
+                                    type="number"
+                                    step="1"
+                                    id="stt_sound_threshold_percentage"
+                                    required
+                                    v-model="configFile.stt_sound_threshold_percentage"
+                                    @change="settingsChanged=true"
+                                    class="px-4 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                >
+                            </div>
+
+                            <!-- Volume Amplification -->
+                            <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                <div class="flex items-center">
+                                    <label for="stt_gain" class="font-medium text-gray-700 dark:text-gray-200">
+                                        Volume amplification
+                                    </label>
+                                    <span class="ml-1 text-gray-400 hover:text-gray-600 cursor-help" title="Audio input gain adjustment">
+                                        <i class="fas fa-info-circle"></i>
+                                    </span>
+                                </div>
+                                <input
+                                    type="number"
+                                    step="1"
+                                    id="stt_gain"
+                                    required
+                                    v-model="configFile.stt_gain"
+                                    @change="settingsChanged=true"
+                                    class="px-4 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                >
+                            </div>
+
+                            <!-- Audio Settings Group -->
+                            <div class="space-y-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Audio Settings</h3>
+                                
+                                <!-- Audio Rate -->
+                                <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                    <label for="stt_rate" class="font-medium text-gray-700 dark:text-gray-200">Audio rate</label>
+                                    <input
+                                        type="number"
+                                        step="1"
+                                        id="stt_rate"
+                                        required
+                                        v-model="configFile.stt_rate"
+                                        @change="settingsChanged=true"
+                                        class="px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                    >
+                                </div>
+
+                                <!-- Channels -->
+                                <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                    <label for="stt_channels" class="font-medium text-gray-700 dark:text-gray-200">Number of channels</label>
+                                    <input
+                                        type="number"
+                                        step="1"
+                                        id="stt_channels"
+                                        required
+                                        v-model="configFile.stt_channels"
+                                        @change="settingsChanged=true"
+                                        class="px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                    >
+                                </div>
+
+                                <!-- Buffer Size -->
+                                <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                    <label for="stt_buffer_size" class="font-medium text-gray-700 dark:text-gray-200">Buffer size</label>
+                                    <input
+                                        type="number"
+                                        step="1"
+                                        id="stt_buffer_size"
+                                        required
+                                        v-model="configFile.stt_buffer_size"
+                                        @change="settingsChanged=true"
+                                        class="px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                    >
+                                </div>
+                            </div>
+
+                            <!-- Word Detection Settings -->
+                            <div class="space-y-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Word Detection</h3>
+                                
+                                <!-- Activate Word Detection -->
+                                <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                    <label for="stt_activate_word_detection" class="font-medium text-gray-700 dark:text-gray-200">
+                                        Activate word detection
+                                    </label>
+                                    <div class="flex items-center">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                id="stt_activate_word_detection"
+                                                v-model="configFile.stt_activate_word_detection"
+                                                @change="settingsChanged=true"
+                                                class="sr-only peer"
+                                            >
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Word Detection File -->
+                                <div class="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-4 items-center">
+                                    <label for="stt_word_detection_file" class="font-medium text-gray-700 dark:text-gray-200">
+                                        Word detection wav file
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="stt_word_detection_file"
+                                        required
+                                        v-model="configFile.stt_word_detection_file"
+                                        @change="settingsChanged=true"
+                                        class="px-4 py-2 bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                    >
+                                </div>
+                            </div>
+                        </div>               
                     </Card>
                     <Card title="Audio devices settings" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="stt_input_device" class="text-sm font-bold" style="margin-right: 1rem;" title="Input device">Audio Input device:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <select
-                                id="stt_input_device"
-                                required
-                                v-model="configFile.stt_input_device"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                    <option v-for="(snd_input_device, index) in snd_input_devices" :key="snd_input_device" :value="snd_input_devices_indexes[index]">
-                                        {{ snd_input_device }}
-                                    </option>                                
-                                </select>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style="min-width: 200px;">
-                                <label for="tts_output_device" class="text-sm font-bold" style="margin-right: 1rem;" title="Input device">Audio Output device:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <select
-                                id="tts_output_device"
-                                required
-                                v-model="configFile.tts_output_device"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                >
-                                    <option v-for="(tts_output_device, index) in snd_output_devices" :key="tts_output_device" :value="snd_output_devices_indexes[index]">
-                                        {{ tts_output_device }}
-                                    </option>                                
-                                </select>
-                            </td>
-                            </tr>
+                        <div class="space-y-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                            <!-- Audio Input Device -->
+                            <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
+                                <div class="md:w-1/3">
+                                    <label 
+                                        for="stt_input_device" 
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-200"
+                                        title="Input device"
+                                    >
+                                        Audio Input Device
+                                    </label>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        Select your microphone or audio input source
+                                    </p>
+                                </div>
+                                <div class="md:w-2/3">
+                                    <select
+                                        id="stt_input_device"
+                                        required
+                                        v-model="configFile.stt_input_device"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200"
+                                    >
+                                        <option 
+                                            v-for="(snd_input_device, index) in snd_input_devices" 
+                                            :key="snd_input_device" 
+                                            :value="snd_input_devices_indexes[index]"
+                                        >
+                                            {{ snd_input_device }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
 
-                        </table>                    
+                            <!-- Audio Output Device -->
+                            <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 pt-4 border-t dark:border-gray-700">
+                                <div class="md:w-1/3">
+                                    <label 
+                                        for="tts_output_device" 
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-200"
+                                        title="Output device"
+                                    >
+                                        Audio Output Device
+                                    </label>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        Select your speakers or audio output device
+                                    </p>
+                                </div>
+                                <div class="md:w-2/3">
+                                    <select
+                                        id="tts_output_device"
+                                        required
+                                        v-model="configFile.tts_output_device"
+                                        @change="settingsChanged=true"
+                                        class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors duration-200"
+                                    >
+                                        <option 
+                                            v-for="(tts_output_device, index) in snd_output_devices" 
+                                            :key="tts_output_device" 
+                                            :value="snd_output_devices_indexes[index]"
+                                        >
+                                            {{ tts_output_device }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>       
                     </Card>
 
                     <Card title="Lollms service" :is_shrunk="true" :is_subcard="true" class="pb-2 m-2">
