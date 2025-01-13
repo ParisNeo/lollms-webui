@@ -2008,293 +2008,182 @@
                     </Card>
 
                     <Card title="Lollms service" :is_shrunk="true" :is_subcard="true" class="pb-2 m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="host" class="text-sm font-bold" style="margin-right: 1rem;">Host:</label>
-                            </td>
-                            <td style="width: 100%;">
-                            <input
-                                type="text"
-                                id="host"
-                                required
-                                v-model="configFile.host"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                            >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="lollms_access_keys" class="text-sm font-bold" style="margin-right: 1rem;">Access keys:</label>
-                            </td>
-                            <td style="width: 100%;">
-                            <StringListManager
-                                v-model="configFile.lollms_access_keys"
-                                @change="settingsChanged = true"
-                                placeholder="Enter access key"
-                            />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="port" class="text-sm font-bold" style="margin-right: 1rem;">Port:</label>
-                            </td>
-                            <td style="width: 100%;">
-                            <input
-                                type="number"
-                                step="1"
-                                id="port"
-                                required
-                                v-model="configFile.port"
-                                @change="settingsChanged=true"
-                                class="w-full mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                            >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="headless_server_mode" class="text-sm font-bold" style="margin-right: 1rem;">Activate headless server mode:</label>
-                            </td>
-                            <td style="width: 100%;">
-                            <input
-                                type="checkbox"
-                                id="headless_server_mode"
-                                required
-                                v-model="configFile.headless_server_mode"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                            >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_lollms_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms server:</label>
-                            </td>
-                            <td style="width: 100%;">
+                        <div class="grid gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md">
+                            <div class="grid grid-cols-[200px,1fr] items-center gap-4">
+                                <label for="host" class="font-semibold text-gray-700 dark:text-gray-200">Host:</label>
                                 <input
-                                    type="checkbox"
-                                    id="activate_lollms_server"
+                                    type="text"
+                                    id="host"
                                     required
-                                    v-model="configFile.activate_lollms_server"
+                                    v-model="configFile.host"
                                     @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
+                                    class="input-field"
                                 >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_lollms_rag_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms RAG server:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                    type="checkbox"
-                                    id="activate_lollms_rag_server"
-                                    required
-                                    v-model="configFile.activate_lollms_rag_server"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_lollms_tts_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms TTS server:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                    type="checkbox"
-                                    id="activate_lollms_tts_server"
-                                    required
-                                    v-model="configFile.activate_lollms_tts_server"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_lollms_stt_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms STT server:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                    type="checkbox"
-                                    id="activate_lollms_stt_server"
-                                    required
-                                    v-model="configFile.activate_lollms_stt_server"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_lollms_tti_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms TTI server:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                    type="checkbox"
-                                    id="activate_lollms_tti_server"
-                                    required
-                                    v-model="configFile.activate_lollms_tti_server"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_lollms_itt_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms ITT server:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                    type="checkbox"
-                                    id="activate_lollms_itt_server"
-                                    required
-                                    v-model="configFile.activate_lollms_itt_server"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                                <label for="activate_lollms_ttm_server" class="text-sm font-bold" style="margin-right: 1rem;">Activate lollms TTM server:</label>
-                            </td>
-                            <td style="width: 100%;">
-                                <input
-                                    type="checkbox"
-                                    id="activate_lollms_ttm_server"
-                                    required
-                                    v-model="configFile.activate_lollms_ttm_server"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                                >
-                            </td>
-                        </tr>
+                            </div>
 
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="activate_ollama_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate ollama server emulator:</label>
-                            </td>
-                            <td style="width: 100%;">
-                            <input
-                                type="checkbox"
-                                id="activate_ollama_emulator"
-                                required
-                                v-model="configFile.activate_ollama_emulator"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                            >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="activate_openai_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate openai server emulator:</label>
-                            </td>
-                            <td style="width: 100%;">
-                            <input
-                                type="checkbox"
-                                id="activate_openai_emulator"
-                                required
-                                v-model="configFile.activate_openai_emulator"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                            >
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="min-width: 200px;">
-                            <label for="activate_mistralai_emulator" class="text-sm font-bold" style="margin-right: 1rem;">Activate mistral ai server emulator:</label>
-                            </td>
-                            <td style="width: 100%;">
-                            <input
-                                type="checkbox"
-                                id="activate_mistralai_emulator"
-                                required
-                                v-model="configFile.activate_mistralai_emulator"
-                                @change="settingsChanged=true"
-                                class="mt-1 px-2 py-1 border border-gray-300 rounded dark:bg-gray-600"
-                            >
-                            </td>
-                        </tr>
-                        </table>
+                            <div class="grid grid-cols-[200px,1fr] items-center gap-4">
+                                <label for="lollms_access_keys" class="font-semibold text-gray-700 dark:text-gray-200">Access keys:</label>
+                                <StringListManager
+                                    v-model="configFile.lollms_access_keys"
+                                    @change="settingsChanged = true"
+                                    placeholder="Enter access key"
+                                />
+                            </div>
+
+                            <div class="grid grid-cols-[200px,1fr] items-center gap-4">
+                                <label for="port" class="font-semibold text-gray-700 dark:text-gray-200">Port:</label>
+                                <input
+                                    type="number"
+                                    step="1"
+                                    id="port"
+                                    required
+                                    v-model="configFile.port"
+                                    @change="settingsChanged=true"
+                                    class="input-field"
+                                >
+                            </div>
+
+                            <div class="grid grid-cols-[200px,1fr] items-center gap-4">
+                                <span class="font-semibold text-gray-700 dark:text-gray-200">Server Configuration:</span>
+                                <div class="space-y-3">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            v-model="configFile.headless_server_mode"
+                                            @change="settingsChanged=true"
+                                            class="w-4 h-4 rounded accent-blue-500"
+                                        >
+                                        <span class="text-sm text-gray-600 dark:text-gray-300">Headless Server Mode</span>
+                                    </label>
+
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            v-model="configFile.activate_lollms_server"
+                                            @change="settingsChanged=true"
+                                            class="w-4 h-4 rounded accent-blue-500"
+                                        >
+                                        <span class="text-sm text-gray-600 dark:text-gray-300">LoLLMS Server</span>
+                                    </label>
+
+                                    <!-- LoLLMS Services -->
+                                    <div class="pl-6 space-y-2 border-l-2 border-gray-200 dark:border-gray-600">
+                                        <label v-for="service in ['rag', 'tts', 'stt', 'tti', 'itt', 'ttm']" 
+                                            :key="service"
+                                            class="flex items-center space-x-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                :id="`activate_lollms_${service}_server`"
+                                                v-model="configFile[`activate_lollms_${service}_server`]"
+                                                @change="settingsChanged=true"
+                                                class="w-4 h-4 rounded accent-blue-500"
+                                            >
+                                            <span class="text-sm text-gray-600 dark:text-gray-300">{{ service.toUpperCase() }} Server</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-[200px,1fr] items-center gap-4">
+                                <span class="font-semibold text-gray-700 dark:text-gray-200">Emulators:</span>
+                                <div class="space-y-3">
+                                    <label v-for="emulator in ['ollama', 'openai', 'mistralai']" 
+                                        :key="emulator"
+                                        class="flex items-center space-x-2 cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            :id="`activate_${emulator}_emulator`"
+                                            v-model="configFile[`activate_${emulator}_emulator`]"
+                                            @change="settingsChanged=true"
+                                            class="w-4 h-4 rounded accent-blue-500"
+                                        >
+                                        <span class="text-sm text-gray-600 dark:text-gray-300">{{ emulator.charAt(0).toUpperCase() + emulator.slice(1) }} Emulator</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
                     </Card>                    
 
                     <Card title="STT services" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">
                         <Card title="Browser Audio STT" :is_subcard="true" class="pb-2  m-2">
-                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="activate_audio_infos" class="text-sm font-bold" style="margin-right: 1rem;">Activate audio infos:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                    <input
-                                    type="checkbox"
-                                    id="activate_audio_infos"
-                                    required
-                                    v-model="configFile.activate_audio_infos"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                    </div>
-                                </td>
-                                </tr>
+                            <div class="space-y-6 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+                                <!-- Activate Audio Infos -->
+                                <div class="flex items-center justify-between">
+                                    <label for="activate_audio_infos" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Activate audio infos
+                                    </label>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="activate_audio_infos"
+                                            v-model="configFile.activate_audio_infos"
+                                            @change="settingsChanged=true"
+                                            class="sr-only peer"
+                                        >
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
 
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="audio_auto_send_input" class="text-sm font-bold" style="margin-right: 1rem;">Send audio input automatically:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                    <input
-                                    type="checkbox"
-                                    id="audio_auto_send_input"
-                                    required
-                                    v-model="configFile.audio_auto_send_input"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
+                                <!-- Auto Send Audio Input -->
+                                <div class="flex items-center justify-between">
+                                    <label for="audio_auto_send_input" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Send audio input automatically
+                                    </label>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            id="audio_auto_send_input"
+                                            v-model="configFile.audio_auto_send_input"
+                                            @change="settingsChanged=true"
+                                            class="sr-only peer"
+                                        >
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+
+                                <!-- Silence Timer -->
+                                <div class="space-y-2">
+                                    <label for="audio_silenceTimer" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Audio silence timer (ms): {{ configFile.audio_silenceTimer }}ms
+                                    </label>
+                                    <div class="flex flex-col gap-4">
+                                        <input 
+                                            id="audio_silenceTimer" 
+                                            v-model="configFile.audio_silenceTimer"
+                                            @change="settingsChanged=true"
+                                            type="range" 
+                                            min="0" 
+                                            max="10000" 
+                                            step="1"
+                                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600"
+                                        >
+                                        <input 
+                                            v-model="configFile.audio_silenceTimer"
+                                            @change="settingsChanged=true"
+                                            type="number"
+                                            class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                        >
                                     </div>
-                                </td>
-                                </tr>
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="audio_silenceTimer" class="text-sm font-bold" style="margin-right: 1rem;">audio in silence timer (ms):</label>
-                                </td>
-                                <td>
-                                    <input id="audio_silenceTimer" v-model="configFile.audio_silenceTimer"
-                                    @change="settingsChanged=true"
-                                    type="range" min="0" max="10000" step="1"
-                                    class="flex-none h-2 mt-14 mb-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                    <input v-model="configFile.audio_silenceTimer"
-                                    @change="settingsChanged=true"
-                                    class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                </td>
-                                </tr>                                        
-                                
-                                <tr>
-                                    <td style="min-width: 200px;">
-                                    <label for="audio_in_language" class="text-sm font-bold" style="margin-right: 1rem;">Input Audio Language:</label>
-                                    </td>
-                                    <td>
-                                    <!-- Select element for choosing the input audio language -->
+                                </div>
+
+                                <!-- Input Audio Language -->
+                                <div class="space-y-2">
+                                    <label for="audio_in_language" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Input Audio Language
+                                    </label>
                                     <select
                                         id="audio_in_language"
                                         v-model="configFile.audio_in_language"
                                         @change="settingsChanged=true"
-                                        class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                                        class="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                     >
-                                        <!-- Options with language codes and corresponding language names -->
                                         <option v-for="language in audioLanguages" :key="language.code" :value="language.code">
-                                        {{ language.name }}
+                                            {{ language.name }}
                                         </option>
                                     </select>
-                                    </td>
-                                </tr> 
-                            </table>
+                                </div>
+                            </div>
 
                         </Card>                           
                         <Card title="Whisper audio transcription" :is_subcard="true" class="pb-2  m-2">
@@ -4200,7 +4089,9 @@
     />
 </template>
 <style scoped>
-
+.input-field {
+    @apply w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white transition-colors duration-200;
+}
 .heartbeat-text {
   font-size: 24px;
   animation: pulsate 1.5s infinite;
@@ -7185,4 +7076,3 @@ export default {
     },
 }
 </script>
-
