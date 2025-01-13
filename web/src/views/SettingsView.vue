@@ -1195,7 +1195,7 @@
                                         </svg>
                                     </button>
                                 </div>
-                            <button @click="addDatabaseService" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data lake</button>
+                            <button @click="addDataLake" class="mt-2 px-2 py-1 bg-blue-500 text-white rounded">Add Data lake</button>
                             </td>
                         </tr>
                         </table>
@@ -4707,7 +4707,25 @@ export default {
                 this.configFile.datalakes[index].mounted = value;
                 this.settingsChanged = true;
             },
-            addDatabaseService() {
+            addDatabaseService(){
+                if (!this.configFile.rag_local_services) {
+                    this.configFile.rag_local_services = [];
+                }
+                
+                // Add new entry as an object with default values
+                this.configFile.rag_local_services.push({
+                    alias: "datalake",
+                    type: "lightrag",
+                    url: "http://localhost:9621/",
+                    path: "",
+                    key: "",
+                    mounted: false
+                });
+                
+                this.settingsChanged = true;
+
+            },
+            addDataLake() {
                 if (!this.configFile.datalakes) {
                     this.configFile.datalakes = [];
                 }
