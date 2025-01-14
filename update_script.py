@@ -188,8 +188,8 @@ def main():
 
     # Perform git pull to update the repository
     if run_git_pull():
-        # Install the new requirements
-        install_requirements()
+        # Install the new requirements (not needed anymore)
+        # install_requirements()
 
         # Reload the main script with the original arguments
         temp_file = "temp_args.txt"
