@@ -1255,6 +1255,10 @@
                                         v-model="configFile.rag_vectorizer_model" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                                     >
+                                    <input v-if="configFile.rag_vectorizer === 'ollama'"
+                                        v-model="configFile.rag_service_url" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
+                                    >
                                 </div>
                             </div>
 
