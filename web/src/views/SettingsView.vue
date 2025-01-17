@@ -1255,13 +1255,16 @@
                                         v-model="configFile.rag_vectorizer_model" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                                     >
-                                    <input v-if="configFile.rag_vectorizer === 'ollama'"
+
+                                </div>
+                            </div>
+                            <div class="flex flex-col md:flex-row md:items-start gap-4">
+                                <label class="text-sm font-bold w-64 pt-2">RAG server address:</label>
+                                <input v-if="configFile.rag_vectorizer === 'ollama'"
                                         v-model="configFile.rag_service_url" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                                     >
-                                </div>
                             </div>
-
                             <!-- Numeric inputs with sliders -->
                             <div class="space-y-6">
                                 <!-- Chunk Size -->
@@ -2191,54 +2194,61 @@
 
                         </Card>                           
                         <Card title="Whisper audio transcription" :is_subcard="true" class="pb-2  m-2">
-                            <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <tr>
-                                    <td style="min-width: 200px;">
-                                        <label for="whisper_activate" class="text-sm font-bold" style="margin-right: 1rem;">Activate Whisper at startup:</label>
-                                    </td>
-                                    <td>
-                                        <div class="flex flex-row">
-                                        <input
-                                        type="checkbox"
-                                        id="whisper_activate"
-                                        required
-                                        v-model="configFile.whisper_activate"
-                                        @change="settingsChanged=true"
-                                        class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 space-y-6">
+                                <!-- Whisper Activation Section -->
+                                <div class="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-all">
+                                    <label for="whisper_activate" class="text-gray-700 dark:text-gray-200 font-medium">
+                                        Activate Whisper at startup
+                                    </label>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input 
+                                            type="checkbox" 
+                                            id="whisper_activate"
+                                            v-model="configFile.whisper_activate"
+                                            @change="settingsChanged=true"
+                                            class="sr-only peer"
                                         >
-                                        </div>
-                                    </td>                                        
-                                </tr>
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="xtts_current_language" class="text-sm font-bold" style="margin-right: 1rem;"></label>
-                                </td>
-                                <td>
-                                    <button class="hover:text-primary bg-green-200 rounded-lg p-4 m-4 w-full text-center items-center" @click="reinstallWhisperService">install whisper</button>
-                                </td>
-                                </tr>                                     
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="whisper_model" class="text-sm font-bold" style="margin-right: 1rem;">Whisper model:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                    <select
-                                        id="whisper_model"
-                                        v-model="configFile.whisper_model"
-                                        @change="settingsChanged=true"
-                                        class="w-full mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
-                                    >
-                                        <!-- Options with language codes and corresponding language names -->
-                                        <option v-for="whispermodel in whisperModels" :key="whispermodel" :value="whispermodel">
-                                        {{ whispermodel }}
-                                        </option>
-                                    </select>
-                                    </div>
-                                </td>
-                                </tr>                                        
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
 
-                            </table>
+                                <!-- Install Whisper Button Section -->
+                                <div class="p-4">
+                                    <button 
+                                        @click="reinstallWhisperService"
+                                        class="w-full py-3 px-4 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                                    >
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                        </svg>
+                                        <span>Install Whisper</span>
+                                    </button>
+                                </div>
+
+                                <!-- Whisper Model Selection Section -->
+                                <div class="p-4">
+                                    <label for="whisper_model" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                                        Whisper Model
+                                    </label>
+                                    <div class="relative">
+                                        <select
+                                            id="whisper_model"
+                                            v-model="configFile.whisper_model"
+                                            @change="settingsChanged=true"
+                                            class="block w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white appearance-none"
+                                        >
+                                            <option v-for="whispermodel in whisperModels" :key="whispermodel" :value="whispermodel">
+                                                {{ whispermodel }}
+                                            </option>
+                                        </select>
+                                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </Card>
                         <Card title="Open AI Whisper audio transcription" :is_subcard="true" class="pb-2  m-2">
                             <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -3331,25 +3341,43 @@
                         </Card>                        
                     </Card>
                     <Card title="TTV settings" :is_subcard="true" class="pb-2  m-2">
-                        <table class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <tr>
-                                <td style="min-width: 200px;">
-                                    <label for="lumalabs_key" class="text-sm font-bold" style="margin-right: 1rem;">Lumalabs key:</label>
-                                </td>
-                                <td>
-                                    <div class="flex flex-row">
-                                    <input
-                                    type="text"
-                                    id="lumalabs_key"
-                                    required
-                                    v-model="configFile.lumalabs_key"
-                                    @change="settingsChanged=true"
-                                    class="mt-1 px-2 py-1 border border-gray-300 rounded  dark:bg-gray-600"
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+                            <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
+                                <div class="w-full md:w-1/3">
+                                    <label 
+                                        for="lumalabs_key" 
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-200"
                                     >
+                                        Lumalabs Key
+                                    </label>
+                                </div>
+                                <div class="w-full md:w-2/3">
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            id="lumalabs_key"
+                                            required
+                                            v-model="configFile.lumalabs_key"
+                                            @change="settingsChanged=true"
+                                            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
+                                                bg-gray-50 dark:bg-gray-700 
+                                                text-gray-900 dark:text-white 
+                                                focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                                transition duration-150 ease-in-out"
+                                            placeholder="Enter your Lumalabs API key"
+                                        >
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
+                                            </svg>
+                                        </div>
                                     </div>
-                                </td>
-                                </tr>  
-                            </table>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Your API key will be securely stored
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
                         
                     </Card>
                     <Card title="Misc" :is_shrunk="true" :is_subcard="true" class="pb-2  m-2">

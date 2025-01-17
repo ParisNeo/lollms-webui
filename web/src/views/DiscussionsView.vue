@@ -1320,7 +1320,7 @@ export default {
                 "LoLLMs' version naming often contains clever easter eggs and references to AI advancements.",
                 "The 'Strawberry' version of LoLLMs was a playful nod to ChatGPT's internal codename for one of its versions.",
                 "The 'Saïph' version name was an intentional reference to Orion, anticipating OpenAI's rumored AGI-capable model codenamed 'Orion'.",
-                "LoLLMs' evolution can be traced through its version names: Warp, Starship, Robot, Brainwave, Strawberry, Feather and Saïph.",
+                "LoLLMs' evolution can be traced through its version names: Warp, Starship, Robot, Brainwave, Strawberry, Feather, Saïph, Nexus, Pulsar.",
                 "Each LoLLMs version name reflects either technological advancement or pays homage to significant developments in AI.",
                 "'Warp' and 'Starship' versions symbolized the quantum leap in AI capabilities and speed improvements.",
                 "'Robot' represented the system's growing autonomy and ability to perform complex tasks.",
