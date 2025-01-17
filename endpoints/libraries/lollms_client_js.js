@@ -119,7 +119,7 @@ class LollmsClient {
     if ('seed' in settings) this.seed = settings.seed;
     if ('n_threads' in settings) this.n_threads = settings.n_threads;
     if ('service_key' in settings) this.service_key = settings.service_key;
-    if ('default_generation_mode' in settings) this.default_generation_mode = settings.default_generation_mode;
+    if ('default_generation_mode' in settings) this.default_generation_mode = convertToGenerationFormat(settings.default_generation_mode);
 
     // You might want to add some validation or type checking here
 
