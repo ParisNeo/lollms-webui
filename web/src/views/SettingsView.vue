@@ -292,93 +292,205 @@
                 </div>
                 <div :class="{ 'hidden': mainconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="flex flex-col mb-2 px-3 pb-2">
-                                <Card title="General" :is_subcard="true" class="pb-2 m-2">
-                                    <div class="settings-container grid gap-6 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600">
-                                        <!-- Logo Section -->
+                        <Card title="General" :is_subcard="true" class="pb-2 m-2">
+                            <div class="settings-container grid gap-6 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600">
+                                <!-- Existing sections remain unchanged -->
+                                
+                                <!-- User Information Section -->
+                                <div class="setting-section">
+                                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-200 mb-4">User Information</h3>
+                                    <div class="settings-grid grid gap-4">
+                                        <!-- User Name -->
                                         <div class="setting-row flex items-center gap-4">
                                             <div class="setting-label w-64">
-                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application logo:</label>
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Username:</label>
+                                            </div>
+                                            <input type="text"
+                                                v-model="configFile.user_name"
+                                                @change="settingsChanged=true"
+                                                class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                                                        text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
+                                        </div>
+                                        
+                                        <!-- User Description -->
+                                        <div class="setting-row flex items-center gap-4">
+                                            <div class="setting-label w-64">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">User Description:</label>
+                                            </div>
+                                            <textarea
+                                                v-model="configFile.user_description"
+                                                @change="settingsChanged=true"
+                                                class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
+                                                        text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500"
+                                                rows="3">
+                                            </textarea>
+                                        </div>
+
+                                        <!-- User Avatar -->
+                                        <div class="setting-row flex items-center gap-4">
+                                            <div class="setting-label w-64">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">User Avatar:</label>
                                             </div>
                                             <div class="setting-content flex items-center gap-4">
-                                                <label for="logo-upload" class="cursor-pointer">
-                                                    <img :src="configFile.app_custom_logo ? `/user_infos/${configFile.app_custom_logo}` : storeLogo" 
+                                                <label for="avatar-upload" class="cursor-pointer">
+                                                    <img :src="configFile.user_avatar ? `/user_infos/${configFile.user_avatar}` : defaultAvatar" 
                                                         class="w-12 h-12 rounded-full object-cover border-2 border-gray-300 hover:border-blue-500 transition-all">
                                                 </label>
-                                                <input type="file" id="logo-upload" class="hidden" @change="uploadLogo">
-                                                <button @click.stop="resetLogo()" 
+                                                <input type="file" id="avatar-upload" class="hidden" @change="uploadAvatar">
+                                                <button @click.stop="resetAvatar()" 
                                                         class="text-gray-500 hover:text-red-600 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-all"
-                                                        title="Discard logo">
+                                                        title="Remove avatar">
                                                     <i data-feather="x"></i>
                                                 </button>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
 
-                                        <!-- Hardware Mode Section -->
-                                        <div class="setting-row flex items-center gap-4">
-                                            <div class="setting-label w-64">
-                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Hardware mode:</label>
-                                            </div>
-                                            <div class="setting-content">
-                                                <select v-model="configFile.hardware_mode"
-                                                        @change="settingsChanged=true"
-                                                        class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 
-                                                            text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-                                                    <option value="cpu">CPU</option>
-                                                    <option value="cpu-noavx">CPU (No AVX)</option>
-                                                    <option value="nvidia-tensorcores">NVIDIA (Tensor Cores)</option>
-                                                    <option value="nvidia">NVIDIA</option>
-                                                    <option value="amd-noavx">AMD (No AVX)</option>
-                                                    <option value="amd">AMD</option>
-                                                    <option value="apple-intel">Apple Intel</option>
-                                                    <option value="apple-silicon">Apple Silicon</option>
-                                                </select>
+                                <!-- Discussion Settings -->
+                                <div class="setting-section">
+                                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-200 mb-4">Discussion Settings</h3>
+                                    <div class="settings-grid grid gap-4">
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Use username in discussions</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.use_user_name_in_discussions"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
                                         </div>
-
-                                        <!-- Toggle Switches -->
-                                        <div class="settings-grid grid gap-4">
-                                            <div v-for="setting in toggleSettings" :key="setting.id" 
-                                                class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                                                <label :for="setting.id" class="font-bold text-sm text-gray-700 dark:text-gray-200">{{ setting.label }}</label>
-                                                <div class="relative inline-block w-12 h-6">
-                                                    <input type="checkbox"
-                                                        :id="setting.id"
-                                                        v-model="configFile[setting.model]"
-                                                        @change="settingsChanged=true"
-                                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                                transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
-                                                    <label :for="setting.id" 
-                                                        class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
-                                                    </label>
-                                                </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Use model name in discussions</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.use_model_name_in_discussions"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
                                         </div>
-
-                                        <!-- Text Input Fields -->
-                                        <div class="settings-grid grid gap-4">
-                                            <div class="setting-row flex items-center gap-4">
-                                                <div class="setting-label w-64">
-                                                    <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Database path:</label>
-                                                </div>
-                                                <input type="text"
-                                                    v-model="configFile.discussion_db_name"
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Use user information in discussions</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.use_user_informations_in_discussion"
                                                     @change="settingsChanged=true"
-                                                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800
-                                                            text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
-                                            </div>
-                                            <div class="setting-row flex items-center gap-4">
-                                                <div class="setting-label w-64">
-                                                    <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Debug file path:</label>
-                                                </div>
-                                                <input type="text"
-                                                    v-model="configFile.debug_log_file_path"
-                                                    @change="settingsChanged=true"
-                                                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800
-                                                            text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500">
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
                                         </div>
                                     </div>
-                                </Card>
+                                </div>
+
+                                <!-- Debug Settings -->
+                                <div class="setting-section">
+                                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-200 mb-4">Debug Settings</h3>
+                                    <div class="settings-grid grid gap-4">
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Enable Debug Mode</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.debug"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Show Final Full Prompt</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.debug_show_final_full_prompt"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Show Chunks</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.debug_show_chunks"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Auto-sync Settings -->
+                                <div class="setting-section">
+                                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-200 mb-4">Auto-sync Settings</h3>
+                                    <div class="settings-grid grid gap-4">
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Auto Update</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_update"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Auto Sync Personalities</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_sync_personalities"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Auto Sync Extensions</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_sync_extensions"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Auto Sync Bindings</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_sync_bindings"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Auto Sync Models</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_sync_models"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+
                                 <Card  title="Model template" :is_subcard="true" class="pb-2  m-2">
                                     <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
                                         <!-- Template Selection -->
@@ -1130,15 +1242,18 @@
                                     <!-- Actions Row -->
                                     <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
                                         <div class="flex items-center space-x-4">
-                                            <label class="flex items-center space-x-2 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    :checked="getServedDatabaseStatus(index)"
-                                                    @change="updateMounted(index, $event.target.checked)"
-                                                    class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                                                >
-                                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Mounted</span>
-                                            </label>
+                                            <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Start at Startup</label>
+                                                <div class="relative inline-block w-12 h-6">
+                                                    <input type="checkbox"
+                                                        v-model="configFile.rag_local_services[index].start_at_startup"
+                                                        @change="settingsChanged=true"
+                                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                                transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                                </div>
+                                            </div>
+
                                             
                                             <input type="file" ref="fileInput" @change="handleFileUpload" 
                                                 accept=".pdf,.txt,.doc,.docx,.csv,.md" class="hidden" multiple />
@@ -4441,7 +4556,7 @@ export default {
                 return this.configFile.rag_local_services[index].url;
             },
             getServedDatabaseStatus(index) {
-                return this.configFile.rag_local_services[index].mounted || false;
+                return this.configFile.rag_local_services[index].start_at_startup || false;
             },
             getServedDatabaseKey(index) {
                 return this.configFile.rag_local_services[index].key || "";
@@ -4495,6 +4610,10 @@ export default {
                 this.configFile.datalakes[index].mounted = value;
                 this.settingsChanged = true;
             },
+            updateStartAtStartup(index, value) {
+                this.configFile.datalakes[index].start_at_startup = value;
+                this.settingsChanged = true;
+            },
             addDatabaseService(){
                 if (!this.configFile.rag_local_services) {
                     this.configFile.rag_local_services = [];
@@ -4507,7 +4626,7 @@ export default {
                     url: "http://localhost:9621/",
                     path: "",
                     key: "",
-                    mounted: false
+                    start_at_startup: false
                 });
                 
                 this.settingsChanged = true;
@@ -4534,6 +4653,14 @@ export default {
                 console.log("Removing remote database")
                 this.configFile.datalakes.splice(index, 1);
                 console.log(this.configFile.datalakes)
+
+                this.settingsChanged = true;
+            },        
+            
+            removeServedDataBase(index) {
+                console.log("Removing remote database")
+                this.configFile.rag_local_services.splice(index, 1);
+                console.log(this.configFile.rag_local_services)
 
                 this.settingsChanged = true;
             },        

@@ -206,7 +206,7 @@
             </audio>  
             <tokens-hilighter :namedTokens="namedTokens">
 
-</tokens-hilighter>
+            </tokens-hilighter>
             <div  v-if="tab_id === 'render'">
               <MarkdownRenderer ref="mdRender" :client_id="this.$store.state.client_id" :message_id="0" :discussion_id="0" :markdown-text="text" class="mt-4 p-2 rounded shadow-lg dark:bg-bg-dark">
               </MarkdownRenderer>          
@@ -889,9 +889,9 @@ export default {
       this.generating=true
     },
     async tokenize_text(){
-      const output = await axios.post("/lollms_tokenize", {"prompt": this.text}, {headers: this.posts_headers});
-      console.log(output.data.named_tokens)
-      this.namedTokens = output.data.named_tokens
+      const output = await axios.post("/lollms_tokenize", {"prompt": this.text, "return_named": true}, {headers: this.posts_headers});
+      console.log(output.data)
+      this.namedTokens = output.data
     },
     generate(){
       console.log("Finding cursor position")
