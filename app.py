@@ -27,8 +27,6 @@ if not PackageManager.check_package_installed_with_version(
     PackageManager.install_or_update("ascii_colors")
 from ascii_colors import ASCIIColors
 
-ASCIIColors.success("OK")
-
 expected_pipmaster_version = "0.3.2"
 ASCIIColors.yellow(
     f"Checking pipmaster ({expected_pipmaster_version}) ...", end="", flush=True
@@ -38,8 +36,6 @@ if not PackageManager.check_package_installed_with_version(
 ):
     PackageManager.install_or_update("pipmaster")
 import pipmaster as pm
-
-ASCIIColors.success("OK")
 
 
 def animate(text: str, stop_event: threading.Event):
