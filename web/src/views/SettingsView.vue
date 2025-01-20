@@ -1110,15 +1110,18 @@
                                     <div class="flex flex-wrap items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700 gap-2">
                                         <div class="flex flex-wrap items-center gap-3">
                                             <!-- Mounted Toggle -->
-                                            <label class="flex items-center space-x-2 cursor-pointer">
-                                                <input
-                                                    type="checkbox"
-                                                    :checked="getDataLakeStatus(index)"
-                                                    @change="updateMounted(index, $event.target.checked)"
-                                                    class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                                                >
-                                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Mounted</span>
-                                            </label>
+                                            <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200 mr-4">Mounted</label>
+                                                <div class="relative inline-block w-12 h-6">
+                                                    <input type="checkbox"
+                                                        v-model="configFile.datalakes[index].mounted"
+                                                        @change="settingsChanged=true"
+                                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                                transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                                </div>
+                                            </div>
+
 
                                             <!-- VectorDB Specific Controls -->
                                             <div v-if="source.type === 'lollmsvectordb'" class="flex gap-2">
@@ -1131,7 +1134,7 @@
                                                     Vectorize
                                                 </button>
 
-                                                <button @click="select_folder(index)" 
+                                                <button @click="lollms_vectordb_select_folder(index)" 
                                                     class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                                     title="Select a folder as data source">
                                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1237,13 +1240,35 @@
                                                 placeholder="Enter API key"
                                             >
                                         </div>
+
+                                        <div class="flex flex-col lg:col-span-2">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Input folder</label>
+                                            <input
+                                                type="text"
+                                                v-model="configFile.rag_local_services[index].input_path"
+                                                @change="settingsChanged=true"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Input folder"
+                                            >
+                                        </div>
+                                        <div class="flex flex-col lg:col-span-2">
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Input folder</label>
+                                            <input
+                                                type="text"
+                                                v-model="configFile.rag_local_services[index].working_path"
+                                                @change="settingsChanged=true"
+                                                class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                                placeholder="Output folder"
+                                            >
+                                        </div>
+
                                     </div>
 
                                     <!-- Actions Row -->
                                     <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
                                         <div class="flex items-center space-x-4">
                                             <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Start at Startup</label>
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200 mr-4">Start at Startup</label>
                                                 <div class="relative inline-block w-12 h-6">
                                                     <input type="checkbox"
                                                         v-model="configFile.rag_local_services[index].start_at_startup"
@@ -1253,6 +1278,7 @@
                                                     <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                                 </div>
                                             </div>
+
 
                                             
                                             <input type="file" ref="fileInput" @change="handleFileUpload" 
@@ -1266,6 +1292,23 @@
                                                 Upload Files
                                             </button>
                                         </div>
+                                        
+                                        <button @click="lightrag_select_input_folder(index)" 
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                            title="Select a folder as data source">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                            </svg>
+                                            Select input Folder
+                                        </button>
+                                        <button @click="lightrag_select_output_folder(index)" 
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                            title="Select a folder as data source">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                            </svg>
+                                            Select work Folder
+                                        </button>
 
                                         <button @click="removeServedDataBase(index)" 
                                             class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
@@ -4625,6 +4668,8 @@ export default {
                     type: "lightrag",
                     url: "http://localhost:9621/",
                     path: "",
+                    input_path: "",
+                    working_path: "",
                     key: "",
                     start_at_startup: false
                 });
@@ -4697,10 +4742,59 @@ export default {
             async vectorize_folder(index){
                 await axios.post('/vectorize_folder', {client_id:this.$store.state.client_id, rag_database:this.$store.state.config.datalakes[index]}, this.posts_headers)
             },
-            async select_folder(index) {
+            async lightrag_select_input_folder(index) {
                 try {
-                    socket.on("rag_db_added", (infos) => {
-                        console.log("rag_db_added")
+                    socket.on("lightrag_input_folder_added", (infos) => {
+                        console.log("lightrag_input_folder_added")
+                        console.log(infos)
+                        if (infos) {
+                            // Update with new dictionary structure
+                            console.log(this.$store.state.config.rag_local_services)
+                            console.log(index)
+                            this.$store.state.config.rag_local_services[index]["input_path"] = infos["path"] 
+                            this.settingsChanged = true;
+                        } else {
+                            this.$store.state.toast.showToast("Failed to select a folder", 4, false)
+                        }
+                    });
+
+                    await axios.post('/select_lightrag_input_folder', 
+                        { client_id: this.$store.state.client_id }, 
+                        this.posts_headers
+                    )
+                } catch {
+                    this.$store.state.toast.showToast("Failed to select a folder", 4, false)
+                }
+            },
+            async lightrag_select_output_folder(index) {
+                try {
+                    socket.on("lightrag_output_folder_added", (infos) => {
+                        console.log("lightrag_output_folder_added")
+                        console.log(infos)
+                        if (infos) {
+                            // Update with new dictionary structure
+                            console.log(this.$store.state.config.rag_local_services)
+                            console.log(index)
+                            this.$store.state.config.rag_local_services[index]["working_path"] = infos["path"] 
+                            this.settingsChanged = true;
+                        } else {
+                            this.$store.state.toast.showToast("Failed to select a folder", 4, false)
+                        }
+                    });
+
+                    await axios.post('/select_lightrag_output_folder', 
+                        { client_id: this.$store.state.client_id }, 
+                        this.posts_headers
+                    )
+                } catch {
+                    this.$store.state.toast.showToast("Failed to select a folder", 4, false)
+                }
+            },
+            
+            async lollms_vectordb_select_folder(index) {
+                try {
+                    socket.on("lollmsvectordb_datalake_added", (infos) => {
+                        console.log("lollmsvectordb_datalake_added")
                         console.log(infos)
                         if (infos) {
                             // Update with new dictionary structure
@@ -4719,7 +4813,7 @@ export default {
                         }
                     });
 
-                    await axios.post('/add_rag_database', 
+                    await axios.post('/select_lollmsvectordb_input_folder', 
                         { client_id: this.$store.state.client_id }, 
                         this.posts_headers
                     )
