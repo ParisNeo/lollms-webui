@@ -363,6 +363,17 @@
                                             </div>
                                         </div>
                                         <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Use assistant name in discussion</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.use_assistant_name_in_discussion"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
                                             <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Use model name in discussions</label>
                                             <div class="relative inline-block w-12 h-6">
                                                 <input type="checkbox"

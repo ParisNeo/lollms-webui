@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 148
+version: 149
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -71,6 +71,7 @@ extensions: []
 
 user_name: user
 user_description: ""
+use_assistant_name_in_discussion: false
 use_user_name_in_discussions: false
 use_model_name_in_discussions: false
 user_avatar: null
