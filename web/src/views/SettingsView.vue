@@ -499,6 +499,134 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Webui Settings -->
+                                <div class="setting-section">
+                                    <h3 class="font-bold text-lg text-gray-800 dark:text-gray-200 mb-4">Webui Settings</h3>
+                                    <div class="settings-grid grid gap-4">
+                                        <!-- Logo Upload Section -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <div class="flex items-center space-x-4">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Logo</label>
+                                                <!-- Logo Preview -->
+                                                <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                                                    <img v-if="configFile.app_custom_logo" 
+                                                        :src="'/user_infos/' + configFile.app_custom_logo" 
+                                                        class="w-full h-full object-cover"
+                                                        alt="Custom Logo">
+                                                    <img v-else 
+                                                        :src="defaultImgPlaceholder" 
+                                                        class="w-full h-full object-cover"
+                                                        alt="Default Logo">
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <!-- Remove logo button (only show if custom logo exists) -->
+                                                <button v-if="configFile.app_custom_logo"
+                                                        @click="removeLogo"
+                                                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
+                                                    Remove Logo
+                                                </button>
+                                                <label class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                                                    Upload Logo
+                                                    <input type="file" 
+                                                        @change="uploadLogo" 
+                                                        accept="image/*"
+                                                        class="hidden">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <!-- Auto Title Setting -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <div class="flex items-center space-x-2">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Automatic Discussion Naming</label>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">(Let AI name your discussions automatically)</div>
+                                            </div>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_title"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Auto Show Browser Setting -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <div class="flex items-center space-x-2">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Auto-launch Browser</label>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">(Open browser automatically when starting LOLLMS)</div>
+                                            </div>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_show_browser"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Remote Access Warning -->
+                                        <div class="setting-row flex flex-col p-4 bg-red-50 dark:bg-red-900/20 rounded-lg shadow-sm border-2 border-red-200 dark:border-red-800">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                    <label class="font-bold text-sm text-red-700 dark:text-red-400">Remote Access</label>
+                                                </div>
+                                                <div class="relative inline-block w-12 h-6">
+                                                    <input type="checkbox"
+                                                        v-model="configFile.force_accept_remote_access"
+                                                        @change="settingsChanged=true"
+                                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                                transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-red-500">
+                                                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                                </div>
+                                            </div>
+                                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                                <strong>Security Warning:</strong> Enabling remote access poses significant security risks. Only enable this if you:
+                                                <ul class="list-disc ml-6 mt-1">
+                                                    <li>Fully understand the security implications</li>
+                                                    <li>Have proper network security measures in place</li>
+                                                    <li>Are in a trusted network environment</li>
+                                                </ul>
+                                            </p>
+                                        </div>
+
+                                        <!-- Copy with Details Setting -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <div class="flex items-center space-x-2">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Enhanced Message Copy</label>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    (Include metadata like sender name and model info when copying messages)
+                                                </div>
+                                            </div>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.copy_to_clipboard_add_all_details"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Headless Mode -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Headless server mode (DEACTIVATES the WEBUI)</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.headless_server_mode"
+                                                    @change="settingsChanged=true"
+                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </Card>
 
@@ -5244,6 +5372,19 @@ export default {
         resetAvatar(){
             this.configFile.user_avatar='';
             this.settingsChanged=true
+        },
+        removeLogo() {
+            axios.post('/remove_logo')
+                .then(() => {
+                    this.configFile.app_custom_logo = null;
+                    this.$store.state.config.app_custom_logo = null;
+                    this.settingsChanged = true;
+                    this.$store.state.toast.showToast("Logo removed successfully!", 4, true);
+                })
+                .catch(error => {
+                    console.error('Error removing logo:', error);
+                    this.$store.state.toast.showToast("Error removing logo!", 4, false);
+                });
         },
         uploadLogo(event){
             const file = event.target.files[0]; // Get the selected file

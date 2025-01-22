@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 149
+version: 150
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -9,7 +9,7 @@ model_name: null
 model_variant: null
 model_type: null
 
-show_news_panel: true
+show_news_panel: false
 
 # Security measures
 turn_on_setting_update_validation: true
