@@ -185,7 +185,7 @@
                                     @paste="handlePaste"
                                     @keydown.enter.exact="submitOnEnter($event)"
                                     class="w-full p-2 text-sm text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                                    placeholder="Send message..."
+                                    placeholder="Write your message to the AI here..."
                                 ></textarea>
                             </form>
                             </div>
