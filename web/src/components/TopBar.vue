@@ -389,7 +389,7 @@ export default {
       error: null,      
       isInfosMenuVisible: false,
       isVisible: false,
-      isPinned: false,
+      isPinned: JSON.parse(localStorage.getItem('isPinned') || 'false'),
       selectedLanguage: '',
       isLanguageMenuVisible: false,
       sunIcon: document.querySelector(".sun"),
@@ -439,6 +439,7 @@ export default {
   },
   async mounted() {
     try {
+      this.isVisible = this.isPinned
       this.$store.state.toast = this.$refs.toast
       this.$store.state.messageBox = this.$refs.messageBox
       this.$store.state.universalForm = this.$refs.universalForm
@@ -707,6 +708,8 @@ export default {
     togglePin() {
       this.isPinned = !this.isPinned
       this.isVisible = this.isPinned
+      // Save the new state to localStorage
+      localStorage.setItem('isPinned', JSON.stringify(this.isPinned))
     },
     fun_mode_on(){
         console.log("Turning on fun mode")

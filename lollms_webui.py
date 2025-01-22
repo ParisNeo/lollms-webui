@@ -649,8 +649,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         # Get the list of messages
         messages = discussion.get_messages()
-        discussion_messages = f"{self.start_header_id_template}instruction{self.end_header_id_template}Create a short title to this discussion\nYour response should only contain the title without any comments.\n"
-        discussion_title = f"\n{self.start_header_id_template}Discussion title{self.end_header_id_template}"
+        discussion_messages = f"{self.system_full_header}Create a short title to this discussion\nYour response should only contain the title without any comments or thoughts.\n"
+        discussion_title = f"\n{self.ai_custom_header('assistant')}"
 
         available_space = (
             self.config.ctx_size
