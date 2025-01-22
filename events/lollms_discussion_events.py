@@ -173,6 +173,7 @@ def add_events(sio: socketio):
                 nb_tokens = len(lollmsElfServer.model.tokenize(welcome_message))
             except:
                 nb_tokens = None
+                
             message = lollmsElfServer.session.get_client(
                 client_id
             ).discussion.add_message(
