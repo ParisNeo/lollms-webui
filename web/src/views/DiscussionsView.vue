@@ -865,6 +865,7 @@
     </div>    
     
     <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>
+    <ChangelogPopup/>
 </template>
 
 
@@ -1251,6 +1252,7 @@ import modelImgPlaceholder from "../assets/default_model.png"
 
 import MountedPersonalities from '@/components/MountedPersonalities.vue'
 import ChatBarButton from '@/components/ChatBarButton.vue'
+import ChangelogPopup from "@/components/ChangelogPopup.vue"
 
 
 const parsePlaceholder = (placeholder) => {
@@ -1382,9 +1384,22 @@ export default {
                 "The project maintains a philosophy of 'Don't panic, bring a towel, and trust in AI' - a reference to The Hitchhiker's Guide to the Galaxy",
                 "Despite having multiple patents in various fields, ParisNeo's interest in AI was sparked when he read about AlexNet in 2012",
                 "LoLLMs receives daily updates, similar to course corrections on a starship",
+                "Fun Fact: Neo's apartment number 101 in The Matrix is a brilliant multi-layered reference! In binary, 101 equals 5, representing someone who stands 'apart' from the zeros and ones of the Matrix. But there's more - Room 101 is also famous from Orwell's '1984' as the room containing 'the worst thing in the world.' For Neo, his apartment 101 was indeed where he faced his worst fear: discovering his entire reality was a lie. ParisNeo slyly references this in LoLLMs v18 by making '101' a special command that reveals the system's true capabilities!",
                 "ParisNeo's journey into programming shows his determination - he taught himself BASIC by reverse engineering games before he even knew English",
-                "Version 17 of LoLLMs, nicknamed 'Pulsar', draws inspiration from the most precise natural clocks in the universe - pulsating neutron stars. Just as pulsars emit precise, regular signals that help navigate spacecraft, LoLLMs Pulsar orchestrates precise communication between different AI systems. The version number 17 wasn't just sequential - pulsars rotate up to 1.7 thousand times per second, making '17' a cosmic nod to these incredible stellar lighthouses of space!"
+                "Version 17 of LoLLMs, nicknamed 'Pulsar', draws inspiration from the most precise natural clocks in the universe - pulsating neutron stars. Just as pulsars emit precise, regular signals that help navigate spacecraft, LoLLMs Pulsar orchestrates precise communication between different AI systems. The version number 17 wasn't just sequential - pulsars rotate up to 1.7 thousand times per second, making '17' a cosmic nod to these incredible stellar lighthouses of space!",
+                "Version 18 'Matrix' of LoLLMs is a delightful nod to ParisNeo's teenage obsession with The Matrix movie - talk about coming full circle from watching the film 60 times to creating an AI system that lets users 'bend the rules' of reality!",
+                "Did you know? The '18' in LoLLMs v18 'Matrix' has a hidden meaning - the '1' represents The One (like Neo), while the '8' represents infinity (∞) when turned sideways. Just as Neo broke free from the infinite cycle of the Matrix, LoLLMs v18 breaks traditional AI limitations!",
+                "LoLLMs v18 Matrix introduces a groundbreaking feature called 'Digital Twins' - multiple AI personas that can interact with each other, much like the multiplying Agent Smith in The Matrix Reloaded. Life imitating art at its finest!",
+                "When ParisNeo announced version 18 'Matrix', he included a hidden binary message in the release notes that, when decoded, read 'There is no spoon' - a playful reference to both The Matrix and the flexible nature of AI reality.",
+                "The Matrix version introduced 'Morpheus Mode' - an advanced teaching capability that guides users through complex AI concepts, just like Morpheus guided Neo through the nature of the Matrix. 'Unfortunately, no one can be told what LoLLMs is. You have to experience it for yourself.'",
+                "In a cheeky nod to The Matrix's famous green code rain, LoLLMs v18 includes an easter egg where typing 'follow the white rabbit' triggers a special visualization mode for code generation.",
+                "While previous versions were inspired by celestial bodies (like Saïph and Pulsar), Matrix marks LoLLMs' first version named after a simulation concept - reflecting the growing capabilities of AI to create and manage virtual worlds.",
+                "LoLLMs Matrix version includes an unprecedented 18 different AI models working in parallel, mirroring the 18 different iterations of The Matrix that the Architect mentions in the movie - another subtle reference ParisNeo slipped in!",
+                "The development of Matrix version started exactly 18 years after ParisNeo's infamous Matrix-watching marathon, making this version a personal milestone in his journey from movie fan to AI innovator.",
+                "In the Matrix version's documentation, ParisNeo included a special section titled 'What is the Matrix?' that explains complex AI concepts using analogies from the movie, making advanced technology accessible to everyone - just like Morpheus did for Neo!"
             ],
+            currentVersion: null,
+            showChangelogPopup: false,
             randomFact: "",            
             showPlaceholderModal: false,
             selectedPrompt: '',
@@ -3561,6 +3576,7 @@ export default {
 
             this.isDragOverDiscussion = false
         },
+
     },
     async created() {
         this.randomFact = this.interestingFacts[Math.floor(Math.random() * this.interestingFacts.length)];
@@ -3742,7 +3758,7 @@ export default {
         this.$store.state.news = this.$refs.news
         this.$store.state.personality_editor = this.$refs.personality_editor
 
-
+        this.checkChangelogUpdate()
         window.addEventListener('resize', this.adjustMenuPosition);
         
         socket.on('refresh_files',()=>{
@@ -3785,7 +3801,8 @@ export default {
         SocialIcon,
         MountedPersonalities,
 
-        ChatBarButton
+        ChatBarButton,
+        ChangelogPopup
 
     },
     watch: {        

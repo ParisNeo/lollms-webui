@@ -43,7 +43,7 @@ async def get_lollms_version():
     return {"id": 9}
 
 
-@router.get("/get_changeLog")
+@router.get("/get_changelog")
 async def get_lollms_version():
     """Get the changelog."""
     # Return the version string
@@ -58,7 +58,6 @@ async def get_lollms_version():
     base_path = Path(__file__).parent
     infos = base_path / "news" / "current.html"
     return infos.read_text(encoding="utf8")
-
 
 import json
 from pathlib import Path
@@ -98,6 +97,25 @@ async def set_last_video_url(req: LastViewedVideoUrlRequest):
     lollmsElfServer.config.last_viewed_video = req.last_viewed_video_url
     lollmsElfServer.config.save_config()
 
+
+
+# First, add this to your request models
+class LastViewedChangelogVersionRequest(BaseModel):
+    client_id: str
+    version: str
+
+@router.get("/get_last_viewed_changelog_version")
+async def get_last_viewed_changelog_version():
+    """Get the last changelog version viewed by the user."""
+    return lollmsElfServer.config.last_viewed_changelog_version
+
+@router.post("/set_last_viewed_changelog_version")
+async def set_last_viewed_changelog_version(req: LastViewedChangelogVersionRequest):
+    """Set the last changelog version viewed by the user."""
+    check_access(lollmsElfServer, req.client_id)
+    lollmsElfServer.config.last_viewed_changelog_version = req.version
+    lollmsElfServer.config.save_config()
+    return {"status": "success"}
 
 @router.get("/get_themes")
 async def get_themes():
