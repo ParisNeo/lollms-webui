@@ -3569,9 +3569,9 @@ export default {
 
         socket.onopen = () => {
             if (this.currentDiscussion!=null){
-                this.setPageTitle(item)
+                this.setPageTitle(this.currentDiscussion.title)
                 localStorage.setItem('selected_discussion', this.currentDiscussion.id)
-                this.load_discussion(item.id, ()=>{
+                this.load_discussion(this.currentDiscussion.id, ()=>{
                     if (this.discussionArr.length > 1) {
                         if (this.currentDiscussion.title === '' || this.currentDiscussion.title === null) {
                             this.changeTitleUsingUserMSG(this.currentDiscussion.id, this.discussionArr[1].content)

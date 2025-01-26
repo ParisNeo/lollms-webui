@@ -58,35 +58,57 @@
                         <source :src="audio_url" type="audio/wav"  ref="audio_player" >
                         Your browser does not support the audio element.
                     </audio>
-                    <div class="message-details">
-                        <div v-if="message.steps.length > 0" class="steps-container">
-                            <div class="steps-header" @click="toggleExpanded">
-                            <div class="steps-icon">
-                                <StatusIcon :status="message.status_message" :icon="true" />
+                    <div class="message-details w-full max-w-4xl mx-auto">
+                        <!-- Processing Steps Section -->
+                        <div v-if="message.steps.length > 0" class="steps-container bg-white/50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700 text-sm mb-2">
+                            <div 
+                                class="flex items-center p-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+                                @click="toggleExpanded"
+                            >
+                                <StatusIcon :status="message.status_message" :icon="true" class="w-4 h-4 mr-2" />
+                                <span class="text-gray-600 dark:text-gray-300 flex-grow">{{ message.status_message }}</span>
+                                <span 
+                                    class="text-xs text-gray-400 transform transition-transform duration-200"
+                                    :class="{ 'rotate-180': expanded }"
+                                >▼</span>
                             </div>
-                            <div class="steps-summary">
-                                <h3 class="steps-title">Processing Info</h3>
-                                <p class="steps-status">{{ message.status_message }}</p>
-                            </div>
-                            <span class="toggle-icon">{{ expanded ? '▲' : '▼' }}</span>
-                            </div>
-                            <transition name="fade">
-                            <div v-if="expanded" class="steps-content">
-                                <ul class="steps-list">
-                                <li v-for="(step, index) in message.steps" :key="`step-${message.id}-${index}`" class="step-item">
-                                    <Step 
-                                    :done="step.done"
-                                    :text="step.text"
-                                    :status="step.status"
-                                    :description="step.description"
-                                    />
-                                </li>
-                                </ul>
-                            </div>
+
+                            <transition
+                                enter-active-class="transition-all duration-200 ease-out"
+                                leave-active-class="transition-all duration-150 ease-in"
+                                enter-from-class="opacity-0 max-h-0"
+                                enter-to-class="opacity-100 max-h-[500px]"
+                                leave-from-class="opacity-100 max-h-[500px]"
+                                leave-to-class="opacity-0 max-h-0"
+                            >
+                                <div v-if="expanded" class="overflow-hidden">
+                                    <div class="px-2 pb-2 space-y-1">
+                                        <div 
+                                            v-for="(step, index) in message.steps" 
+                                            :key="`step-${message.id}-${index}`"
+                                            class="animate-fadeIn"
+                                            :style="{ animationDelay: `${index * 50}ms` }"
+                                        >
+                                            <Step 
+                                                :done="step.done"
+                                                :text="step.text"
+                                                :status="step.status"
+                                                :description="step.description"
+                                                class="text-xs rounded bg-gray-50/50 dark:bg-gray-700/50 p-2 hover:bg-gray-100 dark:hover:bg-gray-600/50"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </transition>
                         </div>
 
-                        <div class="flex flex-col items-start w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
+
+
+                        <!-- Content Renderer Section -->
+                        <div 
+                            v-if="message.html_js_s && message.html_js_s.length"
+                            class="flex flex-col items-start w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+                        >
                             <div 
                                 v-for="(html_js, index) in message.html_js_s" 
                                 :key="`htmljs-${message.id}-${index}`" 
@@ -972,5 +994,6 @@ details summary::-webkit-details-marker {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 
 </style>
