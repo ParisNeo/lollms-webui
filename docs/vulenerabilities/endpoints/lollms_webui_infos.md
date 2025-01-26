@@ -59,17 +59,17 @@ async def update_software():
 
 ## 3. Duplicate Endpoints
 
-There are two identical endpoints for `get_lollms_webui_version`. One of them is redundant and should be removed.
+There are two identical endpoints for `get_version_infos`. One of them is redundant and should be removed.
 
 **Vulnerable Code Snippet:**
 
 ```python
 @router.get("/get_versionID")
-async def get_lollms_webui_version():
+async def get_version_infos():
    # ...
 
-@router.get("/get_lollms_webui_version")
-async def get_lollms_webui_version():
+@router.get("/get_version_infos")
+async def get_version_infos():
    # ...
 ```
 
@@ -78,8 +78,8 @@ async def get_lollms_webui_version():
 Remove the redundant endpoint.
 
 ```python
-@router.get("/get_lollms_webui_version")
-async def get_lollms_webui_version():
+@router.get("/get_version_infos")
+async def get_version_infos():
    # ...
 ```
 

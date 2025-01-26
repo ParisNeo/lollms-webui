@@ -75,7 +75,14 @@ def terminate_thread(thread):
             )  # The current version of the webui
 
 
-lollms_webui_version = "v17 (codename Pulsar 💫)"
+lollms_webui_version = {
+    "version_main":18,
+    "version_secondary":0,
+    "version_type":"alpha",
+    "version_codename":"Matrix 💊"
+}
+
+
 
 
 class LOLLMSWebUI(LOLLMSElfServer):

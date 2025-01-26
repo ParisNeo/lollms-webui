@@ -989,23 +989,6 @@
                                                 >
                                             </div>
                                         </div>
-
-                                        <style scoped>
-                                        .toggle-checkbox {
-                                            @apply appearance-none w-9 h-5 rounded-full bg-gray-300 dark:bg-gray-600 
-                                                checked:bg-blue-500 transition-colors duration-200 relative cursor-pointer;
-                                        }
-                                        
-                                        .toggle-checkbox:before {
-                                            content: '';
-                                            @apply absolute w-4 h-4 bg-white rounded-full left-0.5 top-0.5 
-                                                transform transition-transform duration-200;
-                                        }
-                                        
-                                        .toggle-checkbox:checked:before {
-                                            @apply translate-x-4;
-                                        }
-                                        </style>
                                     </div>
                                 </Card>         
                                 <Card title="Knowledge database" :is_subcard="true" class="pb-2  m-2">
@@ -4418,6 +4401,20 @@
     />
 </template>
 <style scoped>
+.toggle-checkbox {
+    @apply appearance-none w-9 h-5 rounded-full bg-gray-300 dark:bg-gray-600 
+        checked:bg-blue-500 transition-colors duration-200 relative cursor-pointer;
+}
+
+.toggle-checkbox:before {
+    content: '';
+    @apply absolute w-4 h-4 bg-white rounded-full left-0.5 top-0.5 
+        transform transition-transform duration-200;
+}
+
+.toggle-checkbox:checked:before {
+    @apply translate-x-4;
+}
 .input-field {
     @apply w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white transition-colors duration-200;
 }

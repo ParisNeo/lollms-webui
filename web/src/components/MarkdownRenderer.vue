@@ -12,6 +12,11 @@
             :client_id="client_id"
             @update-code="updateCode(index, $event)"
           ></code-block>
+          <thinking-block
+            v-if="item.type === 'thinking'"
+            :content="item.content"
+            :is-done="item.is_done"
+          ></thinking-block>
           <div v-else v-html="item.html"></div>
         </div>
       </div>
@@ -30,6 +35,7 @@
   import 'highlight.js/styles/tokyo-night-dark.css';
   import attrs from 'markdown-it-attrs';
   import CodeBlock from './CodeBlock.vue';
+  import ThinkingBlock from './ThinkingBlock.vue' 
   import hljs from 'highlight.js';
   import mathjax from 'markdown-it-mathjax3';
   
@@ -71,98 +77,158 @@
     },
     components: {
       CodeBlock,
+      ThinkingBlock,
     },
     setup(props) {
-      const md = new MarkdownIt({
-        html: true,
-        breaks: true, // Enable single line breaks
-        highlight: (code, language) => {
-          const validLanguage = language && hljs.getLanguage(language) ? language : 'plaintext';
-          return hljs.highlight(validLanguage, code).value;
-        },
-        renderInline: false,
-      })
-        .use(emoji)
-        .use(anchor)
-        .use(implicitFigures, {
-          figcaption: true,
-        })
-        .use(attrs)
-        .use(MarkdownItMultimdTable, {
-          enableRowspan: true,
-          enableColspan: true,
-          enableGridTables: true,
-          enableGridTablesExtra: true,
-          enableTableIndentation: true,
-          tableCellPadding: ' ',
-          tableCellJoiner: '|',
-          multilineCellStartMarker: '|>',
-          multilineCellEndMarker: '<|',
-          multilineCellPadding: ' ',
-          multilineCellJoiner: '\n',
-        })
-        .use(mathjax, {
-          inlineOpen: ['$', '\\('],
-          inlineClose: ['$', '\\)'],
-          blockOpen: ['$$', '\\['],
-          blockClose: ['$$', '\\]'],
-          mode: 'tex',
-          beforeMath: '',
-          afterMath: ''
-        });
-  
-      const markdownItems = ref([]);
-      const updateMarkdown = () => {
-        if (props.markdownText) {
-          let tokens = md.parse(props.markdownText, {});
-          let cumulated = [];
-          markdownItems.value = [];
-          for (let i = 0; i < tokens.length; i++) {
-            if (tokens[i].type !== 'fence') {
-              cumulated.push(tokens[i]);
-            } else {
-              if (cumulated.length > 0) {
-                markdownItems.value.push({
-                  type: 'html',
-                  html: md.renderer.render(cumulated, md.options, {}),
-                });
-                cumulated = [];
-              }
+      // Custom rule for thinking blocks
+      const thinkingRule = (state, startLine, endLine, silent) => {
+        let start = state.bMarks[startLine] + state.tShift[startLine];
+        let max = state.eMarks[startLine];
+        
+        let line = state.src.slice(start, max);
+
+        if (!line.trim().startsWith('<thinking>')) return false;
+        
+        let currentLine = startLine + 1;
+        let content = [];
+        let found = false;
+        
+        // Search for closing tag
+        while (currentLine < endLine) {
+          let currentLineContent = state.src.slice(
+            state.bMarks[currentLine], 
+            state.eMarks[currentLine]
+          );
+          
+          if (currentLineContent.trim() === '</thinking>') {
+            found = true;
+            break;
+          }
+          content.push(currentLineContent);
+          currentLine++;
+        }
+        
+        if (silent) return true;
+        
+        // Create tokens
+        let token = state.push('thinking_open', 'div', 1);
+        token.markup = '<thinking>';
+        token.block = true;
+        token.is_done = found; // Add is_done status
+        
+        token = state.push('thinking_content', '', 0);
+        token.content = content.join('\n');
+        token.is_done = found;
+        
+        token = state.push('thinking_close', 'div', -1);
+        token.markup = '</thinking>';
+        token.block = true;
+        token.is_done = found;
+        
+        state.line = found ? currentLine + 1 : currentLine;
+        return true;
+      };
+
+    const md = new MarkdownIt({
+      html: true,
+      breaks: true,
+      highlight: (code, language) => {
+        const validLanguage = language && hljs.getLanguage(language) ? language : 'plaintext';
+        return hljs.highlight(validLanguage, code).value;
+      },
+    })
+    .use(emoji)
+    .use(anchor)
+    .use(implicitFigures, {
+      figcaption: true,
+    })
+    .use(attrs);
+    // Add renderer rules
+    md.renderer.rules.thinking_open = () => '<div class="thinking-block">';
+    md.renderer.rules.thinking_content = (tokens, idx) => {
+      return `<div class="thinking-content">${md.utils.escapeHtml(tokens[idx].content)}</div>`;
+    };
+    md.renderer.rules.thinking_close = () => '</div>';
+
+    // Add the rule
+    md.block.ruler.before('fence', 'thinking', thinkingRule);
+    const markdownItems = ref([]);
+    
+    const updateMarkdown = () => {
+      if (props.markdownText) {
+        let tokens = md.parse(props.markdownText, {});
+        let cumulated = [];
+        markdownItems.value = [];
+        
+        for (let i = 0; i < tokens.length; i++) {
+          const token = tokens[i];
+          
+          if (token.type === 'thinking_open') {
+            if (cumulated.length > 0) {
               markdownItems.value.push({
-                type: 'code',
-                language: escapeHtml(tokens[i].info),
-                code: tokens[i].content,
+                type: 'html',
+                html: md.renderer.render(cumulated, md.options, {}),
+              });
+              cumulated = [];
+            }
+            
+            const contentToken = tokens[i + 1];
+            if (contentToken && contentToken.type === 'thinking_content') {
+              markdownItems.value.push({
+                type: 'thinking',
+                content: contentToken.content,
+                is_done: contentToken.is_done // Add is_done status
               });
             }
-          }
-          if (cumulated.length > 0) {
+            
+            i += 2;
+          } else if (token.type === 'fence') {
+            if (cumulated.length > 0) {
+              markdownItems.value.push({
+                type: 'html', 
+                html: md.renderer.render(cumulated, md.options, {}),
+              });
+              cumulated = [];
+            }
             markdownItems.value.push({
-              type: 'html',
-              html: md.renderer.render(cumulated, md.options, {}),
+              type: 'code',
+              language: escapeHtml(token.info),
+              code: token.content,
             });
-            cumulated = [];
+          } else {
+            cumulated.push(token);
           }
-        } else {
-          markdownItems.value = [];
         }
+        
+        if (cumulated.length > 0) {
+          markdownItems.value.push({
+            type: 'html',
+            html: md.renderer.render(cumulated, md.options, {}),
+          });
+        }
+        
         nextTick(() => {
           feather.replace();
           if (window.MathJax) {
-            window.MathJax.typesetPromise(); // Ensure MathJax typesets after rendering
+            window.MathJax.typesetPromise();
           }
         });
-      };
-  
+      } else {
+        markdownItems.value = [];
+      }
+    };
       const updateCode = (index, newCode) => {
         markdownItems.value[index].code = newCode;
       };
-  
+
       watch(() => props.markdownText, updateMarkdown);
+      
       onMounted(() => {
         updateMarkdown();
       });
+
       return { markdownItems, updateCode };
-    },
+    }
   };
   </script>
   
