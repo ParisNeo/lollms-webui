@@ -70,13 +70,58 @@ The installation scripts are:
 ### Manual install:
 Since v 10.14, manual installation is back:
 
-- Make sure you have python 3.11 is installed or to have a python 3.11 conda environment or other way.
-- clone the repo at: `https://github.com/ParisNeo/lollms-webui.git`
-- better create an environment  for lollms and activate it
-- in the repo folder, make sure you pull all submodules:  `git submodule update --init --recursive`
-- install lollms by going to lollms_core then do: `pip install -e .`
-- go back to the root of the lollms_webui folder
-- install all requirements: `pip install -r requirements.txt` 
+# 1. First ensure Python 3.11 is installed
+# You can check your Python version with:
+python --version
+
+# If you need to install Python 3.11, download it from:
+# https://www.python.org/downloads/release/python-3118/
+
+# 2. Clone the repository with submodules
+git clone --recursive https://github.com/ParisNeo/lollms-webui.git
+cd lollms-webui
+git submodule update --init --recursive
+
+# 3. Create and activate a virtual environment (recommended)
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On Linux/Mac:
+source venv/bin/activate
+
+# 4. Install requirements
+pip install -r requirements.txt
+
+# 5. Create global_paths_cfg.yaml
+cat > global_paths_cfg.yaml << EOL
+lollms_path: $(pwd)/lollms_core/lollms
+lollms_personal_path: $(pwd)/personal_data
+EOL
+
+# 6. Install desired bindings
+# You can set environment variables to select which bindings to install
+# For example, to install ollama binding:
+python zoos/bindings_zoo/ollama/__init__.py
+
+# List of available bindings and their installation commands:
+# elf:           python zoos/bindings_zoo/elf/__init__.py
+# openrouter:    python zoos/bindings_zoo/openrouter/__init__.py
+# openai:        python zoos/bindings_zoo/openai/__init__.py
+# groq:          python zoos/bindings_zoo/groq/__init__.py
+# mistralai:     python zoos/bindings_zoo/mistralai/__init__.py
+# ollama:        python zoos/bindings_zoo/ollama/__init__.py
+# vllm:          python zoos/bindings_zoo/vllm/__init__.py
+# litellm:       python zoos/bindings_zoo/litellm/__init__.py
+# exllamav2:     python zoos/bindings_zoo/exllamav2/__init__.py
+# python_llama_cpp: python zoos/bindings_zoo/python_llama_cpp/__init__.py
+# huggingface:   python zoos/bindings_zoo/huggingface/__init__.py
+# remote_lollms: python zoos/bindings_zoo/remote_lollms/__init__.py
+# xAI:           python zoos/bindings_zoo/xAI/__init__.py
+# gemini:        python zoos/bindings_zoo/gemini/__init__.py
+
+# 7. Run the server
+python app.py
+
 
 now you are ready to run lolmms: `python app.py` 
 ## Smart Routing: Optimizing for Money and Speed
