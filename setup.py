@@ -3,32 +3,36 @@ from typing import Union
 
 import setuptools
 
-with open("README.md", "r") as fh:
+README_MD_FILE = "README.md"
+REQUIREMENTS_TXT_FILE = "requirements.txt"
+REQUIREMENTS_DEV_TXT_FILE = "requirements_dev.txt"
+
+with open(README_MD_FILE, "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-
-def read_requirements(path: Union[str, Path]):
+def read_requirements(path: Union[str, Path]) -> list:
     with open(path, "r") as file:
-        return file.read().splitlines()
+        return [line.strip() for line in file.readlines()]
 
+requirements = list(filter(None, read_requirements(REQUIREMENTS_TXT_FILE)))
+requirements_dev = list(filter(None, read_requirements(REQUIREMENTS_DEV_TXT_FILE)))
 
 requirements = read_requirements("requirements.txt")
 requirements_dev = read_requirements("requirements_dev.txt")
 
 setuptools.setup(
     name="Lollms-webui",
-    version="5.0.2",
+    version="5.0.4",
     author="Saifeddine ALOUI",
     author_email="aloui.saifeddine@gmail.com",
     description="A web ui for running chat models with different bindings. Supports multiple personalities and extensions.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/ParisNeo/lollms-webui",
+    url="https://github.com/ba2512005/lollms-webui",
     packages=setuptools.find_packages(),
     install_requires=requirements,
-    extras_require={"dev": requirements_dev},
     classifiers=[
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "License :: OSI Approved :: Apache 2.0 License",
         "Operating System :: OS Independent",
     ],
