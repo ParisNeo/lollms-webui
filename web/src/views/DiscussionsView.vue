@@ -1367,7 +1367,7 @@ export default {
                 "There are more possible ways to shuffle a deck of 52 cards than there are atoms on Earth.",
                 "The first computer virus was created in 1983 as an experiment.",
                 "The speed of light in a vacuum is exactly 299,792,458 meters per second.",
-
+                "In version 18 (Matrix), the changelog contained a binary secret message from ParisNeo.\nDid you get it?\nIt meant THERE IS NO SPOON, the matirx's famous scene.",
                 "ParisNeo started coding at age 11 after an older programmer refused to teach him BASIC programming",
                 "ParisNeo learned BASIC by reverse engineering other people's games, even before he learned English",
                 "At age 12, ParisNeo co-created SAIF14, a suite of programs on a Tandy 1000 computer built by two kids",

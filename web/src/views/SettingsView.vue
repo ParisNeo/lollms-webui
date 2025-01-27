@@ -357,7 +357,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.use_user_name_in_discussions"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -368,7 +368,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.use_assistant_name_in_discussion"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -379,7 +379,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.use_model_name_in_discussions"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -390,7 +390,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.use_user_informations_in_discussion"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -408,7 +408,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.debug"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -419,7 +419,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.debug_show_final_full_prompt"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -430,7 +430,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.debug_show_chunks"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -448,7 +448,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.auto_update"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -459,7 +459,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.auto_sync_personalities"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -470,7 +470,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.auto_sync_extensions"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -481,7 +481,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.auto_sync_bindings"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -492,7 +492,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.auto_sync_models"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -545,7 +545,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.auto_title"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -561,7 +561,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.auto_show_browser"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -580,8 +580,8 @@
                                                     <input type="checkbox"
                                                         v-model="configFile.force_accept_remote_access"
                                                         @change="settingsChanged=true"
-                                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                                transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-red-500">
+                                                        class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                     <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                                 </div>
                                             </div>
@@ -607,7 +607,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.copy_to_clipboard_add_all_details"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -620,7 +620,7 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.headless_server_mode"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
@@ -774,7 +774,8 @@
                                                     id="use_continue_message"
                                                     v-model="configFile.use_continue_message"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer">
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label for="use_continue_message" 
                                                     class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
                                                 </label>
@@ -919,7 +920,8 @@
                                                     required
                                                     v-model="configFile.turn_on_code_execution"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
                                                 >
                                             </div>
                                         </div>
@@ -936,7 +938,8 @@
                                                     required
                                                     v-model="configFile.turn_on_code_validation"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
                                                 >
                                             </div>
                                         </div>
@@ -953,7 +956,8 @@
                                                     required
                                                     v-model="configFile.turn_on_setting_update_validation"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
                                                 >
                                             </div>
                                         </div>
@@ -969,7 +973,8 @@
                                                     required
                                                     v-model="configFile.turn_on_open_file_validation"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
                                                 >
                                             </div>
                                         </div>
@@ -985,7 +990,8 @@
                                                     required
                                                     v-model="configFile.turn_on_send_file_validation"
                                                     @change="settingsChanged=true"
-                                                    class="toggle-checkbox"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
                                                 >
                                             </div>
                                         </div>
@@ -1238,7 +1244,7 @@
                                                     <input type="checkbox"
                                                         v-model="configFile.datalakes[index].mounted"
                                                         @change="settingsChanged=true"
-                                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                        class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                                 transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                     <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                                 </div>
@@ -1395,15 +1401,15 @@
                                                     <input type="checkbox"
                                                         v-model="configFile.rag_local_services[index].start_at_startup"
                                                         @change="settingsChanged=true"
-                                                        class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                                transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                        class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                     <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                                 </div>
                                             </div>
 
 
                                             
-                                            <input type="file" ref="fileInput" @change="handleFileUpload" 
+                                            <input type="file" ref="fileInput2" @change="handleFileUpload" 
                                                 accept=".pdf,.txt,.doc,.docx,.csv,.md" class="hidden" multiple />
                                             
                                             <button @click="triggerFileInput" 
@@ -4401,20 +4407,6 @@
     />
 </template>
 <style scoped>
-.toggle-checkbox {
-    @apply appearance-none w-9 h-5 rounded-full bg-gray-300 dark:bg-gray-600 
-        checked:bg-blue-500 transition-colors duration-200 relative cursor-pointer;
-}
-
-.toggle-checkbox:before {
-    content: '';
-    @apply absolute w-4 h-4 bg-white rounded-full left-0.5 top-0.5 
-        transform transition-transform duration-200;
-}
-
-.toggle-checkbox:checked:before {
-    @apply translate-x-4;
-}
 .input-field {
     @apply w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:text-white transition-colors duration-200;
 }

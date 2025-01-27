@@ -1,46 +1,36 @@
-# Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
-# Set the working directory in the container
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
+# Add retry logic and include OpenGL libraries
+RUN apt-get update --option Acquire::Retries=5 \
+    && apt-get install -y --no-install-recommends \
+        git \
+        build-essential \
+        xauth \
+        libgl1 \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender-dev \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Miniconda
-RUN curl -O https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda \
-    && rm Miniconda3-latest-Linux-x86_64.sh
+# Set working directory
+WORKDIR /app
 
-# Add Conda to PATH
-ENV PATH /opt/conda/bin:$PATH
+# Clone LoLLMs-webui repository with submodules
+RUN git clone --recursive https://github.com/ParisNeo/lollms-webui.git . && \
+    git submodule update --init --recursive
 
-# Create and activate Conda environment
-RUN conda create --name lollms_env python=3.11 git pip -y
-SHELL ["conda", "run", "-n", "lollms_env", "/bin/bash", "-c"]
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install  torch
+RUN pip install -e lollms_core
+RUN echo "lollms_path: /app/lollms-webui/lollms_core/lollms\nlollms_personal_path: /app/personal_data" > /app/global_paths_cfg.yaml
 
-# Clone the repository
-RUN git clone --depth 1 --recurse-submodules https://github.com/ParisNeo/lollms-webui.git \
-    && cd lollms-webui/lollms_core \
-    && pip install -e . \
-    && cd ../.. \
-    && cd lollms-webui/utilities/pipmaster \
-    && pip install -e . \
-    && cd ../..
-
-# Install project dependencies
-WORKDIR /app/lollms-webui
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-# Copy the rest of the application code
-COPY . .
-
-# Expose port 9600
+# Expose default web UI port
 EXPOSE 9600
 
-# Set the default command to run the application
-CMD ["python", "app.py"]
+# Set the entrypoint to our start script
+CMD ["python", "/app/app.py","--host","0.0.0.0"]
+
+
