@@ -276,7 +276,7 @@
 
     </div>
 </template>
-<style>
+<style scoped>
 .expand-button {
     margin-left: 10px;
     /* Add space between sender and expand button */

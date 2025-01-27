@@ -232,7 +232,7 @@
   };
   </script>
   
-  <style>
+  <style scoped>
   .math {
     display: inline-block; /* this should allow inline math to display inline */
   }

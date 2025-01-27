@@ -4676,42 +4676,42 @@ export default {
     }, 
         methods: {
             triggerFileInput() {
-            this.$refs.fileInput.click()
+                this.$refs.fileInput.click()
             },
             async handleFileUpload(event) {
-            const files = event.target.files
-            if (!files.length) return
+                const files = event.target.files
+                if (!files.length) return
 
-            this.isUploading = true
-            const formData = new FormData()
-            
-            // Add database name
-            formData.append('database_name', this.databaseName)
-            
-            // Add all files
-            Array.from(files).forEach(file => {
-                formData.append('files', file)
-            })
-
-            try {
-                const response = await axios.post('/upload_files_2_rag_db', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                onUploadProgress: (progressEvent) => {
-                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-                    this.$emit('upload-progress', percentCompleted)
-                }
-                })
+                this.isUploading = true
+                const formData = new FormData()
                 
-                this.$emit('upload-success', response.data)
-            } catch (error) {
-                console.error('Upload failed:', error)
-                this.$emit('upload-error', error)
-            } finally {
-                this.isUploading = false
-                event.target.value = ''
-            }
+                // Add database name
+                formData.append('database_name', this.databaseName)
+                
+                // Add all files
+                Array.from(files).forEach(file => {
+                    formData.append('files', file)
+                })
+
+                try {
+                    const response = await axios.post('/upload_files_2_rag_db', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                        this.$emit('upload-progress', percentCompleted)
+                    }
+                    })
+                    
+                    this.$emit('upload-success', response.data)
+                } catch (error) {
+                    console.error('Upload failed:', error)
+                    this.$emit('upload-error', error)
+                } finally {
+                    this.isUploading = false
+                    event.target.value = ''
+                }
             },    
             updateRagDatabase(index, value, field) {
                 if (field) {
