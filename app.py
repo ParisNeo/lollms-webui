@@ -173,6 +173,7 @@ if __name__ == "__main__":
         "--host", type=str, default=None, help="the hostname to listen on"
     )
     parser.add_argument("--port", type=int, default=None, help="the port to listen on")
+    parser.add_argument("--force-accept-remote-access", action='store_true', help="force to accept remote access")
 
     args = parser.parse_args()
     root_path = Path(__file__).parent
@@ -229,6 +230,9 @@ if __name__ == "__main__":
             else f"http://localhost:{config['port']}"
         )
     ]
+
+    if args.force_accept_remote_access:
+        config.force_accept_remote_access = True
 
     # class EndpointSpecificCORSMiddleware(BaseHTTPMiddleware):
     #     async def dispatch(self, request: Request, call_next):
@@ -497,6 +501,7 @@ if __name__ == "__main__":
         #   thread.start()
 
         # if autoshow
+
 
         if config.auto_show_browser and not config.headless_server_mode:
             if config["host"] == "0.0.0.0":

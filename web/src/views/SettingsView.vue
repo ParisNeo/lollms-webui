@@ -641,6 +641,7 @@
                                                 <option value="lollms_simplified">Lollms simplified communication template</option>
                                                 <option value="bare">Bare, useful when in chat mode</option>
                                                 <option value="llama3">LLama3 communication template</option>
+                                                <option value="lucie">Lucie communication template</option>
                                                 <option value="mistral">Mistral communication template</option>
                                                 <option value="deepseek">DeepSeek communication template</option>
                                             </select>
@@ -5004,6 +5005,19 @@ export default {
                 this.configFile.end_user_message_id_template = ""
                 this.configFile.start_ai_header_id_template = "<|start_header_id|>"
                 this.configFile.end_ai_header_id_template = "<|end_header_id|>"
+                this.configFile.end_ai_message_id_template = ""
+                this.settingsChanged=true
+            } else if (selectedOption === 'lucie') {
+                console.log("Using lucie template")
+                this.configFile.start_header_id_template = "<s><|start_header_id|>"
+                this.configFile.system_message_template = "system"
+                this.configFile.end_header_id_template = "<|end_header_id|>\n\n"
+                this.configFile.separator_template = "<|eot_id|>"
+                this.configFile.start_user_header_id_template = "<|start_header_id|>"
+                this.configFile.end_user_header_id_template = "<|end_header_id|>\n\n"
+                this.configFile.end_user_message_id_template = ""
+                this.configFile.start_ai_header_id_template = "<|start_header_id|>"
+                this.configFile.end_ai_header_id_template = "<|end_header_id|>\n\n"
                 this.configFile.end_ai_message_id_template = ""
                 this.settingsChanged=true
             } else if (selectedOption === 'mistral') {

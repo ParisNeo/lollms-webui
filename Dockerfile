@@ -31,6 +31,6 @@ RUN echo "lollms_path: /app/lollms-webui/lollms_core/lollms\nlollms_personal_pat
 EXPOSE 9600
 
 # Set the entrypoint to our start script
-CMD ["python", "/app/app.py","--host","0.0.0.0"]
+CMD ["python", "/app/app.py", "--host", "0.0.0.0", "--force-accept-remote-access"]
 
 

@@ -1,4 +1,4 @@
-# LoLLMs v18.0.0 Changelog
+# LoLLMs v18.0 (alpha) Changelog
 ## LoLLMs v18 'Matrix'
 
 01010100 01001000 01000101 01010010 01000101 00100000 
