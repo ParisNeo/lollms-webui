@@ -25,8 +25,8 @@ RUN git clone --recursive https://github.com/ParisNeo/lollms-webui.git . && \
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install  torch
 RUN pip install -e lollms_core
+RUN mkdir /app/personal_data
 RUN echo "lollms_path: /app/lollms-webui/lollms_core/lollms\nlollms_personal_path: /app/personal_data" > /app/global_paths_cfg.yaml
-
 # Expose default web UI port
 EXPOSE 9600
 

@@ -187,6 +187,17 @@ Remember, it is crucial to prioritize security and take necessary precautions to
 Stay safe and enjoy using LoLLMs responsibly!
 
 
+# Docker status
+Since v18, lollms can be run using Docker.
+Just build the image. Assuming you are in lollms-webui folder :
+```bash
+docker build -t lollms-webui-app .
+```
+Then run ot using:
+```bash
+docker run -d -p 9600:9600 --name lollms-webui-container lollms-webui-app 
+```
+When lollms is first run, you can use
 # Disclaimer
 Large Language Models are amazing tools that can be used for diverse purposes. Lollms was built to harness this power to help the user enhance its productivity. But you need to keep in mind that these models have their limitations and should not replace human intelligence or creativity, but rather augment it by providing suggestions based on patterns found within large amounts of data. It is up to each individual how they choose to use them responsibly!
 
