@@ -1,3 +1,7 @@
+# LoLLMs v18.0 (beta) Changelog
+
+Now the messages can no longer render raw HTML. This allows a new protection against some code injection attacks. Since now lollms can run on docker.
+
 # LoLLMs v18.0 (alpha) Changelog
 ## LoLLMs v18 'Matrix'
 
