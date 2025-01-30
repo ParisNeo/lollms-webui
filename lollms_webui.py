@@ -163,42 +163,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         # migrate old databases to new ones:
         databases_path = self.lollms_paths.personal_path / "databases"
-        if (
-            databases_path.exists()
-            and len([f for f in databases_path.iterdir() if f.suffix == ".db"]) > 0
-        ):
-            if yes_or_no_input(
-                "Old databases have been spotted on your system. Do you want me to migrate them to the new format?"
-            ):
-                databases_found = False
-                for database_path in databases_path.iterdir():
-                    if database_path.suffix == ".db":
-                        ASCIIColors.red(
-                            f"Found old discussion database format : {database_path}"
-                        )
-                        ASCIIColors.red(f"Migrating to new format... ", end="")
-                        new_db_path = (
-                            self.lollms_paths.personal_discussions_path
-                            / database_path.stem
-                        )
-                        new_db_path.mkdir(exist_ok=True, parents=True)
-                        try:
-                            shutil.copy(database_path, new_db_path / "database.db")
-                            ASCIIColors.green("ok")
-                            databases_found = True
-                        except Exception as ex:
-                            ASCIIColors.warning(ex)
-                if databases_found:
-                    ASCIIColors.green(
-                        f"Databases are migrated from {databases_path} to the new {self.lollms_paths.personal_discussions_path} path"
-                    )
-                    if yes_or_no_input(
-                        "Databases are migrated to the new format. Do you want me to delete the previous version?"
-                    ):
-                        for database_path in databases_path.iterdir():
-                            if database_path.suffix == ".db":
-                                ASCIIColors.red(f"Deleting {database_path}")
-                                database_path.unlink()
+        
         if config["discussion_db_name"].endswith(".db"):
             config["discussion_db_name"] = config["discussion_db_name"].replace(
                 ".db", ""

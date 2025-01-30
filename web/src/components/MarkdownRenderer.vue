@@ -130,7 +130,7 @@
       };
 
     const md = new MarkdownIt({
-      html: true,
+      html: false,
       breaks: true,
       highlight: (code, language) => {
         const validLanguage = language && hljs.getLanguage(language) ? language : 'plaintext';
