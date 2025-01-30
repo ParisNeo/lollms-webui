@@ -231,8 +231,14 @@ if __name__ == "__main__":
         )
     ]
 
-    if args.force_accept_remote_access:
+    if args.force_accept_remote_access: # Used for docker
         config.force_accept_remote_access = True
+        #this is turned off 
+        config.turn_on_setting_update_validation = False
+        config.turn_on_code_validation = False
+        config.turn_on_open_file_validation = False
+        config.turn_on_setting_update_validation = False
+        
 
     # class EndpointSpecificCORSMiddleware(BaseHTTPMiddleware):
     #     async def dispatch(self, request: Request, call_next):
