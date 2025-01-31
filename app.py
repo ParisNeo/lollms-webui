@@ -86,7 +86,7 @@ packages: List[Tuple[str, str]] = [
     ("freedom_search", "0.2.2"),
     ("scrapemaster", "0.2.1"),
     ("lollms_client", "0.7.7"),
-    ("lollmsvectordb", "1.3.7"),
+    ("lollmsvectordb", "1.3.8"),
 ]
 
 if not pm.is_installed("einops"):

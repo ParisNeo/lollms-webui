@@ -1394,7 +1394,6 @@ export default {
                 "The Matrix version introduced 'Morpheus Mode' - an advanced teaching capability that guides users through complex AI concepts, just like Morpheus guided Neo through the nature of the Matrix. 'Unfortunately, no one can be told what LoLLMs is. You have to experience it for yourself.'",
                 "In a cheeky nod to The Matrix's famous green code rain, LoLLMs v18 includes an easter egg where typing 'follow the white rabbit' triggers a special visualization mode for code generation.",
                 "While previous versions were inspired by celestial bodies (like Saïph and Pulsar), Matrix marks LoLLMs' first version named after a simulation concept - reflecting the growing capabilities of AI to create and manage virtual worlds.",
-                "LoLLMs Matrix version includes an unprecedented 18 different AI models working in parallel, mirroring the 18 different iterations of The Matrix that the Architect mentions in the movie - another subtle reference ParisNeo slipped in!",
                 "The development of Matrix version started exactly 18 years after ParisNeo's infamous Matrix-watching marathon, making this version a personal milestone in his journey from movie fan to AI innovator.",
                 "In the Matrix version's documentation, ParisNeo included a special section titled 'What is the Matrix?' that explains complex AI concepts using analogies from the movie, making advanced technology accessible to everyone - just like Morpheus did for Neo!"
             ],
