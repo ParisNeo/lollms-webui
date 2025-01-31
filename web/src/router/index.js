@@ -6,7 +6,6 @@ import SettingsView from '../views/SettingsView.vue'
 import TrainingView from '../views/TrainingView.vue'
 import QuantizingView from '../views/QuantizingView.vue'
 import DiscussionsView from '../views/DiscussionsView.vue'
-import InteractiveView from '../views/InteractiveView.vue'
 import NodesView from '../views/NodesView.vue'
 import ComfyuiView from '../views/ComfyuiView.vue'
 import AutoSDView from '../views/AutoSDView.vue'
@@ -71,11 +70,6 @@ const router = createRouter({
       path: '/',
       name: 'discussions',
       component: DiscussionsView
-    },
-    {
-      path: '/interactive/',
-      name: 'interactive',
-      component: InteractiveView
     },
     {
       path: '/nodes/',
