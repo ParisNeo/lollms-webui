@@ -1358,7 +1358,44 @@
                                         </div>
 
                                     </div>
-
+                                    <div class="flex items-center" :key="index">
+                                        <div class="relative mr-2">
+                                            <button 
+                                                @click="toggleStatus(index)"
+                                                class="flex items-center space-x-1"
+                                            >
+                                                <div 
+                                                    :class="[
+                                                        'w-3 h-3 rounded-full',
+                                                        getStatusColor(index)
+                                                    ]"
+                                                ></div>
+                                                <div 
+                                                    v-if="expandedStatusIndex === index" 
+                                                    class="absolute left-5 top-0 bg-white shadow-lg rounded-md p-2 z-10 text-sm"
+                                                >
+                                                    <div v-if="serverStatuses[index]">
+                                                        <p>Status: {{ serverStatuses[index].status }}</p>
+                                                        <p>Indexed Files: {{ serverStatuses[index].indexed_files_count }}</p>
+                                                        <p>Model: {{ serverStatuses[index].configuration?.llm_model }}</p>
+                                                    </div>
+                                                    <p v-else>No status available</p>
+                                                </div>
+                                            </button>
+                                        </div>
+                                        
+                                        <button 
+                                            v-if="source.type === 'lightrag'"
+                                            @click="checkLightRagServerHealth(index)"
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                            title="Check LightRAG server health"
+                                        >
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            LightRAG Status
+                                        </button>
+                                    </div>
                                     <!-- Actions Row -->
                                     <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
                                         <div class="flex items-center space-x-4">
@@ -1404,7 +1441,7 @@
                                             </svg>
                                             Select work Folder
                                         </button>
-
+                                        <!-- Health Check Button for LightRAG -->
                                         <button @click="removeServedDataBase(index)" 
                                             class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4365,7 +4402,14 @@
         </div>
     </div>
     <div v-if="settingsChanged" 
-         class="fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 flex gap-3 items-center border border-gray-200 dark:border-gray-700">
+         class="fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 flex flex-col gap-2 border border-gray-200 dark:border-gray-700">
+        <!-- Status Message -->
+        <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+            <i data-feather="alert-circle" class="w-4 h-4"></i>
+            <span class="text-sm font-medium">Settings have been modified</span>
+        </div>
+        
+        <!-- Action Buttons -->
         <div v-if="!isLoading" class="flex items-center gap-2">
             <button class="flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 duration-75 active:scale-95"
                     title="Apply changes" 
@@ -4398,7 +4442,7 @@
             </svg>
             <span class="sr-only">Loading...</span>
         </div>
-    </div>    
+    </div>
     <AddModelDialog ref="addmodeldialog" />
     <ChoiceDialog  class="z-20"
       :show="variantSelectionDialogVisible"
@@ -4539,10 +4583,13 @@ export default {
     data() {
 
         return {
+
             posts_headers : {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            serverStatuses: {},  // Object to store status for each server
+            expandedStatusIndex: null,  // Track which status panel is expanded
             isUploading: false,
             defaultModelImgPlaceholder:defaultModelImgPlaceholder,
             snd_input_devices: [],
@@ -4669,44 +4716,186 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            async checkLightRagServerHealth(index) {
+                try {
+                    const source = this.configFile.datalakes[index];
+                    const headers = source.key ? { 'X-API-Key': source.key } : {};
+                    
+                    const response = await fetch(`${source.url.replace(/\/+$/, '')}/health`, { headers });
+                    const data = await response.json();
+                    
+                    // Update status for this specific server
+                    this.serverStatuses[index]= {
+                        status: 'healthy',
+                        indexed_files_count: data.indexed_files_count,
+                        configuration: data.configuration
+                    };
+                    
+                    this.$store.state.toast.showToast(
+                        `Healthy | ${data.indexed_files_count} files indexed | Model: ${data.configuration.llm_model}`,
+                        4,
+                        true
+                    );
+                    return data;
+                } catch (error) {
+                    // Update status for this specific server on error
+                    this.serverStatuses[index]=  {
+                        status: 'unhealthy'
+                    };
+                    
+                    this.$store.state.toast.showToast('Could not connect to LightRAG server', 4, false);
+                }
+            },
+            
+            // Optional: Method to check all servers at once
+            async checkAllServers() {
+                for (let i = 0; i < this.configFile.datalakes.length; i++) {
+                    if (this.configFile.datalakes[i].type === 'lightrag') {
+                        await this.checkLightRagServerHealth(i);
+                    }
+                }
+            },
+
+            async uploadFilesToLightRag(index, files) {
+                const source = this.configFile.datalakes[index];
+                const headers = source.key ? { 'X-API-Key': source.key } : {};
+                
+                for (const file of files) {
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                try {
+                    const response = await fetch(`${source.url}/documents/upload`, {
+                    method: 'POST',
+                    headers,
+                    body: formData
+                    });
+                    
+                    const result = await response.json();
+                    this.$emit('show-notification', {
+                    title: 'LightRAG Upload Success',
+                    message: `${file.name} uploaded successfully`,
+                    type: 'success'
+                    });
+                } catch (error) {
+                    this.$emit('show-notification', {
+                    title: 'LightRAG Upload Error',
+                    message: `Failed to upload ${file.name}: ${error.message}`,
+                    type: 'error'
+                    });
+                }
+                }
+            },
+
+            async handleFileUpload(event, index) {
+                const files = Array.from(event.target.files);
+                const source = this.configFile.datalakes[index];
+                
+                const supportedExtensions = {
+                lightrag: ['.txt', '.md', '.pdf', '.docx', '.pptx', '.xlsx'],
+                lollmsvectordb: [".sh",
+                    ".json",
+                    ".sym",
+                    ".log",
+                    ".snippet",
+                    ".se",
+                    ".yml",
+                    ".snippets",
+                    ".lua",
+                    ".pdf",
+                    ".md",
+                    ".docx",
+                    ".xlsx",
+                    ".png",
+                    ".bmp",
+                    ".jpg",
+                    ".yaml",
+                    ".inc",
+                    ".txt",
+                    ".ini",
+                    ".pas",
+                    ".pptx",
+                    ".map",
+                    ".php",
+                    ".xlsx",
+                    ".rtf",
+                    ".hpp",
+                    ".h",
+                    ".asm",
+                    ".xml",
+                    ".hh",
+                    ".sql",
+                    ".java",
+                    ".c",
+                    ".html",
+                    ".inf",
+                    ".rb",
+                    ".py",
+                    ".cs",
+                    ".js",
+                    ".bat",
+                    ".css",
+                    ".s",
+                    ".cpp",
+                    ".csv",
+                    ".msg"
+                ]
+                };
+                
+                const validFiles = files.filter(file => {
+                const ext = '.' + file.name.split('.').pop().toLowerCase();
+                return supportedExtensions[source.type].includes(ext);
+                });
+                
+                if (validFiles.length !== files.length) {
+                this.$emit('show-notification', {
+                    title: 'Warning',
+                    message: 'Some files were skipped due to unsupported format',
+                    type: 'warning'
+                });
+                }
+                
+                if (source.type === 'lightrag') {
+                await this.uploadFilesToLightRag(index, validFiles);
+                } else {
+                    try {
+                        if (!files.length) return
+
+                        this.isUploading = true
+                        const formData = new FormData()
+                        
+                        // Add database name
+                        formData.append('database_name', this.databaseName)
+                        
+                        // Add all files
+                        Array.from(files).forEach(file => {
+                            formData.append('files', file)
+                        })                        
+                        const response = await axios.post('/upload_files_2_rag_db', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                        onUploadProgress: (progressEvent) => {
+                            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                            this.$emit('upload-progress', percentCompleted)
+                        }
+                        })
+                        
+                        this.$emit('upload-success', response.data)
+                    } catch (error) {
+                        console.error('Upload failed:', error)
+                        this.$emit('upload-error', error)
+                    } finally {
+                        this.isUploading = false
+                        event.target.value = ''
+                    }
+                }
+            },
+
+
             triggerFileInput() {
                 this.$refs.fileInput.click()
-            },
-            async handleFileUpload(event) {
-                const files = event.target.files
-                if (!files.length) return
-
-                this.isUploading = true
-                const formData = new FormData()
-                
-                // Add database name
-                formData.append('database_name', this.databaseName)
-                
-                // Add all files
-                Array.from(files).forEach(file => {
-                    formData.append('files', file)
-                })
-
-                try {
-                    const response = await axios.post('/upload_files_2_rag_db', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                    onUploadProgress: (progressEvent) => {
-                        const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-                        this.$emit('upload-progress', percentCompleted)
-                    }
-                    })
-                    
-                    this.$emit('upload-success', response.data)
-                } catch (error) {
-                    console.error('Upload failed:', error)
-                    this.$emit('upload-error', error)
-                } finally {
-                    this.isUploading = false
-                    event.target.value = ''
-                }
-            },    
+            },   
             updateRagDatabase(index, value, field) {
                 if (field) {
                     // For mounted, keep it as boolean, for others just set the value
@@ -6953,6 +7142,14 @@ export default {
         //this.load_everything()
     },
     computed: { 
+        getStatusColor() {
+            return (index) => {
+                const status = this.serverStatuses[index]
+                if (!status) return 'bg-gray-400' // Unknown status
+                if (status.status === 'healthy') return 'bg-green-500' // Healthy
+                return 'bg-red-500' // Unhealthy
+            }
+        },        
         full_template:{
             get(){
                 return (this.configFile.start_header_id_template+this.configFile.system_message_template+this.configFile.end_header_id_template+" system message"+this.configFile.separator_template+this.configFile.start_user_header_id_template+"user name"+this.configFile.end_user_header_id_template+" User prompt"+this.configFile.separator_template+this.configFile.end_user_message_id_template+this.configFile.separator_template+this.configFile.start_ai_header_id_template+"ai personality"+this.configFile.end_ai_header_id_template+"ai response"+this.configFile.end_ai_message_id_template).replace("\n","<br>")
