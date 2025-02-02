@@ -6,6 +6,7 @@
     <button 
       @click="toggleMenu"
       class="flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-all duration-300 shadow-md"
+      :title="help"
       :class="{
         'bg-blue-600 hover:bg-blue-700': !isAnyCommandChecked, // Default state
         'bg-yellow-400 hover:bg-yellow-500': isAnyCommandChecked // Highlighted state
@@ -138,6 +139,10 @@ export default {
   props: {
     commandsList: Array,
     sendCommand: Function,
+    help: {
+      type: String,
+      default: ''
+    },
     icon: {
       type: String,
       default: ''
