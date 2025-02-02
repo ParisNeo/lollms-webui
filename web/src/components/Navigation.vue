@@ -122,12 +122,6 @@ const navLinks = [
     text: 'ComfyUI', 
     condition: () => store.state.config.enable_comfyui_service || store.state.config.active_tti_service === 'comfyui' 
   },
-  { 
-    active: false, 
-    route: 'interactive', 
-    text: 'Interactive', 
-    condition: () => store.state.config.active_tts_service !== 'None' && store.state.config.active_stt_service !== 'None' 
-  },
   { active: true, route: 'settings', text: 'Settings' },
   { active: true, route: 'help_view', text: 'Help' }
 ];

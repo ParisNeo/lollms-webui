@@ -1756,8 +1756,8 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                 self.cancel_gen = False
                 sources_text = ""
                 if len(context_details["documentation_entries"]) > 0:
-                    sources_text += '<div class="text-gray-400 mr-10px">Sources:</div>'
-                    sources_text += '<div class="mt-4 flex flex-col items-start gap-x-2 gap-y-1.5 text-sm" style="max-height: 500px; overflow-y: auto;">'
+                    sources_text += '<div class="text-gray-400 mr-10px flex items-center gap-2"><i class="fas fa-book"></i>Sources:</div>'
+                    sources_text += '<div class="mt-4 flex flex-col items-start gap-x-2 gap-y-1.5 text-sm">'
                     for source in context_details["documentation_entries"]:
                         title = source["document_title"]
                         path = source["document_path"]
@@ -1765,38 +1765,45 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                         size = source["chunk_size"]
                         similarity = source["similarity"]
                         sources_text += f"""
-                            <div class="source-item">
-                                <button onclick="var details = document.getElementById('source-details-{title}-{message_id}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>{title}</strong> - ({similarity*100:.2f}%)</button>
-                                <div id="source-details-{title}-{message_id}" style="display:none;">
-                                    <div style="max-height: 200px; overflow-y: auto;">
-                                        <p><strong>Path:</strong> {path}</p>
-                                        <p><strong>Content:</strong> {content}</p>
-                                        <p><strong>Size:</strong> {size}</p>
-                                        <p><strong>Similarity:</strong> {similarity}</p>
-                                    </div>
+                            <div class="source-item w-full">
+                                <div class="flex items-center gap-2 p-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200" 
+                                    onclick="document.getElementById('source-details-{title}-{message_id}').classList.toggle('hidden')">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span class="font-bold">{title}</span>
+                                    <span class="text-gray-500 ml-2">({similarity*100:.2f}%)</span>
+                                    <i class="fas fa-chevron-down ml-auto"></i>
+                                </div>
+                                <div id="source-details-{title}-{message_id}" class="hidden p-3 border-l-2 ml-6">
+                                    <p class="mb-2"><i class="fas fa-folder-open mr-2"></i>{path}</p>
+                                    <p class="mb-2 whitespace-pre-wrap">{content}</p>
+                                    <p class="text-sm text-gray-500">Size: {size}</p>
                                 </div>
                             </div>
                         """
                     sources_text += "</div>"
                     self.personality.ui(sources_text)
+
                 if len(context_details["skills"]) > 0:
-                    sources_text += '<div class="text-gray-400 mr-10px">Memories:</div>'
-                    sources_text += '<div class="mt-4 w-full flex flex-col items-start gap-x-2 gap-y-1.5 text-sm" style="max-height: 500px; overflow-y: auto;">'
-                    ind = 0
-                    for skill in context_details["skills"]:
+                    sources_text += '<div class="text-gray-400 mr-10px flex items-center gap-2"><i class="fas fa-brain"></i>Memories:</div>'
+                    sources_text += '<div class="mt-4 w-full flex flex-col items-start gap-x-2 gap-y-1.5 text-sm">'
+                    for ind, skill in enumerate(context_details["skills"]):
                         sources_text += f"""
-                            <div class="source-item">
-                                <button onclick="var details = document.getElementById('source-details-{ind}-{message_id}'); details.style.display = details.style.display === 'none' ? 'block' : 'none';" style="text-align: left; font-weight: bold;"><strong>Memory {ind}: {skill['title']}</strong> - ({skill['similarity']*100:.2f}%)</button>
-                                <div id="source-details-{ind}-{message_id}" style="display:none;">
-                                    <div class="w-full" style="max-height: 200px; overflow-y: auto;">
-                                        <pre>{skill['content']}</pre>
-                                    </div>    
+                            <div class="source-item w-full">
+                                <div class="flex items-center gap-2 p-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200"
+                                    onclick="document.getElementById('source-details-{ind}-{message_id}').classList.toggle('hidden')">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span class="font-bold">Memory {ind}: {skill['title']}</span>
+                                    <span class="text-gray-500 ml-2">({skill['similarity']*100:.2f}%)</span>
+                                    <i class="fas fa-chevron-down ml-auto"></i>
+                                </div>
+                                <div id="source-details-{ind}-{message_id}" class="hidden p-3 border-l-2 ml-6">
+                                    <pre class="whitespace-pre-wrap">{skill['content']}</pre>
                                 </div>
                             </div>
                         """
-                        ind += 1
                     sources_text += "</div>"
                     self.personality.ui(sources_text)
+
                 # Send final message
                 if (
                     self.config.activate_internet_search

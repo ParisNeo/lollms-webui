@@ -54,6 +54,7 @@ export const store = createStore({
         view_mode: localStorage.getItem('lollms_webui_view_mode') || 'compact', // Default value
         yesNoDialog:null,
         universalForm:null,
+        saveConfiguration:null,
         toast:null,
         news:null,
         messageBox:null,

@@ -1,358 +1,387 @@
 <template>
+    <!-- Chatbar Container: Fixed, centered, and compact with a modern look -->
+    <div
+      class="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-lg p-3 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl"
+    >
+      <!-- Panel Toggles Row -->
+      <div class="flex items-center justify-between mb-3">
 
-            <div class="absolute bottom-0 left-0 w-fit min-w-96  w-full justify-center text-center">
-                <div v-if="filesList.length > 0" class="items-center gap-2 panels-color shadow-sm hover:shadow-none dark:border-gray-800  w-fit">
-                    <!-- EXPAND / COLLAPSE BUTTON -->
-                    <div class="flex">
-                        <button 
-                            class="mx-1 w-full text-2xl hover:text-secondary duration-75 flex justify-center  hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg "
-                            :title="showfilesList ? 'Hide file list' : 'Show file list'" type="button"
-                            @click.stop=" showfilesList = !showfilesList">
-                            <i data-feather="list"></i>
-                        </button>
-                    </div>                 
-                    <!-- FILES     -->
-                    <div v-if="filesList.length > 0 && showfilesList ==true">
-                        <div class="flex flex-col max-h-64  ">
-                            <TransitionGroup name="list" tag="div"
-                                class="flex flex-col flex-grow overflow-y-auto scrollbar-thin scrollbar-track-bg-light scrollbar-thumb-bg-light-tone hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark dark:scrollbar-thumb-bg-dark-tone dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
-                                <div v-for="(file, index) in filesList" :key="index + '-' + file.name">
-                                    <div class="  m-1" :title="file.name">
-
-                                        <div
-                                            class="flex flex-row items-center gap-1 text-left p-2 text-sm font-medium items-center gap-2 rounded-lg border bg-gray-100 p-1.5 shadow-sm hover:shadow-none dark:border-gray-800 dark:bg-gray-700 hover:bg-primary dark:hover:bg-primary">
-                                            <div v-if="!isFileSentList[index]" filesList role="status">
-                                                <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary"
-                                                    viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path
-                                                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                                        fill="currentColor" />
-                                                    <path
-                                                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                                        fill="currentFill" />
-                                                </svg>
-                                                <span class="sr-only">Loading...</span>
-                                            </div>
-                                            <div>
-                                                <i data-feather="file" class="w-5 h-5"></i>
-
-                                            </div>
-
-
-                                            <div class="line-clamp-1 w-3/5" :class="isFileSentList[index]?'text-green-500':'text-red-200'">
-                                                {{ file.name }}
-                                            </div>
-                                            <div class="grow">
-
-                                            </div>
-
-                                            <div class="flex flex-row items-center">
-                                                <p class="whitespace-nowrap">
-                                                    {{ computedFileSize(file.size) }}
-
-                                                </p>
-                                                <button type="button" title="Remove item"
-                                                    class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
-                                                    @click="removeItem(file)">
-                                                    <i data-feather="x" class="w-5 h-5 "></i>
-
-                                                </button>
-
-                                            </div>
-
-
-                                        </div>
-
-
-                                    </div>
-                                </div>
-                            </TransitionGroup>
-
-                        </div>
-                    </div>
-                    <div v-if="filesList.length > 0" class="flex mx-1 w-500">
-                        <!-- ADDITIONAL INFO PANEL -->
-                        <div class="whitespace-nowrap flex flex-row gap-2">
-                            <p class="font-bold ">
-                                Total size:
-                            </p>
-
-                            {{ totalSize }}
-
-                            ({{ filesList.length }})
-
-
-                        </div>
-                        <div class="grow">
-
-                        </div>
-                        <button type="button" title="Clear all"
-                            class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
-                            @click="clear_files">
-                            <i data-feather="trash" class="w-5 h-5 "></i>
-                        </button>
-                        <button type="button" title="Download database"
-                            class="flex items-center p-0.5 text-sm rounded-sm hover:text-red-600 active:scale-75"
-                            @click="download_files">
-                            <i data-feather="download-cloud" class="w-5 h-5 "></i>
-                        </button>                        
-                    </div>
-                </div>
-
-                <!-- CHAT BOX -->
-                <div v-if="selecting_model||selecting_binding" title="Selecting model" class="flex flex-row flex-grow justify-end panels-color">
-                    <!-- SPINNER -->
-                    <div role="status">
-                        <img :src="loader_v0" class="w-50 h-50">
-                        <span class="sr-only">Selecting model...</span>
-                    </div>
-                </div>
-                <div class="flex w-fit relative grow w-full">
-                    <div class="chat-bar" tabindex="0">
-                        <div v-if="loading" title="Waiting for reply">
-                            <img :src="loader_v0">
-                            <!-- SPINNER -->
-                            <div role="status">
-                                <span class="sr-only">Loading...</span>
-                            </div>
-                        </div>
-
-                        <ChatBarButton 
-                            @click="toggleLeftPanel" 
-                            :class="{ 'text-red-500': leftPanelCollapsed }" 
-                            title="Toggle View Mode"
-                        >
-                            <div v-show="leftPanelCollapsed">
-                                <!-- Chevron Right SVG -->
-                                <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                >
-                                <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                            </div>
-                            <div v-show="!leftPanelCollapsed">
-                                <!-- Chevron Left SVG -->
-                                <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                >
-                                <polyline points="15 18 9 12 15 6"></polyline>
-                                </svg>
-                            </div>
-                        </ChatBarButton>                             
-                              
-                        
-
-                        
-                        <div class="w-fit">
-                            <PersonalitiesCommands
-                                v-if="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands!=''" 
-                                :commandsList="this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands"
-                                :sendCommand="sendCMDEvent"
-                                :on-show-toast-message="onShowToastMessage"
-                                ref="personalityCMD"
-                            ></PersonalitiesCommands>
-                        </div>   
-                        <div class="w-fit">
-                            <PersonalitiesCommands
-                                v-if="isdataLakeNamesValid"
-                                :icon="'feather:book'"
-                                :commandsList="dataLakeNames"
-                                :sendCommand="mountDB"
-                                :on-show-toast-message="onShowToastMessage"
-                                ref="databasesList"
-                            ></PersonalitiesCommands>                                    
-                        </div>      
-                        <div class="relative grow m-0 p-0">
-                            <form class="m-0 p-0">
-                                <textarea
-                                    id="chat"
-                                    rows="1"
-                                    v-model="message"
-                                    @paste="handlePaste"
-                                    @keydown.enter.exact="submitOnEnter($event)"
-                                    class="w-full p-2 text-sm text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                                    placeholder="Write your message to the AI here..."
-                                ></textarea>
-                            </form>
-                            </div>
-
-                            <div class="flex items-center space-x-3">
-                            <ChatBarButton
-                                v-if="loading"
-                                @click="stopGenerating"
-                                class="bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700"
-                            >
-                                <template #icon>
-                                <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                </template>
-                                <span>Stop</span>
-                            </ChatBarButton>
-
-                            <ChatBarButton v-else @click="submit" title="Send">
-                                <template #icon>
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                                </svg>
-                                </template>
-                            </ChatBarButton>
-
-                            <ChatBarButton @click="submitWithInternetSearch" title="Send with internet search">
-                                <template #icon>
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-                                </svg>
-                                </template>
-                            </ChatBarButton>
-                            <ChatBarButton 
-                                @click="startSpeechRecognition" 
-                                :class="{ 'text-red-500': isListeningToVoice }" 
-                                title="Voice input"
-                            >
-                                <template #icon>
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
-                                </svg>
-                                </template>
-                            </ChatBarButton>
-
-                            <ChatBarButton 
-                                v-if="$store.state.config.active_tts_service != 'None' && $store.state.config.active_tts_service != null && this.$store.state.config.active_stt_service!='None' && this.$store.state.config.active_stt_service!=null"
-                                @click="updateRT"
-                                :class="is_rt ? 'bg-red-500 dark:bg-red-600' : 'bg-green-500 dark:bg-green-600'"
-                                title="Real-time audio mode"
-                            >
-                                <template #icon>
-                                    🌟
-                                </template>
-                            </ChatBarButton>
-                            <div class="relative" @mouseleave="hideSendMenu" v-if="!loading">
-                                <div class="relative inline-block">
-                                    <!-- Send menu positioned above the button -->
-                                    <div v-show="isSendMenuVisible" @mouseenter="showSendMenu" class="absolute m-0 p-0 z-10 bottom-full left-1/2 transform -translate-x-1/2 w-25 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                        <div class="p-4 m-0 flex flex-col gap-4 max-h-96 overflow-y-auto custom-scrollbar">
-                                            <!-- Additional Buttons -->
-                                            <div class="flex flex-col gap-2">
-                                                <ChatBarButton @click="add_file" title="Send file">
-                                                    <template #icon>
-                                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                                        </svg>
-                                                    </template>
-                                                </ChatBarButton>
-
-
-                                                <ChatBarButton @click="takePicture" title="Take picture" >
-                                                    <template #icon>
-                                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                                        </svg>
-                                                    </template>
-                                                </ChatBarButton>
-
-                                                <ChatBarButton @click="addWebLink" title="Add web link">
-                                                    <template #icon>
-                                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                                                        </svg>
-                                                    </template>
-                                                </ChatBarButton>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div @mouseenter="showSendMenu">
-                                        <button @click.prevent="toggleSendMenu" class="chat-bar-button">
-                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <ChatBarButton @click="makeAnEmptyUserMessage" title="New user message">
-                                <template #icon>
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                                </svg>
-                                </template>
-                            </ChatBarButton>
-
-                            <ChatBarButton @click="makeAnEmptyAIMessage" title="New AI message" class="text-red-400 dark:text-red-300">
-                                <template #icon>
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                </svg>
-                                </template>
-                            </ChatBarButton>
-                            
-                            <ChatBarButton 
-                                @click="toggleRightPanel" 
-                                :class="{ 'text-red-500': !rightPanelCollapsed }" 
-                                title="Toggle right Panel"
-                            >
-                                <div v-show="rightPanelCollapsed">
-                                    <!-- Chevron Left SVG -->
-                                    <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    >
-                                    <polyline points="15 18 9 12 15 6"></polyline>
-                                    </svg>
-                                </div>
-                                <div v-show="!rightPanelCollapsed">
-                                    <!-- Chevron Right SVG -->
-                                    <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    >
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </div>
-                            </ChatBarButton>   
-
-                            </div>
-                            
-                            <input type="file" ref="fileDialog" @change="addFiles" multiple style="display: none" />
-                    </div> 
-                    <div class="ml-auto gap-2"> 
-                        
-                    </div>
-                </div>
+      </div>
+  
+      <!-- Files Panel (if any files are attached) -->
+      <div v-if="filesList.length > 0" class="mb-3">
+        <div class="flex items-center justify-between mb-2">
+          <button
+            class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            :title="showfilesList ? 'Hide file list' : 'Show file list'"
+            @click.stop="showfilesList = !showfilesList"
+          >
+            <i data-feather="list" class="w-5 h-5"></i>
+          </button>
+          <div class="flex items-center gap-2">
+            <span class="text-sm" title="Total file size and number of files">
+              {{ totalSize }} ({{ filesList.length }})
+            </span>
+            <button @click="clear_files" class="p-2 hover:text-red-500 transition-colors" title="Clear all files">
+              <i data-feather="trash" class="w-4 h-4"></i>
+            </button>
+            <button @click="download_files" class="p-2 hover:text-primary transition-colors" title="Download all files">
+              <i data-feather="download-cloud" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Expandable files list -->
+        <TransitionGroup
+          v-show="showfilesList"
+          name="list"
+          tag="div"
+          class="max-h-40 overflow-y-auto rounded-lg bg-gray-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+        >
+          <div
+            v-for="(file, index) in filesList"
+            :key="index + '-' + file.name"
+            class="flex items-center justify-between p-2 group hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          >
+            <div class="flex items-center gap-2 min-w-0">
+              <div v-if="!isFileSentList[index]" class="animate-spin" title="Uploading...">
+                <i data-feather="loader" class="w-4 h-4 text-secondary"></i>
+              </div>
+              <i data-feather="file" class="w-4 h-4 flex-shrink-0" title="File"></i>
+              <span
+                class="truncate text-sm"
+                :class="isFileSentList[index] ? 'text-green-500' : 'text-gray-500'"
+                :title="file.name"
+              >
+                {{ file.name }}
+              </span>
             </div>
-        
-</template>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <span class="text-xs text-gray-500" :title="computedFileSize(file.size)">
+                {{ computedFileSize(file.size) }}
+              </span>
+              <button
+                @click="removeItem(file)"
+                class="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-all"
+                title="Remove file"
+              >
+                <i data-feather="x" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </TransitionGroup>
+      </div>
+  
+      <!-- Main Chat Input and Actions -->
+      <div class="flex flex-col gap-2">
+        <div class="flex flex-row gap-2 w-full">
+        <!-- Left Panel Toggle -->
+        <button
+        @click="toggleLeftPanel"
+        class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+        :title="$store.state.leftPanelCollapsed ? 'Expand Left Panel' : 'Collapse Left Panel'"
+        >
+        <i :data-feather="$store.state.leftPanelCollapsed ? 'chevron-right' : 'chevron-left'" class="w-5 h-5"></i>
+        </button>
+
+        <!-- Input Box with Integrated Send Buttons -->
+        <div class="relative flex-grow">
+            <textarea
+                id="chat"
+                v-model="message"
+                @paste="handlePaste"
+                @keydown.enter.exact="submitOnEnter($event)"
+                rows="1"
+                class="w-full p-3 pr-24 text-sm rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-primary border border-gray-300 dark:border-gray-700 resize-y min-h-[3rem] max-h-32 overflow-auto transition-colors"
+                placeholder="Write your message to the AI here..."
+                title="Enter your message here"
+            ></textarea>
+            <!-- Integrated Send Buttons inside the input box -->
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
+                <template v-if="loading">
+                <button
+                    @click="stopGenerating"
+                    class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    title="Stop generating"
+                >
+                    <i data-feather="stop-circle" class="w-5 h-5"></i>
+                </button>
+                </template>
+                <template v-else>
+                <button
+                    @click="submit"
+                    class="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    title="Send message"
+                >
+                    <i data-feather="send" class="w-5 h-5"></i>
+                </button>
+                <button
+                    @click="submitWithInternetSearch"
+                    class="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                    title="Send with internet search"
+                >
+                    <i data-feather="globe" class="w-5 h-5"></i>
+                </button>
+                </template>
+            </div>
+        </div>    
+            <!-- Right Panel Toggle -->
+            <button
+            @click="toggleRightPanel"
+            class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            :title="$store.state.rightPanelCollapsed ? 'Expand Right Panel' : 'Collapse Right Panel'"
+            >
+            <i :data-feather="$store.state.rightPanelCollapsed ? 'chevron-left' : 'chevron-right'" class="w-5 h-5"></i>
+            </button>            
+        </div>
+
+  
+        <!-- Additional Actions Row -->
+        <div class="flex items-center justify-between relative">
+          <!-- Left Side: Personalities / Commands -->
+          <div class="flex items-center gap-2">
+            <PersonalitiesCommands
+              v-if="isCommandsValid"
+              :commandsList="$store.state.mountedPersArr[$store.state.config.active_personality_id].commands"
+              :sendCommand="sendCMDEvent"
+              :on-show-toast-message="onShowToastMessage"
+              ref="personalityCMD"
+            />
+            <PersonalitiesCommands
+              v-if="isdataLakeNamesValid"
+              icon="feather:book"
+              :commandsList="dataLakeNames"
+              :sendCommand="mountDB"
+              :on-show-toast-message="onShowToastMessage"
+              ref="databasesList"
+            />
+            <PersonalitiesCommands
+              icon="feather:zap"
+              :commandsList="functionCalls"
+              :sendCommand="toggleFunctionCall"
+              :on-show-toast-message="onShowToastMessage"
+              ref="functioncalls"
+            />
+          </div>
+    
+          <!-- Right Side: Additional Options -->
+            <!-- Think First Mode Toggle -->
+            <button
+                @click="toggleThinkFirstMode"
+                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                :class="{ 'text-primary': $store.state.config.think_first_mode }"
+                title="Toggle Think First Mode"
+                >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <!-- Bulb outline with filament -->
+                    <path d="M12 2a6 6 0 0 1 6 6c0 2.42-1.61 4.5-4 5.25V15a2 2 0 0 1-4 0v-1.75C7.61 12.5 6 10.42 6 8a6 6 0 0 1 6-6z" />
+                    <!-- Bulb base -->
+                    <path d="M9 18h6" />
+                    <path d="M10 22h4" />
+                </svg>
+                </button>
+
+
+            <!-- Fun Mode Toggle -->
+            <button
+                @click="toggleFunMode"
+                class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                :class="{ 'text-primary': $store.state.config.fun_mode }"
+                title="Toggle Fun Mode"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <!-- Smiley face icon for Fun Mode -->
+                    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z" />
+                    <!-- Smiley face icon -->
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />
+                </svg>
+            </button>
+
+          <div class="flex items-center gap-2">
+            <button
+              @click="startSpeechRecognition"
+              class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              :class="{ 'text-red-500': isListeningToVoice }"
+              title="Voice input"
+            >
+              <i data-feather="mic" class="w-5 h-5"></i>
+            </button>
+            <button
+              v-if="$store.state.config.active_tts_service !== 'None' && $store.state.config.active_tts_service && $store.state.config.active_stt_service !== 'None'"
+              @click="updateRT"
+              class="p-2 rounded-lg transition-colors"
+              :class="is_rt ? 'bg-red-500 text-white' : 'bg-green-500 text-white'"
+              title="Toggle real-time audio mode"
+            >
+              🌟
+            </button>
+            <!-- More Actions Dropdown Trigger -->
+            <button
+              @click="toggleSendMenu"
+              class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              title="More actions (Add file, take picture, etc.)"
+            >
+              <i data-feather="plus-circle" class="w-5 h-5"></i>
+            </button>
+            <!-- Dropdown Menu for Extra Actions -->
+            <div
+              v-show="isSendMenuVisible"
+              class="absolute right-0 bottom-full mb-12 w-48 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-10"
+            >
+              <div class="p-2 space-y-1">
+                <button
+                  @click="add_file"
+                  class="w-full p-2 flex items-center gap-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  title="Add a file"
+                >
+                  <i data-feather="file-plus" class="w-4 h-4"></i>
+                  <span>Add File</span>
+                </button>
+                <button
+                  @click="takePicture"
+                  class="w-full p-2 flex items-center gap-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  title="Take a picture"
+                >
+                  <i data-feather="camera" class="w-4 h-4"></i>
+                  <span>Take Picture</span>
+                </button>
+                <button
+                  @click="addWebLink"
+                  class="w-full p-2 flex items-center gap-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  title="Add a web link"
+                >
+                  <i data-feather="link" class="w-4 h-4"></i>
+                  <span>Add Web Link</span>
+                </button>
+              </div>
+            </div>
+            <button
+              @click="makeAnEmptyUserMessage"
+              class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              title="Insert an empty user message"
+            >
+              <i data-feather="message-circle" class="w-5 h-5"></i>
+            </button>
+            <button
+              @click="makeAnEmptyAIMessage"
+              class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-red-400"
+              title="Insert an empty AI message"
+            >
+              <i data-feather="cpu" class="w-5 h-5"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Hidden File Input -->
+    <input type="file" ref="fileDialog" @change="addFiles" multiple class="hidden" />
+  
+    <!-- Tutorial Help Overlay -->
+    <div v-if="showHelpModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
+      <div class="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-xl w-full relative overflow-y-auto max-h-[80vh]">
+        <h2 class="text-2xl font-bold mb-4 text-center">Tutorial</h2>
+        <button
+            @click="toggleHelpModal"
+            class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            title="Close tutorial"
+            >
+            <i data-feather="x" class="w-6 h-6"></i>
+        </button>
+
+        <p class="mb-4 text-center">Below is an overview of the chatbar buttons and what they do.</p>
+        <div class="space-y-4">
+          <div class="flex items-center gap-3">
+            <button class="p-2 bg-primary text-white rounded-lg">
+              <i data-feather="send" class="w-5 h-5"></i>
+            </button>
+            <span>Sends your message to the AI.</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 bg-gray-50 rounded-lg border">
+              <i data-feather="globe" class="w-5 h-5"></i>
+            </button>
+            <span>Sends your message with an internet search.</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 hover:bg-gray-100 rounded-lg">
+              <i data-feather="mic" class="w-5 h-5"></i>
+            </button>
+            <span>Activates voice input.</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 bg-green-500 text-white rounded-lg">
+              <span>🌟</span>
+            </button>
+            <span>Toggles real-time audio mode.</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 hover:bg-gray-100 rounded-lg">
+              <i data-feather="plus-circle" class="w-5 h-5"></i>
+            </button>
+            <span>Opens more actions (Add File, Take Picture, Add Web Link).</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 hover:bg-gray-100 rounded-lg">
+              <i data-feather="info" class="w-5 h-5"></i>
+            </button>
+            <span>Opens this tutorial overlay.</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 hover:bg-gray-100 rounded-lg">
+              <i data-feather="message-circle" class="w-5 h-5"></i>
+            </button>
+            <span>Inserts an empty user message.</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 hover:bg-gray-100 rounded-lg text-red-400">
+              <i data-feather="cpu" class="w-5 h-5"></i>
+            </button>
+            <span>Inserts an empty AI message.</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 hover:bg-gray-100 rounded-lg">
+              <i data-feather="chevron-left" class="w-5 h-5"></i>
+            </button>
+            <span>Toggles the left panel.</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <button class="p-2 hover:bg-gray-100 rounded-lg">
+              <i data-feather="chevron-right" class="w-5 h-5"></i>
+            </button>
+            <span>Toggles the right panel.</span>
+          </div>
+        </div>
+        <button
+          @click="toggleHelpModal"
+          class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          title="Close tutorial"
+        >
+          <i data-feather="x" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </div>
+  </template>
+  
+  
 <style scoped>
 .personalities-hover-area {
   position: relative;
@@ -403,10 +432,6 @@
     position: absolute;
 }
 </style>
-<!-- <script setup>
-import MountedPersonalitiesComponent from './MountedPersonalitiesComponent.vue'
-
-</script> -->
 <script>
 import { nextTick, ref, TransitionGroup } from 'vue'
 import axios from "axios";
@@ -461,6 +486,7 @@ export default {
             isFileSentList: [],
             totalSize: 0,
             showfilesList: true,
+            showHelpModal: false,
             models_menu_icon:"",
             posts_headers : {
                 'accept': 'application/json',
@@ -469,12 +495,6 @@ export default {
         }
     },
     computed: {
-        leftPanelCollapsed(){
-            return this.$store.state.leftPanelCollapsed;
-        },
-        rightPanelCollapsed(){
-            return this.$store.state.rightPanelCollapsed;
-        },
         isCompactMode() {
             return this.$store.state.view_mode === 'compact';
         },
@@ -482,22 +502,38 @@ export default {
             console.log('dataLakeNames:', this.dataLakeNames);
             console.log('Type of dataLakeNames:', typeof this.dataLakeNames);
             return Array.isArray(this.dataLakeNames) && this.dataLakeNames.length > 0;
+        },  
+        isCommandsValid() {
+            return Array.isArray(this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands) && this.$store.state.mountedPersArr[this.$store.state.config.active_personality_id].commands.length > 0;
         },        
         dataLakeNames() {
             console.log("rag_databases", this.$store.state.config.datalakes);
             // Extract the names from the combined array and transform them into the desired format
             const formattedDataSources = this.$store.state.config.datalakes.map(dataLake => {
                 console.log("entry", dataLake);
-                
-                const icon = dataLake.mounted ? 'feather:check' : '';
-                
-                console.log("icon decision", icon);
-
                 return {
                     name: dataLake.alias,
                     value: dataLake.alias || 'default_value',
-                    icon: icon,
+                    is_checked: dataLake.mounted,
+                    icon: '',
                     help: 'mounts the datalake'
+                };
+            });
+
+            console.log("formatted datalake", formattedDataSources);
+            return formattedDataSources;
+        },
+        functionCalls(){
+            console.log("", this.$store.state.config.function_calls);
+            // Extract the names from the combined array and transform them into the desired format
+            const formattedDataSources = this.$store.state.config.function_calls.map(functionCall => {
+                console.log("entry", functionCall);
+                return {
+                    name: functionCall.name,
+                    value: functionCall.value || 'default_value',
+                    is_checked: functionCall.selected,
+                    icon: functionCall.icon,
+                    help: functionCall.help
                 };
             });
 
@@ -507,6 +543,18 @@ export default {
 
     },
     methods: { 
+        toggleThinkFirstMode() {
+            this.$store.state.config.think_first_mode = !this.$store.state.config.think_first_mode
+            
+            this.$store.state.applyConfiguration()
+            this.$store.state.saveConfiguration()
+        },
+        toggleFunMode() {
+            this.$store.state.config.fun_mode = !this.$store.state.config.fun_mode
+
+            this.$store.state.applyConfiguration()
+            this.$store.state.saveConfiguration()
+        },
         showSendMenu() {
             clearTimeout(this.hideSendMenuTimeout);
             this.isSendMenuVisible = true
@@ -518,20 +566,21 @@ export default {
         },
 
         toggleLeftPanel(){
-            console.log(this.leftPanelCollapsed)
-            this.$store.commit('setLeftPanelCollapsed', ! this.leftPanelCollapsed); // Assuming you have a mutation to set the view mode
+            console.log(this.$store.state.leftPanelCollapsed)
+            this.$store.commit('setLeftPanelCollapsed', !this.$store.state.leftPanelCollapsed); // Assuming you have a mutation to set the view mode
         },
         async toggleRightPanel(){
-            console.log(this.rightPanelCollapsed)
-            this.$store.commit('setRightPanelCollapsed', !this.rightPanelCollapsed); // Assuming you have a mutation to set the view mode
-            if(this.rightPanelCollapsed){
+            console.log(this.$store.state.rightPanelCollapsed)
+            
+            this.$store.commit('setRightPanelCollapsed', !this.$store.state.rightPanelCollapsed); // Assuming you have a mutation to set the view mode
+            if(this.$store.state.rightPanelCollapsed){
                 this.$store.commit('setleftPanelCollapsed', true); // Assuming you have a mutation to set the view mode
                 this.$nextTick(() => {
                 this.extractHtml()
                 });
 
             }
-            console.log(this.rightPanelCollapsed)
+            console.log(this.$store.state.rightPanelCollapsed)
         }, 
 
         handlePaste(event) {
@@ -630,6 +679,12 @@ export default {
         makeAnEmptyAIMessage() {
             this.$emit('createEmptyAIMessage')
         },
+        toggleSendMenu() {
+            this.isSendMenuVisible = !this.isSendMenuVisible;
+        },
+        toggleHelpModal() {
+            this.showHelpModal = !this.showHelpModal;
+        },
         updateRT() {
             console.log("Updating rt status")
             if(this.is_rt){
@@ -727,16 +782,29 @@ export default {
             this.$emit('sendCMDEvent', cmd)
         },
         async mountDB(cmd){
+            console.log("datalake_name:")
+            console.log(cmd)
             await axios.post('/toggle_mount_rag_database', {"client_id":this.$store.state.client_id,"datalake_name":cmd})
             await this.$store.dispatch('refreshConfig');
             console.log("Refreshed")
 
         },
+        async toggleFunctionCall(cmd){
+            console.log("function call:")
+            console.log(cmd)
+            await axios.post('/toggle_mount_rag_database', {"client_id":this.$store.state.client_id,"datalake_name":cmd})
+            await this.$store.dispatch('refreshConfig');
+            console.log("Refreshed")
+
+        },
+        
         addWebLink(){
+            this.isSendMenuVisible = false;
             console.log("Emitting addWebLink")
             this.$emit('addWebLink')
         },
         add_file(){
+            this.isSendMenuVisible = false;
             // Create a new hidden input element
             const input = document.createElement('input');
             input.type = 'file';
@@ -759,6 +827,7 @@ export default {
             input.click();
        },
         takePicture(){
+            this.isSendMenuVisible = false;
             socket.emit('take_picture')
             socket.on('picture_taken',()=>{
                 axios.post('/get_discussion_files_list', {"client_id":this.$store.state.client_id}).then(res=>{
@@ -785,6 +854,7 @@ export default {
             }
         },
         submit() {
+            console.log("SUBMIT")
             if (this.message) {
                 this.sendMessageEvent(this.message)
                 this.message = ""
@@ -792,6 +862,7 @@ export default {
 
         },
         submitWithInternetSearch(){
+            console.log("SUBMIT WITH internet")
             if (this.message) {
                 this.sendMessageEvent(this.message, "internet")
                 this.message = ""

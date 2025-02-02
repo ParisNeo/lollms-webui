@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 151
+version: 153
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -337,7 +337,14 @@ positive_boost: null
 negative_boost: null
 current_language: english
 fun_mode: false
-
+think_first_mode: false
+function_calls: []
+# { name: the function name,
+#   value: the function name without spaces,
+#   selected: selected or not,
+#   icon: the icon in form feather:icon name or img:url or b64:base64,
+#   help: the help
+# }
 
 # webui configurations
 show_code_of_conduct: true

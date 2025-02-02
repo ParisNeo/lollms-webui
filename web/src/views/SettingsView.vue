@@ -12,7 +12,7 @@
                             <i data-feather="x"></i>
                         </button>
                         <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes"
-                            type="button" @click.stop="save_configuration()">
+                            type="button" @click.stop="saveConfiguration()">
                             <i data-feather="check"></i>
                         </button>
                     </div>
@@ -1243,7 +1243,7 @@
                                             <div class="inline-flex">
                                                 <input type="file" ref="fileInput" @change="handleFileUpload" 
                                                     accept=".pdf,.txt,.doc,.docx,.csv,.md" class="hidden" multiple />
-                                                <button @click="triggerFileInput" 
+                                                <button @click="triggerLightRagFileInput" 
                                                     class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
@@ -1358,44 +1358,101 @@
                                         </div>
 
                                     </div>
-                                    <div class="flex items-center" :key="index">
-                                        <div class="relative mr-2">
-                                            <button 
-                                                @click="toggleStatus(index)"
-                                                class="flex items-center space-x-1"
-                                            >
+                                    <div class="w-full bg-gray-50 rounded-lg hover:bg-gray-100 transition-all duration-200">
+                                        <!-- Main Row -->
+                                        <div class="flex items-center justify-between px-4 py-3">
+                                            <div class="flex items-center space-x-4">
                                                 <div 
                                                     :class="[
-                                                        'w-3 h-3 rounded-full',
+                                                        'w-4 h-4 rounded-full transition-all duration-300',
                                                         getStatusColor(index)
                                                     ]"
                                                 ></div>
-                                                <div 
-                                                    v-if="expandedStatusIndex === index" 
-                                                    class="absolute left-5 top-0 bg-white shadow-lg rounded-md p-2 z-10 text-sm"
+                                                
+                                                <button 
+                                                    v-if="source.type === 'lightrag'"
+                                                    @click="checkLightRagServerHealth(index)"
+                                                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm"
+                                                    :class="{ 'opacity-75 cursor-wait': isChecking }"
+                                                    :disabled="isChecking"
                                                 >
-                                                    <div v-if="serverStatuses[index]">
-                                                        <p>Status: {{ serverStatuses[index].status }}</p>
-                                                        <p>Indexed Files: {{ serverStatuses[index].indexed_files_count }}</p>
-                                                        <p>Model: {{ serverStatuses[index].configuration?.llm_model }}</p>
-                                                    </div>
-                                                    <p v-else>No status available</p>
-                                                </div>
+                                                    <svg 
+                                                        class="w-4 h-4 mr-2" 
+                                                        :class="{ 'animate-spin': isChecking }"
+                                                        fill="none" 
+                                                        stroke="currentColor" 
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path 
+                                                            stroke-linecap="round" 
+                                                            stroke-linejoin="round" 
+                                                            stroke-width="2" 
+                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                        />
+                                                    </svg>
+                                                    {{ isChecking ? 'Checking...' : 'LightRAG Status' }}
+                                                </button>
+                                            </div>
+
+                                            <!-- Expand/Collapse Button -->
+                                            <button 
+                                                @click="expandedStatusIndex = expandedStatusIndex === index ? null : index"
+                                                class="text-gray-500 hover:text-gray-700"
+                                            >
+                                                <svg 
+                                                    class="w-5 h-5 transition-transform duration-200"
+                                                    :class="{ 'transform rotate-180': expandedStatusIndex === index }"
+                                                    fill="none" 
+                                                    stroke="currentColor" 
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                                </svg>
                                             </button>
                                         </div>
-                                        
-                                        <button 
-                                            v-if="source.type === 'lightrag'"
-                                            @click="checkLightRagServerHealth(index)"
-                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                            title="Check LightRAG server health"
+
+                                        <!-- Details Section -->
+                                        <transition
+                                            enter-active-class="transition-all duration-300 ease-out"
+                                            enter-from-class="opacity-0 max-h-0"
+                                            enter-to-class="opacity-100 max-h-[200px]"
+                                            leave-active-class="transition-all duration-200 ease-in"
+                                            leave-from-class="opacity-100 max-h-[200px]"
+                                            leave-to-class="opacity-0 max-h-0"
                                         >
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                            </svg>
-                                            LightRAG Status
-                                        </button>
+                                            <div 
+                                                v-if="expandedStatusIndex === index"
+                                                class="px-4 pb-3 border-t border-gray-200"
+                                            >
+                                                <div v-if="serverStatuses[index]" class="grid grid-cols-2 gap-2 pt-3">
+                                                    <div class="flex items-center justify-between px-3 py-2 bg-white rounded-md shadow-sm">
+                                                        <span class="font-medium text-gray-700">Status</span>
+                                                        <span :class="{
+                                                            'text-green-600': serverStatuses[index].status === 'online',
+                                                            'text-red-600': serverStatuses[index].status === 'offline',
+                                                            'text-yellow-600': serverStatuses[index].status === 'loading'
+                                                        }">{{ serverStatuses[index].status }}</span>
+                                                    </div>
+                                                    
+                                                    <div class="flex items-center justify-between px-3 py-2 bg-white rounded-md shadow-sm">
+                                                        <span class="font-medium text-gray-700">Indexed Files</span>
+                                                        <span class="text-blue-600">{{ serverStatuses[index].indexed_files_count }}</span>
+                                                    </div>
+                                                    
+                                                    <div class="flex items-center justify-between px-3 py-2 bg-white rounded-md shadow-sm col-span-2">
+                                                        <span class="font-medium text-gray-700">Model</span>
+                                                        <span class="text-purple-600">{{ serverStatuses[index].configuration?.llm_model || 'N/A' }}</span>
+                                                    </div>
+
+                                                    <div class="col-span-2 text-xs text-right text-gray-500 mt-2">
+                                                        Last Updated: {{ new Date().toLocaleTimeString() }}
+                                                    </div>
+                                                </div>
+                                                <div v-else class="text-gray-500 py-2">No status available</div>
+                                            </div>
+                                        </transition>
                                     </div>
+
                                     <!-- Actions Row -->
                                     <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
                                         <div class="flex items-center space-x-4">
@@ -1413,15 +1470,15 @@
 
 
                                             
-                                            <input type="file" ref="fileInput2" @change="handleFileUpload" 
-                                                accept=".pdf,.txt,.doc,.docx,.csv,.md" class="hidden" multiple />
+                                            <input type="file" ref="lightragFU" @change="handleFileUpload" 
+                                            accept=".pdf,.txt,.doc,.docx,.csv,.md" class="hidden" multiple />
                                             
-                                            <button @click="triggerFileInput" 
-                                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                                                </svg>
-                                                Upload Files
+                                            <button @click="triggerLightRagFileInput(index)" 
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                                            </svg>
+                                            Upload Files
                                             </button>
                                         </div>
                                         
@@ -4588,7 +4645,8 @@ export default {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            serverStatuses: {},  // Object to store status for each server
+            isChecking: false,
+            serverStatuses: [],  // Object to store status for each server
             expandedStatusIndex: null,  // Track which status panel is expanded
             isUploading: false,
             defaultModelImgPlaceholder:defaultModelImgPlaceholder,
@@ -4716,6 +4774,13 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            toggleLightragServerStatus(index) {
+                if (this.expandedStatusIndex === index) {
+                    this.expandedStatusIndex = null
+                } else {
+                    this.expandedStatusIndex = index
+                }
+            },
             async checkLightRagServerHealth(index) {
                 try {
                     const source = this.configFile.datalakes[index];
@@ -4893,8 +4958,8 @@ export default {
             },
 
 
-            triggerFileInput() {
-                this.$refs.fileInput.click()
+            triggerLightRagFileInput(index) {
+                this.$refs.lightragFU[index].click()
             },   
             updateRagDatabase(index, value, field) {
                 if (field) {
@@ -6633,7 +6698,7 @@ export default {
 
                     this.$store.state.toast.showToast("Configuration changed successfully.", 4, true)
                     this.settingsChanged = false
-                    //this.save_configuration()
+                    //this.saveConfiguration()
                 } else {
 
                     this.$store.state.toast.showToast("Configuration change failed.", 4, false)
@@ -6645,7 +6710,7 @@ export default {
                 })
             })
         },
-        save_configuration() {
+        saveConfiguration() {
             this.showConfirmation = false
             axios.post('/save_settings', {}, {headers: this.posts_headers})
                 .then((res) => {
@@ -6659,7 +6724,7 @@ export default {
                     }
                 })
                 .catch(error => {
-                    console.log(error.message, 'save_configuration')
+                    console.log(error.message, 'saveConfiguration')
                     this.$store.state.messageBox.showMessage("Couldn't save settings!")
                     return { 'status': false }
                 });
@@ -7097,7 +7162,8 @@ export default {
         }
 
 
-    }, async mounted() {
+    }, 
+    async mounted() {
         console.log("Getting voices")
         this.getVoices();
         console.log("Constructing")

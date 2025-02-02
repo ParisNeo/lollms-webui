@@ -2139,11 +2139,11 @@ export default {
             }
         }, 
         add_webpage(){
-            this.$refs.web_url_input_box.showPanel();
+            this.$store.state.web_url_input_box.showPanel();
         },
         addWebpage(){
 
-            axios.post('/add_webpage', {"client_id":this.client_id, "url": this.$refs.web_url_input_box.inputText}, {headers: this.posts_headers}).then(response => {
+            axios.post('/add_webpage', {"client_id":this.client_id, "url": this.$store.state.web_url_input_box.inputText}, {headers: this.posts_headers}).then(response => {
                 if (response && response.status){
                     this.recoverFiles()
                 }

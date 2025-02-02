@@ -343,6 +343,8 @@ if __name__ == "__main__":
         add_events as lollms_model_events_add
     from lollms.server.events.lollms_personality_events import \
         add_events as lollms_personality_events_add
+    
+    from lollms.server.endpoints.lollms_function_calls import router as lollms_function_calls
 
     from endpoints.chat_bar import router as chat_bar_router
     from endpoints.lollms_advanced import router as lollms_advanced_router
@@ -391,6 +393,8 @@ if __name__ == "__main__":
         app.include_router(lollms_tts_add_router)
         app.include_router(lollms_xtts_add_router)
         app.include_router(lollms_whisper)
+
+        app.include_router(lollms_function_calls)
 
         app.include_router(lollms_sd_router)
         app.include_router(lollms_diffusers_router)

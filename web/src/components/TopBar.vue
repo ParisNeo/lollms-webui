@@ -45,58 +45,7 @@
           </a>
         </div>
         <div class="relative">
-          <div v-if="is_fun_mode" 
-              title="Fun mode is on, press to turn off" 
-              class="w-10 h-10 cursor-pointer transform transition-all duration-300 
-                    hover:scale-110 active:scale-95 bg-yellow-400 rounded-full p-1
-                    hover:bg-yellow-300 dark:hover:bg-yellow-500"
-              @click="fun_mode_off()"
-          >
-              <svg xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24" 
-                  fill="currentColor" 
-                  class="w-full h-full text-white animate-bounce"
-              >
-                  <circle cx="12" cy="12" r="10" stroke="black" stroke-width="1.5"/>
-                  <path d="M7 14c0 3 4 4 5 4s5-1 5-4M9 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm8 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" 
-                        stroke="black" stroke-width="1.5"/>
-              </svg>
-          </div>
-          <div 
-              v-else 
-              title="Fun mode is off, press to turn on" 
-              class="w-10 h-10 cursor-pointer rounded-full 
-                    hover:bg-gray-100 dark:hover:bg-gray-800 
-                    transform transition-all duration-300 
-                    hover:scale-110 active:scale-95 p-1"
-              @click="fun_mode_on()"
-          >
-              <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  stroke-width="2.5" 
-                  class="w-full h-full transition-colors duration-300"
-              >
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="8" y1="14" x2="16" y2="14"/>
-                  <circle cx="9" cy="9" r="1"/>
-                  <circle cx="15" cy="9" r="1"/>
-              </svg>
-          </div>
-          
-          <!-- Enhanced Tooltip -->
-          <div 
-              class="absolute pointer-events-none opacity-0 group-hover:opacity-100
-                    transition-opacity duration-200 -bottom-12 left-1/2 transform 
-                    -translate-x-1/2 bg-gray-900 text-white px-3 py-1.5 rounded-lg
-                    text-sm whitespace-nowrap shadow-xl z-50"
-          >
-              <div class="absolute -top-2 left-1/2 transform -translate-x-1/2 
-                          border-solid border-4 border-transparent border-b-gray-900"/>
-              {{ is_fun_mode ? 'Disable fun mode' : 'Enable fun mode' }}
-          </div>
+
       </div>
         <div v-if="isDarkMode" class="text-2xl svg-button hover:text-primary duration-150 cursor-pointer  w-50 h-50 ml-2" title="Switch to Light theme" @click="themeSwitch()">
             <i data-feather="sun"></i>
@@ -381,6 +330,10 @@ export default {
   },
   data() {
     return {
+      posts_headers : {
+                'accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
       starCount:null,
       themeDropdownOpen: false,
       currentTheme: localStorage.getItem('preferred-theme') || 'default',
@@ -416,20 +369,6 @@ export default {
             }
         },
     
-    is_fun_mode(){
-        try{
-            if (this.$store.state.config){
-                return this.$store.state.config.fun_mode;
-            }
-            else{
-                return false;
-            }
-        }
-        catch(error){
-            console.error("Oopsie! Looks like we hit a snag: ", error);
-            return false;
-        }
-    },
     isGenerating(){
         return this.$store.state.isGenerating;
     },
@@ -440,10 +379,15 @@ export default {
   async mounted() {
     try {
       this.isVisible = this.isPinned
+      
+      
+      this.$store.state.applyConfiguration = this.applyConfiguration
+      this.$store.state.saveConfiguration = this.saveConfiguration
       this.$store.state.toast = this.$refs.toast
       this.$store.state.messageBox = this.$refs.messageBox
       this.$store.state.universalForm = this.$refs.universalForm
       this.$store.state.yesNoDialog = this.$refs.yesNoDialog
+      this.$store.state.web_url_input_box = this.$refs.web_url_input_box
       document.addEventListener('click', this.handleClickOutside)
       // Load saved theme preference
       const savedTheme = localStorage.getItem('preferred-theme')
@@ -538,7 +482,44 @@ export default {
         // Continue without saving to localStorage
       }
     },
+      applyConfiguration() {
+          axios.post('/apply_settings', {"client_id":this.$store.state.client_id, "config":this.$store.state.config}, {headers: this.posts_headers}).then((res) => {
+              //console.log('apply-res',res)
+              if (res.data.status) {
 
+                  this.$store.state.toast.showToast("Configuration changed successfully.", 4, true)
+                  //this.saveConfiguration()
+              } else {
+
+                  this.$store.state.toast.showToast("Configuration change failed.", 4, false)
+
+              }
+              nextTick(() => {
+                  feather.replace()
+
+              })
+          })
+      },
+    saveConfiguration() {
+        console.log("Saving configuration")
+        axios.post('/save_settings', {}, {headers: this.posts_headers})
+            .then((res) => {
+                if (res) {
+                    if (res.status) {
+                        // this.$store.state.messageBox.showMessage("Settings saved!")
+                    }
+                    else
+                        this.$store.state.messageBox.showMessage("Error: Couldn't save settings!")
+                    return res.data;
+                }
+            })
+            .catch(error => {
+                console.log(error.message, 'saveConfiguration')
+                this.$store.state.messageBox.showMessage("Couldn't save settings!")
+                return { 'status': false }
+            });
+
+    },
     // Helper method to clear space in localStorage
     clearOldStorageItems() {
       try {
@@ -710,16 +691,6 @@ export default {
       this.isVisible = this.isPinned
       // Save the new state to localStorage
       localStorage.setItem('isPinned', JSON.stringify(this.isPinned))
-    },
-    fun_mode_on(){
-        console.log("Turning on fun mode")
-        this.$store.state.config.fun_mode=true;
-        this.applyConfiguration()
-    },
-    fun_mode_off(){
-        console.log("Turning off fun mode")
-        this.$store.state.config.fun_mode=false;
-        this.applyConfiguration()
     },
     showNews(){
         this.$store.state.news.show()
