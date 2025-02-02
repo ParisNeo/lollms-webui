@@ -1,92 +1,58 @@
 <template>
     <div class="container pt-12 flex flex-row shadow-lg p-10 pt-0 overflow-y-scroll w-full background-color scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary">
         <!-- CONTROL PANEL -->
-        <div
-            class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg  panels-color  shadow-lg">
-            <!-- SAVE CONFIG -->
-            <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center duration-75">
-                <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
-                    @click.stop="showConfirmation = false">
-                    <i data-feather="x"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes"
-                    type="button" @click.stop="save_configuration()">
-                    <i data-feather="check"></i>
-                </button>
-            </div>
-            <!-- SAVE AND RESET -->
-            <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center">
-                <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="reset_configuration()">
-                    <i data-feather="refresh-ccw"></i>
-                </button>
-                <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    title="Collapse / Expand all panels" type="button" @click.stop="all_collapsed = !all_collapsed">
-                    <i data-feather="list"></i>
-                </button>
-            </div>
-            
-            <div class="flex gap-3 flex-1 items-center justify-end">
-                <button
-                    title="Clear uploads"
-                    class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast(['failed!'], 4, false)}})"
-                    >
-                    <i data-feather="trash-2"></i>
-                    </button>
-                    <button
-                    title="Restart program"
-                    class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="api_post_req('restart_program').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast(['failed!'], 4, false)}})"
-                    >
-                    <i data-feather="refresh-ccw"></i>
-                    </button>
-                    <button v-if="has_updates"
-                    title="Upgrade program "
-                    class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                    @click="api_post_req('update_software').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast('Success!', 4, true)}})"
-                    >
-                    <i data-feather="arrow-up-circle"></i>
-                    <i data-feather="alert-circle"></i>
-                   </button>
-                <div class="flex gap-3 items-center">
-                    <div v-if="settingsChanged" class="flex gap-3 items-center">
-                        <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                            title="Apply changes" type="button" @click.stop="applyConfiguration()">
-                            <div class="flex flex-row">
-                                <p class="text-green-600 font-bold hover:text-green-300 ml-4 pl-4 mr-4 pr-4">Apply changes:</p>
-                                <i data-feather="check"></i>
-                            </div>
-                        </button>
-                        <button v-if="!isLoading" class="text-2xl hover:text-secondary duration-75 active:scale-90"
-                            title="Cancel changes" type="button" @click.stop="cancelConfiguration()">
-                            <div class="flex flex-row">
-                                <p class="text-red-600 font-bold hover:text-red-300 ml-4 pl-4 mr-4 pr-4">Cancel changes:</p>
-                                <i data-feather="x"></i>
-                            </div>
-                        </button>
-                    </div>
-
-                    <!-- SPINNER -->
-                    <div v-if="isLoading" role="status">
-                        <p>{{ loading_text }}</p>
-                        <svg aria-hidden="true" class="w-6 h-6   animate-spin  fill-secondary" viewBox="0 0 100 101"
-                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                fill="currentColor" />
-                            <path
-                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                fill="currentFill" />
-                        </svg>
-                        <span class="sr-only">Loading...</span>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-
         <div :class="isLoading ? 'pointer-events-none opacity-30 w-full' : 'w-full'">
+            <div class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div
+                    class="sticky top-0 z-10 flex flex-row mb-2 p-3 gap-3 w-full rounded-b-lg  panels-color  shadow-lg">
+                    <!-- SAVE CONFIG -->
+                    <div v-if="showConfirmation" class="flex gap-3 flex-1 items-center duration-75">
+                        <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 " title="Cancel" type="button"
+                            @click.stop="showConfirmation = false">
+                            <i data-feather="x"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm save changes"
+                            type="button" @click.stop="save_configuration()">
+                            <i data-feather="check"></i>
+                        </button>
+                    </div>
+                    <!-- SAVE AND RESET -->
+                    <div v-if="!showConfirmation" class="flex gap-3 flex-1 items-center">
+                        <button title="Reset configuration" class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                            @click="reset_configuration()">
+                            <i data-feather="refresh-ccw"></i>
+                        </button>
+                        <button class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                            title="Collapse / Expand all panels" type="button" @click.stop="all_collapsed = !all_collapsed">
+                            <i data-feather="list"></i>
+                        </button>
+                    </div>
+                    <button
+                        title="Clear uploads"
+                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        @click="api_get_req('clear_uploads').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast(['failed!'], 4, false)}})"
+                        >
+                        <i data-feather="trash-2"></i>
+                        </button>
+                        <button
+                        title="Restart program"
+                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        @click="api_post_req('restart_program').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast(['failed!'], 4, false)}})"
+                        >
+                        <i data-feather="refresh-ccw"></i>
+                        </button>
+                        <button v-if="has_updates"
+                        title="Upgrade program "
+                        class="text-2xl hover:text-secondary duration-75 active:scale-90"
+                        @click="api_post_req('update_software').then((res)=>{if(res.status){this.$store.state.toast.showToast('Success!', 4, true)}else{this.$store.state.toast.showToast('Success!', 4, true)}})"
+                        >
+                        <i data-feather="arrow-up-circle"></i>
+                        <i data-feather="alert-circle"></i>
+                    </button>  
+
+                </div>                
+          
+            </div>
             <!-- DISK AND RAM USAGE -->
             <div class="flex flex-col mb-2  rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
                 <div class="flex flex-row p-3">
@@ -4398,6 +4364,41 @@
             </div>
         </div>
     </div>
+    <div v-if="settingsChanged" 
+         class="fixed bottom-4 right-4 z-50 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 flex gap-3 items-center border border-gray-200 dark:border-gray-700">
+        <div v-if="!isLoading" class="flex items-center gap-2">
+            <button class="flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 duration-75 active:scale-95"
+                    title="Apply changes" 
+                    type="button" 
+                    @click.stop="applyConfiguration()">
+                <span class="text-green-600 font-medium">Apply</span>
+                <i data-feather="check" class="w-4 h-4 text-green-600"></i>
+            </button>
+            <button class="flex items-center gap-2 px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 duration-75 active:scale-95"
+                    title="Cancel changes" 
+                    type="button" 
+                    @click.stop="cancelConfiguration()">
+                <span class="text-red-600 font-medium">Cancel</span>
+                <i data-feather="x" class="w-4 h-4 text-red-600"></i>
+            </button>
+        </div>
+
+        <!-- SPINNER -->
+        <div v-if="isLoading" class="flex items-center gap-2">
+            <p class="text-sm text-gray-600 dark:text-gray-300">{{ loading_text }}</p>
+            <svg aria-hidden="true" 
+                 class="w-5 h-5 animate-spin fill-secondary" 
+                 viewBox="0 0 100 101" 
+                 fill="none" 
+                 xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                    fill="currentColor" />
+                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                    fill="currentFill" />
+            </svg>
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>    
     <AddModelDialog ref="addmodeldialog" />
     <ChoiceDialog  class="z-20"
       :show="variantSelectionDialogVisible"
