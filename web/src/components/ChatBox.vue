@@ -1,8 +1,9 @@
 <template>
     <!-- Chatbar Container: Fixed, centered, and compact with a modern look -->
     <div
-    class="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-2xl p-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl"
+        class="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-2xl p-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl transition-all duration-300 ease-in-out"
     >
+
       <!-- Files Panel (if any files are attached) -->
       <div v-if="filesList.length > 0" class="mb-3">
         <div class="flex items-center justify-between mb-2">
