@@ -120,7 +120,7 @@
           <button
           @click="toggleLeftPanel"
           class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-          :class="$store.state.leftPanelCollapsed ? '' : 'bg-gray-700'"
+          :class="$store.state.leftPanelCollapsed ? '' : 'bg-gray-300'"
           :title="$store.state.leftPanelCollapsed ? 'Expand Left Panel' : 'Collapse Left Panel'"
           >
           <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -293,7 +293,7 @@
             <button
             @click="toggleRightPanel"
             class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            :class="$store.state.rightPanelCollapsed ? '' : 'bg-gray-700'"
+            :class="$store.state.rightPanelCollapsed ? '' : 'bg-gray-300'"
             :title="$store.state.rightPanelCollapsed ? 'Expand Right Panel' : 'Collapse Right Panel'"
             >
             <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

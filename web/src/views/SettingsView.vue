@@ -827,7 +827,7 @@
                                                     <div class="flex justify-end space-x-2">
                                                         <button 
                                                             type="button"
-                                                            @click="showAddPreset = false"
+                                                            @click="showAddThinkingPreset = false"
                                                             class="px-4 py-2 text-sm text-gray-600 border rounded-md"
                                                         >
                                                             Cancel
