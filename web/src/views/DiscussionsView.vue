@@ -818,7 +818,8 @@
                     class="absolute w-full bottom-0 bg-transparent p-10 pt-16 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
                 </div>
             </div>
-            <div class="flex flex-row items-center justify-center h-10" v-if="currentDiscussion.id">
+            <div class="w-full flex flex-row items-center justify-center h-10 mx-auto" v-if="currentDiscussion.id">
+
                 <ChatBox ref="chatBox" 
                     :loading="isGenerating" 
                     :discussionList="discussionArr" 
