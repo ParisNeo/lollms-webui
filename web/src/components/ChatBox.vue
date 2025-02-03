@@ -3,9 +3,6 @@
     <div
         class="fixed bottom-8 left-1/2 transform -translate-x-1/2 w-full max-w-2xl p-6 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-gray-700 shadow-2xl transition-all duration-300 ease-in-out z-50"
     >
-
-
-
       <!-- Files Panel (if any files are attached) -->
       <div v-if="filesList.length > 0" class="mb-3">
         <div class="flex items-center justify-between mb-2">
@@ -88,15 +85,24 @@
             <!-- Integrated Send Buttons inside the input box -->
             <div class="absolute inset-y-0 right-0 flex items-center pr-2 space-x-1">
                 <template v-if="loading">
-                <button
-                    @click="stopGenerating"
-                    class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                    title="Stop generating"
-                >
-                    <i data-feather="stop-circle" class="w-5 h-5"></i>
-                </button>
-                </template>
-                <template v-else>
+                    <button
+                        @click="stopGenerating"
+                        class="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 
+                              transform hover:scale-105 active:scale-95
+                              transition-all duration-200 ease-in-out
+                              shadow-md hover:shadow-lg
+                              animate-pulse
+                              focus:outline-none focus:ring-2 focus:ring-red-400
+                              disabled:opacity-50"
+                        title="Stop generating"
+                        aria-label="Stop generation process"
+                    >
+                        <i data-feather="stop-circle" 
+                          class="w-5 h-5 animate-spin-slow" 
+                        ></i>
+                        <span class="sr-only">Stop Generation</span>
+                    </button>
+                </template>                <template v-else>
                 <button
                     @click="submit"
                     class="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -405,6 +411,18 @@
   
   
 <style scoped>
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
+}
 .personalities-hover-area {
   position: relative;
   padding-top: 10px; /* Adjust this value to create enough space to move the cursor to the menu */
