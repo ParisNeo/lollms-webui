@@ -750,6 +750,103 @@
                                         </div>
                                     </div>
                                 </Card>
+                                <Card title="Thinking Methods" :is_subcard="true" class="pb-2 m-2">
+                                    <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                                        <!-- Thinking Prompt with Preset Button -->
+                                        <div class="space-y-2 flex flex-col">
+                                            <div class="flex justify-between items-center">
+                                                <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                                    Thinking Prompt
+                                                </label>
+                                                <div class="space-x-2">
+                                                    <button 
+                                                        @click="showThinkingPresets = true"
+                                                        class="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                                                    >
+                                                        Select Thinking Preset
+                                                    </button>
+                                                    <button 
+                                                        @click="showAddThinkingPreset = true"
+                                                        class="px-3 py-1 text-sm bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                                                    >
+                                                        Add New Preset
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <textarea  
+                                                @change="settingsChanged=true" 
+                                                v-model="configFile.thinking_prompt" 
+                                                class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md text-sm min-h-[150px]"
+                                                placeholder="Enter thinking prompt or select a preset..."
+                                            ></textarea>
+                                        </div>
+
+                                        <!-- Select Thinking Preset Modal -->
+                                        <Modal v-if="showThinkingPresets" @close="showThinkingPresets = false">
+                                            <div class="p-4">
+                                                <h3 class="text-lg font-semibold mb-4">Select Thinking Preset</h3>
+                                                <div class="space-y-2">
+                                                    <div v-for="preset in thinkingPresets" 
+                                                        :key="preset.name"
+                                                        class="border rounded-md p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                                                        @click="selectPreset(preset)"
+                                                    >
+                                                        <div class="font-medium">{{ preset.name }}</div>
+                                                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ preset.description }}</div>
+                                                        <div class="text-xs text-gray-500 mt-1">Author: {{ preset.author }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Modal>
+
+                                        <!-- Add New Thinking Preset Modal -->
+                                        <Modal v-if="showAddThinkingPreset" @close="showAddThinkingPreset = false">
+                                            <div class="p-4">
+                                                <h3 class="text-lg font-semibold mb-4">Add New Thinking Preset</h3>
+                                                <form @submit.prevent="saveNewPreset" class="space-y-4">
+                                                    <div>
+                                                        <label class="block text-sm font-medium mb-1">Name</label>
+                                                        <input v-model="newPreset.name" class="w-full rounded-md border p-2" required>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium mb-1">Description</label>
+                                                        <input v-model="newPreset.description" class="w-full rounded-md border p-2" required>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium mb-1">Author</label>
+                                                        <input v-model="newPreset.author" class="w-full rounded-md border p-2" required>
+                                                    </div>
+                                                    <div>
+                                                        <label class="block text-sm font-medium mb-1">Thinking Prompt</label>
+                                                        <textarea 
+                                                            v-model="newPreset.prompt" 
+                                                            class="w-full rounded-md border p-2 min-h-[150px]"
+                                                            required
+                                                        ></textarea>
+                                                    </div>
+                                                    <div class="flex justify-end space-x-2">
+                                                        <button 
+                                                            type="button"
+                                                            @click="showAddPreset = false"
+                                                            class="px-4 py-2 text-sm text-gray-600 border rounded-md"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                        <button 
+                                                            type="submit"
+                                                            class="px-4 py-2 text-sm bg-blue-500 text-white rounded-md"
+                                                        >
+                                                            Save Preset
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </Modal>
+                                    </div>
+                                </Card>
+
+
+
 
                                 <Card  title="User" :is_subcard="true" class="pb-2  m-2">
                                     <div class="grid gap-6 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md">
@@ -4645,6 +4742,17 @@ export default {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            showThinkingPresets: false,
+            showAddThinkingPreset: false,
+            thinkingPresets: [],
+            newPreset: {
+                name: '',
+                description: '',
+                author: '',
+                prompt: ''
+            },
+            selectedMethodDescription: '',
+            selectedMethodAuthor: '',
             isChecking: false,
             serverStatuses: [],  // Object to store status for each server
             expandedStatusIndex: null,  // Track which status panel is expanded
@@ -4811,7 +4919,35 @@ export default {
                     this.$store.state.toast.showToast('Could not connect to LightRAG server', 4, false);
                 }
             },
-            
+            async loadthinkingPresets() {
+                try {
+                    console.log("loadthinkingPresets")
+                    const response = await axios.post('/get_thinking_methods', {
+                        client_id: this.$store.state.client_id
+                    });
+                    console.log("loadthinkingPresets --- ")
+                    console.log(response)
+                    if (response.data.status === 'success') {
+                        this.thinkingPresets = response.data.thinking_methods;
+                        // Load local presets and merge
+                        this.loadLocalPresets();
+                        // Set initial selection if available
+                        if (this.allThinkingPresets.length > 0) {
+                            this.updateSelectedMethodInfo(this.configFile.selected_thinking_method || this.allThinkingPresets[0].name);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading thinking methods:', error);
+                    this.$toast.error('Failed to load thinking methods');
+                    // Still load local presets even if backend fails
+                    this.loadLocalPresets();
+                }
+            },
+
+            handlethinkingPresetselection() {
+                this.updateSelectedMethodInfo(this.configFile.selected_thinking_method);
+                this.settingsChanged = true;
+            },        
             // Optional: Method to check all servers at once
             async checkAllServers() {
                 for (let i = 0; i < this.configFile.datalakes.length; i++) {
@@ -7159,11 +7295,74 @@ export default {
         },
         searchModel_func() {
             this.filterModels()
+        },
+
+        loadLocalPresets() {
+            const savedPresets = localStorage.getItem('localThinkingPresets');
+            if (savedPresets) {
+                this.localThinkingPresets = JSON.parse(savedPresets);
+            }
+        },
+
+        saveLocalPresets() {
+            localStorage.setItem('localThinkingPresets', JSON.stringify(this.localThinkingPresets));
+        },
+
+        selectPreset(preset) {
+            this.configFile.thinking_prompt = preset.prompt;
+            this.configFile.selected_thinking_method = preset.name;
+            this.showThinkingPresets = false;
+            this.settingsChanged = true;
+            this.updateSelectedMethodInfo(preset.name);
+        },
+
+        saveNewPreset() {
+            // Ensure prompt has thinking tags
+            let promptToSave = this.newPreset.prompt;
+            if (!promptToSave.includes('<thinking>')) {
+                promptToSave = `<thinking>\n${promptToSave}\n</thinking>`;
+            }
+
+            const newPreset = {
+                name: this.newPreset.name,
+                description: this.newPreset.description,
+                author: this.newPreset.author,
+                prompt: promptToSave,
+                isLocal: true // Flag to identify user-created presets
+            };
+
+            // Check for name conflicts
+            const existingPreset = this.allThinkingPresets.find(p => p.name === newPreset.name);
+            if (existingPreset) {
+                this.$toast.error('A preset with this name already exists');
+                return;
+            }
+
+            this.localThinkingPresets.push(newPreset);
+            this.saveLocalPresets();
+            
+            // Reset form
+            this.newPreset = {
+                name: '',
+                description: '',
+                author: '',
+                prompt: ''
+            };
+            
+            this.showAddThinkingPreset = false;
+            this.$toast.success('New thinking preset added successfully');
+        },
+
+        updateSelectedMethodInfo(methodName) {
+            const method = this.allThinkingPresets.find(m => m.name === methodName);
+            if (method) {
+                this.configFile.selected_thinking_method = method.name;
+                this.configFile.thinking_prompt = method.prompt;
+            }
         }
-
-
     }, 
     async mounted() {
+        this.loadthinkingPresets();
         console.log("Getting voices")
         this.getVoices();
         console.log("Constructing")

@@ -69,14 +69,6 @@
       <!-- Main Chat Input and Actions -->
       <div class="flex flex-col gap-2">
         <div class="flex flex-row gap-2 w-full">
-        <!-- Left Panel Toggle -->
-        <button
-        @click="toggleLeftPanel"
-        class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-        :title="$store.state.leftPanelCollapsed ? 'Expand Left Panel' : 'Collapse Left Panel'"
-        >
-        <i :data-feather="$store.state.leftPanelCollapsed ? 'chevron-right' : 'chevron-left'" class="w-5 h-5"></i>
-        </button>
 
         <!-- Input Box with Integrated Send Buttons -->
         <div class="relative flex-grow">
@@ -119,19 +111,29 @@
                 </template>
             </div>
         </div>    
-            <!-- Right Panel Toggle -->
-            <button
-            @click="toggleRightPanel"
-            class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            :title="$store.state.rightPanelCollapsed ? 'Expand Right Panel' : 'Collapse Right Panel'"
-            >
-            <i :data-feather="$store.state.rightPanelCollapsed ? 'chevron-left' : 'chevron-right'" class="w-5 h-5"></i>
-            </button>            
         </div>
 
   
         <!-- Additional Actions Row -->
         <div class="flex items-center justify-between relative">
+          <!-- Left Panel Toggle -->
+          <button
+          @click="toggleLeftPanel"
+          class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          :class="$store.state.leftPanelCollapsed ? '' : 'bg-gray-700'"
+          :title="$store.state.leftPanelCollapsed ? 'Expand Left Panel' : 'Collapse Left Panel'"
+          >
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <!-- Main vertical bar with rounded corners -->
+              <rect x="3" y="2" width="4" height="20" rx="2" fill="currentColor"/>
+              
+              <!-- Three horizontal lines with rounded corners -->
+              <rect x="9" y="6" width="12" height="2" rx="1" fill="currentColor"/>
+              <rect x="9" y="11" width="12" height="2" rx="1" fill="currentColor"/>
+              <rect x="9" y="16" width="12" height="2" rx="1" fill="currentColor"/>
+          </svg>          
+          </button>
+
           <!-- Left Side: Personalities / Commands -->
           <div class="flex items-center gap-2">
             <PersonalitiesCommands
@@ -286,6 +288,25 @@
               <i data-feather="cpu" class="w-5 h-5"></i>
             </button>
           </div>
+          
+            <!-- Right Panel Toggle -->
+            <button
+            @click="toggleRightPanel"
+            class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            :class="$store.state.rightPanelCollapsed ? '' : 'bg-gray-700'"
+            :title="$store.state.rightPanelCollapsed ? 'Expand Right Panel' : 'Collapse Right Panel'"
+            >
+            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <!-- Main vertical bar with rounded corners (right side) -->
+                <rect x="17" y="2" width="4" height="20" rx="2" fill="currentColor"/>
+                
+                <!-- Three horizontal lines with rounded corners -->
+                <rect x="3" y="6" width="12" height="2" rx="1" fill="currentColor"/>
+                <rect x="3" y="11" width="12" height="2" rx="1" fill="currentColor"/>
+                <rect x="3" y="16" width="12" height="2" rx="1" fill="currentColor"/>
+            </svg>
+            </button>            
+
         </div>
       </div>
     </div>
