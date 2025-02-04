@@ -1,442 +1,280 @@
 <template>
     <div v-if="show"
-        class="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-50 p-4 overflow-hidden">
-        <div class="relative w-full max-w-md max-h-[80vh]">
-            <!-- Main Container with shadow and rounded corners -->
-            <div class="flex flex-col rounded-lg bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel shadow-lg">
+         class="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-all" style="z-index: 1000;">
+        <div class="relative w-full mx-4 max-w-2xl">
+            <!-- Main Container -->
+            <div class="flex flex-col rounded-xl bg-white dark:bg-gray-800 shadow-2xl transform transition-all max-h-[90vh]">
                 <!-- Header -->
-                <div class="flex flex-row items-center p-4 border-b border-gray-200 dark:border-gray-700">
-                    <div class="grow flex items-center">
-                        <i data-feather="sliders" class="mr-2 flex-shrink-0"></i>
-                        <h3 class="text-lg font-semibold select-none">{{ title }}</h3>
+                <div class="flex items-center justify-between p-6 border-b border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center gap-3">
+                        <i data-feather="sliders" class="w-6 h-6 text-blue-500"></i>
+                        <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200">{{ title }}</h3>
                     </div>
-                    <!-- Close Button -->
-                    <button @click.stop="hide(false)" title="Close"
-                        class="p-1.5 hover:bg-gray-200 rounded-lg dark:hover:bg-gray-800">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z">
-                            </path>
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Scrollable Content Area -->
-                <div class="overflow-y-auto p-4 max-h-[60vh] custom-scrollbar">
-                    <div class="space-y-2">
-                        <div v-for="(item, index) in controls_array" :key="index" class="p-1">
-
-                            <div v-if="item.type == 'str' || item.type == 'string'">
-                                <div v-if="!item.options">
-                                    <label
-                                        class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
-                                        :class="item.help ? 'cursor-pointer ' : ''">
-                                        <!-- TITLE -->
-                                        <div class="text-base font-semibold">
-                                            {{ item.name }}:
-                                        </div>
-
-                                        <!-- HELP BUTTON -->
-                                        <label v-if="item.help" class="relative inline-flex">
-                                            <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                            <div
-                                                class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                                <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                            </div>
-                                        </label>
-
-                                    </label>
-                                    <!-- HELP DESCRIPTION -->
-                                    <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                        {{ item.help }}
-                                    </p>
-
-                                    <input type="text" v-model="item.value"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Enter string">
-                                </div>
-                                <div v-if="item.options">
-                                    <label
-                                        class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
-                                        :class="item.help ? 'cursor-pointer ' : ''">
-                                        <!-- TITLE -->
-                                        <div class="text-base font-semibold">
-                                            {{ item.name }}:
-                                        </div>
-
-                                        <!-- HELP BUTTON -->
-                                        <label v-if="item.help" class="relative inline-flex">
-                                            <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                            <div
-                                                class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                                <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                            </div>
-                                        </label>
-
-                                    </label>
-                                    <!-- HELP DESCRIPTION -->
-                                    <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                        {{ item.help }}
-                                    </p>
-                                    <select v-model="item.value"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                                        <option v-for="op in item.options" :value="op" :selected="item.value === op">{{
-                                            op
-                                        }}
-
-                                        </option>
-
-                                    </select>
-
-                                </div>
-
-
-                            </div>
-                            <div v-if="item.type == 'btn'">
-                                <button class="" onclick="btn_clicked(item)"> {{ item.name }} </button>
-                            </div>
-                            <div v-if="item.type == 'text'">
-                                <div v-if="!item.options">
-                                    <label
-                                        class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
-                                        :class="item.help ? 'cursor-pointer ' : ''">
-                                        <!-- TITLE -->
-                                        <div class="text-base font-semibold">
-                                            {{ item.name }}:
-                                        </div>
-
-                                        <!-- HELP BUTTON -->
-                                        <label v-if="item.help" class="relative inline-flex">
-                                            <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                            <div
-                                                class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                                <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                            </div>
-                                        </label>
-
-                                    </label>
-                                    <!-- HELP DESCRIPTION -->
-                                    <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                        {{ item.help }}
-                                    </p>
-
-                                    <textarea v-model="item.value"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                        placeholder="Enter string"></textarea>
-                                </div>
-                                <div v-if="item.options">
-                                    <label
-                                        class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
-                                        :class="item.help ? 'cursor-pointer ' : ''">
-                                        <!-- TITLE -->
-                                        <div class="text-base font-semibold">
-                                            {{ item.name }}:
-                                        </div>
-
-                                        <!-- HELP BUTTON -->
-                                        <label v-if="item.help" class="relative inline-flex">
-                                            <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                            <div
-                                                class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                                <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                            </div>
-                                        </label>
-
-                                    </label>
-                                    <!-- HELP DESCRIPTION -->
-                                    <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                        {{ item.help }}
-                                    </p>
-                                    <select v-model="item.value"
-                                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-
-                                        <option v-for="op in item.options" :value="op" :selected="item.value === op">{{
-                                            op
-                                        }}
-
-                                        </option>
-
-                                    </select>
-
-                                </div>
-                            </div>                        
-                            <div v-if="item.type == 'int'">
-                                <label
-                                    class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
-                                    :class="item.help ? 'cursor-pointer ' : ''">
-                                    <!-- TITLE -->
-                                    <div class="text-base font-semibold">
-                                        {{ item.name }}:
-                                    </div>
-
-                                    <!-- HELP BUTTON -->
-                                    <label v-if="item.help" class="relative inline-flex">
-                                        <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                        <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                            <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                        </div>
-                                    </label>
-
-                                </label>
-                                <!-- HELP DESCRIPTION -->
-                                <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                    {{ item.help }}
-                                </p>
-
-                                <input type="number" v-model="item.value"  step="1"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Enter number">
-
-                                <input v-if="(item.min != null && item.max != null)" type="range" v-model="item.value"
-                                    :min="item.min" :max="item.max" step="1"
-                                    class="flex-none h-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </div>
-                            <div v-if="item.type == 'float'">
-                                <label
-                                    class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
-                                    :class="item.help ? 'cursor-pointer ' : ''">
-                                    <!-- TITLE -->
-                                    <div class="text-base font-semibold">
-                                        {{ item.name }}:
-                                    </div>
-
-                                    <!-- HELP BUTTON -->
-                                    <label v-if="item.help" class="relative inline-flex">
-                                        <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                        <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                            <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                        </div>
-                                    </label>
-
-                                </label>
-                                <!-- HELP DESCRIPTION -->
-                                <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                    {{ item.help }}
-                                </p>
-
-                                <input type="number" v-model="item.value"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Enter number">
-
-                                <input v-if="(item.min != null && item.max != null)" type="range" v-model="item.value"
-                                    :min="item.min" :max="item.max" step="0.1"
-                                    class="flex-none h-2 w-full bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700  focus:ring-blue-500 focus:border-blue-500  dark:border-gray-600 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </div>                        
-                            <div v-if="item.type == 'bool'">
-                                <div class="mb-2 relative flex items-center gap-2">
-
-                                    <label for="default-checkbox" class="text-base font-semibold">
-                                        {{ item.name }}:
-                                    </label>
-                                    <input type="checkbox" v-model="item.value"
-                                        class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-
-                                    <!-- HELP BUTTON -->
-                                    <label v-if="item.help" class="relative inline-flex">
-                                        <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                        <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                            <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                        </div>
-                                    </label>
-
-
-                                </div>
-                                <!-- HELP DESCRIPTION -->
-                                <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                    {{ item.help }}
-                                </p>
-
-                            </div>
-                            <div v-if="item.type == 'list'">
-
-
-                                <label
-                                    class="mb-2 relative flex items-center gap-2 text-sm font-medium text-gray-900 dark:text-white select-none"
-                                    :class="item.help ? 'cursor-pointer ' : ''">
-                                    <!-- TITLE -->
-                                    <div class="text-base font-semibold">
-                                        {{ item.name }}:
-                                    </div>
-
-                                    <!-- HELP BUTTON -->
-                                    <label v-if="item.help" class="relative inline-flex">
-                                        <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                        <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                            <i data-feather="help-circle" class="w-5 h-5 "></i>
-                                        </div>
-                                    </label>
-
-                                </label>
-                                <!-- HELP DESCRIPTION -->
-                                <p v-if="item.isHelp" class="text-sm font-normal text-gray-700 dark:text-gray-400 mb-2">
-                                    {{ item.help }}
-                                </p>
-
-                                <input type="text" v-model="item.value"
-                                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                    placeholder="Enter comma separated values">
-                            </div>
-
-                            <!-- New File/Folder Input Type -->
-                            <div v-if="item.type === 'file' || item.type === 'folder'" class="space-y-2">
-                                <label class="flex items-center gap-2">
-                                    <span class="text-base font-semibold">{{ item.name }}:</span>
-                                    <!-- Help Button -->
-                                    <label v-if="item.help" class="relative inline-flex">
-                                        <input type="checkbox" v-model="item.isHelp" class="sr-only peer">
-                                        <div class="hover:text-secondary duration-75 active:scale-90 peer-checked:text-primary">
-                                            <i data-feather="help-circle" class="w-5 h-5"></i>
-                                        </div>
-                                    </label>
-                                </label>
-                                <!-- Help Text -->
-                                <p v-if="item.isHelp" class="text-sm text-gray-600 dark:text-gray-400">
-                                    {{ item.help }}
-                                </p>
-                                <!-- File/Folder Selection Input -->
-                                <div class="flex gap-2">
-                                    <input type="text" v-model="item.value" readonly
-                                        class="flex-1 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        :placeholder="item.type === 'file' ? 'Select file...' : 'Select folder...'">
-                                    <button @click="openFileDialog(item)"
-                                        class="px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:hover:bg-gray-600">
-                                        ...
-                                    </button>
-                                </div>
-                            </div>
-
-                            <hr v-if="index < controls_array.length - 1"
-                                class="h-px my-4 bg-gray-200 border-0 dark:bg-gray-700">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Footer with Buttons -->
-                <div class="flex justify-center gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
-                    <button @click.stop="hide(true)"
-                        class="px-5 py-2.5 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700">
-                        {{ ConfirmButtonText }}
-                    </button>
                     <button @click.stop="hide(false)"
-                        class="px-5 py-2.5 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-600">
+                            class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <i data-feather="x" class="w-5 h-5 text-gray-500 dark:text-gray-400"></i>
+                    </button>
+                </div>
+
+                <!-- Scrollable Content -->
+                <div class="overflow-y-auto px-6 py-5 custom-scrollbar">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <template v-for="(item, index) in controls_array" :key="index">
+                            <div class="group" :class="{'md:col-span-2': item.spanFull || ['btn', 'text', 'list', 'file', 'folder'].includes(item.type)}">
+                                <!-- Common Help Button Structure -->
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="flex items-center gap-2">
+                                        <span class="text-base font-semibold text-gray-700 dark:text-gray-300">
+                                            {{ item.name }}
+                                        </span>
+                                        <button v-if="item.help" @click="item.isHelp = !item.isHelp"
+                                                class="text-gray-400 hover:text-blue-500 transition-colors">
+                                            <i data-feather="help-circle" class="w-4 h-4"></i>
+                                        </button>
+                                    </label>
+                                    <span v-if="item.required" class="text-xs text-red-500">* Required</span>
+                                </div>
+
+                                <!-- Help Text -->
+                                <p v-if="item.isHelp" class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                                    {{ item.help }}
+                                </p>
+
+                                <!-- Input Fields -->
+                                <div class="space-y-2">
+                                    <!-- Text/Select Input -->
+                                    <div v-if="['str', 'string'].includes(item.type)">
+                                        <input v-if="!item.options" 
+                                               type="text" 
+                                               v-model="item.value"
+                                               :placeholder="item.placeholder || 'Enter text'"
+                                               class="w-full px-4 py-3 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all">
+                                        
+                                        <select v-else v-model="item.value"
+                                                class="w-full px-4 py-3 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none">
+                                            <option v-for="(op, i) in item.options" :key="i" :value="op">
+                                                {{ op }}
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Button -->
+                                    <div v-if="item.type === 'btn'">
+                                        <button @click="btn_clicked(item)"
+                                                class="w-full px-4 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors flex justify-center items-center gap-2">
+                                            <i v-if="item.icon" data-feather="item.icon" class="w-4 h-4"></i>
+                                            {{ item.name }}
+                                        </button>
+                                    </div>
+
+                                    <!-- Text Area -->
+                                    <div v-if="item.type === 'text'">
+                                        <textarea v-model="item.value" 
+                                                  rows="4"
+                                                  class="w-full px-4 py-3 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+                                    </div>
+
+                                    <!-- Number Inputs -->
+                                    <div v-if="['int', 'float'].includes(item.type)" class="space-y-3">
+                                        <input type="number" 
+                                               v-model="item.value" 
+                                               :step="item.type === 'int' ? 1 : 0.1"
+                                               class="w-full px-4 py-3 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        
+                                        <input v-if="item.min !== undefined && item.max !== undefined" 
+                                               type="range" 
+                                               v-model="item.value" 
+                                               :min="item.min" 
+                                               :max="item.max"
+                                               :step="item.step || (item.type === 'int' ? 1 : 0.1)"
+                                               class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full appearance-none cursor-pointer range-thumb">
+                                    </div>
+
+                                    <!-- Boolean Input -->
+                                    <div v-if="item.type === 'bool'" class="flex items-center gap-3">
+                                        <label class="relative inline-flex items-center cursor-pointer switch">
+                                            <input type="checkbox" v-model="item.value" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 transition-colors">
+                                                <div class="switch-thumb"></div>
+                                            </div>
+                                        </label>
+                                        <span class="text-sm text-gray-600 dark:text-gray-300">{{ item.value ? 'Enabled' : 'Disabled' }}</span>
+                                    </div>
+
+                                    <!-- Color Picker -->
+                                    <div v-if="item.type === 'color'" class="flex items-center gap-3">
+                                        <input type="color" 
+                                               v-model="item.value"
+                                               class="w-12 h-12 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer">
+                                        <input type="text" 
+                                               v-model="item.value"
+                                               class="flex-1 px-4 py-3 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    </div>
+
+                                    <!-- File/Folder Input -->
+                                    <div v-if="['file', 'folder'].includes(item.type)" class="flex gap-2">
+                                        <input type="text" 
+                                               v-model="item.value" 
+                                               readonly
+                                               class="flex-1 px-4 py-3 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                                        <button @click="openFileDialog(item)"
+                                                class="px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors flex items-center gap-2">
+                                            <i data-feather="folder" class="w-4 h-4"></i>
+                                            <span>Browse</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Divider -->
+                                <div v-if="index < controls_array.length - 1 && !item.spanFull" 
+                                     class="h-px bg-gray-100 dark:bg-gray-700 my-6"></div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-end gap-3 p-6 border-t border-gray-100 dark:border-gray-700">
+                    <button @click.stop="hide(false)"
+                            class="px-6 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200">
                         {{ DenyButtonText }}
+                    </button>
+                    <button @click.stop="hide(true)"
+                            class="px-6 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors flex items-center gap-2">
+                        <i data-feather="check" class="w-4 h-4"></i>
+                        {{ ConfirmButtonText }}
                     </button>
                 </div>
             </div>
         </div>
     </div>
 </template>
-<script >
-import feather from 'feather-icons'
-import { nextTick, TransitionGroup } from 'vue'
-export default {
-    setup() {
-        return {}
-    },
-    name: 'UniversalForm',
-    //emits: ['panelLeave', 'panelDrop'],
 
+<script>
+import feather from 'feather-icons'
+
+export default {
+    name: 'UniversalForm',
     data() {
         return {
             show: false,
             resolve: null,
             controls_array: [],
-            title: "Universal form",
+            title: "Universal Form",
             ConfirmButtonText: "Submit",
             DenyButtonText: "Cancel",
         }
     },
     mounted() {
-
-        nextTick(() => {
-            feather.replace()
-
-        })
+        feather.replace()
     },
     methods: {
         btn_clicked(item) {
-            console.log(item)
+            if (item.callback) {
+                item.callback(item)
+            } else {
+                console.log('Button clicked:', item)
+            }
         },
+        
         hide(response) {
-            this.show = false;
-            
+            this.show = false
             if (this.resolve) {
                 if(response){
-                    this.resolve(this.controls_array);
-                this.resolve = null;
+                    const result = this.controls_array.reduce((acc, item) => {
+                        acc[item.name] = this.parseValue(item)
+                        return acc
+                    }, {})
+                    this.resolve(result)
                 }
-
+                this.resolve = null
             }
         },
+        
         showForm(controls_array, title, ConfirmButtonText, DenyButtonText) {
-            this.ConfirmButtonText = ConfirmButtonText || this.ConfirmButtonText
-            this.DenyButtonText = DenyButtonText || this.DenyButtonText
-            //let moddedArr =[]
-            // add aditional values for UI
-            for (let i = 0; i < controls_array.length; i++) {
-                controls_array[i].isHelp = false
-
-            }
-
-
-            return new Promise((resolve) => {
-                this.controls_array = controls_array;
-                this.show = true;
-                this.title = title || this.title
-                this.resolve = resolve;
-                console.log('show form', this.controls_array)
-            });
-        },
-        openFileDialog(item) {
-            // Create input element
-            const input = document.createElement('input');
-            input.type = 'file';
-            if (item.type === 'folder') {
-                input.webkitdirectory = true;
-                input.directory = true;
+            if (typeof controls_array === 'object' && !Array.isArray(controls_array)) {
+                return this._newShowForm(controls_array)
             }
             
-            // Set accepted file types if specified
-            if (item.accept) {
-                input.accept = item.accept;
+            this.ConfirmButtonText = ConfirmButtonText || this.ConfirmButtonText
+            this.DenyButtonText = DenyButtonText || this.DenyButtonText
+            
+            this.controls_array = controls_array.map(item => ({
+                ...item,
+                isHelp: false,
+                placeholder: item.placeholder || '',
+                required: item.required || false,
+                spanFull: item.spanFull || ['btn', 'text', 'list', 'file', 'folder'].includes(item.type)
+            }))
+            
+            this.title = title || this.title
+            this.show = true
+            
+            return new Promise((resolve) => {
+                this.resolve = resolve
+                this.$nextTick(() => feather.replace())
+            })
+        },
+        
+        _newShowForm(config) {
+            this.title = config.title || this.title
+            this.ConfirmButtonText = config.confirmText || this.ConfirmButtonText
+            this.DenyButtonText = config.denyText || this.DenyButtonText
+            
+            this.controls_array = config.fields.map(f => ({
+                ...f,
+                isHelp: false,
+                placeholder: f.placeholder || '',
+                required: f.required || false,
+                spanFull: f.spanFull || ['btn', 'text', 'list', 'file', 'folder'].includes(f.type)
+            }))
+            
+            this.show = true
+            
+            return new Promise((resolve) => {
+                this.resolve = resolve
+                this.$nextTick(() => feather.replace())
+            })
+        },
+        
+        parseValue(item) {
+            switch(item.type) {
+                case 'int': return parseInt(item.value) || 0
+                case 'float': return parseFloat(item.value) || 0.0
+                case 'bool': return Boolean(item.value)
+                case 'list': return item.value.split(',').map(i => i.trim())
+                default: return item.value
             }
-
-            // Handle file selection
+        },
+        
+        openFileDialog(item) {
+            const input = document.createElement('input')
+            input.type = item.type === 'folder' ? 'file' : item.type
+            if(item.type === 'folder') input.webkitdirectory = true
+            if(item.accept) input.accept = item.accept
+            
             input.onchange = (e) => {
-                if (e.target.files.length > 0) {
-                    item.value = e.target.files[0].path;
-                }
-            };
-
-            // Trigger file dialog
-            input.click();
+                const files = Array.from(e.target.files)
+                item.value = files.map(f => f.path).join(', ')
+            }
+            
+            input.click()
         }
-
     },
     watch: {
         controls_array: {
-        deep: true,
-        handler(newArray) {
-            newArray.forEach(item => {
-            if (item.type === 'int') {
-                item.value = parseInt(item.value);
-            } else if (item.type === 'float') {
-                item.value = parseFloat(item.value);
+            deep: true,
+            handler(newArray) {
+                newArray.forEach(item => {
+                    if(item.type === 'int') item.value = parseInt(item.value) || 0
+                    if(item.type === 'float') item.value = parseFloat(item.value) || 0.0
+                })
             }
-            // Add more conditions for other types if needed
-            });
-        }
-        },
-        show() {
-            nextTick(() => {
-                feather.replace()
-
-            })
         }
     }
 }
 </script>
+
 <style scoped>
 .custom-scrollbar {
     scrollbar-width: thin;
@@ -444,19 +282,43 @@ export default {
 }
 
 .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+    @apply bg-transparent;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(156, 163, 175, 0.5);
-    border-radius: 3px;
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(156, 163, 175, 0.7);
+    @apply bg-gray-400 dark:bg-gray-500;
+}
+
+.range-thumb {
+    @apply appearance-none w-4 h-4 bg-blue-500 rounded-full shadow-sm -mt-1;
+}
+
+.dark .range-thumb {
+    @apply bg-blue-600;
+}
+
+.switch-thumb {
+    @apply absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transform transition-transform duration-200;
+}
+
+.peer:checked ~ .switch-thumb {
+    @apply translate-x-5;
+}
+
+.peer:checked ~ div {
+    @apply bg-blue-600;
+}
+
+.dark .peer:checked ~ div {
+    @apply bg-blue-700;
 }
 </style>
