@@ -22,3 +22,7 @@
 	path = utilities/pipmaster
 	url = https://github.com/ParisNeo/pipmaster.git
 	branch = main
+[submodule "zoos/functions_zoo"]
+	path = zoos/functions_zoo
+	url = https://github.com/ParisNeo/lollms_functions_zoo.git
+	branch = main
