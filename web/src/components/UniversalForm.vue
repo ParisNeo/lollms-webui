@@ -181,15 +181,14 @@ export default {
             this.show = false
             if (this.resolve) {
                 if(response){
-                    const result = this.controls_array.reduce((acc, item) => {
-                        acc[item.name] = this.parseValue(item)
-                        return acc
-                    }, {})
-                    this.resolve(result)
+                    this.resolve(this.controls_array);
+                this.resolve = null;
                 }
-                this.resolve = null
             }
         },
+
+
+        
         
         showForm(controls_array, title, ConfirmButtonText, DenyButtonText) {
             if (typeof controls_array === 'object' && !Array.isArray(controls_array)) {
@@ -207,10 +206,12 @@ export default {
                 spanFull: item.spanFull || ['btn', 'text', 'list', 'file', 'folder'].includes(item.type)
             }))
             
-            this.title = title || this.title
-            this.show = true
             
             return new Promise((resolve) => {
+                console.log('Resolve')
+                console.log(resolve)
+                this.title = title || this.title
+                this.show = true
                 this.resolve = resolve
                 this.$nextTick(() => feather.replace())
             })

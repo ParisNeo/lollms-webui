@@ -1444,7 +1444,7 @@
                                             >
                                         </div>
                                         <div class="flex flex-col lg:col-span-2">
-                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Input folder</label>
+                                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Working folder</label>
                                             <input
                                                 type="text"
                                                 v-model="configFile.rag_local_services[index].working_path"
@@ -1452,6 +1452,14 @@
                                                 class="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                                 placeholder="Output folder"
                                             >
+                                        </div>
+                                        <div class="flex flex-col lg:col-span-2">
+                                            <button
+                                            @click="startRagServer(index)"
+                                            class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 shadow-sm"
+                                            >
+                                            Start Server
+                                        </button>
                                         </div>
 
                                     </div>
@@ -4887,6 +4895,23 @@ export default {
                     this.expandedStatusIndex = null
                 } else {
                     this.expandedStatusIndex = index
+                }
+            },
+            async startRagServer(index) {
+                try {
+                    const response = await axios.post('/start_rag_server', {
+                        client_id: this.$store.state.client_id
+                    });
+                    if (response.status){
+                        this.$store.state.toast.showToast("Starting Lightrag server\nPlease wait a little bit then check the server helth.", 4, true);
+                    }
+                } catch (error) {
+                    // Update status for this specific server on error
+                    this.serverStatuses[index]=  {
+                        status: 'unhealthy'
+                    };
+                    
+                    this.$store.state.toast.showToast('Could not connect to LightRAG server', 4, false);
                 }
             },
             async checkLightRagServerHealth(index) {

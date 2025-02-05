@@ -86,8 +86,18 @@
         let max = state.eMarks[startLine];
         
         let line = state.src.slice(start, max);
-
-        if (!line.trim().startsWith('<thinking>')) return false;
+        let startTag, endTag;
+        
+        // Check for both tag formats
+        if (line.trim().startsWith('<thinking>')) {
+          startTag = '<thinking>';
+          endTag = '</thinking>';
+        } else if (line.trim().startsWith('<think>')) {
+          startTag = '<think>';
+          endTag = '</think>';
+        } else {
+          return false;
+        }
         
         let currentLine = startLine + 1;
         let content = [];
@@ -100,7 +110,7 @@
             state.eMarks[currentLine]
           );
           
-          if (currentLineContent.trim() === '</thinking>') {
+          if (currentLineContent.trim() === endTag) {
             found = true;
             break;
           }
@@ -112,22 +122,23 @@
         
         // Create tokens
         let token = state.push('thinking_open', 'div', 1);
-        token.markup = '<thinking>';
+        token.markup = startTag;
         token.block = true;
-        token.is_done = found; // Add is_done status
+        token.is_done = found;
         
         token = state.push('thinking_content', '', 0);
         token.content = content.join('\n');
         token.is_done = found;
         
         token = state.push('thinking_close', 'div', -1);
-        token.markup = '</thinking>';
+        token.markup = endTag;
         token.block = true;
         token.is_done = found;
         
         state.line = found ? currentLine + 1 : currentLine;
         return true;
       };
+
 
     const md = new MarkdownIt({
       html: false,

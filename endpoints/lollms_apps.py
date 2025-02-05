@@ -65,6 +65,7 @@ class AppInfo:
         last_update_date: str,
         model_name: str,
         disclaimer: str,
+        app_type: str,
         has_server: bool,
         has_readme: bool,
         is_public: bool,
@@ -109,6 +110,7 @@ async def list_apps():
                 current_version = ""
                 model_name = ""
                 disclaimer = ""
+                app_type = "html"
                 has_server = False
                 has_readme = False
                 is_public = app_name.stem in remote_apps
@@ -126,6 +128,7 @@ async def list_apps():
                         current_version = data.get("version", "")
                         model_name = data.get("model_name", "")
                         disclaimer = data.get("disclaimer", "No disclaimer provided.")
+                        app_type = data.get("app_type","html") # html/python
                         has_server = data.get(
                             "has_server", (Path(app_name) / "server.py").exists()
                         )
@@ -171,6 +174,7 @@ async def list_apps():
                             last_update_date=last_update_date,
                             model_name=model_name,
                             disclaimer=disclaimer,
+                            app_type=app_type,
                             has_server=has_server,
                             has_readme=has_readme,
                             is_public=is_public,
@@ -506,6 +510,9 @@ def load_apps_data():
                             model_name=description_data.get("model_name", ""),
                             disclaimer=description_data.get(
                                 "disclaimer", "No disclaimer provided."
+                            ),
+                            app_type=description_data.get(
+                                "app_type", "html"
                             ),
                             has_server=description_data.get(
                                 "has_server", (Path(item_path) / "server.py").exists()

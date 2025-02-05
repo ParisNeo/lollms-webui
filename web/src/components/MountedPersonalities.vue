@@ -180,7 +180,8 @@ export default {
                         if (res.data && Object.keys(res.data).length > 0) {
 
                             this.$refs.universalForm.showForm(res.data, "Personality settings - " + persEntry.name, "Save changes", "Cancel").then(res => {
-
+                                console.log("Received")
+                                console.log(res)
                                 // send new data
                                 try {
                                     axios.post('/set_active_personality_settings',
