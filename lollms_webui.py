@@ -621,7 +621,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         # Get the list of messages
         messages = discussion.get_messages()
-        discussion_messages = f"{self.system_full_header}Create a short title to this discussion\nYour response should only contain the title without any comments or thoughts.\n"
+        discussion_messages = f"{self.system_full_header}Create a short title to this discussion\n--- discussion ---\n"
         discussion_title = f"\n{self.ai_custom_header('assistant')}"
 
         available_space = (
@@ -667,6 +667,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
         for message_tokens in full_message_list:
             discussion_messages += self.model.detokenize(message_tokens)
+        discussion_messages +"\n--- ---\n"
+        discussion_messages +f"\n{self.user_custom_header('user')}Your response should only contain the title without any comments or thoughts.\n"
         discussion_messages += discussion_title
         title = [""]
 
@@ -681,7 +683,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             else:
                 return True
 
-        self._generate(discussion_messages, 512, client_id, receive)
+        self._generate(discussion_messages, 1024, client_id, receive)
         title[0] = self.personality.remove_thinking_blocks(title[0])
         ASCIIColors.info(f"TITLE:{title[0]}")
         return title[0]
