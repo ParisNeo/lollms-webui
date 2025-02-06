@@ -681,8 +681,9 @@ class LOLLMSWebUI(LOLLMSElfServer):
             else:
                 return True
 
-        self._generate(discussion_messages, 150, client_id, receive)
-        ASCIIColors.info(title[0])
+        self._generate(discussion_messages, 512, client_id, receive)
+        title[0] = self.personality.remove_thinking_blocks(title[0])
+        ASCIIColors.info(f"TITLE:{title[0]}")
         return title[0]
 
     def get_discussion_to(self, client_id, message_id=-1):
