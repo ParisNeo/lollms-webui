@@ -1528,14 +1528,14 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                         prompt,
                         client.discussion.image_files,
                         callback=callback,
-                        n_predict=n_predict,
-                        temperature=self.config["temperature"],
-                        top_k=self.config["top_k"],
-                        top_p=self.config["top_p"],
-                        repeat_penalty=self.config["repeat_penalty"],
-                        repeat_last_n=self.config["repeat_last_n"],
-                        seed=self.config["seed"],
-                        n_threads=self.config["n_threads"],
+                        n_predict=int(n_predict),
+                        temperature=float(self.config["temperature"]),
+                        top_k=int(self.config["top_k"]),
+                        top_p=float(self.config["top_p"]),
+                        repeat_penalty=float(self.config["repeat_penalty"]),
+                        repeat_last_n=int(self.config["repeat_last_n"]),
+                        seed=int(self.config["seed"]),
+                        n_threads=int(self.config["n_threads"]),
                     )
                 else:
                     prompt = "\n".join(
