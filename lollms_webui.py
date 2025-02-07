@@ -1942,14 +1942,17 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
             # if client.schedule_for_deletion:
             #    self.session.remove_client(client.client_id, client.client_id)
 
-            ASCIIColors.success(
-                f" ╔══════════════════════════════════════════════════╗ "
-            )
-            ASCIIColors.success(
-                f" ║                        Done                      ║ "
-            )
-            ASCIIColors.success(
-                f" ╚══════════════════════════════════════════════════╝ "
+            ASCIIColors.multicolor(
+                texts=[
+                f" ╔══════════════════════════════════════════════════╗\n",
+                f" ║","                        Done                      ","║\n",
+                f" ╚══════════════════════════════════════════════════╝\n",
+                ],
+                colors=[
+                    ASCIIColors.color_bright_cyan,
+                    ASCIIColors.color_bright_cyan,ASCIIColors.color_bright_green,ASCIIColors.color_bright_cyan,
+                    ASCIIColors.color_bright_cyan,
+                ]
             )
             if self.config.auto_title:
                 d = client.discussion
