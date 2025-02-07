@@ -1661,13 +1661,60 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                     force_using_internet=force_using_internet,
                     previous_chunk=client.generated_text if is_continue else "",
                 )
+                EMOJI_YES = "✅"
+                EMOJI_NO = "❌" 
+                ASCIIColors.multicolor(
+                    texts=[
+                        "🚀 Generation Options:\n",
+                        "• Fun Mode: ",
+                        f"{EMOJI_YES if context_details['fun_mode'] else EMOJI_NO}",
+                        "\n",
+                        "• Think First Mode: ",
+                        f"{EMOJI_YES if context_details['think_first_mode'] else EMOJI_NO}",
+                        "\n",
+                        "• Continuation: ",
+                        f"{EMOJI_YES if context_details['is_continue'] else EMOJI_NO}",
+                        "\n",
+                        "🎮 Generating up to ",
+                        f"{min(context_details['available_space'], self.config.max_n_predict)}",
+                        " tokens...",
+                        "\n",
+                        "Available context space: ",
+                        f"{context_details['available_space']}",
+                        "\n",
+                        "Prompt tokens used: ",
+                        f"{self.config.ctx_size - context_details['available_space']}",
+                        "\n",
+                        "Max tokens allowed: ",
+                        f"{self.config.max_n_predict}",
+                        "\n",
+                        "⚡ Powered by LoLLMs"
+                    ],
+                    colors=[
+                        ASCIIColors.color_bright_cyan,
+                        ASCIIColors.color_bright_green,
+                        ASCIIColors.color_reset,
+                        ASCIIColors.color_bright_cyan,
+                        ASCIIColors.color_bright_green,
+                        ASCIIColors.color_reset,
+                        ASCIIColors.color_bright_cyan,
+                        ASCIIColors.color_bright_green,
+                        ASCIIColors.color_reset,
+                        ASCIIColors.color_bright_blue,
+                        ASCIIColors.color_bright_green,
+                        ASCIIColors.color_reset,
+                        ASCIIColors.color_bright_yellow,
+                        ASCIIColors.color_bright_green,
+                        ASCIIColors.color_reset,
+                        ASCIIColors.color_bright_magenta,
+                        ASCIIColors.color_bright_blue,
+                        ASCIIColors.color_reset,
+                        ASCIIColors.color_bright_magenta
+                    ],
+                    end="\n",
+                    flush=True
+                )
 
-                ASCIIColors.info(
-                    f"prompt has {self.config.ctx_size-context_details['available_space']} tokens"
-                )
-                ASCIIColors.info(
-                    f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict)} tokens"
-                )
                 self.prepare_reception(client_id)
                 self.generating = True
                 client.processing = True
