@@ -196,7 +196,7 @@
                             <ToolbarButton @click.stop="resendMessage('simple_question')" title="Resend message without context" icon="sendSimple" />
                         </div>
                         <div v-if="!editMsgMode && message.sender === $store.state.mountedPers.name">
-                            <ToolbarButton @click="continueMessage" title="Continue message" icon="fastForward" />
+                            <ToolbarButton @click.stop="continueMessage" title="Continue message" icon="fastForward" />
                         </div>
                         <!-- DELETE CONFIRMATION -->
                         <div v-if="deleteMsgMode" class="flex items-center duration-75">
@@ -720,6 +720,7 @@ export default {
             this.$emit('resendMessage', this.message.id, this.message.content, msg_type)
         },
         continueMessage() {
+            console.log("Emitting continueMessage")
             this.$emit('continueMessage', this.message.id, this.message.content)
         },
         getImgUrl() {

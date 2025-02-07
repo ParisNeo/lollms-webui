@@ -3,7 +3,7 @@
     <button 
       class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
       :title="title"
-      @click="$emit('click')"
+      @click.prevent.stop="emit_click"
     >
       <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
         <g v-html="iconPath"></g>
@@ -29,6 +29,10 @@
       }
     },
     methods: {
+      emit_click(){
+        console.log("emitting click")
+        this.$emit('click')
+      },
       getIconPath() {
         // Your switch statement remains the same
         switch (this.icon) {

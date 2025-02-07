@@ -251,6 +251,5 @@ def add_events(sio: socketio):
     # add functions to lollm
     lollmsElfServer.handle_generate_msg = handle_generate_msg
     lollmsElfServer.generate_msg_with_internet = generate_msg_with_internet
-    lollmsElfServer.handle_continue_generate_msg_from = (
-        handle_continue_generate_msg_from
-    )
+    lollmsElfServer.handle_generate_msg_from = handle_generate_msg_from
+    lollmsElfServer.handle_continue_generate_msg_from = handle_continue_generate_msg_from

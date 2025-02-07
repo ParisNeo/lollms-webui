@@ -1315,7 +1315,8 @@ export default {
                 "The first computer virus was created in 1971 and was called 'Creeper'. It simply displayed the message 'I'm the creeper: catch me if you can!'",
                 "Did you know? The CAPTCHA system you use to prove you're human actually helps digitize books and improve AI training!",
                 "The word 'robot' comes from the Czech word 'robota', meaning forced labor or servitude!",
-                "Did you know? The first AI chatbot, ELIZA, was created in 1966 and could convince some people they were talking to a real therapist!"                "Large Language Models (LLMs) have evolved from having millions of parameters to hundreds of billions in just a few years.",
+                "Did you know? The first AI chatbot, ELIZA, was created in 1966 and could convince some people they were talking to a real therapist!",
+                "Large Language Models (LLMs) have evolved from having millions of parameters to hundreds of billions in just a few years.",
                 "LoLLMs (Lord of Large Language Multimodal Systems) is an open-source AI assistant platform created by ParisNeo.",
                 "Saïph (κ Orionis) is a blue-white supergiant star approximately 650 light-years away from Earth.",
                 "Neural networks were first proposed in 1943 by Warren McCulloch and Walter Pitts.",
@@ -3318,9 +3319,8 @@ export default {
             axios.get('/get_generation_status', {}).then((res) => {
                 if (res) {
                     if (!res.data.status) {
+                        console.log("Continuing generation")
                         socket.emit('continue_generate_msg_from', { prompt: msg, id: msgId });
-
-
                     }
                     else {
                         console.log("Already generating");
