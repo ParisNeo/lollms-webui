@@ -1187,10 +1187,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
         ]:
             return
 
-        if data is not None:
-            if not client_id in list(self.session.clients.keys()):
-                self.error("Connection lost", client_id=client_id)
-                return
         if operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP:
             ASCIIColors.info("--> Step:" + data)
             self.update_message_step(client_id, data, operation_type)
