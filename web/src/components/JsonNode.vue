@@ -1,41 +1,30 @@
+<!-- JsonNode.vue -->
 <template>
     <div class="json-tree">
-      <!-- When data is an object -->
-      <template v-if="isObject">
-        <div v-for="(value, key) in data" :key="key" class="node">
-          <div class="node-header" @click.stop="toggleCollapse(key)">
-            <span class="toggle">
-              <i :class="collapsedItems[key] ? 'fas fa-chevron-right' : 'fas fa-chevron-down'"></i>
-            </span>
-            <span class="key">{{ key }}:</span>
-            <span v-if="debug" class="node-debug"> [key = {{ key }}]</span>
-          </div>
-          <div v-if="!collapsedItems[key]" class="node-children">
-            <JsonNode :data="value" />
+      <!-- Object -->
+      <div v-if="isObject" class="tree-node">
+        <div class="node-label" @click="toggle">
+          <span class="toggle-icon">{{ expanded ? '▼' : '▶' }}</span>
+          <span class="key">{{ label }}</span>
+          <span class="bracket">{{ isArray ? '[' : '{' }}</span>
+        </div>
+        <div v-if="expanded" class="node-content">
+          <div v-for="(value, key) in data" :key="key" class="node-item">
+            <json-node 
+              :data="value"
+              :label="key"
+              :depth="depth + 1"
+            />
           </div>
         </div>
-      </template>
+        <div v-if="expanded" class="bracket-close">{{ isArray ? ']' : '}' }}</div>
+      </div>
   
-      <!-- When data is an array -->
-      <template v-else-if="isArray">
-        <div v-for="(item, index) in data" :key="index" class="node">
-          <div class="node-header" @click.stop="toggleCollapse(index)">
-            <span class="toggle">
-              <i :class="collapsedItems[index] ? 'fas fa-chevron-right' : 'fas fa-chevron-down'"></i>
-            </span>
-            <span class="index">[{{ index }}]:</span>
-            <span v-if="debug" class="node-debug"> [index = {{ index }}]</span>
-          </div>
-          <div v-if="!collapsedItems[index]" class="node-children">
-            <JsonNode :data="item" />
-          </div>
-        </div>
-      </template>
-  
-      <!-- When data is a primitive -->
-      <template v-else>
-        <span class="primitive">{{ formatPrimitive(data) }}</span>
-      </template>
+      <!-- Primitive values -->
+      <div v-else class="tree-leaf">
+        <span class="key" v-if="label">{{ label }}:</span>
+        <span :class="['value', getValueType(data)]">{{ formatValue(data) }}</span>
+      </div>
     </div>
   </template>
   
@@ -44,93 +33,102 @@
     name: 'JsonNode',
     props: {
       data: {
-        type: [Object, Array, String, Number, Boolean, null],
-        required: true,
+        required: true
       },
+      label: {
+        type: String,
+        default: ''
+      },
+      depth: {
+        type: Number,
+        default: 0
+      }
     },
     data() {
       return {
-        // Use a plain object to track which keys/indices are collapsed.
-        collapsedItems: {},
-        debug: true, // Toggle node-level debug logs/output.
-      };
+        expanded: true
+      }
     },
     computed: {
       isObject() {
-        const result =
-          typeof this.data === 'object' &&
-          this.data !== null &&
-          !Array.isArray(this.data);
-        if (this.debug) {
-          console.log('[JsonNode] isObject:', result, 'Data:', this.data);
-        }
-        return result;
+        return this.data !== null && typeof this.data === 'object'
       },
       isArray() {
-        const result = Array.isArray(this.data);
-        if (this.debug) {
-          console.log('[JsonNode] isArray:', result, 'Data:', this.data);
-        }
-        return result;
-      },
-    },
-    methods: {
-      toggleCollapse(key) {
-        console.log('[JsonNode] Toggling collapse for key:', key, 'Current:', this.collapsedItems[key]);
-        // Toggle the collapse state for the given key/index.
-        this.$set(this.collapsedItems, key, !this.collapsedItems[key]);
-        console.log('[JsonNode] New collapse state for key:', key, this.collapsedItems[key]);
-      },
-      formatPrimitive(value) {
-        if (value === null) return 'null';
-        if (typeof value === 'string') return '"' + value + '"';
-        return value.toString();
-      },
-    },
-    mounted() {
-      if (this.debug) {
-        console.log('[JsonNode] Mounted with data:', this.data);
+        return Array.isArray(this.data)
       }
     },
-  };
+    methods: {
+      toggle() {
+        this.expanded = !this.expanded
+      },
+      getValueType(value) {
+        if (value === null) return 'null'
+        return typeof value
+      },
+      formatValue(value) {
+        if (value === null) return 'null'
+        if (typeof value === 'string') return `"${value}"`
+        return value
+      }
+    }
+  }
   </script>
   
   <style scoped>
   .json-tree {
-    margin-left: 16px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-left: 20px;
   }
-  .node-header {
+  
+  .tree-node {
+    position: relative;
+  }
+  
+  .node-label {
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    padding: 4px 0;
+    padding: 2px 0;
   }
-  .node-header:hover {
-    background-color: #f9f9f9;
+  
+  .node-label:hover {
+    background-color: #f0f0f0;
   }
-  .toggle {
-    width: 16px;
-    margin-right: 4px;
+  
+  .toggle-icon {
+    display: inline-block;
+    width: 20px;
+    color: #666;
   }
+  
+  .node-content {
+    border-left: 1px dotted #ccc;
+    margin-left: 7px;
+    padding-left: 13px;
+  }
+  
   .key {
-    color: #92278f;
-    font-weight: 500;
+    color: #881391;
+    margin-right: 5px;
   }
-  .index {
-    color: #2e6f9a;
+  
+  .value {
+    padding: 2px 4px;
   }
-  .primitive {
-    color: #2a9394;
+  
+  .value.string { color: #22863a; }
+  .value.number { color: #005cc5; }
+  .value.boolean { color: #d73a49; }
+  .value.null { color: #6a737d; }
+  
+  .bracket {
+    color: #444;
+    margin-left: 5px;
   }
-  .node-children {
-    margin-left: 16px;
-    border-left: 1px dashed #ddd;
-    padding-left: 8px;
-  }
-  .node-debug {
-    font-size: 12px;
-    color: #555;
-    margin-left: 4px;
+  
+  .bracket-close {
+    color: #444;
+    margin-left: 7px;
   }
   </style>
   

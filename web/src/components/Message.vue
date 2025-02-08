@@ -49,7 +49,7 @@
                     </div>
                     <div  v-if="message.metadata !== null">
                         <div v-for="(metadata, index) in (message.metadata?.filter(metadata => metadata!=null && metadata.hasOwnProperty('title') && metadata.hasOwnProperty('content')) || [])" :key="'json-' + message.id + '-' + index" class="json font-bold">
-                            <JsonViewer :jsonFormText="metadata.title" :jsonData="metadata.content" :key="'msgjson-' + message.id" />
+                            <JsonViewer :title="metadata.title" :data="metadata.content" :key="'msgjson-' + message.id" />
                         </div>
                     </div>
                     <DynamicUIRenderer v-if="message.ui" ref="ui" class="w-full" :ui="message.ui" :key="'msgui-' + message.id" />

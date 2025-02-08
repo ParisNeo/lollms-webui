@@ -1,95 +1,87 @@
+<!-- JsonViewer.vue -->
 <template>
-  <div v-if="isContentPresent" class="json-viewer">
-    <div class="collapsible-section" @click="toggleCollapsible">
-      <span class="toggle-icon">
-        <i :class="collapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-down'"></i>
-      </span>
-      {{ jsonFormText }}
+  <div class="json-viewer">
+    <div class="viewer-header" @click="toggle">
+      <span class="toggle-icon">{{ expanded ? '▼' : '▶' }}</span>
+      <span class="title">{{ title }}</span>
     </div>
-    <div v-show="!collapsed" class="json-content panels-color">
-      <json-tree-view :data="parsedJsonData" :depth="0"></json-tree-view>
+    <div v-if="expanded" class="viewer-content">
+      <json-node :data="parsedData" />
     </div>
   </div>
 </template>
 
 <script>
-import JsonTreeView from './JsonTreeView.vue';
+import JsonNode from './JsonNode.vue'
 
 export default {
-  components: {
-    JsonTreeView
-  },
+  name: 'JsonViewer',
+  components: { JsonNode },
   props: {
-    jsonData: {
-      type: [Object, Array, String],
-      default: null,
+    data: {
+      required: true
     },
-    jsonFormText: {
+    title: {
       type: String,
-      default: "JSON Viewer",
-    },
+      default: 'JSON Data'
+    }
   },
   data() {
     return {
-      collapsed: true,
-    };
+      expanded: true
+    }
   },
   computed: {
-    isContentPresent() {
-      return (
-        this.jsonData !== null &&
-        (typeof this.jsonData !== 'string' || this.jsonData.trim() !== '')
-      );
-    },
-    parsedJsonData() {
-      if (typeof this.jsonData === 'string') {
+    parsedData() {
+      if (typeof this.data === 'string') {
         try {
-          return JSON.parse(this.jsonData);
-        } catch (error) {
-          console.error('Error parsing JSON string:', error);
-          return { error: 'Invalid JSON string' };
+          return JSON.parse(this.data)
+        } catch (e) {
+          return { error: 'Invalid JSON' }
         }
       }
-      return this.jsonData;
+      return this.data
     }
   },
   methods: {
-    toggleCollapsible() {
-      this.collapsed = !this.collapsed;
-    },
-  },
-};
+    toggle() {
+      this.expanded = !this.expanded
+    }
+  }
+}
 </script>
 
 <style scoped>
 .json-viewer {
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #333;
-}
-
-.collapsible-section {
-  cursor: pointer;
-  padding: 8px;
-  background-color: #f0f0f0;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.2s;
+  margin: 10px;
+  background: white;
 }
 
-.collapsible-section:hover {
-  background-color: #e0e0e0;
+.viewer-header {
+  padding: 8px 12px;
+  background: #f5f5f5;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.viewer-header:hover {
+  background: #eee;
 }
 
 .toggle-icon {
-  margin-right: 8px;
-  transition: transform 0.2s;
+  display: inline-block;
+  width: 20px;
+  color: #666;
 }
 
-.json-content {
-  margin-top: 8px;
-  padding-left: 16px;
+.title {
+  font-weight: bold;
+  color: #333;
+}
+
+.viewer-content {
+  padding: 10px;
 }
 </style>

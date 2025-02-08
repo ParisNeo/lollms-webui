@@ -516,9 +516,18 @@ class LOLLMSWebUI(LOLLMSElfServer):
             ASCIIColors.warning(
                 "An error was encountered while trying to mount personality"
             )
-        ASCIIColors.success(f" ╔══════════════════════════════════════════════════╗ ")
-        ASCIIColors.success(f" ║                      Done                        ║ ")
-        ASCIIColors.success(f" ╚══════════════════════════════════════════════════╝ ")
+        ASCIIColors.multicolor(
+            texts=[
+            f" ╔══════════════════════════════════════════════════╗\n",
+            f" ║","                        Done                      ","║\n",
+            f" ╚══════════════════════════════════════════════════╝\n",
+            ],
+            colors=[
+                ASCIIColors.color_bright_cyan,
+                ASCIIColors.color_bright_cyan,ASCIIColors.color_bright_green,ASCIIColors.color_bright_cyan,
+                ASCIIColors.color_bright_cyan,
+            ]
+        )
         # Sort the indices in descending order to ensure correct removal
         to_remove.sort(reverse=True)
 
