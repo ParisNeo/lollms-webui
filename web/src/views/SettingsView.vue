@@ -4376,7 +4376,156 @@
                 </div>
 
             </div>
+            <!-- FUNCTION CALLS ZOO -->
+            <div
+                class="flex flex-col mb-2 rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
+                <div class="flex flex-row p-3 items-center">
+                    <button @click.stop="fzc_collapsed = !fzc_collapsed"
+                        class="text-2xl hover:text-primary p-2 -m-2 text-left w-full flex items-center">
+                        <div v-show="fzc_collapsed"><i data-feather='chevron-right'></i></div>
+                        <div v-show="!fzc_collapsed"><i data-feather='chevron-down'></i></div>
+                        <p class="text-lg font-semibold cursor-pointer select-none mr-2">
+                            Function Calls Zoo</p>
 
+                        <div v-if="configFile.mounted_functions" class="mr-2">|</div>
+                        <!-- LIST OF MOUNTED FUNCTIONS -->
+                        <div class="mr-2 font-bold font-large text-lg line-clamp-1">
+                            {{ active_function }}
+                        </div>
+                        <div v-if="configFile.mounted_functions" class="mr-2">|</div>
+                        <div v-if="configFile.mounted_functions"
+                            class="text-base font-semibold cursor-pointer select-none items-center flex flex-row">
+                            <!-- LIST -->
+                            <div class="flex -space-x-4 items-center" v-if="mountedFuncArr.length > 0">
+                                <!-- ITEM -->
+                                <div class="relative hover:-translate-y-2 duration-300 hover:z-10 shrink-0"
+                                    v-for="(item, index) in mountedFuncArr" :key="index + '-' + item.name" ref="mountedFunctions">
+                                    <div class="group items-center flex flex-row">
+                                        <button @click.stop="onFunctionSelected(item)">
+                                            <img :src="bUrl + item.icon" @error="functionImgPlaceholder"
+                                                class="w-8 h-8 rounded-full object-fill text-red-700 border-2 active:scale-90 group-hover:border-secondary"
+                                                :class="configFile.active_function_id == configFile.mounted_functions.indexOf(item.full_path) ? 'border-secondary' : 'border-transparent z-0'"
+                                                :title="item.name">
+                                        </button>
+                                        <button @click.stop="unmountFunction(item)">
+                                            <span
+                                                class="hidden group-hover:block -top-2 -right-1 absolute active:scale-90 bg-bg-light dark:bg-bg-dark rounded-full border-2 border-transparent"
+                                                title="Unmount function">
+                                                <!-- UNMOUNT BUTTON -->
+                                                <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500"
+                                                    fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                    <path fill-rule="evenodd"
+                                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"></path>
+                                                </svg>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button @click.stop="unmountAllFunctions()"
+                            class="bg-bg-light hover:border-green-200 ml-5 dark:bg-bg-dark rounded-full border-2 border-transparent"
+                            title="Unmount All">
+                            <!-- UNMOUNT BUTTON -->
+                            <svg aria-hidden="true" class="w-4 h-4 text-red-600 hover:text-red-500" fill="currentColor"
+                                viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </button>
+                </div>
+                <div :class="{ 'hidden': fzc_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
+                    <!-- SEARCH BAR -->
+                    <div class="mx-2 mb-4">
+                        <label for="function-search"
+                            class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <div v-if="searchFunctionInProgress">
+                                    <!-- SPINNER -->
+                                    <div role="status">
+                                        <svg aria-hidden="true"
+                                            class="inline w-4 h-4 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                                            viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path
+                                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                fill="currentColor" />
+                                            <path
+                                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                fill="currentFill" />
+                                        </svg>
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                                <div v-if="!searchFunctionInProgress">
+                                    <!-- SEARCH -->
+                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <input type="search" id="function-search"
+                                class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Search function..." required v-model="searchFunction"
+                                @keyup.stop="searchFunction_func">
+                            <button v-if="searchFunction" @click.stop="searchFunction = ''" type="button"
+                                class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                Clear search</button>
+                        </div>
+                    </div>
+                    <div class="mx-2 mb-4" v-if="!searchFunction">
+                        <label for="funcCat" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Function Categories: ({{ funcCatgArr.length }})
+                        </label>
+                        <select id="funcCat" @change="update_function_category($event.target.value, refresh)"
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <option v-for="(item, index) in funcCatgArr" :key="index"
+                                :selected="item == this.configFile.function_category">{{ item }}</option>
+                        </select>
+                    </div>
+                    <div>
+                        <div v-if="functionsFiltered.length > 0" class="mb-2">
+                            <label for="function" class="block ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                {{ searchFunction ? 'Search results' : 'Functions' }}: ({{
+                                    functionsFiltered.length
+                                }})
+                            </label>
+                            <div class="overflow-y-auto no-scrollbar p-2 pb-0 grid lg:grid-cols-3 md:grid-cols-2 gap-4"
+                                :class="fzl_collapsed ? '' : 'max-h-96'">
+                                <TransitionGroup name="bounce">
+                                    <function-entry ref="functionsZoo" v-for="(func, index) in functionsFiltered"
+                                        :key="'index-' + index + '-' + func.name" :function="func"
+                                        :on-mount="mountFunction"
+                                        :on-unmount="unmountFunction"
+                                        :on-remount="remountFunction"
+                                        :on-edit="editFunction"
+                                        :on-copy-to-custom="copyToCustom"
+                                        :on-reinstall="onFunctionReinstall"
+                                        :on-settings="onSettingsFunction"
+                                        :on-toggle-favorite="toggleFavorite" />
+                                </TransitionGroup>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EXPAND / COLLAPSE BUTTON -->
+                    <button v-if="fzl_collapsed"
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        title="Collapse" type="button" @click="fzl_collapsed = !fzl_collapsed">
+                        <i data-feather="chevron-up"></i>
+                    </button>
+                    <button v-else
+                        class="text-2xl hover:text-secondary duration-75 flex justify-center hover:bg-bg-light-tone hover:dark:bg-bg-dark-tone rounded-lg"
+                        title="Expand" type="button" @click="fzl_collapsed = !fzl_collapsed">
+                        <i data-feather="chevron-down"></i>
+                    </button>
+                </div>
+            </div>
             <!-- MODEL CONFIGURATION -->
             <div
                 class="flex flex-col mb-2 p-3 rounded-lg panels-color hover:bg-bg-light-tone-panel hover:dark:bg-bg-dark-tone-panel duration-150 shadow-lg">
@@ -4750,6 +4899,14 @@ export default {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
             },
+            fzc_collapsed: false, // Collapse state for the function calls zoo section
+            fzl_collapsed: false, // Collapse state for the function list
+            mountedFuncArr: [], // List of mounted functions
+            searchFunction: '', // Search query for functions
+            searchFunctionInProgress: false, // Loading state for search
+            funcCatgArr: [], // List of function categories
+            functionsFiltered: [], // Filtered list of functions
+
             showThinkingPresets: false,
             showAddThinkingPreset: false,
             thinkingPresets: [],
@@ -4890,6 +5047,86 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            // Toggle favorite function
+            toggleFavorite(funcUid) {
+                const index = this.favorites.indexOf(funcUid);
+                if (index === -1) {
+                this.favorites.push(funcUid);
+                } else {
+                this.favorites.splice(index, 1);
+                }
+                this.saveFavoritesToLocalStorage();
+            },
+
+            // Mount a function
+            async mountFunction(func) {
+                try {
+                const response = await axios.post('/mount_function', {
+                    client_id: this.$store.state.client_id,
+                    function_name: func.name,
+                });
+                if (response.data.status) {
+                    this.showMessage('Function mounted successfully', true);
+                    this.$store.dispatch('refreshMountedFunctions');
+                } else {
+                    this.showMessage('Failed to mount function', false);
+                }
+                } catch (error) {
+                this.showMessage('Error mounting function', false);
+                console.error(error);
+                }
+            },
+
+            // Unmount a function
+            async unmountFunction(func) {
+                try {
+                const response = await axios.post('/unmount_function', {
+                    client_id: this.$store.state.client_id,
+                    function_name: func.name,
+                });
+                if (response.data.status) {
+                    this.showMessage('Function unmounted successfully', true);
+                    this.$store.dispatch('refreshMountedFunctions');
+                } else {
+                    this.showMessage('Failed to unmount function', false);
+                }
+                } catch (error) {
+                this.showMessage('Error unmounting function', false);
+                console.error(error);
+                }
+            },
+
+            // Unmount all functions
+            async unmountAllFunctions() {
+                try {
+                const response = await axios.post('/unmount_all_functions', {
+                    client_id: this.$store.state.client_id,
+                });
+                if (response.data.status) {
+                    this.showMessage('All functions unmounted successfully', true);
+                    this.$store.dispatch('refreshMountedFunctions');
+                } else {
+                    this.showMessage('Failed to unmount all functions', false);
+                }
+                } catch (error) {
+                this.showMessage('Error unmounting all functions', false);
+                console.error(error);
+                }
+            },
+
+            // Update function category
+            update_function_category(category, refresh) {
+                this.configFile.function_category = category;
+                if (refresh) {
+                this.refreshFunctionsZoo();
+                }
+            },
+
+            // Refresh functions zoo
+            refreshFunctionsZoo() {
+                this.$store.dispatch('refreshFunctionsZoo');
+            },
+
             toggleLightragServerStatus(index) {
                 if (this.expandedStatusIndex === index) {
                     this.expandedStatusIndex = null

@@ -43,7 +43,7 @@ class APScript:
     def exception(self, ex, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def warning(self, warning: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def json(self, title: str, json_infos: dict, callback: Callable[([str, int, dict, list], bool)] = None, indent = 4) -> Any
-    def ui(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_html(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def ui_in_iframe(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def code(self, code: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def add_chunk_to_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any

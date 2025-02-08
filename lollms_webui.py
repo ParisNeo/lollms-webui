@@ -1836,7 +1836,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                             </div>
                         """
                     sources_text += "</div>"
-                    self.personality.ui(sources_text)
+                    self.personality.set_message_html(sources_text)
 
                 if len(context_details["skills"]) > 0:
                     sources_text += '<div class="text-gray-400 mr-10px flex items-center gap-2"><i class="fas fa-brain"></i>Memories:</div>'
@@ -1857,7 +1857,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                             </div>
                         """
                     sources_text += "</div>"
-                    self.personality.ui(sources_text)
+                    self.personality.set_message_html(sources_text)
 
                 # Send final message
                 if (
@@ -1923,7 +1923,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                     }
                     </style>
                     """
-                    self.personality.ui(sources_text)
+                    self.personality.set_message_html(sources_text)
 
             except Exception as ex:
                 trace_exception(ex)

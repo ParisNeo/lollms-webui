@@ -17,7 +17,7 @@ class AIPersonality:
     def notify(self, content, notification_type: NotificationType = NotificationType.NOTIF_SUCCESS, duration: int = 4, client_id = None, display_type: NotificationDisplayType = NotificationDisplayType.TOAST, verbose = True) -> Any
     def new_message(self, message_text: str, message_type: MSG_TYPE = MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_SET_CONTENT, metadata = [], callback: Callable[([str, int, dict, list, Any], bool)] = None) -> Any
     def set_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
-    def ui(self, ui_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_html(self, ui_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def set_message_content_invisible_to_ai(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def set_message_content_invisible_to_user(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def build_prompt(self, prompt_parts: List[str], sacrifice_id: int = -1, context_size: int = None, minimum_spare_context_size: int = None) -> Any
@@ -209,7 +209,7 @@ class APScript:
     def exception(self, ex, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def warning(self, warning: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def json(self, title: str, json_infos: dict, callback: Callable[([str, int, dict, list], bool)] = None, indent = 4) -> Any
-    def ui(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+    def set_message_html(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def ui_in_iframe(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def code(self, code: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
     def add_chunk_to_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
@@ -397,7 +397,7 @@ def set_message_content(self, full_text: str, callback: Callable[([str, MSG_TYPE
 ### ui
 
 ```python
-def ui(self, ui_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+def set_message_html(self, ui_text: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
 ```
 
 ### full_invisible_to_ai
@@ -1369,7 +1369,7 @@ def json(self, title: str, json_infos: dict, callback: Callable[([str, int, dict
 ### ui
 
 ```python
-def ui(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
+def set_message_html(self, html_ui: str, callback: Callable[([str, MSG_TYPE, dict, list], bool)] = None) -> Any
 ```
 
 ### ui_in_iframe
