@@ -4485,7 +4485,7 @@
                         <select id="funcCat" @change="update_function_category($event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option v-for="(item, index) in funcCatgArr" :key="index"
-                                :selected="item == this.configFile.function_category">{{ item }}</option>
+                                :selected="item == this.function_category">{{ item }}</option>
                         </select>
                     </div>
                     <div>
@@ -4899,11 +4899,12 @@ export default {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            fzc_collapsed: false, // Collapse state for the function calls zoo section
-            fzl_collapsed: false, // Collapse state for the function list
+            fzc_collapsed: true, // Collapse state for the function calls zoo section
+            fzl_collapsed: true, // Collapse state for the function list
             mountedFuncArr: [], // List of mounted functions
             searchFunction: '', // Search query for functions
             searchFunctionInProgress: false, // Loading state for search
+            function_category: [], // the current category
             funcCatgArr: [], // List of function categories
             functionsFiltered: [], // Filtered list of functions
 
@@ -5034,6 +5035,8 @@ export default {
         }
     },
     async created() {
+        // Fetch all function calls from the backend
+        await this.fetchFunctionCalls();
         try{
         this.$store.state.loading_infos = "Getting Hardware usage"
         await this.refreshHardwareUsage(this.$store);
@@ -5047,6 +5050,33 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            async fetchFunctionCalls() {
+            try {
+                const response = await fetch('/list_function_calls');
+                const data = await response.json();
+                this.allFunctions = data.function_calls;
+
+                // Extract unique categories
+                const categories = new Set(this.allFunctions.map(func => func.category));
+                this.funcCatgArr = Array.from(categories);
+
+                // Set the default category to the first one found
+                if (this.funcCatgArr.length > 0) {
+                this.function_category = this.funcCatgArr[0];
+                }
+
+                // Filter functions based on the default category
+                this.updateFilteredFunctions();
+            } catch (error) {
+                console.error('Error fetching function calls:', error);
+            }
+            },
+            updateFilteredFunctions() {
+            // Filter functions based on the selected category
+            this.functionsFiltered = this.allFunctions.filter(
+                func => func.category === this.function_category
+            );
+            },
             // Toggle favorite function
             toggleFavorite(funcUid) {
                 const index = this.favorites.indexOf(funcUid);
@@ -5116,7 +5146,7 @@ export default {
 
             // Update function category
             update_function_category(category, refresh) {
-                this.configFile.function_category = category;
+                this.function_category = category;
                 if (refresh) {
                 this.refreshFunctionsZoo();
                 }
