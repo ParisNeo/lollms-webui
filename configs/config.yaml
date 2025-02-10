@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 154
+version: 155
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -358,7 +358,7 @@ thinking_prompt:   "Use a think first process to answer the user:
 
 
 
-function_calls: []
+mounted_function_calls: []
 # { name: the function name,
 #   value: the function name without spaces,
 #   selected: selected or not,
