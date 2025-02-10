@@ -218,3 +218,7 @@ models.txt
 logs
 *.pkl
 lollms_apps_zoo
+
+#environment folders
+env\
+lollms_env\
