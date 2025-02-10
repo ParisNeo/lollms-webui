@@ -80,13 +80,13 @@ git submodule update --init --recursive
 
 #### Windows
 ```
-python3.11 -m venv lollms_env
+python -m venv lollms_env
 lollms_env\Scripts\activate
 ```
 
 #### macOS and Linux
 ```
-python3.11 -m venv lollms_env
+python -m venv lollms_env
 source lollms_env/bin/activate
 ```
 
