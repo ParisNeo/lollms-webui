@@ -465,6 +465,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                                 f"Personality {personality.name} request using custom voice but couldn't load XTTS"
                             )
                 except Exception as ex:
+                    trace_exception(ex)
                     ASCIIColors.error(
                         f"Personality file not found or is corrupted ({personality_path}).\nReturned the following exception:{ex}\nPlease verify that the personality you have selected exists or select another personality. Some updates may lead to change in personality name or category, so check the personality selection in settings to be sure."
                     )
