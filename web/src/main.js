@@ -516,6 +516,15 @@ export const store = createStore({
           item.isInstalled=modelsArr.includes(item.name)
         })
         this.state.installedModels = this.state.modelsZoo.filter(item=> item.isInstalled)
+        const modelsNotInZoo = modelsArr.filter(modelName => !this.state.modelsZoo.some(item => item.name === modelName))
+        const installedCustomModels = modelsNotInZoo.map(modelName => ({
+          name: modelName,
+          icon: this.imgBinding,
+          isCustomModel: true,
+          isInstalled: true
+        }))
+        this.state.installedModels = [...this.state.installedModels, ...installedCustomModels]
+        commit('setInstalledModels', this.state.installedModels);
         const index = this.state.modelsZoo.findIndex(item=>item.name == this.state.config.model_name)
         if (index!=-1){
           commit('setCurrentModel',this.state.modelsZoo[index])
