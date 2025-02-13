@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 155
+version: 156
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -369,3 +369,5 @@ mounted_function_calls: []
 # webui configurations
 show_code_of_conduct: true
 activate_audio_infos: true
+
+keep_thoughts: false
