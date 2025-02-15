@@ -339,7 +339,7 @@ current_language: english
 fun_mode: false
 think_first_mode: false
 thinking_prompt:   "Use a think first process to answer the user:
-  <thinking>
+  <think>
   Ask yourself about the user's request and answer it with logical details.
   If the user is requesting general information that does not require internet search and you are confident about it, then prepare to answer directly.
   If the user is requesting general information that does require internet search and you have in the context enough information to answer, then use that data to answer.
@@ -351,7 +351,7 @@ thinking_prompt:   "Use a think first process to answer the user:
 
   Make sure you continue thinking until you find a satisfactory answer
   Assess any potential errors you may make
-  </thinking>
+  </think>
 
   After thinking you can answer the user."
 

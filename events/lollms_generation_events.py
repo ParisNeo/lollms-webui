@@ -109,7 +109,6 @@ def add_events(sio: socketio):
                 lollmsElfServer.start_message_generation(message, message.id, client_id)
 
             # lollmsElfServer.sio.sleep(0.01)
-            ASCIIColors.info("Started generation task")
             lollmsElfServer.busy = True
             # tpe = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message_id, client_id))
             # tpe.start()
@@ -184,7 +183,6 @@ def add_events(sio: socketio):
             client.generation_thread.start()
 
             # lollmsElfServer.sio.sleep(0.01)
-            ASCIIColors.info("Started generation task")
             lollmsElfServer.busy = True
             # tpe = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message_id, client_id))
             # tpe.start()

@@ -370,7 +370,6 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 client.generation_thread.start()
 
                 self.sio.sleep(0.01)
-                ASCIIColors.info("Started generation task")
                 self.busy = True
                 # tpe = threading.Thread(target=self.start_message_generation, args=(message, message_id, client_id))
                 # tpe.start()
