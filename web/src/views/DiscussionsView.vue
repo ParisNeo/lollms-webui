@@ -2759,6 +2759,7 @@ export default {
         scrollBottom(el) {
 
             if (el) {
+                console.log("Scrolling to bottom")
                 el.scrollTo(
                     {
                         top: el.scrollHeight,
@@ -2801,8 +2802,9 @@ export default {
             this.discussionArr.push(usrMessage)
             nextTick(() => {
                 const msgList = document.getElementById('messages-list')
-
-                this.scrollBottom(msgList)
+                if(msgList.length>0){
+                    this.scrollBottom(msgList)
+                }
 
             })
         },
@@ -3825,7 +3827,6 @@ export default {
         this.$store.state.news = this.$refs.news
         this.$store.state.personality_editor = this.$refs.personality_editor
 
-        this.checkChangelogUpdate()
         window.addEventListener('resize', this.adjustMenuPosition);
         
         socket.on('refresh_files',()=>{

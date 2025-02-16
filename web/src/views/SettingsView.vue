@@ -4499,15 +4499,14 @@
                                 :class="fzl_collapsed ? '' : 'max-h-96'">
                                 <TransitionGroup name="bounce">
                                     <function-entry ref="functionsZoo" v-for="(func, index) in functionsFiltered"
-                                        :key="'index-' + index + '-' + func.name" :function="func"
+                                        :key="'index-' + index + '-' + func.name" 
+                                        :function_call="func"
                                         :on-mount="mountFunction"
                                         :on-unmount="unmountFunction"
                                         :on-remount="remountFunction"
                                         :on-edit="editFunction"
                                         :on-copy-to-custom="copyToCustom"
-                                        :on-reinstall="onFunctionReinstall"
-                                        :on-settings="onSettingsFunction"
-                                        :on-toggle-favorite="toggleFavorite" />
+                                         />
                                 </TransitionGroup>
                             </div>
                         </div>
@@ -4854,6 +4853,7 @@ import { nextTick } from 'vue'
 import ModelEntry from '@/components/ModelEntry.vue';
 import PersonalityViewer from '@/components/PersonalityViewer.vue';
 import PersonalityEntry from "@/components/PersonalityEntry.vue";
+import FunctionEntry from "@/components/FunctionEntry.vue";
 import BindingEntry from "../components/BindingEntry.vue";
 import socket from '@/services/websocket.js'
 import defaultModelImgPlaceholder from "../assets/default_model.png"
@@ -4884,6 +4884,7 @@ export default {
         // eslint-disable-next-line vue/no-unused-components
         PersonalityViewer,
         PersonalityEntry,
+        FunctionEntry,
         BindingEntry,
         ChoiceDialog,
         Card,
@@ -5059,11 +5060,15 @@ export default {
                 // Extract unique categories
                 const categories = new Set(this.allFunctions.map(func => func.category));
                 this.funcCatgArr = Array.from(categories);
+                console.log("funcCatgArr: ");
+                console.log(this.funcCatgArr)
 
                 // Set the default category to the first one found
                 if (this.funcCatgArr.length > 0) {
-                this.function_category = this.funcCatgArr[0];
+                    this.function_category = this.funcCatgArr[0];
                 }
+                console.log("function_category: ")
+                console.log(this.function_category )
 
                 // Filter functions based on the default category
                 this.updateFilteredFunctions();
@@ -5072,10 +5077,13 @@ export default {
             }
             },
             updateFilteredFunctions() {
-            // Filter functions based on the selected category
-            this.functionsFiltered = this.allFunctions.filter(
-                func => func.category === this.function_category
-            );
+                // Filter functions based on the selected category
+                this.functionsFiltered = this.allFunctions.filter(
+                    func => func.category === this.function_category
+                );
+                console.log("functionsFiltered: ");
+                console.log(this.functionsFiltered );
+
             },
             // Toggle favorite function
             toggleFavorite(funcUid) {
@@ -5091,16 +5099,16 @@ export default {
             // Mount a function
             async mountFunction(func) {
                 try {
-                const response = await axios.post('/mount_function', {
-                    client_id: this.$store.state.client_id,
-                    function_name: func.name,
-                });
-                if (response.data.status) {
-                    this.showMessage('Function mounted successfully', true);
-                    this.$store.dispatch('refreshMountedFunctions');
-                } else {
-                    this.showMessage('Failed to mount function', false);
-                }
+                    const response = await axios.post('/mount_function_call', {
+                        client_id: this.$store.state.client_id,
+                        function_category: func.category,
+                        function_name: func.name,
+                    });
+                    if (response.data.status) {
+                        this.showMessage('Function mounted successfully', true);
+                    } else {
+                        this.showMessage('Failed to mount function', false);
+                    }
                 } catch (error) {
                 this.showMessage('Error mounting function', false);
                 console.error(error);
@@ -5110,15 +5118,19 @@ export default {
             // Unmount a function
             async unmountFunction(func) {
                 try {
+                    console.log("Unmounting function")
                 const response = await axios.post('/unmount_function', {
                     client_id: this.$store.state.client_id,
                     function_name: func.name,
                 });
                 if (response.data.status) {
-                    this.showMessage('Function unmounted successfully', true);
-                    this.$store.dispatch('refreshMountedFunctions');
+                    await this.$store.dispatch('refreshConfig');
+                    this.$store.state.toast.show('Function mounted successfully!', 4, true)
+                    this.$store.state.messageBox.showMessage('Function unmounted successfully', true);
+                    func.mounted = true
                 } else {
-                    this.showMessage('Failed to unmount function', false);
+                    this.$store.state.toast.show('Failed to unmount function', 4, false)
+                    this.$store.state.messageBox.showMessage('Failed to unmount function', false);
                 }
                 } catch (error) {
                 this.showMessage('Error unmounting function', false);

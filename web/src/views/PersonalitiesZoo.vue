@@ -54,14 +54,14 @@
       <span class="text-xl text-gray-700 font-semibold">Loading...</span>
     </div>
     <div v-else>
-      <div class="container mx-auto px-4 flex flex-column pb-20">
+      <div class="container mx-auto px-4 flex flex-col pb-20">
         <!-- Favorite Apps Section -->
-        <div v-if="favoriteApps.length > 0 && !searchQuery">
-          <h2 class="text-2xl font-bold my-8">Favorite Apps</h2>
+        <div v-if="favoritePersonalities.length > 0 && !searchQuery">
+          <h2 class="text-2xl font-bold my-8">Favorite Personalities</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             <personality-entry
               ref="personalitiesZoo"
-              v-for="pers in favoriteApps"
+              v-for="pers in favoritePersonalities"
               :key="pers.uid"
               :personality="pers"
               :select_language="true"
@@ -83,7 +83,7 @@
           </div>
         </div>
       </div>
-      <div class="container mx-auto px-4 flex flex-column pb-20">
+      <div class="container mx-auto px-4 flex flex-col pb-20">
         <!-- Current Category Section -->
         <h2 class="text-2xl font-bold my-8">{{ currentCategoryName }} ({{ sortedAndFilteredPersonalities.length }})</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
@@ -106,7 +106,7 @@
             :on-copy-personality-name="onCopyPersonalityName"
             :on-copy-to_custom="onCopyToCustom"
             :on-open-folder="handleOpenFolder"
-            :toggle-favorite="toggleFavorite"
+            :on-toggle-favorite="toggleFavorite"
           />
         </div>
       </div>
@@ -220,7 +220,7 @@ export default {
       });
     },
 
-    favoriteApps() {
+    favoritePersonalities() {
       return this.combinedApps.filter(app => this.favorites.includes(app.uid));
     },
   },

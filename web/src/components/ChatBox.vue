@@ -564,21 +564,22 @@ export default {
             return formattedDataSources;
         },
         functionCalls(){
-            console.log("", this.$store.state.config.function_calls);
+            console.log("Function calls", this.$store.state.config.mounted_function_calls);
             // Extract the names from the combined array and transform them into the desired format
-            const formattedDataSources = this.$store.state.config.function_calls.map(functionCall => {
+            const formattedFunctionCalls = this.$store.state.config.mounted_function_calls.map(functionCall => {
                 console.log("entry", functionCall);
                 return {
                     name: functionCall.name,
-                    value: functionCall.value || 'default_value',
+                    value: functionCall,
+                    dir: functionCall.dir,
                     is_checked: functionCall.selected,
                     icon: functionCall.icon,
                     help: functionCall.help
                 };
             });
 
-            console.log("formatted datalake", formattedDataSources);
-            return formattedDataSources;
+            console.log("formatted function calls", formattedFunctionCalls);
+            return formattedFunctionCalls;
         }
 
     },
@@ -829,10 +830,14 @@ export default {
             console.log("Refreshed")
 
         },
-        async toggleFunctionCall(cmd){
+        async toggleFunctionCall(func){
             console.log("function call:")
-            console.log(cmd)
-            await axios.post('/toggle_mount_rag_database', {"client_id":this.$store.state.client_id,"datalake_name":cmd})
+            console.log(func)
+            await axios.post('/toggle_function_call', {
+                        client_id: this.$store.state.client_id,
+                        name: func.name,
+                        dir: func.dir
+                    })
             await this.$store.dispatch('refreshConfig');
             console.log("Refreshed")
 

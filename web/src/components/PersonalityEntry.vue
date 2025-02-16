@@ -74,7 +74,7 @@
 import { nextTick } from "vue";
 import feather from "feather-icons";
 import { marked } from "marked"; // Correct import for marked
-import botImgPlaceholder from "../assets/logo.svg";
+import botImgPlaceholder from "../assets/logo.png";
 import userImgPlaceholder from "../assets/default_user.svg";
 import InteractiveMenu from "@/components/InteractiveMenu.vue";
 
