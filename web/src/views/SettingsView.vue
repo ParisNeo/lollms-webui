@@ -4502,8 +4502,8 @@
                                         :key="'index-' + index + '-' + func.name" 
                                         :function_call="func"
                                         :on-mount="mountFunction"
-                                        :on-unmount="unmountFunction"
-                                        :on-remount="remountFunction"
+                                        :on-un-mount="unmountFunction"
+                                        :on-re-mount="remountFunction"
                                         :on-edit="editFunction"
                                         :on-copy-to-custom="copyToCustom"
                                          />
@@ -4905,7 +4905,7 @@ export default {
             mountedFuncArr: [], // List of mounted functions
             searchFunction: '', // Search query for functions
             searchFunctionInProgress: false, // Loading state for search
-            function_category: [], // the current category
+            function_category: null, // the current category
             funcCatgArr: [], // List of function categories
             functionsFiltered: [], // Filtered list of functions
 
@@ -5105,12 +5105,12 @@ export default {
                         function_name: func.name,
                     });
                     if (response.data.status) {
-                        this.showMessage('Function mounted successfully', true);
+                        this.$store.state.messageBox.showMessage('Function mounted successfully', true);
                     } else {
-                        this.showMessage('Failed to mount function', false);
+                        this.$store.state.messageBox.showMessage('Failed to mount function', false);
                     }
                 } catch (error) {
-                this.showMessage('Error mounting function', false);
+                    this.$store.state.messageBox.showMessage('Error mounting function', false);
                 console.error(error);
                 }
             },
@@ -5133,7 +5133,7 @@ export default {
                     this.$store.state.messageBox.showMessage('Failed to unmount function', false);
                 }
                 } catch (error) {
-                this.showMessage('Error unmounting function', false);
+                    this.$store.state.messageBox.showMessage('Error unmounting function', false);
                 console.error(error);
                 }
             },
@@ -5145,22 +5145,23 @@ export default {
                     client_id: this.$store.state.client_id,
                 });
                 if (response.data.status) {
-                    this.showMessage('All functions unmounted successfully', true);
+                    this.$store.state.messageBox.showMessage('All functions unmounted successfully', true);
                     this.$store.dispatch('refreshMountedFunctions');
                 } else {
-                    this.showMessage('Failed to unmount all functions', false);
+                    this.$store.state.messageBox.showMessage('Failed to unmount all functions', false);
                 }
                 } catch (error) {
-                this.showMessage('Error unmounting all functions', false);
+                    this.$store.state.messageBox.showMessage('Error unmounting all functions', false);
                 console.error(error);
                 }
             },
 
             // Update function category
             update_function_category(category, refresh) {
+                console.log("this.function_category")
                 this.function_category = category;
                 if (refresh) {
-                this.refreshFunctionsZoo();
+                    this.refreshFunctionsZoo();
                 }
             },
 

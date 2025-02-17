@@ -187,7 +187,7 @@ export default {
     unmount() {
       console.log("Unmounting")
       console.log(this.onUnMount)
-      this.onUnMount(this)
+      this.onUnMount(this.function_call)
       this.mounted=false
     },
     showHelp() {

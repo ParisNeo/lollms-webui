@@ -29,6 +29,7 @@ import requests
 from lollms.app import LollmsApplication
 from lollms.binding import (BindingBuilder, BindingType, LLMBinding,
                             LOLLMSConfig, ModelBuilder)
+from lollms.function_call import FunctionCall, FunctionType
 from lollms.client_session import Client
 from lollms.com import LoLLMsCom, NotificationDisplayType, NotificationType
 from lollms.config import InstallOption
@@ -1411,7 +1412,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                             f"{k}: {v}"
                             for k, v in self.config.smart_routing_models_description.items()
                         ]+[
-                        "!@>prompt:" + context_details["prompt"],
+                        "!@>prompt:" + context_details.prompt,
                         """Given the prompt, which model among the previous list is the most suited and why?
 
 You must answer with json code placed inside the markdown code tag like this:
@@ -1672,23 +1673,23 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                     texts=[
                         "🚀 Generation Options:\n",
                         "• Fun Mode: ",
-                        f"{EMOJI_YES if context_details['fun_mode'] else EMOJI_NO}",
+                        f"{EMOJI_YES if context_details.fun_mode else EMOJI_NO}",
                         "\n",
                         "• Think First Mode: ",
-                        f"{EMOJI_YES if context_details['think_first_mode'] else EMOJI_NO}",
+                        f"{EMOJI_YES if context_details.think_first_mode else EMOJI_NO}",
                         "\n",
                         "• Continuation: ",
-                        f"{EMOJI_YES if context_details['is_continue'] else EMOJI_NO}",
+                        f"{EMOJI_YES if context_details.is_continue else EMOJI_NO}",
                         "\n",
                         "🎮 Generating up to ",
-                        f"{min(context_details['available_space'], self.config.max_n_predict)}",
+                        f"{min(context_details.available_space, self.config.max_n_predict)}",
                         " tokens...",
                         "\n",
                         "Available context space: ",
-                        f"{context_details['available_space']}",
+                        f"{context_details.available_space}",
                         "\n",
                         "Prompt tokens used: ",
-                        f"{self.config.ctx_size - context_details['available_space']}",
+                        f"{self.config.ctx_size - context_details.available_space}",
                         "\n",
                         "Max tokens allowed: ",
                         f"{self.config.max_n_predict}",
@@ -1724,12 +1725,28 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                 self.generating = True
                 client.processing = True
                 try:
-                    self.generate(
+                    generation_output = self.generate(
                         context_details,
                         client_id=client_id,
                         is_continue=is_continue,
                         callback=partial(self.process_data, client_id=client_id),
                     )
+                    try:
+                        if len(context_details.function_calls)>0:
+                            codes = self.personality.extract_code_blocks(generation_output)
+                            for code in codes:
+                                if code["type"]=="function":
+                                    infos = json.loads(code["content"])
+                                    for function_call in context_details.function_calls:
+                                        if infos["function_name"]==function_call["name"]:
+                                            fc:FunctionCall = function_call["class"]
+                                            if fc.function_type == FunctionType.CLASSIC:
+                                                self.personality.new_message("")
+                                                output = fc.execute(**infos["function_parameters"])
+                                                self.personality.set_message_content(output)
+                    except Exception as ex:
+                        trace_exception(ex)
+
                     if (
                         self.tts
                         and self.config.auto_read
@@ -1810,10 +1827,10 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
 
                 self.cancel_gen = False
                 sources_text = ""
-                if len(context_details["documentation_entries"]) > 0:
+                if len(context_details.documentation_entries) > 0:
                     sources_text += '<div class="text-gray-400 mr-10px flex items-center gap-2"><i class="fas fa-book"></i>Sources:</div>'
                     sources_text += '<div class="mt-4 flex flex-col items-start gap-x-2 gap-y-1.5 text-sm">'
-                    for source in context_details["documentation_entries"]:
+                    for source in context_details.documentation_entries:
                         title = source["document_title"]
                         path = source["document_path"]
                         content = source["chunk_content"]
@@ -1838,10 +1855,10 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                     sources_text += "</div>"
                     self.personality.set_message_html(sources_text)
 
-                if len(context_details["skills"]) > 0:
+                if len(context_details.skills) > 0:
                     sources_text += '<div class="text-gray-400 mr-10px flex items-center gap-2"><i class="fas fa-brain"></i>Memories:</div>'
                     sources_text += '<div class="mt-4 w-full flex flex-col items-start gap-x-2 gap-y-1.5 text-sm">'
-                    for ind, skill in enumerate(context_details["skills"]):
+                    for ind, skill in enumerate(context_details.skills):
                         sources_text += f"""
                             <div class="source-item w-full">
                                 <div class="flex items-center gap-2 p-2 bg-gray-100 rounded cursor-pointer hover:bg-gray-200"
@@ -1873,7 +1890,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                     """
 
-                    for source in context_details["internet_search_infos"]:
+                    for source in context_details.internet_search_infos:
                         url = source["url"]
                         title = source["title"]
                         brief = source["brief"]
@@ -1959,6 +1976,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                     ASCIIColors.color_bright_cyan,
                 ]
             )
+
             if self.config.auto_title:
                 d = client.discussion
                 ttl = d.title()
@@ -2024,10 +2042,10 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
         )
         client.generated_text = ""
         ASCIIColors.info(
-            f"prompt has {self.config.ctx_size-context_details['available_space']} tokens"
+            f"prompt has {self.config.ctx_size-context_details.available_space} tokens"
         )
         ASCIIColors.info(
-            f"warmup for generating up to {min(context_details['available_space'],self.config.max_n_predict if self.config.max_n_predict else self.config.ctx_size)} tokens"
+            f"warmup for generating up to {min(context_details.available_space,self.config.max_n_predict if self.config.max_n_predict else self.config.ctx_size)} tokens"
         )
         self.generate(
             context_details,
