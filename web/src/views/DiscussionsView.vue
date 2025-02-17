@@ -3171,6 +3171,13 @@ export default {
                 headers: { 'Content-Type': 'application/json' },
             })
         },
+        async openCustomFunctionCallsFolder(id){
+            const json = JSON.stringify({ 'client_id': this.$store.state.client_id, 'discussion_id': id.id })   
+            await axios.post(`/open_custom_function_calls_folder`, json, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            })
+        },
         async editTitle(newTitleObj) {
 
             const index = this.discussionsList.findIndex((x) => x.id == newTitleObj.id)

@@ -1725,7 +1725,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                 self.generating = True
                 client.processing = True
                 try:
-                    generation_output = self.generate(
+                    self.generate(
                         context_details,
                         client_id=client_id,
                         is_continue=is_continue,
@@ -1733,7 +1733,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                     )
                     try:
                         if len(context_details.function_calls)>0:
-                            codes = self.personality.extract_code_blocks(generation_output)
+                            codes = self.personality.extract_code_blocks(client.generated_text)
                             for code in codes:
                                 if code["type"]=="function":
                                     infos = json.loads(code["content"])

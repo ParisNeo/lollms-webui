@@ -4485,7 +4485,8 @@
                         <select id="funcCat" @change="update_function_category($event.target.value, refresh)"
                             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             <option v-for="(item, index) in funcCatgArr" :key="index"
-                                :selected="item == this.function_category">{{ item }}</option>
+                                :selected="item == function_category">{{ item }}
+                            </option>
                         </select>
                     </div>
                     <div>
@@ -5051,6 +5052,17 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            // Update function category
+            update_function_category(category, refresh) {
+                console.log("this.function_category changed to "+category)
+                this.function_category = category;
+                if (refresh) {
+                    console.log("Refreshing")
+                    // Filter functions based on the default category
+                    this.updateFilteredFunctions();
+                    this.refreshFunctionsZoo();
+                }
+            },        
             async fetchFunctionCalls() {
             try {
                 const response = await fetch('/list_function_calls');
@@ -5106,6 +5118,7 @@ export default {
                     });
                     if (response.data.status) {
                         this.$store.state.messageBox.showMessage('Function mounted successfully', true);
+                        func.mounted = false;
                     } else {
                         this.$store.state.messageBox.showMessage('Failed to mount function', false);
                     }
@@ -5125,11 +5138,11 @@ export default {
                 });
                 if (response.data.status) {
                     await this.$store.dispatch('refreshConfig');
-                    this.$store.state.toast.show('Function mounted successfully!', 4, true)
+                    this.$store.state.toast.showToast('Function mounted successfully!', 4, true)
                     this.$store.state.messageBox.showMessage('Function unmounted successfully', true);
                     func.mounted = true
                 } else {
-                    this.$store.state.toast.show('Failed to unmount function', 4, false)
+                    this.$store.state.toast.showToast('Failed to unmount function', 4, false)
                     this.$store.state.messageBox.showMessage('Failed to unmount function', false);
                 }
                 } catch (error) {
@@ -5153,15 +5166,6 @@ export default {
                 } catch (error) {
                     this.$store.state.messageBox.showMessage('Error unmounting all functions', false);
                 console.error(error);
-                }
-            },
-
-            // Update function category
-            update_function_category(category, refresh) {
-                console.log("this.function_category")
-                this.function_category = category;
-                if (refresh) {
-                    this.refreshFunctionsZoo();
                 }
             },
 
