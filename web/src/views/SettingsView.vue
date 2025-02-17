@@ -5119,7 +5119,7 @@ export default {
             async unmountFunction(func) {
                 try {
                     console.log("Unmounting function")
-                const response = await axios.post('/unmount_function', {
+                const response = await axios.post('/unmount_function_call', {
                     client_id: this.$store.state.client_id,
                     function_name: func.name,
                 });
