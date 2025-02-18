@@ -5118,8 +5118,9 @@ export default {
                         function_name: func.name,
                     });
                     if (response.data.status) {
+                        await this.$store.dispatch('refreshConfig');
                         this.$store.state.messageBox.showMessage('Function mounted successfully', true);
-                        func.mounted = false;
+                        entry.mounted = false;
                     } else {
                         this.$store.state.messageBox.showMessage('Failed to mount function', false);
                     }
@@ -5142,7 +5143,7 @@ export default {
                     await this.$store.dispatch('refreshConfig');
                     this.$store.state.toast.showToast('Function mounted successfully!', 4, true)
                     this.$store.state.messageBox.showMessage('Function unmounted successfully', true);
-                    func.mounted = true
+                    entry.mounted = true
                 } else {
                     this.$store.state.toast.showToast('Failed to unmount function', 4, false)
                     this.$store.state.messageBox.showMessage('Failed to unmount function', false);

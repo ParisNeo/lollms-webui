@@ -1744,6 +1744,8 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                                                 self.personality.new_message("")
                                                 output = fc.execute(**infos["function_parameters"])
                                                 self.personality.set_message_content(output)
+                                            elif fc.function_type == FunctionType.CONTEXT_UPDATE:
+                                                process_output = fc.process_output(context_details, process_output)
                     except Exception as ex:
                         trace_exception(ex)
 
