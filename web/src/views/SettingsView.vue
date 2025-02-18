@@ -5109,7 +5109,8 @@ export default {
             },
 
             // Mount a function
-            async mountFunction(func) {
+            async mountFunction(entry) {
+                const func = entry.function_call
                 try {
                     const response = await axios.post('/mount_function_call', {
                         client_id: this.$store.state.client_id,
@@ -5129,7 +5130,8 @@ export default {
             },
 
             // Unmount a function
-            async unmountFunction(func) {
+            async unmountFunction(entry) {
+                const func = entry.function_call
                 try {
                     console.log("Unmounting function")
                 const response = await axios.post('/unmount_function_call', {

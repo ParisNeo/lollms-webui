@@ -182,12 +182,12 @@ export default {
     },
     mount() {
       console.log("Mounting")
-      this.onMount(this.function_call)
+      this.onMount(this)
     },
     unmount() {
       console.log("Unmounting")
       console.log(this.onUnMount)
-      this.onUnMount(this.function_call)
+      this.onUnMount(this)
       this.mounted=false
     },
     showHelp() {
