@@ -1734,18 +1734,18 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                     try:
                         if len(context_details.function_calls)>0:
                             codes = self.personality.extract_code_blocks(client.generated_text)
-                            for code in codes:
-                                if code["type"]=="function":
-                                    infos = json.loads(code["content"])
-                                    for function_call in context_details.function_calls:
+                            for function_call in context_details.function_calls:
+                                fc:FunctionCall = function_call["class"]
+                                for code in codes:
+                                    if code["type"]=="function":
+                                        infos = json.loads(code["content"])
                                         if infos["function_name"]==function_call["name"]:
-                                            fc:FunctionCall = function_call["class"]
                                             if fc.function_type == FunctionType.CLASSIC:
                                                 self.personality.new_message("")
                                                 output = fc.execute(**infos["function_parameters"])
                                                 self.personality.set_message_content(output)
-                                            elif fc.function_type == FunctionType.CONTEXT_UPDATE:
-                                                process_output = fc.process_output(context_details, process_output)
+                                if fc.function_type == FunctionType.CONTEXT_UPDATE:
+                                    process_output = fc.process_output(context_details, client.generated_text)
                     except Exception as ex:
                         trace_exception(ex)
 
