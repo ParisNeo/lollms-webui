@@ -571,7 +571,7 @@ async def open_custom_function_calls_folder(request: ClientAuthentication):
     try:
         ASCIIColors.info("Opening folder:")
         # Create a temporary file.
-        root_folder = lollmsElfServer.lollms_paths.custom_functions_zoo_path
+        root_folder = lollmsElfServer.lollms_paths.custom_function_calls_path
         root_folder.mkdir(parents=True, exist_ok=True)
         if platform.system() == "Windows":
             subprocess.Popen(f'explorer "{root_folder}"')
