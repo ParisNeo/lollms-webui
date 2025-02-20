@@ -1741,11 +1741,12 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                                         infos = json.loads(code["content"])
                                         if infos["function_name"]==function_call["name"]:
                                             if fc.function_type == FunctionType.CLASSIC:
-                                                self.personality.new_message("")
                                                 output = fc.execute(**infos["function_parameters"])
+                                                self.personality.new_message("")
                                                 self.personality.set_message_content(output)
                                 if fc.function_type == FunctionType.CONTEXT_UPDATE:
                                     process_output = fc.process_output(context_details, client.generated_text)
+                                    self.personality.new_message(process_output)
                     except Exception as ex:
                         trace_exception(ex)
 
