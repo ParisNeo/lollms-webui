@@ -1746,7 +1746,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                                                 self.personality.set_message_content(output)
                                 if fc.function_type == FunctionType.CONTEXT_UPDATE:
                                     process_output = fc.process_output(context_details, client.generated_text)
-                                    self.personality.new_message(process_output)
+                                    self.personality.set_message_content(process_output)
                     except Exception as ex:
                         trace_exception(ex)
 
