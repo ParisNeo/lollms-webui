@@ -5120,7 +5120,7 @@ export default {
                     if (response.data.status) {
                         await this.$store.dispatch('refreshConfig');
                         this.$store.state.messageBox.showMessage('Function mounted successfully', true);
-                        entry.mounted = false;
+                        entry.mounted = true;
                     } else {
                         this.$store.state.messageBox.showMessage('Failed to mount function', false);
                     }
@@ -5141,9 +5141,9 @@ export default {
                 });
                 if (response.data.status) {
                     await this.$store.dispatch('refreshConfig');
-                    this.$store.state.toast.showToast('Function mounted successfully!', 4, true)
+                    this.$store.state.toast.showToast('Function unmounted successfully!', 4, true)
                     this.$store.state.messageBox.showMessage('Function unmounted successfully', true);
-                    entry.mounted = true
+                    entry.mounted = false
                 } else {
                     this.$store.state.toast.showToast('Failed to unmount function', 4, false)
                     this.$store.state.messageBox.showMessage('Failed to unmount function', false);
@@ -6456,7 +6456,7 @@ export default {
             await axios.post("/copy_to_custom_personas",{client_id:this.$store.state.client_id, category: pers.personality.category, name: pers.personality.name})
         },
         async handleOpenFolder(pers){
-            await axios.post("/open_personality_folder",{client_id:this.$store.state.client_id, personality_folder: pers.personality.category/pers.personality.folder})
+            await axios.post("/open_personality_folder",{client_id:this.$store.state.client_id,  category: pers.personality.category, name: pers.personality.name})
         },
         onCancelInstall() {
 

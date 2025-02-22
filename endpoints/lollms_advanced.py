@@ -593,8 +593,8 @@ async def open_custom_function_calls_folder(request: ClientAuthentication):
 
 class PersonalityFolderRequest(BaseModel):
     client_id: str = Field(...)
-    personality_folder: str = Field(...)
-
+    category: str = Field(...)
+    name: str = Field(...)
 
 @router.post("/open_personality_folder")
 async def open_personality_folder(request: PersonalityFolderRequest):
@@ -605,7 +605,12 @@ async def open_personality_folder(request: PersonalityFolderRequest):
     :return: A JSON response with the status of the operation.
     """
     client = check_access(lollmsElfServer, request.client_id)
-    personality_folder = sanitize_path(request.personality_folder)
+    request.name = sanitize_path(request.name)
+    request.category = sanitize_path(request.category)
+    if request.category == "custom_personalities":
+        folder = lollmsElfServer.lollms_paths.custom_personalities_path/request.name
+    else:
+        folder = lollmsElfServer.lollms_paths.personalities_zoo_path/request.category/request.name
 
     if lollmsElfServer.config.headless_server_mode:
         return {

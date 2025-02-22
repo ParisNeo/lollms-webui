@@ -79,64 +79,85 @@
       CodeBlock,
       ThinkingBlock,
     },
-    setup(props) {
+    setup(props) {// Helper function to find the next tag
+      function findNextTag(state, startLine) {
+        for (let i = startLine; i < state.lineMax; i++) {
+          let line = state.src.slice(state.bMarks[i], state.eMarks[i]).trim();
+          if (line === '<thinking>' || line === '<think>' || line === '</thinking>' || line === '</think>') {
+            return { line: i, tag: line };
+          }
+        }
+        return null;
+      }
+
       // Custom rule for thinking blocks
       const thinkingRule = (state, startLine, endLine, silent) => {
         let start = state.bMarks[startLine] + state.tShift[startLine];
         let max = state.eMarks[startLine];
+        let line = state.src.slice(start, max).trim();
         
-        let line = state.src.slice(start, max);
-        let startTag, endTag;
-        
-        // Check for both tag formats
-        if (line.trim().startsWith('<thinking>')) {
-          startTag = '<thinking>';
-          endTag = '</thinking>';
-        } else if (line.trim().startsWith('<think>')) {
-          startTag = '<think>';
-          endTag = '</think>';
-        } else {
-          return false;
-        }
-        
-        let currentLine = startLine + 1;
-        let content = [];
-        let found = false;
-        
-        // Search for closing tag
-        while (currentLine < endLine) {
-          let currentLineContent = state.src.slice(
-            state.bMarks[currentLine], 
-            state.eMarks[currentLine]
-          );
-          
-          if (currentLineContent.trim() === endTag) {
-            found = true;
-            break;
+        if (line === '<thinking>' || line === '<think>') {
+          // Explicit start
+          let startTag = line;
+          let endTag = startTag.replace('<', '</');
+          let content = [];
+          let found = false;
+          let currentLine = startLine + 1;
+          while (currentLine < endLine) {
+            let currentLineContent = state.src.slice(state.bMarks[currentLine], state.eMarks[currentLine]).trim();
+            if (currentLineContent === endTag) {
+              found = true;
+              break;
+            }
+            content.push(currentLineContent);
+            currentLine++;
           }
-          content.push(currentLineContent);
-          currentLine++;
+          if (silent) return true;
+          // Create tokens
+          let token = state.push('thinking_open', 'div', 1);
+          token.markup = startTag;
+          token.block = true;
+          token.is_done = found;
+          token.implicit = false;
+          token = state.push('thinking_content', '', 0);
+          token.content = content.join('\n');
+          token.is_done = found;
+          token = state.push('thinking_close', 'div', -1);
+          token.markup = endTag;
+          token.block = true;
+          token.is_done = found;
+          state.line = found ? currentLine + 1 : currentLine;
+          return true;
+        } else {
+          // Check for implicit start
+          let nextTag = findNextTag(state, startLine);
+          if (nextTag && (nextTag.tag === '</thinking>' || nextTag.tag === '</think>')) {
+            let endTag = nextTag.tag;
+            let startTag = endTag === '</thinking>' ? '<thinking>' : '<think>';
+            let content = [];
+            for (let i = startLine; i < nextTag.line; i++) {
+              content.push(state.src.slice(state.bMarks[i], state.eMarks[i]));
+            }
+            if (silent) return true;
+            // Create tokens with implicit start
+            let token = state.push('thinking_open', 'div', 1);
+            token.markup = startTag;
+            token.block = true;
+            token.is_done = true;
+            token.implicit = true;
+            token = state.push('thinking_content', '', 0);
+            token.content = content.join('\n');
+            token.is_done = true;
+            token = state.push('thinking_close', 'div', -1);
+            token.markup = endTag;
+            token.block = true;
+            token.is_done = true;
+            state.line = nextTag.line + 1;
+            return true;
+          } else {
+            return false;
+          }
         }
-        
-        if (silent) return true;
-        
-        // Create tokens
-        let token = state.push('thinking_open', 'div', 1);
-        token.markup = startTag;
-        token.block = true;
-        token.is_done = found;
-        
-        token = state.push('thinking_content', '', 0);
-        token.content = content.join('\n');
-        token.is_done = found;
-        
-        token = state.push('thinking_close', 'div', -1);
-        token.markup = endTag;
-        token.block = true;
-        token.is_done = found;
-        
-        state.line = found ? currentLine + 1 : currentLine;
-        return true;
       };
 
 

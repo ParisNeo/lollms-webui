@@ -74,6 +74,7 @@
         <div class="relative flex-grow">
             <textarea
                 id="chat"
+                :disabled="loading"
                 v-model="message"
                 @paste="handlePaste"
                 @keydown.enter.exact="submitOnEnter($event)"
@@ -163,6 +164,7 @@
               ref="databasesList"
             />
             <PersonalitiesCommands
+              v-if="$store.state.config.mounted_function_calls.length>0"
               icon="feather:zap"
               :help="'Function calls (WIP)'"
               :commandsList="functionCalls"

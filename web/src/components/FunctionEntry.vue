@@ -1,15 +1,14 @@
 <template>
   <div class="app-card flex flex-col h-full"
-    :class="selected_computed ? 'border-primary-light' : 'border-transparent', mounted ? 'bg-blue-200 dark:bg-blue-700' : ''"
+    :class="mounted ? 'border-primary-light' : 'border-transparent'"
     :title="!function_call.installed ? 'Not installed' : ''">
     <div class="flex-grow">
       <div class="flex items-center mb-4">
         <img :src="getImgUrl()" @error="defaultImg($event)" alt="function_call Icon" 
           class="w-16 h-16 rounded-full border border-gray-300 mr-4 cursor-pointer"
-          @click="toggleSelected"
           @mouseover="showThumbnail" @mousemove="updateThumbnailPosition" @mouseleave="hideThumbnail" />
         <div>
-          <h3 class="font-bold text-xl text-gray-800 cursor-pointer" @click="toggleSelected">{{ function_call.name }}</h3>
+          <h3 class="font-bold text-xl text-gray-800 cursor-pointer">{{ function_call.name }}</h3>
           <p class="text-sm text-gray-600">Author: {{ function_call.author }}</p>
           <p class="text-sm text-gray-600">Version: {{ function_call.version }}</p>
           <p class="text-sm text-gray-600">Category: {{ function_call.category }}</p>
@@ -36,11 +35,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
           </svg>
         </button>
-        <button v-if="mounted" @click="toggleSelected" class="text-blue-500 hover:text-blue-600 transition duration-300 ease-in-out" title="Select">
-          <i data-feather="check" class="h-6 w-6"></i>
-        </button>
         <button @click="showFolder" class="text-purple-500 hover:text-purple-600 transition duration-300 ease-in-out" title="Show Folder">
           <i data-feather="folder" class="h-6 w-6"></i>
+        </button>
+        <!-- Added Settings Button -->
+        <button v-if="mounted" @click="show_settings" class="text-green-500 hover:text-green-600 transition duration-300 ease-in-out" title="Settings">
+          <i data-feather="settings" class="h-6 w-6"></i>
         </button>
         <InteractiveMenu :commands="commandsList" :force_position="2" title="Menu" class="text-gray-500 hover:text-gray-600 transition duration-300 ease-in-out">
         </InteractiveMenu>
@@ -79,10 +79,8 @@ export default {
   props: {
     function_call: {},
     select_language: Boolean,
-    selected: Boolean,
     full_path: String,
     onOpenFolder:Function,
-    onSelected: Function,
     onMount: Function,
     onUnMount: Function,
     onRemount: Function,
@@ -121,9 +119,6 @@ export default {
         }
         return main_menu
       },  
-      selected_computed(){
-        return this.selected
-    }
   },
   mounted() {
     this.mounted = this.function_call.mounted
@@ -165,12 +160,7 @@ export default {
     toggleCopyLink() {
       this.onCopyfunction_callName(this)
       //navigator.clipboard.writeText(this.path)
-    },
-    toggleSelected() {
-      if(this.mounted){
-        this.onSelected(this)
-      }
-    },
+    },  
     edit(){
       this.onEdit(this)
     },
@@ -199,11 +189,6 @@ export default {
     }
   },
   watch: {
-    selected() {
-      nextTick(() => {
-        feather.replace()
-      })
-    }
   }
 };
 </script>
