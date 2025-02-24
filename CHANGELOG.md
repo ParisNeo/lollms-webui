@@ -1,4 +1,4 @@
-# LoLLMs v18.0 Changelog
+# LoLLMs v18.1 Changelog
 - Working system-wide function calling.
 - Full integration with lightrag.
 - Enhanced UI
