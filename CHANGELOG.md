@@ -4,6 +4,7 @@
 - Enhanced UI
 - Reworked the context management system
 - Long term memory is back via a special function call
+- [Here is a video tutorial about function calls in lollms](https://youtu.be/0ft6PyOvSqI?si=3bFtOzQ-J2Y53JaY)
   
 # LoLLMs v18.0 (beta) Changelog
 
