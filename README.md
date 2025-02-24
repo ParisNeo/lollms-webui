@@ -6,7 +6,7 @@
 ## Latest video
 Here is a tutorial on how to use function calls in lollms.
 
-<iframe width="560" height="315" src="[URL_to_Video](https://youtu.be/0ft6PyOvSqI?si=3bFtOzQ-J2Y53JaY)" frameborder="0" allowfullscreen></iframe>
+[URL_to_Video](https://youtu.be/0ft6PyOvSqI?si=3bFtOzQ-J2Y53JaY)
 
 ![GitHub license](https://img.shields.io/github/license/ParisNeo/lollms-webui)
 ![GitHub issues](https://img.shields.io/github/issues/ParisNeo/lollms-webui)
