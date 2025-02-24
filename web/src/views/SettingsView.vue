@@ -596,614 +596,668 @@
                             </div>
                         </Card>
 
-                                <Card  title="Model template" :is_subcard="true" class="pb-2  m-2">
-                                    <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-                                        <!-- Template Selection -->
-                                        <div class="flex flex-col space-y-2">
-                                            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Template Type</label>
-                                            <select @change="handleTemplateSelection" 
-                                                    class="form-select w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                                <option value="lollms">Lollms communication template</option>
-                                                <option value="lollms_simplified">Lollms simplified communication template</option>
-                                                <option value="bare">Bare, useful when in chat mode</option>
-                                                <option value="llama3">LLama3 communication template</option>
-                                                <option value="lucie">Lucie communication template</option>
-                                                <option value="mistral">Mistral communication template</option>
-                                                <option value="deepseek">DeepSeek communication template</option>
-                                            </select>
-                                        </div>
+                        <Card  title="Model template" :is_subcard="true" class="pb-2  m-2">
+                            <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                                <!-- Template Selection -->
+                                <div class="flex flex-col space-y-2">
+                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Template Type</label>
+                                    <select @change="handleTemplateSelection" 
+                                            class="form-select w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                        <option value="lollms">Lollms communication template</option>
+                                        <option value="lollms_simplified">Lollms simplified communication template</option>
+                                        <option value="bare">Bare, useful when in chat mode</option>
+                                        <option value="llama3">LLama3 communication template</option>
+                                        <option value="lucie">Lucie communication template</option>
+                                        <option value="mistral">Mistral communication template</option>
+                                        <option value="deepseek">DeepSeek communication template</option>
+                                    </select>
+                                </div>
 
-                                        <!-- Header Templates -->
-                                        <div class="grid md:grid-cols-2 gap-4">
-                                            <div class="space-y-2">
-                                                <label for="start_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    Start Header Template
-                                                </label>
-                                                <input type="text" id="start_header_id_template"
-                                                    v-model="configFile.start_header_id_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                            <div class="space-y-2">
-                                                <label for="end_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    End Header Template
-                                                </label>
-                                                <input type="text" id="end_header_id_template"
-                                                    v-model="configFile.end_header_id_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                        </div>
-
-                                        <!-- User Templates -->
-                                        <div class="grid md:grid-cols-2 gap-4">
-                                            <div class="space-y-2">
-                                                <label for="start_user_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    Start User Header Template
-                                                </label>
-                                                <input type="text" id="start_user_header_id_template"
-                                                    v-model="configFile.start_user_header_id_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                            <div class="space-y-2">
-                                                <label for="end_user_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    End User Header Template
-                                                </label>
-                                                <input type="text" id="end_user_header_id_template"
-                                                    v-model="configFile.end_user_header_id_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                        </div>
-
-                                        <!-- AI Templates -->
-                                        <div class="grid md:grid-cols-2 gap-4">
-                                            <div class="space-y-2">
-                                                <label for="start_ai_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    Start AI Header Template
-                                                </label>
-                                                <input type="text" id="start_ai_header_id_template"
-                                                    v-model="configFile.start_ai_header_id_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                            <div class="space-y-2">
-                                                <label for="end_ai_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    End AI Header Template
-                                                </label>
-                                                <input type="text" id="end_ai_header_id_template"
-                                                    v-model="configFile.end_ai_header_id_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                        </div>
-
-                                        <!-- Message End Templates -->
-                                        <div class="grid md:grid-cols-2 gap-4">
-                                            <div class="space-y-2">
-                                                <label for="end_user_message_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    End User Message Template
-                                                </label>
-                                                <input type="text" id="end_user_message_id_template"
-                                                    v-model="configFile.end_user_message_id_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                            <div class="space-y-2">
-                                                <label for="end_ai_message_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    End AI Message Template
-                                                </label>
-                                                <input type="text" id="end_ai_message_id_template"
-                                                    v-model="configFile.end_ai_message_id_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </div>
-                                        </div>
-
-                                        <!-- Separator and System Templates -->
-                                        <div class="space-y-2">
-                                            <label for="separator_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                Separator Template
-                                            </label>
-                                            <textarea id="separator_template"
-                                                    v-model="configFile.separator_template"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full h-24 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                            </textarea>
-                                        </div>
-
-                                        <div class="space-y-2">
-                                            <label for="system_message_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                System Template
-                                            </label>
-                                            <input type="text" id="system_message_template"
-                                                v-model="configFile.system_message_template"
-                                                @change="settingsChanged=true"
-                                                class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
-                                        </div>
-
-                                        <!-- Full Template Preview -->
-                                        <div class="space-y-2">
-                                            <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Full Template Preview</label>
-                                            <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md">
-                                                <div v-html="full_template"></div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Continue Message Toggle -->
-                                        <div class="flex items-center space-x-4">
-                                            <label for="use_continue_message" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                Use Continue Message
-                                            </label>
-                                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                                                <input type="checkbox" 
-                                                    id="use_continue_message"
-                                                    v-model="configFile.use_continue_message"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
-                                                <label for="use_continue_message" 
-                                                    class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
-                                                </label>
-                                            </div>
-                                        </div>
+                                <!-- Header Templates -->
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label for="start_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            Start Header Template
+                                        </label>
+                                        <input type="text" id="start_header_id_template"
+                                            v-model="configFile.start_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
                                     </div>
-                                </Card>
-                                <Card title="Thinking Methods" :is_subcard="true" class="pb-2 m-2">
-                                    <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-                                        <!-- Thinking Prompt with Preset Button -->
-                                        <div class="space-y-2 flex flex-col">
-                                            <div class="flex justify-between items-center">
-                                                <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                                    Thinking Prompt
-                                                </label>
-                                                <div class="space-x-2">
-                                                    <button 
-                                                        @click="showThinkingPresets = true"
-                                                        class="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                                                    >
-                                                        Select Thinking Preset
-                                                    </button>
-                                                    <button 
-                                                        @click="showAddThinkingPreset = true"
-                                                        class="px-3 py-1 text-sm bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
-                                                    >
-                                                        Add New Preset
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <textarea  
-                                                @change="settingsChanged=true" 
-                                                v-model="configFile.thinking_prompt" 
-                                                class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md text-sm min-h-[150px]"
-                                                placeholder="Enter thinking prompt or select a preset..."
-                                            ></textarea>
-                                        </div>
-
-                                        <!-- Select Thinking Preset Modal -->
-                                        <Modal v-if="showThinkingPresets" @close="showThinkingPresets = false">
-                                            <div class="p-4">
-                                                <h3 class="text-lg font-semibold mb-4">Select Thinking Preset</h3>
-                                                <div class="space-y-2">
-                                                    <div v-for="preset in thinkingPresets" 
-                                                        :key="preset.name"
-                                                        class="border rounded-md p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
-                                                        @click="selectPreset(preset)"
-                                                    >
-                                                        <div class="font-medium">{{ preset.name }}</div>
-                                                        <div class="text-sm text-gray-600 dark:text-gray-400">{{ preset.description }}</div>
-                                                        <div class="text-xs text-gray-500 mt-1">Author: {{ preset.author }}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Modal>
-
-                                        <!-- Add New Thinking Preset Modal -->
-                                        <Modal v-if="showAddThinkingPreset" @close="showAddThinkingPreset = false">
-                                            <div class="p-4">
-                                                <h3 class="text-lg font-semibold mb-4">Add New Thinking Preset</h3>
-                                                <form @submit.prevent="saveNewPreset" class="space-y-4">
-                                                    <div>
-                                                        <label class="block text-sm font-medium mb-1">Name</label>
-                                                        <input v-model="newPreset.name" class="w-full rounded-md border p-2" required>
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-sm font-medium mb-1">Description</label>
-                                                        <input v-model="newPreset.description" class="w-full rounded-md border p-2" required>
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-sm font-medium mb-1">Author</label>
-                                                        <input v-model="newPreset.author" class="w-full rounded-md border p-2" required>
-                                                    </div>
-                                                    <div>
-                                                        <label class="block text-sm font-medium mb-1">Thinking Prompt</label>
-                                                        <textarea 
-                                                            v-model="newPreset.prompt" 
-                                                            class="w-full rounded-md border p-2 min-h-[150px]"
-                                                            required
-                                                        ></textarea>
-                                                    </div>
-                                                    <div class="flex justify-end space-x-2">
-                                                        <button 
-                                                            type="button"
-                                                            @click="showAddThinkingPreset = false"
-                                                            class="px-4 py-2 text-sm text-gray-600 border rounded-md"
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                        <button 
-                                                            type="submit"
-                                                            class="px-4 py-2 text-sm bg-blue-500 text-white rounded-md"
-                                                        >
-                                                            Save Preset
-                                                        </button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </Modal>
+                                    <div class="space-y-2">
+                                        <label for="end_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            End Header Template
+                                        </label>
+                                        <input type="text" id="end_header_id_template"
+                                            v-model="configFile.end_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
                                     </div>
-                                </Card>
+                                </div>
 
+                                <!-- User Templates -->
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label for="start_user_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            Start User Header Template
+                                        </label>
+                                        <input type="text" id="start_user_header_id_template"
+                                            v-model="configFile.start_user_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="end_user_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            End User Header Template
+                                        </label>
+                                        <input type="text" id="end_user_header_id_template"
+                                            v-model="configFile.end_user_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
+                                </div>
 
+                                <!-- AI Templates -->
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label for="start_ai_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            Start AI Header Template
+                                        </label>
+                                        <input type="text" id="start_ai_header_id_template"
+                                            v-model="configFile.start_ai_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="end_ai_header_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            End AI Header Template
+                                        </label>
+                                        <input type="text" id="end_ai_header_id_template"
+                                            v-model="configFile.end_ai_header_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
+                                </div>
 
+                                <!-- Message End Templates -->
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div class="space-y-2">
+                                        <label for="end_user_message_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            End User Message Template
+                                        </label>
+                                        <input type="text" id="end_user_message_id_template"
+                                            v-model="configFile.end_user_message_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label for="end_ai_message_id_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            End AI Message Template
+                                        </label>
+                                        <input type="text" id="end_ai_message_id_template"
+                                            v-model="configFile.end_ai_message_id_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                    </div>
+                                </div>
 
-                                <Card  title="User" :is_subcard="true" class="pb-2  m-2">
-                                    <div class="grid gap-6 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md">
-                                        <!-- User Name -->
-                                        <div class="flex flex-col md:flex-row md:items-center gap-4">
-                                            <label for="user_name" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
-                                                User Name
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="user_name"
-                                                required
-                                                v-model="configFile.user_name"
-                                                @change="settingsChanged=true"
-                                                class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                <!-- Separator and System Templates -->
+                                <div class="space-y-2">
+                                    <label for="separator_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        Separator Template
+                                    </label>
+                                    <textarea id="separator_template"
+                                            v-model="configFile.separator_template"
+                                            @change="settingsChanged=true"
+                                            class="w-full h-24 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                    </textarea>
+                                </div>
+
+                                <div class="space-y-2">
+                                    <label for="system_message_template" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        System Template
+                                    </label>
+                                    <input type="text" id="system_message_template"
+                                        v-model="configFile.system_message_template"
+                                        @change="settingsChanged=true"
+                                        class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                </div>
+
+                                <!-- Full Template Preview -->
+                                <div class="space-y-2">
+                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">Full Template Preview</label>
+                                    <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md">
+                                        <div v-html="full_template"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Continue Message Toggle -->
+                                <div class="flex items-center space-x-4">
+                                    <label for="use_continue_message" class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        Use Continue Message
+                                    </label>
+                                    <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                        <input type="checkbox" 
+                                            id="use_continue_message"
+                                            v-model="configFile.use_continue_message"
+                                            @change="settingsChanged=true"
+                                            class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                        <label for="use_continue_message" 
+                                            class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer">
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title="Thinking Methods" :is_subcard="true" class="pb-2 m-2">
+                            <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
+                                <!-- Thinking Prompt with Preset Button -->
+                                <div class="space-y-2 flex flex-col">
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                            Thinking Prompt
+                                        </label>
+                                        <div class="space-x-2">
+                                            <button 
+                                                @click="showThinkingPresets = true"
+                                                class="px-3 py-1 text-sm bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
                                             >
+                                                Select Thinking Preset
+                                            </button>
+                                            <button 
+                                                @click="showAddThinkingPreset = true"
+                                                class="px-3 py-1 text-sm bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+                                            >
+                                                Add New Preset
+                                            </button>
                                         </div>
+                                    </div>
+                                    <textarea  
+                                        @change="settingsChanged=true" 
+                                        v-model="configFile.thinking_prompt" 
+                                        class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md text-sm min-h-[150px]"
+                                        placeholder="Enter thinking prompt or select a preset..."
+                                    ></textarea>
+                                </div>
 
-                                        <!-- User Description -->
-                                        <div class="flex flex-col md:flex-row md:items-start gap-4">
-                                            <label for="user_description" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
-                                                User Description
-                                            </label>
-                                            <textarea
-                                                id="user_description"
-                                                required
-                                                v-model="configFile.user_description"
-                                                @change="settingsChanged=true"
-                                                class="flex-1 h-[300px] px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white resize-none"
-                                            ></textarea>
-                                        </div>
-
-                                        <!-- Toggles Group -->
-                                        <div class="space-y-4">
-                                            <div class="flex flex-col md:flex-row md:items-center gap-4">
-                                                <label class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
-                                                    Discussion Settings
-                                                </label>
-                                                <div class="flex-1 space-y-3">
-                                                    <label class="flex items-center space-x-3 cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            v-model="configFile.use_user_informations_in_discussion"
-                                                            @change="settingsChanged=true"
-                                                            class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
-                                                        >
-                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Use user description in discussion</span>
-                                                    </label>
-                                                    <label class="flex items-center space-x-3 cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            v-model="configFile.use_model_name_in_discussions"
-                                                            @change="settingsChanged=true"
-                                                            class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
-                                                        >
-                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Use model name in discussion</span>
-                                                    </label>
-                                                    <label class="flex items-center space-x-3 cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            v-model="configFile.use_user_name_in_discussions"
-                                                            @change="settingsChanged=true"
-                                                            class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
-                                                        >
-                                                        <span class="text-sm text-gray-700 dark:text-gray-200">Use User Name in discussions</span>
-                                                    </label>
-                                                </div>
+                                <!-- Select Thinking Preset Modal -->
+                                <Modal v-if="showThinkingPresets" @close="showThinkingPresets = false">
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold mb-4">Select Thinking Preset</h3>
+                                        <div class="space-y-2">
+                                            <div v-for="preset in thinkingPresets" 
+                                                :key="preset.name"
+                                                class="border rounded-md p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                                                @click="selectPreset(preset)"
+                                            >
+                                                <div class="font-medium">{{ preset.name }}</div>
+                                                <div class="text-sm text-gray-600 dark:text-gray-400">{{ preset.description }}</div>
+                                                <div class="text-xs text-gray-500 mt-1">Author: {{ preset.author }}</div>
                                             </div>
                                         </div>
+                                    </div>
+                                </Modal>
 
-                                        <!-- User Avatar -->
-                                        <div class="flex flex-col md:flex-row md:items-center gap-4">
-                                            <label class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
-                                                User Avatar
-                                            </label>
-                                            <div class="flex items-center gap-4">
-                                                <label for="avatar-upload" class="cursor-pointer">
-                                                    <img 
-                                                        :src="configFile.user_avatar!=null && configFile.user_avatar!=''?'/user_infos/'+configFile.user_avatar: storeLogo" 
-                                                        class="w-16 h-16 rounded-full object-cover border-2 border-gray-300 hover:border-blue-500"
-                                                    >
-                                                </label>
-                                                <input type="file" id="avatar-upload" class="hidden" @change="uploadAvatar">
+                                <!-- Add New Thinking Preset Modal -->
+                                <Modal v-if="showAddThinkingPreset" @close="showAddThinkingPreset = false">
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-semibold mb-4">Add New Thinking Preset</h3>
+                                        <form @submit.prevent="saveNewPreset" class="space-y-4">
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Name</label>
+                                                <input v-model="newPreset.name" class="w-full rounded-md border p-2" required>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Description</label>
+                                                <input v-model="newPreset.description" class="w-full rounded-md border p-2" required>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Author</label>
+                                                <input v-model="newPreset.author" class="w-full rounded-md border p-2" required>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Thinking Prompt</label>
+                                                <textarea 
+                                                    v-model="newPreset.prompt" 
+                                                    class="w-full rounded-md border p-2 min-h-[150px]"
+                                                    required
+                                                ></textarea>
+                                            </div>
+                                            <div class="flex justify-end space-x-2">
                                                 <button 
-                                                    @click.stop="resetAvatar()"
-                                                    class="p-2 text-gray-500 hover:text-red-500 transition-colors duration-200"
-                                                    title="Remove avatar"
+                                                    type="button"
+                                                    @click="showAddThinkingPreset = false"
+                                                    class="px-4 py-2 text-sm text-gray-600 border rounded-md"
                                                 >
-                                                    <i data-feather="x" class="w-5 h-5"></i>
+                                                    Cancel
+                                                </button>
+                                                <button 
+                                                    type="submit"
+                                                    class="px-4 py-2 text-sm bg-blue-500 text-white rounded-md"
+                                                >
+                                                    Save Preset
                                                 </button>
                                             </div>
-                                        </div>
+                                        </form>
+                                    </div>
+                                </Modal>
+                            </div>
+                        </Card>
+                        <Card  title="User" :is_subcard="true" class="pb-2  m-2">
+                            <div class="grid gap-6 bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md">
+                                <!-- User Name -->
+                                <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                    <label for="user_name" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                        User Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="user_name"
+                                        required
+                                        v-model="configFile.user_name"
+                                        @change="settingsChanged=true"
+                                        class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                    >
+                                </div>
 
-                                        <!-- Token Settings -->
-                                        <div class="space-y-4">
-                                            <div class="flex flex-col md:flex-row md:items-center gap-4">
-                                                <label for="max_n_predict" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
-                                                    Maximum Token Space
-                                                </label>
+                                <!-- User Description -->
+                                <div class="flex flex-col md:flex-row md:items-start gap-4">
+                                    <label for="user_description" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                        User Description
+                                    </label>
+                                    <textarea
+                                        id="user_description"
+                                        required
+                                        v-model="configFile.user_description"
+                                        @change="settingsChanged=true"
+                                        class="flex-1 h-[300px] px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white resize-none"
+                                    ></textarea>
+                                </div>
+
+                                <!-- Toggles Group -->
+                                <div class="space-y-4">
+                                    <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                        <label class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                            Discussion Settings
+                                        </label>
+                                        <div class="flex-1 space-y-3">
+                                            <label class="flex items-center space-x-3 cursor-pointer">
                                                 <input
-                                                    type="number"
-                                                    id="max_n_predict"
-                                                    required
-                                                    v-model="configFile.max_n_predict"
+                                                    type="checkbox"
+                                                    v-model="configFile.use_user_informations_in_discussion"
                                                     @change="settingsChanged=true"
-                                                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                                    class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
                                                 >
-                                            </div>
-                                            <div class="flex flex-col md:flex-row md:items-center gap-4">
-                                                <label for="min_n_predict" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
-                                                    Minimum Token Space
-                                                </label>
+                                                <span class="text-sm text-gray-700 dark:text-gray-200">Use user description in discussion</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3 cursor-pointer">
                                                 <input
-                                                    type="number"
-                                                    id="min_n_predict"
-                                                    required
-                                                    v-model="configFile.min_n_predict"
+                                                    type="checkbox"
+                                                    v-model="configFile.use_model_name_in_discussions"
                                                     @change="settingsChanged=true"
-                                                    class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                                    class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
                                                 >
-                                            </div>
+                                                <span class="text-sm text-gray-700 dark:text-gray-200">Use model name in discussion</span>
+                                            </label>
+                                            <label class="flex items-center space-x-3 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    v-model="configFile.use_user_name_in_discussions"
+                                                    @change="settingsChanged=true"
+                                                    class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:bg-gray-600"
+                                                >
+                                                <span class="text-sm text-gray-700 dark:text-gray-200">Use User Name in discussions</span>
+                                            </label>
                                         </div>
                                     </div>
-                                </Card>  
-                                <Card  title="Security settings" :is_subcard="true" class="pb-2  m-2">
-                                    <div class="settings-container p-6 space-y-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md">
-                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                                            <label for="turn_on_code_execution" class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                Turn on code execution
-                                            </label>
-                                            <div class="relative">
-                                                <input
-                                                    type="checkbox"
-                                                    id="turn_on_code_execution"
-                                                    required
-                                                    v-model="configFile.turn_on_code_execution"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
-                                                >
-                                            </div>
-                                        </div>
+                                </div>
 
-                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                                            <label for="turn_on_code_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                Turn on code validation
-                                                <span class="block text-xs text-gray-500 dark:text-gray-400">Very recommended for security reasons</span>
-                                            </label>
-                                            <div class="relative">
-                                                <input
-                                                    type="checkbox"
-                                                    id="turn_on_code_validation"
-                                                    required
-                                                    v-model="configFile.turn_on_code_validation"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
-                                                >
-                                            </div>
-                                        </div>
-
-                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                                            <label for="turn_on_setting_update_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                Turn on apply settings validation
-                                                <span class="block text-xs text-gray-500 dark:text-gray-400">Very recommended for security reasons</span>
-                                            </label>
-                                            <div class="relative">
-                                                <input
-                                                    type="checkbox"
-                                                    id="turn_on_setting_update_validation"
-                                                    required
-                                                    v-model="configFile.turn_on_setting_update_validation"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
-                                                >
-                                            </div>
-                                        </div>
-
-                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                                            <label for="turn_on_open_file_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                Turn on open file/folder validation
-                                            </label>
-                                            <div class="relative">
-                                                <input
-                                                    type="checkbox"
-                                                    id="turn_on_open_file_validation"
-                                                    required
-                                                    v-model="configFile.turn_on_open_file_validation"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
-                                                >
-                                            </div>
-                                        </div>
-
-                                        <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                                            <label for="turn_on_send_file_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                                                Turn on send file validation
-                                            </label>
-                                            <div class="relative">
-                                                <input
-                                                    type="checkbox"
-                                                    id="turn_on_send_file_validation"
-                                                    required
-                                                    v-model="configFile.turn_on_send_file_validation"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
-                                                >
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Card>         
-                                <Card title="Knowledge database" :is_subcard="true" class="pb-2  m-2">
-                                    <div class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 space-y-4">
-                                        <!-- Skills Library Activation -->
-                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                            <label 
-                                                for="activate_skills_lib" 
-                                                class="text-sm font-bold text-gray-900 dark:text-white min-w-[200px]"
+                                <!-- User Avatar -->
+                                <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                    <label class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                        User Avatar
+                                    </label>
+                                    <div class="flex items-center gap-4">
+                                        <label for="avatar-upload" class="cursor-pointer">
+                                            <img 
+                                                :src="configFile.user_avatar!=null && configFile.user_avatar!=''?'/user_infos/'+configFile.user_avatar: storeLogo" 
+                                                class="w-16 h-16 rounded-full object-cover border-2 border-gray-300 hover:border-blue-500"
                                             >
-                                                Activate Skills library:
-                                            </label>
-                                            <div class="flex items-center">
-                                                <label class="relative inline-flex items-center cursor-pointer">
-                                                    <input
-                                                        type="checkbox"
-                                                        id="activate_skills_lib"
-                                                        required
-                                                        v-model="configFile.activate_skills_lib"
-                                                        @change="settingsChanged=true"
-                                                        class="sr-only peer"
-                                                    >
-                                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 
-                                                            peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full 
-                                                            peer dark:bg-gray-600 peer-checked:after:translate-x-full 
-                                                            peer-checked:after:border-white after:content-[''] after:absolute 
-                                                            after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 
-                                                            after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
-                                                            dark:border-gray-600 peer-checked:bg-blue-600">
-                                                    </div>
-                                                </label>
-                                            </div>
-                                        </div>
+                                        </label>
+                                        <input type="file" id="avatar-upload" class="hidden" @change="uploadAvatar">
+                                        <button 
+                                            @click.stop="resetAvatar()"
+                                            class="p-2 text-gray-500 hover:text-red-500 transition-colors duration-200"
+                                            title="Remove avatar"
+                                        >
+                                            <i data-feather="x" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
-                                        <!-- Database Name Input -->
-                                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                            <label 
-                                                for="skills_lib_database_name" 
-                                                class="text-sm font-bold text-gray-900 dark:text-white min-w-[200px]"
+                                <!-- Token Settings -->
+                                <div class="space-y-4">
+                                    <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                        <label for="max_n_predict" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                            Maximum Token Space
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="max_n_predict"
+                                            required
+                                            v-model="configFile.max_n_predict"
+                                            @change="settingsChanged=true"
+                                            class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                        >
+                                    </div>
+                                    <div class="flex flex-col md:flex-row md:items-center gap-4">
+                                        <label for="min_n_predict" class="text-sm font-bold text-gray-700 dark:text-gray-200 min-w-[200px]">
+                                            Minimum Token Space
+                                        </label>
+                                        <input
+                                            type="number"
+                                            id="min_n_predict"
+                                            required
+                                            v-model="configFile.min_n_predict"
+                                            @change="settingsChanged=true"
+                                            class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>  
+                        <Card  title="Security settings" :is_subcard="true" class="pb-2  m-2">
+                            <div class="settings-container p-6 space-y-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-md">
+                                <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                    <label for="turn_on_code_execution" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Turn on code execution
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            type="checkbox"
+                                            id="turn_on_code_execution"
+                                            required
+                                            v-model="configFile.turn_on_code_execution"
+                                            @change="settingsChanged=true"
+                                            class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                    <label for="turn_on_code_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Turn on code validation
+                                        <span class="block text-xs text-gray-500 dark:text-gray-400">Very recommended for security reasons</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            type="checkbox"
+                                            id="turn_on_code_validation"
+                                            required
+                                            v-model="configFile.turn_on_code_validation"
+                                            @change="settingsChanged=true"
+                                            class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                    <label for="turn_on_setting_update_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Turn on apply settings validation
+                                        <span class="block text-xs text-gray-500 dark:text-gray-400">Very recommended for security reasons</span>
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            type="checkbox"
+                                            id="turn_on_setting_update_validation"
+                                            required
+                                            v-model="configFile.turn_on_setting_update_validation"
+                                            @change="settingsChanged=true"
+                                            class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                    <label for="turn_on_open_file_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Turn on open file/folder validation
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            type="checkbox"
+                                            id="turn_on_open_file_validation"
+                                            required
+                                            v-model="configFile.turn_on_open_file_validation"
+                                            @change="settingsChanged=true"
+                                            class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
+                                        >
+                                    </div>
+                                </div>
+
+                                <div class="setting-row flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                                    <label for="turn_on_send_file_validation" class="text-sm font-medium text-gray-700 dark:text-gray-200">
+                                        Turn on send file validation
+                                    </label>
+                                    <div class="relative">
+                                        <input
+                                            type="checkbox"
+                                            id="turn_on_send_file_validation"
+                                            required
+                                            v-model="configFile.turn_on_send_file_validation"
+                                            @change="settingsChanged=true"
+                                            class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>         
+                        <Card title="Knowledge database" :is_subcard="true" class="pb-2  m-2">
+                            <div class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 space-y-4">
+                                <!-- Skills Library Activation -->
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <label 
+                                        for="activate_skills_lib" 
+                                        class="text-sm font-bold text-gray-900 dark:text-white min-w-[200px]"
+                                    >
+                                        Activate Skills library:
+                                    </label>
+                                    <div class="flex items-center">
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                id="activate_skills_lib"
+                                                required
+                                                v-model="configFile.activate_skills_lib"
+                                                @change="settingsChanged=true"
+                                                class="sr-only peer"
                                             >
-                                                Skills library database name:
+                                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 
+                                                    peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full 
+                                                    peer dark:bg-gray-600 peer-checked:after:translate-x-full 
+                                                    peer-checked:after:border-white after:content-[''] after:absolute 
+                                                    after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 
+                                                    after:border after:rounded-full after:h-5 after:w-5 after:transition-all 
+                                                    dark:border-gray-600 peer-checked:bg-blue-600">
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Database Name Input -->
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                    <label 
+                                        for="skills_lib_database_name" 
+                                        class="text-sm font-bold text-gray-900 dark:text-white min-w-[200px]"
+                                    >
+                                        Skills library database name:
+                                    </label>
+                                    <div class="flex-1">
+                                        <input
+                                            type="text"
+                                            id="skills_lib_database_name"
+                                            required
+                                            v-model="configFile.skills_lib_database_name"
+                                            @change="settingsChanged=true"
+                                            class="w-full px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 
+                                                dark:border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 
+                                                focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 
+                                                text-gray-900 dark:text-white transition-colors duration-200"
+                                            placeholder="Enter database name"
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+
+                        </Card>
+                        <Card title="Latex" :is_subcard="true" class="pb-2  m-2">
+                            <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                                    <div class="min-w-[200px]">
+                                        <label 
+                                            for="pdf_latex_path" 
+                                            class="block text-sm font-semibold text-gray-700 dark:text-gray-200"
+                                        >
+                                            PDF LaTeX Path:
+                                        </label>
+                                    </div>
+                                    <div class="flex-1 w-full">
+                                        <input
+                                            type="text"
+                                            id="pdf_latex_path"
+                                            required
+                                            v-model="configFile.pdf_latex_path"
+                                            @change="settingsChanged=true"
+                                            class="w-full px-4 py-2 text-sm bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:placeholder-gray-400 transition-colors duration-200"
+                                            placeholder="Enter PDF LaTeX path..."
+                                        >
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title="Boost" :is_subcard="true" class="pb-2  m-2">
+                            <div class="settings-container bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md">
+                                <div class="setting-row mb-4">
+                                    <div class="flex items-center justify-between">
+                                        <label for="positive_boost" class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                            Positive Boost
+                                        </label>
+                                        <div class="w-64">
+                                            <input
+                                                type="text"
+                                                id="positive_boost"
+                                                required
+                                                v-model="configFile.positive_boost"
+                                                @change="settingsChanged=true"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-all duration-200"
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="setting-row mb-4">
+                                    <div class="flex items-center justify-between">
+                                        <label for="negative_boost" class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                            Negative Boost
+                                        </label>
+                                        <div class="w-64">
+                                            <input
+                                                type="text"
+                                                id="negative_boost"
+                                                required
+                                                v-model="configFile.negative_boost"
+                                                @change="settingsChanged=true"
+                                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-all duration-200"
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="setting-row">
+                                    <div class="flex items-center justify-between">
+                                        <label for="fun_mode" class="text-sm font-bold text-gray-700 dark:text-gray-200">
+                                            Fun Mode
+                                        </label>
+                                        <div class="w-64">
+                                            <label class="inline-flex items-center cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    id="fun_mode"
+                                                    required
+                                                    v-model="configFile.fun_mode"
+                                                    @change="settingsChanged=true"
+                                                    class="sr-only peer"
+                                                >
+                                                <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                             </label>
-                                            <div class="flex-1">
-                                                <input
-                                                    type="text"
-                                                    id="skills_lib_database_name"
-                                                    required
-                                                    v-model="configFile.skills_lib_database_name"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full px-3 py-2 bg-white dark:bg-gray-600 border border-gray-300 
-                                                        dark:border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 
-                                                        focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 
-                                                        text-gray-900 dark:text-white transition-colors duration-200"
-                                                    placeholder="Enter database name"
-                                                >
-                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </Card>
+                        <Card title="Folders" :is_subcard="true" class="pb-2 m-2">
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
+                                <!-- Custom Personalities Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('custom-personalities')"
+                                >
+                                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">Custom Personalities</span>
+                                </div>
 
-                                </Card>
-                                <Card title="Latex" :is_subcard="true" class="pb-2  m-2">
-                                    <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600">
-                                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                                            <div class="min-w-[200px]">
-                                                <label 
-                                                    for="pdf_latex_path" 
-                                                    class="block text-sm font-semibold text-gray-700 dark:text-gray-200"
-                                                >
-                                                    PDF LaTeX Path:
-                                                </label>
-                                            </div>
-                                            <div class="flex-1 w-full">
-                                                <input
-                                                    type="text"
-                                                    id="pdf_latex_path"
-                                                    required
-                                                    v-model="configFile.pdf_latex_path"
-                                                    @change="settingsChanged=true"
-                                                    class="w-full px-4 py-2 text-sm bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:text-white dark:placeholder-gray-400 transition-colors duration-200"
-                                                    placeholder="Enter PDF LaTeX path..."
-                                                >
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Card>
-                                <Card title="Boost" :is_subcard="true" class="pb-2  m-2">
-                                    <div class="settings-container bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-md">
-                                        <div class="setting-row mb-4">
-                                            <div class="flex items-center justify-between">
-                                                <label for="positive_boost" class="text-sm font-bold text-gray-700 dark:text-gray-200">
-                                                    Positive Boost
-                                                </label>
-                                                <div class="w-64">
-                                                    <input
-                                                        type="text"
-                                                        id="positive_boost"
-                                                        required
-                                                        v-model="configFile.positive_boost"
-                                                        @change="settingsChanged=true"
-                                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-all duration-200"
-                                                    >
-                                                </div>
-                                            </div>
-                                        </div>
+                                <!-- Custom Function Calls Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('custom-function-calls')"
+                                >
+                                    <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">Custom Function Calls</span>
+                                </div>
 
-                                        <div class="setting-row mb-4">
-                                            <div class="flex items-center justify-between">
-                                                <label for="negative_boost" class="text-sm font-bold text-gray-700 dark:text-gray-200">
-                                                    Negative Boost
-                                                </label>
-                                                <div class="w-64">
-                                                    <input
-                                                        type="text"
-                                                        id="negative_boost"
-                                                        required
-                                                        v-model="configFile.negative_boost"
-                                                        @change="settingsChanged=true"
-                                                        class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-600 dark:border-gray-500 dark:text-white transition-all duration-200"
-                                                    >
-                                                </div>
-                                            </div>
-                                        </div>
+                                <!-- Configurations Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('configurations')"
+                                >
+                                    <svg class="w-12 h-12 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">Configurations</span>
+                                </div>
 
-                                        <div class="setting-row">
-                                            <div class="flex items-center justify-between">
-                                                <label for="fun_mode" class="text-sm font-bold text-gray-700 dark:text-gray-200">
-                                                    Fun Mode
-                                                </label>
-                                                <div class="w-64">
-                                                    <label class="inline-flex items-center cursor-pointer">
-                                                        <input
-                                                            type="checkbox"
-                                                            id="fun_mode"
-                                                            required
-                                                            v-model="configFile.fun_mode"
-                                                            @change="settingsChanged=true"
-                                                            class="sr-only peer"
-                                                        >
-                                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </Card>
+                                <!-- AI Outputs Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('ai-outputs')"
+                                >
+                                    <svg class="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">AI Outputs</span>
+                                </div>
+
+                                <!-- Discussions Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('discussions')"
+                                >
+                                    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">Discussions</span>
+                                </div>
+                            </div>
+                        </Card>
                     </div>
                 </div>
             </div>
@@ -1496,6 +1550,30 @@
                                                         />
                                                     </svg>
                                                     {{ isChecking ? 'Checking...' : 'LightRAG Status' }}
+                                                </button>
+                                                <button 
+                                                    v-if="source.type === 'lightrag'"
+                                                    @click="showLightRagWebUI(index)"
+                                                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 shadow-sm"
+                                                    :class="{ 'opacity-75 cursor-wait': isShowingWebUI }"
+                                                    :disabled="isShowingWebUI"
+                                                >
+                                                    <svg 
+                                                        class="w-4 h-4 mr-2" 
+                                                        :class="{ 'animate-spin': isShowingWebUI }"
+                                                        fill="none" 
+                                                        stroke="currentColor" 
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <!-- External link icon -->
+                                                        <path 
+                                                            stroke-linecap="round" 
+                                                            stroke-linejoin="round" 
+                                                            stroke-width="2" 
+                                                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                                        />
+                                                    </svg>
+                                                    {{ isShowingWebUI ? 'Opening...' : 'Show LightRAG WebUI' }}
                                                 </button>
                                             </div>
 
@@ -5052,6 +5130,29 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            async handleFolderClick(folderType){
+                const payload = {
+                    client_id: this.$store.state.client_id, // Replace with the actual client ID
+                    folder: folderType,
+                };
+
+                try {
+                    // Make the POST request using axios
+                    const response = await axios.post('/open_personal_folder', payload);
+
+                    // Handle the response
+                    if (response.data.status) {
+                        console.log(`Successfully opened folder: ${folderType}`);
+                        console.log('Response:', response.data);
+                    } else {
+                        console.error(`Failed to open folder: ${folderType}`);
+                        console.error('Error:', response.data.error);
+                    }
+                } catch (error) {
+                    // Handle any errors
+                    console.error('Error calling endpoint:', error);
+                }
+            },
             // Update function category
             update_function_category(category, refresh) {
                 console.log("this.function_category changed to "+category)
@@ -5200,6 +5301,13 @@ export default {
                     
                     this.$store.state.toast.showToast('Could not connect to LightRAG server', 4, false);
                 }
+            },
+            async showLightRagWebUI(index){
+                // Construct the WebUI URL using the config file
+                const webuiUrl = `${this.configFile.datalakes[index]}/webui`;
+
+                // Open the WebUI in a new tab
+                window.open(webuiUrl, '_blank');
             },
             async checkLightRagServerHealth(index) {
                 try {

@@ -800,3 +800,42 @@ async def get_available_voices():
         return JSONResponse(content={"voices": voices})
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+
+
+
+
+class PersonalFolderRequest(BaseModel):
+    client_id: str = Field(...)
+    folder:str = Field(...)
+
+@router.post("/open_personal_folder")
+async def open_personality_folder(request: PersonalFolderRequest):
+    """
+    Opens a personal data folder.
+
+    :param request: The HTTP request object.
+    :return: A JSON response with the status of the operation.
+    """
+    client = check_access(lollmsElfServer, request.client_id)
+    if(request.folder=="custom-personalities"):
+        root_folder =  lollmsElfServer.lollms_paths.custom_personalities_path
+    elif(request.folder=="custom-function-calls"):
+        root_folder =  lollmsElfServer.lollms_paths.custom_function_calls_path
+    elif(request.folder=="configurations"):
+        root_folder =  lollmsElfServer.lollms_paths.personal_configuration_path
+    elif(request.folder=="ai-outputs"):
+        root_folder =  lollmsElfServer.lollms_paths.personal_outputs_path
+    elif(request.folder=="discussions"):
+        root_folder =  lollmsElfServer.lollms_paths.personal_discussions_path
+    else:
+        return JSONResponse(content={"error": "Unknown folder"})
+        
+
+    if platform.system() == "Windows":
+        subprocess.Popen(f'explorer "{root_folder}"')
+    elif platform.system() == "Linux":
+        subprocess.run(["xdg-open", str(root_folder)], check=True)
+    elif platform.system() == "Darwin":
+        subprocess.run(["open", str(root_folder)], check=True)
+    return {"status": True, "execution_time": 0}
+
