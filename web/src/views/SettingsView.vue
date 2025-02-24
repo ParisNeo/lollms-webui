@@ -5304,7 +5304,7 @@ export default {
             },
             async showLightRagWebUI(index){
                 // Construct the WebUI URL using the config file
-                const webuiUrl = `${this.configFile.datalakes[index]}/webui`;
+                const webuiUrl = `${this.configFile.datalakes[index].url}/webui`;
 
                 // Open the WebUI in a new tab
                 window.open(webuiUrl, '_blank');
