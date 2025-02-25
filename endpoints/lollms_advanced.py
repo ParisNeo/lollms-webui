@@ -636,9 +636,15 @@ async def open_personality_folder(request: PersonalityFolderRequest):
     try:
         ASCIIColors.info("Opening folder:")
         # Create a temporary file.
-        root_folder = (
-            lollmsElfServer.lollms_paths.personalities_zoo_path / personality_folder
-        )
+        if request.category!="custom_personalities":
+            root_folder = (
+                lollmsElfServer.lollms_paths.custom_personalities_path / request.name
+            )
+        else:
+            personality_folder = request.category +"/"+ request.name
+            root_folder = (
+                lollmsElfServer.lollms_paths.personalities_zoo_path / personality_folder
+            )
         root_folder.mkdir(parents=True, exist_ok=True)
         if platform.system() == "Windows":
             subprocess.Popen(f'explorer "{root_folder}"')

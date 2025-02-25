@@ -5264,6 +5264,7 @@ export default {
                 if (response.data.status) {
                     this.$store.state.messageBox.showMessage('All functions unmounted successfully', true);
                     this.$store.dispatch('refreshMountedFunctions');
+                    this.$store.dispatch('refreshConfig');
                 } else {
                     this.$store.state.messageBox.showMessage('Failed to unmount all functions', false);
                 }
@@ -7398,11 +7399,14 @@ export default {
             }
             const searchTerm = this.searchPersonality.toLowerCase()
             const seachedPersonalities = this.$store.state.personalities.filter((item) => {
-
-                if (item.name && item.name.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.full_path && item.full_path.toLowerCase().includes(searchTerm)) {
+                try{
+                    if (item.name && item.name.toLowerCase().includes(searchTerm) || item.description && item.description.toLowerCase().includes(searchTerm) || item.full_path && item.full_path.toLowerCase().includes(searchTerm)) {
                     return item
+                    }
                 }
-
+                catch{
+                    console.log("error")
+                }
             })
 
 

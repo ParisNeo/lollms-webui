@@ -136,7 +136,7 @@ handleClickOutside(event) {
                 feather.replace()
             })
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // Cleanup the event listener
     window.removeEventListener('resize', this.positionMenu);
   },
