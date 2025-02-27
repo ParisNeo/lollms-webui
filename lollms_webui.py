@@ -1741,7 +1741,8 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                                         infos = json.loads(code["content"])
                                         if infos["function_name"]==function_call["name"]:
                                             if fc.function_type == FunctionType.CLASSIC:
-                                                output = fc.execute(**infos["function_parameters"])
+                                                context_details.ai_output = client.generated_text
+                                                output = fc.execute(context_details,**infos["function_parameters"])
                                                 self.personality.new_message("")
                                                 self.personality.set_message_content(output)
                                 if fc.function_type == FunctionType.CONTEXT_UPDATE:
