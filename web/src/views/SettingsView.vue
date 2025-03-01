@@ -2206,13 +2206,11 @@
                                         id="active_ttv_service"
                                         required
                                         v-model="configFile.active_ttv_service"
-                                        @change="settingsChanged=true"
+                                        @change="settingsChanged = true"
                                         class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
                                     >
                                         <option value="None">None</option>
-                                        <option value="cog_video_x">Cog Video X</option>
-                                        <option value="diffusers">Diffusers</option>
-                                        <option value="lumalab">Lumalab</option>
+                                        <option v-for="service in ttvServices" :key="service" :value="service">{{ service }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -3875,6 +3873,43 @@
                             <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
                                 <div class="w-full md:w-1/3">
                                     <label 
+                                        for="novita_ai_key" 
+                                        class="block text-sm font-semibold text-gray-700 dark:text-gray-200"
+                                    >
+                                        NovitaAI Key
+                                    </label>
+                                </div>
+                                <div class="w-full md:w-2/3">
+                                    <div class="relative">
+                                        <input
+                                            type="text"
+                                            id="novita_ai_key"
+                                            required
+                                            v-model="configFile.novita_ai_key"
+                                            @change="settingsChanged=true"
+                                            class="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 
+                                                bg-gray-50 dark:bg-gray-700 
+                                                text-gray-900 dark:text-white 
+                                                focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                                transition duration-150 ease-in-out"
+                                            placeholder="Enter your Novita AI API key"
+                                        >
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                            <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                                                <path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        Your API key will be securely stored
+                                    </p>
+                                </div>
+                            </div>
+                        </div>                        
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+                            <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6">
+                                <div class="w-full md:w-1/3">
+                                    <label 
                                         for="lumalabs_key" 
                                         class="block text-sm font-semibold text-gray-700 dark:text-gray-200"
                                     >
@@ -5009,6 +5044,8 @@ export default {
             snd_output_devices: [],
             snd_output_devices_indexes: [],
             voices: [],
+            ttvServices: [], // To store the list of TTV services
+
             voice_languages:{
                             "Arabic": "ar",
                             "Brazilian Portuguese": "pt",
@@ -5115,6 +5152,7 @@ export default {
         }
     },
     async created() {
+        await this.fetchTTVServices()
         // Fetch all function calls from the backend
         await this.fetchFunctionCalls();
         try{
@@ -5130,6 +5168,24 @@ export default {
         //await socket.on('install_progress', this.progressListener);
     }, 
         methods: {
+            /**
+             * Fetches the list of TTV services from the server.
+             * Uses the client_id from the Vuex store.
+             */
+            async fetchTTVServices() {
+                try {
+                    const clientId = this.$store.state.client_id;
+                    const response = await axios.post('/list_ttv_services', { client_id: clientId });
+                    if (response.data && Array.isArray(response.data)) {
+                        this.ttvServices = response.data;
+                    } else {
+                        console.error('Invalid response format:', response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch TTV services:', error);
+                }
+            },
+
             async handleFolderClick(folderType){
                 const payload = {
                     client_id: this.$store.state.client_id, // Replace with the actual client ID

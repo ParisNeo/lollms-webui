@@ -448,7 +448,7 @@
                                                 class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-105 focus:outline-none"
                                             >
                                                 <img 
-                                                    :src="bUrl + item.avatar" 
+                                                    :src="getPersonailyAvatar(item)" 
                                                     @error="personalityImgPlacehodler" 
                                                     :alt="item.name" 
                                                     class="w-full h-full object-cover" 
@@ -1577,7 +1577,6 @@ export default {
             },
             host:"",
             progress_visibility_val         : true,
-            progress_value                  : 0,
             msgTypes: {
                 // Messaging
                 MSG_TYPE_CONTENT                   : 1, // A full message (for some personality the answer is sent in bulk)
@@ -1638,7 +1637,6 @@ export default {
             isDiscussionBottom: false,
             personalityAvatars: [], // object array of personality name: and avatar: props
             fileList: [],
-            database_selectorDialogVisible:false,
             isDragOverDiscussion: false,
             isDragOverChat: false,
             isOpen: false,
@@ -1646,6 +1644,11 @@ export default {
         }
     },
     methods: {        
+        
+        async getPersonailyAvatar(personality){
+            const avatar_path = this.bUrl + personality.avatar
+            return avatar_path
+        },
         updateRandomFact() {
             // Get a new random fact different from the current one
             let newFact;
@@ -3945,6 +3948,7 @@ export default {
         
     },
     computed: { 
+        
         // Get unique placeholders while preserving order
         parsedPlaceholders() {
             const uniqueMap = new Map();
