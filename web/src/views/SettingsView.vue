@@ -389,12 +389,26 @@
                                                 <input type="checkbox"
                                                     v-model="configFile.app_show_changelogs"
                                                     @change="settingsChanged=true"
-                                                    class="w-full absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
                                                             transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>                                            
                                         </div>
-                                        <!-- App name Section -->
+                                        <!-- App show fun facts Section -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">                                     
+                                            <div class="flex items-center space-x-4">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Show fun facts</label>
+                                            </div>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.app_show_fun_facts"
+                                                    @change="settingsChanged=true"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>                                            
+                                        </div>
+                                        <!-- App welcome message Section -->
                                         <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">                                     
                                             <div class="flex items-center space-x-4">
                                                 <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Custom welcome message</label>
