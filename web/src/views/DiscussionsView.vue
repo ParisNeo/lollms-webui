@@ -17,22 +17,23 @@
             <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
                 <div class="mb-8 w-full">
                     <div class="text-5xl md:text-6xl font-bold mb-2 hover:scale-105 transition-transform lollms-title-style">
-                        {{$store.state.theme_vars.lollms_title}}
+                        {{$store.state.config!=null&&$store.state.config.app_custom_name!=null&&$store.state.config.app_custom_name!=""?$store.state.config.app_custom_name:$store.state.theme_vars.lollms_title}}
                     </div>
 
-
                     <p class="text-2xl italic">
-                        One tool to rule them all
+                        {{$store.state.config!=null&&$store.state.config.app_custom_slogan!=null&&$store.state.config.app_custom_slogan!=""?$store.state.config.app_custom_slogan:"One tool to rule them all"}}
                     </p>
-                    <p class="text-xl mb-6">
+                    <p v-if="shouldShowLollmsParagraphs" class="text-xl mb-6">
                         by ParisNeo
                     </p>
+
+
                     <p class="bottom-0 text-2xl italic">
                         {{ version_info }}
                     </p>
 
                     <!-- Clickable interesting fact card -->
-                    <div class="interesting-facts transition-transform duration-300 cursor-pointer"
+                    <div v-if="shouldShowLollmsFunFacts" class="interesting-facts transition-transform duration-300 cursor-pointer"
                         @click="updateRandomFact">
                         <p class="text-lg ">
                             <span class="font-semibold">🤔 Fun Fact: </span>
@@ -74,14 +75,14 @@
             <RouterLink :to="{ name: 'discussions' }" class="flex items-center space-x-2"> <!-- Added space-x-2 -->
                 <div class="logo-container"> <!-- Removed mr-1 -->
                 <img class="w-12 h-12 rounded-full object-cover logo-image" 
-                    :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
-                    alt="Logo" title="LoLLMS WebUI">
+                    :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo !=null && $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
+                    alt="Logo" :title="$store.state.config&&$store.state.config.app_custom_name&&$store.state.config.app_custom_name!=''?$store.state.config.app_custom_logo:'LoLLMS WebUI'">
                 </div>
                 <div class="flex flex-col justify-center">
                     <div class="text-center p-2">
                         <div class="text-md relative inline-block">
                             <span class="relative inline-block font-bold tracking-wide text-black dark:text-white">
-                                LoLLMS
+                                {{$store.state.config&&$store.state.config.app_custom_name&&$store.state.config.app_custom_name!=''?$store.state.config.app_custom_name:'LoLLMS WebUI'}}
                             </span>
                             <div class="absolute -bottom-0.5 left-0 w-full h-0.5 
                                         bg-black dark:bg-white
@@ -91,7 +92,7 @@
                     </div>
 
 
-                <p class="text-gray-400 text-sm">One tool to rule them all</p>
+                <p class="text-gray-400 text-sm">{{$store.state.config&&$store.state.config.app_custom_slogan&&$store.state.config.app_custom_slogan!=''?$store.state.config.app_custom_slogan:'One tool to rule them all'}}</p>
                 </div>
             </RouterLink>
 
@@ -293,7 +294,6 @@
                                             >
                                                 <img 
                                                     :src="item.icon ? item.icon : modelImgPlaceholder" 
-                                                    @error="modelImgPlaceholder" 
                                                     :alt="item.name" 
                                                     class="w-full h-full object-cover" 
                                                     :class="{'border-2 border-secondary': item.name == binding_name}"
@@ -372,7 +372,6 @@
                                             >
                                                 <img 
                                                     :src="item.icon ? item.icon : modelImgPlaceholder" 
-                                                    @error="personalityImgPlacehodler" 
                                                     :alt="item.name" 
                                                     class="w-full h-full object-cover" 
                                                     :class="{'border-2 border-secondary': item.name == model_name}"
@@ -448,8 +447,7 @@
                                                 class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-105 focus:outline-none"
                                             >
                                                 <img 
-                                                    :src="getPersonailyAvatar(item)" 
-                                                    @error="personalityImgPlacehodler" 
+                                                    :src="item.avatar"
                                                     :alt="item.name" 
                                                     class="w-full h-full object-cover" 
                                                     :class="{'border-2 border-secondary': $store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path)}"
@@ -502,7 +500,7 @@
 
                             <div class="personalities-container">
                                 <div @mouseenter="showPersonalitiesMenu" class="personalities-hover-area">
-                                <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersList" :onReady="onPersonalitiesReady"/>
+                                <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
                                 </div>
                             </div>
                         </div>
@@ -1250,6 +1248,8 @@ import skillsRegistry from "../assets/registry.svg"
 import robot from "../assets/robot.svg"
 import { mapState } from 'vuex';
 import modelImgPlaceholder from "../assets/default_model.png"
+import personalityImgPlacehodler from "../assets/default_model.png"
+
 
 import MountedPersonalities from '@/components/MountedPersonalities.vue'
 import ChatBarButton from '@/components/ChatBarButton.vue'
@@ -1494,6 +1494,7 @@ export default {
             discord:discord,
             FastAPI:FastAPI,
             modelImgPlaceholder:modelImgPlaceholder,
+            personalityImgPlacehodler:personalityImgPlacehodler,
             customLanguage: '', // Holds the value of the custom language input
             rebooting_audio: new Audio("rebooting.wav"),            
             connection_lost_audio: new Audio("connection_lost.wav"),
@@ -1646,8 +1647,15 @@ export default {
     methods: {        
         
         async getPersonailyAvatar(personality){
-            const avatar_path = this.bUrl + personality.avatar
-            return avatar_path
+            if(personality.avatar){
+                const avatar_path = "/" + personality.avatar
+                console.log("Personality avatar")
+                console.log(avatar_path)
+                return avatar_path
+            }
+            else{
+                return personalityImgPlacehodler
+            }
         },
         updateRandomFact() {
             // Get a new random fact different from the current one
@@ -1682,6 +1690,7 @@ export default {
                 }
             }
         },
+        onShowPersListFun(){},
         onPersonalitiesReadyFun(){
             this.$store.state.personalities_ready = true;
         },
@@ -1705,6 +1714,8 @@ export default {
             this.personalityHoveredIndex = null
         },
         async onPersonalitySelected(pers) {
+            console.log("Selected personality")
+            console.log(pers)
             this.hidePersonalitiesMenu()
             // eslint-disable-next-line no-unused-vars
             if (pers) {
@@ -1738,7 +1749,6 @@ export default {
                         this.$store.state.toast.showToast("Error on select personality:\n" + pers.name, 4, false)
                     }
 
-                } else {
                 }
 
                 this.$emit('personalitySelected')
@@ -3870,7 +3880,6 @@ export default {
         WelcomeComponent,
         ChoiceDialog,
         ProgressBar,
-        InputBox,
         SkillsLibraryViewer,
         
         PersonalityEditor,
@@ -3948,7 +3957,21 @@ export default {
         
     },
     computed: { 
-        
+        shouldShowLollmsParagraphs() {
+            const slp = !(this.$store.state.config && 
+                this.$store.state.config.app_custom_name && 
+                (this.$store.state.config.app_custom_name != ''));
+            console.log("shouldShowLollmsParagraphs")
+            console.log(slp)
+            return slp;
+        },  
+        shouldShowLollmsFunFacts() {
+            const slf = !(this.$store.state.config && 
+                this.$store.state.config.app_show_fun_facts);
+            console.log("shouldShowLollmsFunFacts")
+            console.log(slf)
+            return slf;
+        },          
         // Get unique placeholders while preserving order
         parsedPlaceholders() {
             const uniqueMap = new Map();
@@ -4170,7 +4193,6 @@ export default {
 import Discussion from '../components/Discussion.vue'
 import ChoiceDialog from '@/components/ChoiceDialog.vue'
 import ProgressBar from "@/components/ProgressBar.vue";
-import InputBox from "@/components/input_box.vue";
 import SkillsLibraryViewer from "@/components/SkillsViewer.vue"
 
 import Message from '../components/Message.vue'

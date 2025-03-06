@@ -1,3 +1,10 @@
+# LoLLMs v19.0 (alpha) Changelog
+- Restructured main settings
+- Added application settings to allow changing the application name, the application slogan, the application logo for a maximum flexibility.
+- Completely changed the services system structure
+- Services parameters are now flexible to allow for variaty of services to have options
+- Function calls may now have static parameters in addition to their parameters
+
 # LoLLMs v18.1 Changelog
 - Working system-wide function calling.
 - Full integration with lightrag.

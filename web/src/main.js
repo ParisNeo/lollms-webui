@@ -97,6 +97,10 @@ export const store = createStore({
           console.log("Can't uipdate personality beceause it was Not found:",newPersonality.full_path)
         }
       },
+      
+      setInstalledModels(state, installedModels){
+        state.installedModels = installedModels;
+      },
       setThemeVars(state, themeVars){
         state.theme_vars = themeVars;
       },

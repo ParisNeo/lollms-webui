@@ -312,6 +312,7 @@ import ProgressBar from "@/components/ProgressBar.vue";
 import UniversalForm from '../components/UniversalForm.vue';
 import Toast from '@/components/Toast.vue'
 import YesNoDialog from '../components/YesNoDialog.vue';
+import InputBox from "@/components/input_box.vue";
 
 import axios from 'axios'
 import feather from 'feather-icons'
@@ -324,6 +325,7 @@ export default {
     Toast,
     MessageBox,
     ProgressBar,
+    InputBox,
     UniversalForm,
     YesNoDialog
    
@@ -353,6 +355,9 @@ export default {
     }
   },
   computed:{
+    progress_visibility(){
+      return false;
+    },
     isModelOK(){
       return this.$store.state.isModelOk;
     },

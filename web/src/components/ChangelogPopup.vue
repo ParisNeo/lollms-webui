@@ -20,6 +20,7 @@ import axios from 'axios';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify'; // For security
 
+import { nextTick } from 'vue'
 export default {
   name: 'ChangelogPopup',
   data() {
@@ -64,10 +65,27 @@ export default {
         const lastViewedVersion = lastViewedResponse.data;
         
         // Show popup if versions don't match
-        if (this.currentVersion !== lastViewedVersion) {
-          console.log("Showing changelog")
-          this.showChangelogPopup = true;
-        }
+                  
+
+        this.$nextTick(() => {
+          if (this.$store.state.config) {
+            if (this.currentVersion !== lastViewedVersion && this.$store.state.config.app_show_changelogs) {
+              console.log("Showing changelog");
+              this.showChangelogPopup = true;
+            }
+          } else {
+            // If config is not loaded yet, you can set up a watcher or retry after a delay
+            const unwatch = this.$watch('$store.state.config', (newConfig) => {
+              if (newConfig) {
+                if (this.currentVersion !== lastViewedVersion && newConfig.app_show_changelogs) {
+                  console.log("Showing changelog");
+                  this.showChangelogPopup = true;
+                }
+                unwatch(); // Stop watching once the config is loaded
+              }
+            });
+          }
+        });
       } catch (error) {
         console.error("Error checking changelog:", error);
       }

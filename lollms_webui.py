@@ -77,10 +77,10 @@ def terminate_thread(thread):
 
 
 lollms_webui_version = {
-    "version_main":18,
-    "version_secondary":1,
-    "version_type":"",
-    "version_codename":"Matrix 💊"
+    "version_main":19,
+    "version_secondary":0,
+    "version_type":"alpha",
+    "version_codename":"Omni 🔗"
 }
 
 
@@ -1227,6 +1227,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             self.update_message_metadata(client_id, data)
             return
         elif operation_type == MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_NEW_MESSAGE:
+            ASCIIColors.info("Building new message")
             self.nb_received_tokens = 0
             self.start_time = datetime.now()
             self.update_message_step(
@@ -1774,11 +1775,11 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                                     / "services/xtts/voices"
                                 )
 
-                            if self.xtts.ready:
+                            if self.tts.ready:
                                 language = convert_language_name(
                                     self.personality.language
                                 )
-                                self.xtts.set_speaker_folder(
+                                self.tts.set_speaker_folder(
                                     Path(self.personality.audio_samples[0]).parent
                                 )
                                 fn = (
@@ -1788,7 +1789,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                                 )
                                 fn = f"{fn}_{message_id}.wav"
                                 url = f"audio/{fn}"
-                                self.xtts.tts_file(
+                                self.tts.tts_file(
                                     client.generated_text,
                                     Path(self.personality.audio_samples[0]).name,
                                     f"{fn}",

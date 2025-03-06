@@ -149,28 +149,88 @@
 
                         </div>
                     </div>
-                    <div class="mb-2" v-for="item in vramUsage.gpus" :key="item">
-                        <label class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            <!-- GPU IMAGE  -->
-                            <img :src="SVGGPU"  width="25" height="25">
+                    <div v-if="vramUsage!=null" >
+                        <div class="mb-2" v-for="item in vramUsage.gpus" :key="item">
+                            <label class="flex items-center gap-1 ml-2 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                <!-- GPU IMAGE  -->
+                                <img :src="SVGGPU"  width="25" height="25">
 
-                            GPU usage:
-                        </label>
-                        <div class="flex flex-col mx-2">
-                            <div><b>Model:&nbsp;</b>{{ item.gpu_model }}</div>
-                            <div><b>Avaliable vram:&nbsp;</b>{{  this.computedFileSize(item.available_space) }}</div>
-                            <div><b>GPU usage:&nbsp;</b> {{ this.computedFileSize(item.used_vram) }} / {{ this.computedFileSize(item.total_vram) }} ({{ item.percentage
-                            }}%)</div>
-                        </div>
-                        <div class="p-2 ">
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + item.percentage + '%;'">
-                                </div>
+                                GPU usage:
+                            </label>
+                            <div class="flex flex-col mx-2">
+                                <div><b>Model:&nbsp;</b>{{ item.gpu_model }}</div>
+                                <div><b>Avaliable vram:&nbsp;</b>{{  this.computedFileSize(item.available_space) }}</div>
+                                <div><b>GPU usage:&nbsp;</b> {{ this.computedFileSize(item.used_vram) }} / {{ this.computedFileSize(item.total_vram) }} ({{ item.percentage
+                                }}%)</div>
                             </div>
+                            <div class="p-2 ">
+                                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" :style="'width: ' + item.percentage + '%;'">
+                                    </div>
+                                </div>
 
+                            </div>
                         </div>
                     </div>
 
+                    <Card title="Folders" :is_subcard="true" class="pb-2 m-2">
+                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
+                                <!-- Custom Personalities Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('custom-personalities')"
+                                >
+                                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">Custom Personalities</span>
+                                </div>
+
+                                <!-- Custom Function Calls Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('custom-function-calls')"
+                                >
+                                    <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">Custom Function Calls</span>
+                                </div>
+
+                                <!-- Configurations Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('configurations')"
+                                >
+                                    <svg class="w-12 h-12 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">Configurations</span>
+                                </div>
+
+                                <!-- AI Outputs Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('ai-outputs')"
+                                >
+                                    <svg class="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">AI Outputs</span>
+                                </div>
+
+                                <!-- Discussions Folder -->
+                                <div 
+                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                                    @click="handleFolderClick('discussions')"
+                                >
+                                    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                    </svg>
+                                    <span class="mt-2 text-sm text-center text-gray-700">Discussions</span>
+                                </div>
+                            </div>
+                        </Card>
 
                 </div>
             </div>
@@ -258,6 +318,188 @@
                 </div>
                 <div :class="{ 'hidden': mainconf_collapsed }" class="flex flex-col mb-2 px-3 pb-0">
                     <div class="flex flex-col mb-2 px-3 pb-2">
+                        <Card title="Application settings" :is_subcard="true" :is_shrunk="true" class="pb-2 m-2">
+                            <div class="settings-grid grid gap-4">
+                                        <!-- App name Section -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">                                     
+                                            <div class="flex items-center space-x-4">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Custom name</label>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <input type="text"
+                                                    v-model="configFile.app_custom_name"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                                    >
+
+                                            </div>
+                                        </div>
+                                        <!-- App slogan Section -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">                                     
+                                            <div class="flex items-center space-x-4">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Custom slogan</label>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <input type="text"
+                                                    v-model="configFile.app_custom_slogan"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500 w-full"
+                                                    >
+
+                                            </div>
+                                        </div>                                        
+                                        <!-- Logo Upload Section -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">                                     
+                                            <div class="flex items-center space-x-4">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Logo</label>
+                                                <!-- Logo Preview -->
+                                                <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
+                                                    <img v-if="configFile.app_custom_logo" 
+                                                        :src="'/user_infos/' + configFile.app_custom_logo" 
+                                                        class="w-full h-full object-cover"
+                                                        alt="Custom Logo">
+                                                    <img v-else 
+                                                        :src="defaultImgPlaceholder" 
+                                                        class="w-full h-full object-cover"
+                                                        alt="Default Logo">
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <!-- Remove logo button (only show if custom logo exists) -->
+                                                <button v-if="configFile.app_custom_logo"
+                                                        @click="removeLogo"
+                                                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
+                                                    Remove Logo
+                                                </button>
+                                                <label class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                                                    Upload Logo
+                                                    <input type="file" 
+                                                        @change="uploadLogo" 
+                                                        accept="image/*"
+                                                        class="hidden">
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <!-- App show change log Section -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">                                     
+                                            <div class="flex items-center space-x-4">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Show change log</label>
+                                            </div>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.app_show_changelogs"
+                                                    @change="settingsChanged=true"
+                                                    class="w-full absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>                                            
+                                        </div>
+                                        <!-- App name Section -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">                                     
+                                            <div class="flex items-center space-x-4">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Custom welcome message</label>
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                <textarea id="separator_template"
+                                                        v-model="configFile.app_custom_welcome_message"
+                                                        @change="settingsChanged=true"
+                                                        class="w-full h-24 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                                                </textarea>                                                
+
+                                            </div>
+                                        </div>
+                                        <!-- Auto Title Setting -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <div class="flex items-center space-x-2">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Automatic Discussion Naming</label>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">(Let AI name your discussions automatically)</div>
+                                            </div>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_title"
+                                                    @change="settingsChanged=true"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Auto Show Browser Setting -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <div class="flex items-center space-x-2">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Auto-launch Browser</label>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">(Open browser automatically when starting LOLLMS)</div>
+                                            </div>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.auto_show_browser"
+                                                    @change="settingsChanged=true"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Remote Access Warning -->
+                                        <div class="setting-row flex flex-col p-4 bg-red-50 dark:bg-red-900/20 rounded-lg shadow-sm border-2 border-red-200 dark:border-red-800">
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center space-x-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                    </svg>
+                                                    <label class="font-bold text-sm text-red-700 dark:text-red-400">Remote Access</label>
+                                                </div>
+                                                <div class="relative inline-block w-12 h-6">
+                                                    <input type="checkbox"
+                                                        v-model="configFile.force_accept_remote_access"
+                                                        @change="settingsChanged=true"
+                                                        class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                                </div>
+                                            </div>
+                                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">
+                                                <strong>Security Warning:</strong> Enabling remote access poses significant security risks. Only enable this if you:
+                                                <ul class="list-disc ml-6 mt-1">
+                                                    <li>Fully understand the security implications</li>
+                                                    <li>Have proper network security measures in place</li>
+                                                    <li>Are in a trusted network environment</li>
+                                                </ul>
+                                            </p>
+                                        </div>
+
+                                        <!-- Copy with Details Setting -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <div class="flex items-center space-x-2">
+                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Enhanced Message Copy</label>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    (Include metadata like sender name and model info when copying messages)
+                                                </div>
+                                            </div>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.copy_to_clipboard_add_all_details"
+                                                    @change="settingsChanged=true"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+
+                                        <!-- Headless Mode -->
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Headless server mode (DEACTIVATES the WEBUI)</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.headless_server_mode"
+                                                    @change="settingsChanged=true"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                        </Card>
                         <Card title="General" :is_subcard="true" class="pb-2 m-2">
                             <div class="settings-container grid gap-6 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-300 dark:border-gray-600">
                                 <!-- Existing sections remain unchanged -->
@@ -468,130 +710,7 @@
                                 <!-- Webui Settings -->
                                 <div class="setting-section">
                                     <h3 class="font-bold text-lg text-gray-800 dark:text-gray-200 mb-4">Webui Settings</h3>
-                                    <div class="settings-grid grid gap-4">
-                                        <!-- Logo Upload Section -->
-                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                                            <div class="flex items-center space-x-4">
-                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Application Logo</label>
-                                                <!-- Logo Preview -->
-                                                <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700">
-                                                    <img v-if="configFile.app_custom_logo" 
-                                                        :src="'/user_infos/' + configFile.app_custom_logo" 
-                                                        class="w-full h-full object-cover"
-                                                        alt="Custom Logo">
-                                                    <img v-else 
-                                                        :src="defaultImgPlaceholder" 
-                                                        class="w-full h-full object-cover"
-                                                        alt="Default Logo">
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center space-x-2">
-                                                <!-- Remove logo button (only show if custom logo exists) -->
-                                                <button v-if="configFile.app_custom_logo"
-                                                        @click="removeLogo"
-                                                        class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                                                    Remove Logo
-                                                </button>
-                                                <label class="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
-                                                    Upload Logo
-                                                    <input type="file" 
-                                                        @change="uploadLogo" 
-                                                        accept="image/*"
-                                                        class="hidden">
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <!-- Auto Title Setting -->
-                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                                            <div class="flex items-center space-x-2">
-                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Automatic Discussion Naming</label>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">(Let AI name your discussions automatically)</div>
-                                            </div>
-                                            <div class="relative inline-block w-12 h-6">
-                                                <input type="checkbox"
-                                                    v-model="configFile.auto_title"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
-                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
-                                            </div>
-                                        </div>
 
-                                        <!-- Auto Show Browser Setting -->
-                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                                            <div class="flex items-center space-x-2">
-                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Auto-launch Browser</label>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">(Open browser automatically when starting LOLLMS)</div>
-                                            </div>
-                                            <div class="relative inline-block w-12 h-6">
-                                                <input type="checkbox"
-                                                    v-model="configFile.auto_show_browser"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
-                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
-                                            </div>
-                                        </div>
-
-                                        <!-- Remote Access Warning -->
-                                        <div class="setting-row flex flex-col p-4 bg-red-50 dark:bg-red-900/20 rounded-lg shadow-sm border-2 border-red-200 dark:border-red-800">
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center space-x-2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                    </svg>
-                                                    <label class="font-bold text-sm text-red-700 dark:text-red-400">Remote Access</label>
-                                                </div>
-                                                <div class="relative inline-block w-12 h-6">
-                                                    <input type="checkbox"
-                                                        v-model="configFile.force_accept_remote_access"
-                                                        @change="settingsChanged=true"
-                                                        class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
-                                                    <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
-                                                </div>
-                                            </div>
-                                            <p class="mt-2 text-sm text-red-600 dark:text-red-400">
-                                                <strong>Security Warning:</strong> Enabling remote access poses significant security risks. Only enable this if you:
-                                                <ul class="list-disc ml-6 mt-1">
-                                                    <li>Fully understand the security implications</li>
-                                                    <li>Have proper network security measures in place</li>
-                                                    <li>Are in a trusted network environment</li>
-                                                </ul>
-                                            </p>
-                                        </div>
-
-                                        <!-- Copy with Details Setting -->
-                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                                            <div class="flex items-center space-x-2">
-                                                <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Enhanced Message Copy</label>
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                    (Include metadata like sender name and model info when copying messages)
-                                                </div>
-                                            </div>
-                                            <div class="relative inline-block w-12 h-6">
-                                                <input type="checkbox"
-                                                    v-model="configFile.copy_to_clipboard_add_all_details"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
-                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
-                                            </div>
-                                        </div>
-
-                                        <!-- Headless Mode -->
-                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Headless server mode (DEACTIVATES the WEBUI)</label>
-                                            <div class="relative inline-block w-12 h-6">
-                                                <input type="checkbox"
-                                                    v-model="configFile.headless_server_mode"
-                                                    @change="settingsChanged=true"
-                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
-                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
-                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </Card>
@@ -1197,64 +1316,6 @@
                                             </label>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                        </Card>
-                        <Card title="Folders" :is_subcard="true" class="pb-2 m-2">
-                            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 p-4">
-                                <!-- Custom Personalities Folder -->
-                                <div 
-                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                                    @click="handleFolderClick('custom-personalities')"
-                                >
-                                    <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                    </svg>
-                                    <span class="mt-2 text-sm text-center text-gray-700">Custom Personalities</span>
-                                </div>
-
-                                <!-- Custom Function Calls Folder -->
-                                <div 
-                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                                    @click="handleFolderClick('custom-function-calls')"
-                                >
-                                    <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                    </svg>
-                                    <span class="mt-2 text-sm text-center text-gray-700">Custom Function Calls</span>
-                                </div>
-
-                                <!-- Configurations Folder -->
-                                <div 
-                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                                    @click="handleFolderClick('configurations')"
-                                >
-                                    <svg class="w-12 h-12 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                    </svg>
-                                    <span class="mt-2 text-sm text-center text-gray-700">Configurations</span>
-                                </div>
-
-                                <!-- AI Outputs Folder -->
-                                <div 
-                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                                    @click="handleFolderClick('ai-outputs')"
-                                >
-                                    <svg class="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                    </svg>
-                                    <span class="mt-2 text-sm text-center text-gray-700">AI Outputs</span>
-                                </div>
-
-                                <!-- Discussions Folder -->
-                                <div 
-                                    class="flex flex-col items-center justify-center p-4 cursor-pointer hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                                    @click="handleFolderClick('discussions')"
-                                >
-                                    <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                    </svg>
-                                    <span class="mt-2 text-sm text-center text-gray-700">Discussions</span>
                                 </div>
                             </div>
                         </Card>
@@ -2105,7 +2166,7 @@
                                         Active TTS Service
                                     </label>
                                 </div>
-                                <div class="w-full md:w-2/3">
+                                <div class="w-full md:w-2/3 flex flex-row space-x-4">
                                     <select
                                         id="active_tts_service"
                                         required
@@ -2115,12 +2176,28 @@
                                     >
                                         <option value="None">None</option>
                                         <option value="browser">Use Browser TTS (doesn't work in realtime mode)</option>
-                                        <option value="xtts">XTTS</option>
-                                        <option value="parler-tts">Parler-TTS</option>
-                                        <option value="openai_tts">Open AI TTS</option>
-                                        <option value="eleven_labs_tts">ElevenLabs TTS</option>
-                                        <option value="fish_tts">Fish TTS</option>
+                                        <option v-for="service in ttsServices" :key="service.name" :value="service.name">{{ service.caption }}</option>
                                     </select>
+
+                                    <button  v-if="!settingsChanged" @click="showTTSServerSettings">
+                                        <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="feather feather-settings"
+                                        >
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path
+                                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                        ></path>
+                                        </svg>
+                                    </button>                                    
                                 </div>
                             </div>
 
@@ -2131,7 +2208,7 @@
                                         Active STT Service
                                     </label>
                                 </div>
-                                <div class="w-full md:w-2/3">
+                                <div class="w-full md:w-2/3 flex flex-row space-x-4">
                                     <select
                                         id="active_stt_service"
                                         required
@@ -2140,9 +2217,28 @@
                                         class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
                                     >
                                         <option value="None">None</option>
-                                        <option value="whisper">Whisper</option>
-                                        <option value="openai_whisper">Open AI Whisper</option>
+                                        <option v-for="service in sttServices" :key="service.name" :value="service.name">{{ service.caption }}</option>
                                     </select>
+                                    
+                                    <button  v-if="!settingsChanged" @click="showSTTServerSettings">
+                                        <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="feather feather-settings"
+                                        >
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path
+                                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                        ></path>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
 
@@ -2153,7 +2249,7 @@
                                         Active TTI Service
                                     </label>
                                 </div>
-                                <div class="w-full md:w-2/3">
+                                <div class="w-full md:w-2/3 flex flex-row space-x-4">
                                     <select
                                         id="active_tti_service"
                                         required
@@ -2162,14 +2258,27 @@
                                         class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
                                     >
                                         <option value="None">None</option>
-                                        <option value="diffusers">Diffusers</option>
-                                        <option value="diffusers_client">Diffusers Client</option>
-                                        <option value="autosd">AUTO1111's SD</option>
-                                        <option value="dall-e">Open AI DALL-E</option>
-                                        <option value="midjourney">Midjourney</option>
-                                        <option value="comfyui">Comfyui</option>
-                                        <option value="fooocus">Fooocus</option>
+                                        <option v-for="service in ttiServices" :key="service.name" :value="service.name">{{ service.caption }}</option>
                                     </select>
+                                    <button  v-if="!settingsChanged" @click="showTTIServerSettings">
+                                        <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="feather feather-settings"
+                                        >
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path
+                                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                        ></path>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
 
@@ -2189,9 +2298,28 @@
                                         class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
                                     >
                                         <option value="None">None</option>
-                                        <option value="musicgen">Music Gen</option>
+                                        <option v-for="service in ttmServices" :key="service.name" :value="service.name">{{ service.caption }}</option>
                                     </select>
                                 </div>
+                                <button v-if="!settingsChanged" @click="showTTMServerSettings">
+                                    <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    class="feather feather-settings"
+                                    >
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path
+                                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                    ></path>
+                                    </svg>
+                                </button>
                             </div>
 
                             <!-- TTV Service -->
@@ -2201,7 +2329,7 @@
                                         Active TTV Service
                                     </label>
                                 </div>
-                                <div class="w-full md:w-2/3">
+                                <div class="w-full md:w-2/3 flex flex-row space-x-4">
                                     <select
                                         id="active_ttv_service"
                                         required
@@ -2210,8 +2338,27 @@
                                         class="w-full px-4 py-2 rounded-lg border border-gray-300 bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-all duration-200"
                                     >
                                         <option value="None">None</option>
-                                        <option v-for="service in ttvServices" :key="service" :value="service">{{ service }}</option>
+                                        <option v-for="service in ttvServices" :key="service" :value="service.name">{{ service.caption }}</option>
                                     </select>
+                                    <button v-if="!settingsChanged" @click="showTTVServerSettings">
+                                        <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        class="feather feather-settings"
+                                        >
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                        <path
+                                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                        ></path>
+                                        </svg>
+                                    </button>
                                 </div>
                             </div>
                         </div>                  
@@ -5025,6 +5172,7 @@ export default {
 
             showThinkingPresets: false,
             showAddThinkingPreset: false,
+            allThinkingPresets: [],
             thinkingPresets: [],
             newPreset: {
                 name: '',
@@ -5038,12 +5186,18 @@ export default {
             serverStatuses: [],  // Object to store status for each server
             expandedStatusIndex: null,  // Track which status panel is expanded
             isUploading: false,
+            defaultImgPlaceholder:defaultImgPlaceholder,
+            defaultPersonalityImgPlaceholder:defaultPersonalityImgPlaceholder,
             defaultModelImgPlaceholder:defaultModelImgPlaceholder,
             snd_input_devices: [],
             snd_input_devices_indexes: [],
             snd_output_devices: [],
             snd_output_devices_indexes: [],
             voices: [],
+            ttsServices: [], // To store the list of TTS services
+            sttServices: [], // To store the list of STT services
+            ttiServices: [], // To store the list of TTI services
+            ttmServices: [], // To store the list of TTM services
             ttvServices: [], // To store the list of TTV services
 
             voice_languages:{
@@ -5152,6 +5306,10 @@ export default {
         }
     },
     async created() {
+        await this.fetchSTTServices()
+        await this.fetchTTSServices()
+        await this.fetchTTIServices()
+        await this.fetchTTMServices()
         await this.fetchTTVServices()
         // Fetch all function calls from the backend
         await this.fetchFunctionCalls();
@@ -5172,6 +5330,58 @@ export default {
              * Fetches the list of TTV services from the server.
              * Uses the client_id from the Vuex store.
              */
+            async fetchSTTServices() {
+                try {
+                    const clientId = this.$store.state.client_id;
+                    const response = await axios.post('/list_stt_services', { client_id: clientId });
+                    if (response.data && Array.isArray(response.data)) {
+                        this.sttServices = response.data;
+                    } else {
+                        console.error('Invalid response format:', response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch TTV services:', error);
+                }
+            },
+            async fetchTTSServices() {
+                try {
+                    const clientId = this.$store.state.client_id;
+                    const response = await axios.post('/list_tts_services', { client_id: clientId });
+                    if (response.data && Array.isArray(response.data)) {
+                        this.ttsServices = response.data;
+                    } else {
+                        console.error('Invalid response format:', response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch TTV services:', error);
+                }
+            },
+            async fetchTTIServices() {
+                try {
+                    const clientId = this.$store.state.client_id;
+                    const response = await axios.post('/list_tti_services', { client_id: clientId });
+                    if (response.data && Array.isArray(response.data)) {
+                        this.ttiServices = response.data;
+                    } else {
+                        console.error('Invalid response format:', response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch TTV services:', error);
+                }
+            },
+            async fetchTTMServices() {
+                try {
+                    const clientId = this.$store.state.client_id;
+                    const response = await axios.post('/list_ttm_services', { client_id: clientId });
+                    if (response.data && Array.isArray(response.data)) {
+                        this.ttmServices = response.data;
+                    } else {
+                        console.error('Invalid response format:', response.data);
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch TTV services:', error);
+                }
+            },
             async fetchTTVServices() {
                 try {
                     const clientId = this.$store.state.client_id;
@@ -6905,7 +7115,7 @@ export default {
                     return res.data;
                 }
                 this.isLoading = false
-                binding_object.isInstalled=False
+                binding_object.isInstalled=false
 
             })
                 // eslint-disable-next-line no-unused-vars
@@ -6945,7 +7155,7 @@ export default {
         onSettingsBinding(bindingEntry) {
             try {
                 this.isLoading = true
-                axios.get('/get_active_binding_settings').then(res => {
+                axios.post('/get_active_binding_settings',{client_id:this.$store.state.client_id}).then(res => {
                     console.log(res)
                     this.isLoading = false
                     if (res) {
@@ -6992,6 +7202,236 @@ export default {
             } catch (error) {
                 this.isLoading = false
                 this.$store.state.toast.showToast("Could not open binding settings. Endpoint error: " + error.message, 4, false)
+            }
+        },
+        showTTIServerSettings() {
+            try {
+                this.isLoading = true
+                axios.post('/get_active_tti_settings',{client_id:this.$store.state.client_id}).then(res => {
+                    console.log(res)
+                    this.isLoading = false
+                    if (res) {
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$store.state.universalForm.showForm(res.data, "TTI settings - " +this.$store.state.config.active_tti_service, "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_tti_settings',
+                                        {client_id:this.$store.state.client_id, "settings":res}, {headers: this.posts_headers}).then(response => {
+                                            if (response && response.data) {
+                                                console.log('tti set with new settings', response.data)
+                                                this.$store.state.toast.showToast("TTI settings updated successfully!", 4, true)
+                                            } else {
+                                                this.$store.state.toast.showToast("Did not get tti settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+                                        })
+                                } catch (error) {
+                                    this.$store.state.toast.showToast("Did not get binding settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$store.state.toast.showToast("TTI has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$store.state.toast.showToast("Could not open ttv settings. Endpoint error: " + error.message, 4, false)
+            }
+        },
+        showSTTServerSettings() {
+            try {
+                this.isLoading = true
+                axios.post('/get_active_stt_settings',{client_id:this.$store.state.client_id}).then(res => {
+                    console.log(res)
+                    this.isLoading = false
+                    if (res) {
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$store.state.universalForm.showForm(res.data, "STT settings - " +this.$store.state.config.active_ttv_service, "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_s_settings',
+                                        {client_id:this.$store.state.client_id, "settings":res}, {headers: this.posts_headers}).then(response => {
+                                            if (response && response.data) {
+                                                console.log('stt set with new settings', response.data)
+                                                this.$store.state.toast.showToast("STT settings updated successfully!", 4, true)
+                                            } else {
+                                                this.$store.state.toast.showToast("Did not get stt settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+                                        })
+                                } catch (error) {
+                                    this.$store.state.toast.showToast("Did not get stt settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$store.state.toast.showToast("STT has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$store.state.toast.showToast("Could not open stt settings. Endpoint error: " + error.message, 4, false)
+            }
+        },
+        showTTSServerSettings() {
+            try {
+                this.isLoading = true
+                axios.post('/get_active_tts_settings',{client_id:this.$store.state.client_id}).then(res => {
+                    console.log(res)
+                    this.isLoading = false
+                    if (res) {
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$store.state.universalForm.showForm(res.data, "TTS settings - " +this.$store.state.config.active_ttv_service, "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_s_settings',
+                                        {client_id:this.$store.state.client_id, "settings":res}, {headers: this.posts_headers}).then(response => {
+                                            if (response && response.data) {
+                                                console.log('tts set with new settings', response.data)
+                                                this.$store.state.toast.showToast("TTS settings updated successfully!", 4, true)
+                                            } else {
+                                                this.$store.state.toast.showToast("Did not get tts settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+                                        })
+                                } catch (error) {
+                                    this.$store.state.toast.showToast("Did not get tts settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$store.state.toast.showToast("TTS has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$store.state.toast.showToast("Could not open tts settings. Endpoint error: " + error.message, 4, false)
+            }
+        },
+        showTTMServerSettings() {
+            try {
+                this.isLoading = true
+                axios.post('/get_active_ttm_settings',{client_id:this.$store.state.client_id}).then(res => {
+                    console.log(res)
+                    this.isLoading = false
+                    if (res) {
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$store.state.universalForm.showForm(res.data, "TTM settings - " +this.$store.state.config.active_ttv_service, "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_ttm_settings',
+                                        {client_id:this.$store.state.client_id, "settings":res}, {headers: this.posts_headers}).then(response => {
+                                            if (response && response.data) {
+                                                console.log('ttm set with new settings', response.data)
+                                                this.$store.state.toast.showToast("TTM settings updated successfully!", 4, true)
+                                            } else {
+                                                this.$store.state.toast.showToast("Did not get ttm settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+                                        })
+                                } catch (error) {
+                                    this.$store.state.toast.showToast("Did not get ttm settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$store.state.toast.showToast("TTM has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$store.state.toast.showToast("Could not open ttm settings. Endpoint error: " + error.message, 4, false)
+            }
+        },
+        showTTVServerSettings() {
+            try {
+                this.isLoading = true
+                axios.post('/get_active_ttv_settings',{client_id:this.$store.state.client_id}).then(res => {
+                    console.log(res)
+                    this.isLoading = false
+                    if (res) {
+
+                        if (res.data && Object.keys(res.data).length > 0) {
+
+                            // open form
+
+                            this.$store.state.universalForm.showForm(res.data, "TTV settings - " +this.$store.state.config.active_ttv_service, "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_active_ttv_settings',
+                                        {client_id:this.$store.state.client_id, "settings":res}, {headers: this.posts_headers}).then(response => {
+                                            if (response && response.data) {
+                                                console.log('ttv set with new settings', response.data)
+                                                this.$store.state.toast.showToast("TTV settings updated successfully!", 4, true)
+                                            } else {
+                                                this.$store.state.toast.showToast("Did not get ttv settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+                                        })
+                                } catch (error) {
+                                    this.$store.state.toast.showToast("Did not get ttv settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+
+
+
+                            })
+                        } else {
+                            this.$store.state.toast.showToast("TTV has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$store.state.toast.showToast("Could not open ttv settings. Endpoint error: " + error.message, 4, false)
             }
         },
         onReloadBinding(binding_object){

@@ -9,30 +9,39 @@
             class="w-24 h-24 rounded-full absolute animate-rolling-ball"
           >
         </div>
-        <div class="flex flex-col items-start">
+        <div v-if="$store.state.config!=null&&$store.state.config.app_custom_name!=null&&$store.state.config.app_custom_name!=''" class="flex flex-col items-start">
           <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
-            {{$store.state.theme_vars.lollms_title}}
-          </h1>
-          <p class="text-2xl italic mt-2">
-            Lord of Large Language And Multimodal Systems
-          </p>
+              {{$store.state.config.app_custom_name}}
+            </h1>
+        </div>
+        <div v-else class="flex flex-col items-start">
+            <h1 class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+              {{$store.state.theme_vars.lollms_title}}
+            </h1>
+            <p class="text-2xl italic mt-2">
+              Lord of Large Language And Multimodal Systems
+            </p>
         </div>
       </div>
-      
-      <div class="space-y-8 animate-fade-in-up">
+      <div v-if="$store.state.config!=null&&$store.state.config.app_custom_name!=null&&$store.state.config.app_custom_name!=''"  class="space-y-8 animate-fade-in-up">
+        <p v-html="$store.state.config.app_custom_welcome_message">
+        </p>
+
+      </div>
+      <div v-else class="space-y-8 animate-fade-in-up">
         <h2 class="text-4xl font-semibold">
           {{$store.state.theme_vars.lollms_welcome_short_message}}
         </h2>
         <p class="text-xl max-w-3xl mx-auto">
           {{$store.state.theme_vars.lollms_welcome_message}}
         </p>
+        <!-- New section for latest news -->
+        <div v-if="latestNews" class="mt-12 p-6 rounded-lg shadow-md animate-fade-in-up overflow-y-scroll scrollbar-thin">
+          <h3>Latest LoLLMS News</h3>
+          <p v-html="latestNews"></p>
+        </div>
       </div>
 
-      <!-- New section for latest news -->
-      <div v-if="latestNews" class="mt-12 p-6 rounded-lg shadow-md animate-fade-in-up overflow-y-scroll scrollbar-thin">
-        <h3>Latest LoLLMS News</h3>
-        <p v-html="latestNews"></p>
-      </div>
       <div v-if="error" class="mt-6 text-red-500">{{ error }}</div>
     </div>
 

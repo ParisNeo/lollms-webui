@@ -326,8 +326,13 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_skills_library import \
         router as lollms_skills_library_router
     from lollms.server.endpoints.lollms_tti import router as lollms_tti_router
+    
+    from lollms.server.endpoints.lollms_stt import \
+        router as lollms_stt_add_router
     from lollms.server.endpoints.lollms_tts import \
         router as lollms_tts_add_router
+    from lollms.server.endpoints.lollms_ttm import \
+        router as lollms_ttm_add_router
     from lollms.server.endpoints.lollms_ttv import \
         router as lollms_ttv_router
     
@@ -395,7 +400,9 @@ if __name__ == "__main__":
         app.include_router(chat_bar_router)
         app.include_router(help_router)
 
+        app.include_router(lollms_stt_add_router)
         app.include_router(lollms_tts_add_router)
+        app.include_router(lollms_ttm_add_router)
         app.include_router(lollms_ttv_router)
         
         app.include_router(lollms_xtts_add_router)
