@@ -1,87 +1,89 @@
-# LoLLMs v19.0 (alpha) Changelog - "Settings & Services: The Great Glow-Up"
-*March 06, 2025*
+# LoLLMs v19.0 (alpha) Changelog
+*Date: March 06, 2025*
 
-## Settings Got a Makeover (Because They Deserved It)
-- **Revamped Main Settings Structure**: We tidied up the settings like a KonMari disciple—sparking joy and usability. Finding stuff is now easier than finding your keys in a messy drawer.
+## Core Settings Enhancements
+- **Revamped Main Settings Structure**: The primary settings interface has been reorganized to improve usability and maintainability, providing streamlined access to essential configuration options.
 
-## Customize It Like It’s Your Mixtape
+## Application Customization
 - **Introduced Application Customization Settings**:  
-  - *Custom application name*: Call it "LoLLMs" or "Sir Talks-a-Lot"—your vibe, your choice.  
-  - *Custom application slogan*: “AI so good it’ll roast your toast!”—go wild.  
-  - *Custom application logo*: Slap your cat’s face on there. Maximum flexibility, zero judgment.
+  - *Custom Application Name*: Users can now define a unique name for the application.  
+  - *Custom Application Slogan*: A configurable slogan option has been added for personalized branding.  
+  - *Custom Application Logo*: Support for a user-defined logo enhances visual customization.  
+  These additions offer extensive flexibility, allowing users to tailor the application’s identity to their specific needs.
 
-## Services: The Extreme Makeover Edition
-- **Overhauled Services System Architecture**: We rebuilt it from the ground up—think of it as the Avengers assembling, but with fewer capes and more modularity. Scalability so slick it could slide into your DMs.
+## Services System Overhaul
+- **Overhauled Services System Architecture**: The services framework has been comprehensively restructured to improve modularity and scalability, facilitating better integration and management of various service types.
 
-## Service Parameters That Bend Over Backwards
-- **Enhanced Service Parameter Flexibility**: These bad boys are now customizable like a Build-A-Bear workshop. Tweak ‘em, twist ‘em—services are ready to party however you like.
+## Service Parameter Improvements
+- **Enhanced Service Parameter Flexibility**: Service parameters have been redesigned to support dynamic customization, accommodating a broader range of services with configurable options for precise control over functionality.
 
-## Function Calls Level Up
-- **Expanded Function Call Capabilities**: Static parameters for the control freaks, dynamic ones for the free spirits. It’s like giving your AI a coffee *and* an energy drink—versatility on steroids.
-
----
-
-# LoLLMs v18.1 Changelog - "Function Calls & Memory: The Comeback Tour"
-*Somewhere Before March 06, 2025*
-
-- **System-Wide Function Calling**: It works everywhere now. Like Wi-Fi, but less spotty.
-- **Full Integration with Lightrag**: Lightrag joined the band, and it’s hitting all the high notes.
-- **Enhanced UI**: Prettier than your average AI facelift—Botox not included.
-- **Reworked Context Management System**: Context got a memory upgrade—less "Wait, what?" and more "I gotchu."
-- **Long-Term Memory Returns**: Via a fancy function call, because who doesn’t love a sequel? *Memory: Reloaded*.
-- **[Video Tutorial Alert!](https://youtu.be/0ft6PyOvSqI?si=3bFtOzQ-J2Y53JaY)**: Watch function calls strut their stuff. Spoiler: It’s cooler than a penguin on ice.
+## Function Call Advancements
+- **Expanded Function Call Capabilities**: Function calls now support both static and dynamic parameters. Static parameters ensure consistent predefined values, while dynamic parameters provide adaptability, enhancing control and versatility in execution.
 
 ---
 
-# LoLLMs v18.0 (beta) Changelog - "HTML BanHammer Edition"
-*Even Earlier Before March 06, 2025*
+# LoLLMs v18.1 Changelog
+*Date: Prior to March 06, 2025*
 
-- **No More Raw HTML Rendering**: Code injection attacks got the boot. Messages are now safer than a bubble-wrapped baby on a Docker container. Security: 1, Hackers: 0.
+- **System-Wide Function Calling**: Function calling capabilities have been fully implemented across the system for consistent operation.  
+- **Full Integration with Lightrag**: Seamless integration with Lightrag has been achieved, enhancing system functionality.  
+- **Enhanced User Interface**: The UI has been refined for improved usability and aesthetics.  
+- **Reworked Context Management System**: The context management framework has been optimized for better performance and reliability.  
+- **Long-Term Memory Reintroduced**: Long-term memory functionality has been restored through a dedicated function call mechanism.  
+- **[Video Tutorial](https://youtu.be/0ft6PyOvSqI?si=3bFtOzQ-J2Y53JaY)**: A detailed guide on function calls in LoLLMs is available for user reference.
 
 ---
 
-# LoLLMs v18.0 (alpha) Changelog - "Matrix Vibes & Thinking Caps"
-*Way Back When*
+# LoLLMs v18.0 (beta) Changelog
+*Date: Prior to v18.1*
 
-## LoLLMs v18 'Matrix' - *Insert Keanu Reeves Whoa*
+- **Discontinued Raw HTML Rendering**: Messages no longer render raw HTML, bolstering security against code injection vulnerabilities. This update aligns with LoLLMs’ compatibility with Docker environments.
+
+---
+
+# LoLLMs v18.0 (alpha) Changelog
+## LoLLMs v18 'Matrix'
+*Date: Earlier Release*
+
+### Binary Signature
 01010100 01001000 01000101 01010010 01000101 00100000 
 01001001 01010011 00100000 01001110 01001111 00100000 
-01010011 01010000 01001111 01001111 01001110  
-(Translation: “THERE IS NO SPOON”—yes, we’re that extra.)
+01010011 01010000 01001111 01001101 01001110  
+(*Translation*: "THERE IS NO SPOON")
 
-## 🎯 Major Features (Big Brain Time)
-- **Think First Process**: AI now thinks before it speaks—like your mom told you to. Revolutionary!
-- **Thinking Visualization UI**: Watch the AI’s gears grind in real-time. It’s like peeking into its diary.
-- **Collapsible Thinking Section**: Hide the brain fart moments with one click.
-- **Automatic Changelog Popup**: New version? BAM—popup in your face like a needy ex.
+## Major Features
+- **Implemented "Think First" Process**: A new process requiring AI to deliberate before responding has been integrated into all interactions.  
+- **Thinking Visualization UI Component**: A dedicated interface element visualizes the AI’s reasoning process.  
+- **Collapsible Thinking Section**: A collapsible section in the chat interface displays the AI’s thought process.  
+- **Automatic Changelog Popup Notification System**: A new system notifies users of updates upon version detection.
 
-## 🖥️ UI Improvements (Shiny!)
-- **Collapsible Thinking Panel**: See the AI’s “Eureka!” moments—or collapse them when it’s overthinking its binary emotions.
-- **Toggle Button**: Show/hide the AI’s midlife crisis with style.
-- **Step-by-Step Visualization**: Now with prettier formatting—because even thoughts deserve a glow-up.
-- **Progress Indicators**: Watch the AI sweat through its thinking stages.
-- **Changelog Popup Dialog**: Sleek, scrollable, and dismissible. “Don’t show again” for the rebels.
+## User Interface Improvements
+- **Collapsible Thinking Process Panel**: Displays the AI’s reasoning steps with an option to collapse for convenience.  
+- **Toggle Button**: Enables users to show or hide the thinking process as needed.  
+- **Enhanced Step-by-Step Visualization**: Improved formatting enhances readability of the AI’s reasoning stages.  
+- **Progress Indicators**: Visual cues indicate progress through the thinking phases.  
+- **Changelog Popup Dialog**: Features a modern, scrollable design with a dismissible option and settings menu access.
 
-## 🧠 AI Goes Full Philosopher
-- **Systematic Thinking**: Hypothesis, analysis, planning—AI’s got a PhD in Overthinking now.
-- **Improved Problem-Solving**: Explicit reasoning steps so clear, it could solve your family drama.
-- **Decision-Making Transparency**: No more “Trust me, bro”—you see the *why*.
+## AI Enhancements
+- **Systematic Thinking Approach**: Structured thinking patterns (hypothesis, analysis, planning) have been integrated for improved reasoning.  
+- **Improved Problem-Solving**: Explicit reasoning steps enhance the AI’s problem-solving capabilities.  
+- **Enhanced Decision-Making Transparency**: The AI’s decision-making process is now more transparent to users.
 
-## ⚡ Performance Boosts (Zoom Zoom)
-- **Optimized Rendering**: Thinking display so fast it could outrun Usain Bolt.
-- **Better Response Pipeline**: Smoother than a buttered slide.
-- **Memory Management**: Tracking thoughts without crashing—AI’s got its life together now.
+## Performance Optimizations
+- **Optimized Thinking Process Rendering**: Display of the thinking process has been streamlined for efficiency.  
+- **Improved Response Generation Pipeline**: The response generation workflow has been enhanced for better performance.  
+- **Better Memory Management**: Memory usage for tracking the thinking process has been optimized.
 
-## 🛠️ Techy Bits (Nerd Alert)
-- **New API Endpoints**: Monitor the AI’s existential crisis remotely.
-- **Thinking Data Structure**: Because even thoughts need a filing cabinet.
-- **Enhanced Logging**: Track every “Aha!” and “Oops.”
-- **Changelog Version Tracking**: Local storage remembers your “Nah, I’m good” popup preferences.
+## Technical Updates
+- **New API Endpoints**: Added endpoints for monitoring the thinking process.  
+- **Thinking Process Data Structure**: A new data structure supports the thinking framework.  
+- **Enhanced Logging System**: Improved logging facilitates thought process tracking.  
+- **Changelog Version Tracking System**: Includes local storage for preferences and automated popup triggers.
 
-## 📝 Docs (Read ‘Em and Weep)
-- **Thinking Process Docs**: Learn how AI became a thinker, not just a talker.
-- **User Guide Update**: Now with “How to Watch AI Think” instructions.
-- **Changelog System Docs**: Because even popups need a manual.
+## Documentation
+- **Thinking Process Documentation**: Comprehensive guides for the new thinking features have been added.  
+- **Updated User Guide**: Instructions for utilizing the thinking visualization are now included.  
+- **Changelog Notification System Documentation**: Details the functionality of the popup system.
 
 ## Note
-No fancy O1 or R1 models needed—just good ol’ prompting and a snazzy UI. We’re proving traditional LLMs can think deep thoughts and still party hard.
+This release demonstrates that advanced thinking capabilities can be achieved with traditional LLMs through effective prompting and visualization, without reliance on specialized models such as O1 or R1.
