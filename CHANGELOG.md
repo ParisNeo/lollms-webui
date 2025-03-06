@@ -1,9 +1,26 @@
 # LoLLMs v19.0 (alpha) Changelog
-- Restructured main settings
-- Added application settings to allow changing the application name, the application slogan, the application logo for a maximum flexibility.
-- Completely changed the services system structure
-- Services parameters are now flexible to allow for variaty of services to have options
-- Function calls may now have static parameters in addition to their parameters
+
+- **Revamped Main Settings Structure**  
+  - Reorganized the core settings layout for improved usability and maintainability, streamlining access to key configuration options.
+
+- **Introduced Application Customization Settings**  
+  - Added new options to personalize the application, including:  
+    - Custom application name  
+    - Custom application slogan  
+    - Custom application logo  
+  - These enhancements provide *maximum flexibility*, enabling users to tailor the application’s branding and identity to their preferences.
+
+- **Overhauled Services System Architecture**  
+  - Completely restructured the services framework to enhance modularity and scalability.  
+  - Improved integration and management of diverse service types for a more robust and adaptable system.
+
+- **Enhanced Service Parameter Flexibility**  
+  - Redesigned service parameters to support dynamic customization.  
+  - Now accommodates a wider *variety* of services by allowing configurable options, empowering users to fine-tune service behavior as needed.
+
+- **Expanded Function Call Capabilities**  
+  - Function calls now support both static and dynamic parameters.  
+  - Static parameters provide predefined values for consistency, while dynamic parameters retain flexibility, offering *greater control and versatility* in function execution.
 
 # LoLLMs v18.1 Changelog
 - Working system-wide function calling.
