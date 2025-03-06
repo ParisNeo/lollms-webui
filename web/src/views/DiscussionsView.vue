@@ -3966,7 +3966,7 @@ export default {
             return slp;
         },  
         shouldShowLollmsFunFacts() {
-            const slf = !(this.$store.state.config && 
+            const slf = (this.$store.state.config && 
                 this.$store.state.config.app_show_fun_facts);
             console.log("shouldShowLollmsFunFacts")
             console.log(slf)
