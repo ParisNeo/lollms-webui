@@ -5493,7 +5493,7 @@ export default {
                 const func = entry.function_call
                 try {
                     this.isLoading = true
-                    axios.post('/get_function_call_settings',{client_id:this.$store.state.client_id,dir:func.category,name:func.name}).then(res => {
+                    axios.post('/get_function_call_settings',{client_id:this.$store.state.client_id,category:func.category,name:func.name}).then(res => {
                         console.log(res)
                         this.isLoading = false
                         if (res) {
@@ -5503,7 +5503,7 @@ export default {
                                     // send new data
                                     try {
                                         axios.post('/set_function_call_settings',
-                                            {client_id:this.$store.state.client_id,dir:func.dir,name:func.name, "settings":res}, {headers: this.posts_headers}).then(response => {
+                                            {client_id:this.$store.state.client_id,category:func.category,name:func.name, "settings":res}, {headers: this.posts_headers}).then(response => {
                                                 if (response && response.data) {
                                                     console.log('function call set with new settings', response.data)
                                                     this.$store.state.toast.showToast("function call settings updated successfully!", 4, true)
