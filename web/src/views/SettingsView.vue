@@ -5499,7 +5499,7 @@ export default {
                         if (res) {
                             if (res.data && Object.keys(res.data).length > 0) {
                                 // open form
-                                this.$store.state.universalForm.showForm(res.data, "Function call settings - " +this.$store.state.config.active_ttv_service, "Save changes", "Cancel").then(res => {
+                                this.$store.state.universalForm.showForm(res.data, "Function call settings - " +func.name, "Save changes", "Cancel").then(res => {
                                     // send new data
                                     try {
                                         axios.post('/set_function_call_settings',
