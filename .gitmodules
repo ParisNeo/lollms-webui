@@ -26,3 +26,7 @@
 	path = zoos/functions_zoo
 	url = https://github.com/ParisNeo/lollms_functions_zoo.git
 	branch = main
+[submodule "zoos/services_zoo"]
+	path = zoos/services_zoo
+	url = https://github.com/ParisNeo/lollms_services_zoo.git
+	branch = main
