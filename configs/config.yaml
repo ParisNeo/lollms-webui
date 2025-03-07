@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 159
+version: 160
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -31,7 +31,7 @@ host: localhost
 port: 9600
 
 app_custom_logo: ""
-app_custom_name: "LoLLMS"
+app_custom_name: ""
 app_show_changelogs: true
 app_custom_welcome_message: ""
 app_custom_slogan: ""

@@ -4776,6 +4776,7 @@
                                     <function-entry ref="functionsZoo" v-for="(func, index) in functionsFiltered"
                                         :key="'index-' + index + '-' + func.name" 
                                         :function_call="func"
+                                        :on-show-settings="showFunctionSettings"
                                         :on-mount="mountFunction"
                                         :on-un-mount="unmountFunction"
                                         :on-re-mount="remountFunction"
@@ -5488,7 +5489,48 @@ export default {
                 }
                 this.saveFavoritesToLocalStorage();
             },
+            async showFunctionSettings(entry){
+                const func = entry.function_call
+                try {
+                    this.isLoading = true
+                    axios.post('/get_function_call_settings',{client_id:this.$store.state.client_id,dir:func.category,name:func.name}).then(res => {
+                        console.log(res)
+                        this.isLoading = false
+                        if (res) {
+                            if (res.data && Object.keys(res.data).length > 0) {
+                                // open form
+                                this.$store.state.universalForm.showForm(res.data, "Function call settings - " +this.$store.state.config.active_ttv_service, "Save changes", "Cancel").then(res => {
+                                    // send new data
+                                    try {
+                                        axios.post('/set_function_call_settings',
+                                            {client_id:this.$store.state.client_id,dir:func.dir,name:func.name, "settings":res}, {headers: this.posts_headers}).then(response => {
+                                                if (response && response.data) {
+                                                    console.log('function call set with new settings', response.data)
+                                                    this.$store.state.toast.showToast("function call settings updated successfully!", 4, true)
+                                                } else {
+                                                    this.$store.state.toast.showToast("Did not get function call settings responses.\n" + response, 4, false)
+                                                    this.isLoading = false
+                                                }
+                                            })
+                                    } catch (error) {
+                                        this.$store.state.toast.showToast("Did not get function call settings responses.\n Endpoint error: " + error.message, 4, false)
+                                        this.isLoading = false
+                                    }
+                                })
+                            } else {
+                                this.$store.state.toast.showToast("Function call has no settings", 4, false)
+                                this.isLoading = false
+                            }
 
+                        }
+                    })
+
+                } catch (error) {
+                    this.isLoading = false
+                    this.$store.state.toast.showToast("Could not open function call settings. Endpoint error: " + error.message, 4, false)
+                }
+
+            },
             // Mount a function
             async mountFunction(entry) {
                 const func = entry.function_call

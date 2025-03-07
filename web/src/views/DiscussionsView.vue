@@ -1885,7 +1885,7 @@ export default {
         showModelConfig(){
             try {
                 this.isLoading = true
-                axios.get('/get_active_binding_settings').then(res => {
+                axios.post('/get_active_binding_settings',{client_id:this.$store.state.client_id}).then(res => {
                     this.isLoading = false
                     if (res) {
                         if (res.data && Object.keys(res.data).length > 0) {
@@ -2244,7 +2244,7 @@ export default {
         onSettingsBinding() {
             try {
                 this.isLoading = true
-                axios.get('/get_active_binding_settings').then(res => {
+                axios.post('/get_active_binding_settings',{client_id:this.$store.state.client_id}).then(res => {
                     this.isLoading = false
                     if (res) {
                         if (res.data && Object.keys(res.data).length > 0) {

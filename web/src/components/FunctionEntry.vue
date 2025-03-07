@@ -86,6 +86,7 @@ export default {
     onRemount: Function,
     onCopyToCustom: Function,
     onEdit: Function,
+    onShowSettings: Function,
     onCopyfunction_callName: Function,
     onToggleFavorite: Function
   },
@@ -129,6 +130,9 @@ export default {
     })
   },
   methods: {
+    show_settings(){
+        this.onShowSettings(this)
+    },
     formatDate(dateString) {
         const options = { year: 'numeric', month: 'short', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
