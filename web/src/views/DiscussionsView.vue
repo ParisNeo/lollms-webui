@@ -2924,6 +2924,7 @@ export default {
             }
         },
         createEmptyUserMessage(message){
+            console.log("Creating empty user message")
             socket.emit('create_empty_message', {"type":0,"message":message}); // 0 for user and 1 for AI
         },
         createEmptyAIMessage(){

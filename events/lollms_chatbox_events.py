@@ -51,7 +51,6 @@ def add_events(sio: socketio):
         if type == 0:
             ASCIIColors.info(f"Building empty User message requested by : {client_id}")
             # send the message to the bot
-            print(f"Creating an empty message for AI answer orientation")
             if lollmsElfServer.session.get_client(client_id).discussion:
                 lollmsElfServer.new_message(
                     client_id,
