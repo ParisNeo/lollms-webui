@@ -126,7 +126,7 @@ async def execute_code(request: CodeRequest):
             ASCIIColors.info("Executing function call:")
             ASCIIColors.yellow(code)
             try:
-                out = lollmsElfServer.personality.execute_function(code)
+                out = lollmsElfServer.execute_function(code, client)
                 return (
                     out
                     if type(out) == str
