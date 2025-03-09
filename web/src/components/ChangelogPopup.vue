@@ -1,13 +1,16 @@
 <template>
-  <div v-if="showChangelogPopup" class="changelog-popup-overlay">
-    <div class="changelog-popup">
+  <div v-if="showChangelogPopup" 
+       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300"
+       :class="{ 'opacity-0': !showChangelogPopup, 'opacity-100': showChangelogPopup }">
+    <div class="bg-white rounded-xl w-[95%] max-w-6xl max-h-[90vh] flex flex-col shadow-2xl transform transition-all duration-300"
+         :class="{ 'scale-95': !showChangelogPopup, 'scale-100': showChangelogPopup }">
       <div class="changelog-header">
-        <h2>What's New in LoLLMs</h2>
-        <button class="close-button" @click="closePopup">×</button>
+        <h2 class="header-title">What's New in LoLLMs</h2>
+        <button class="close-btn" @click="closePopup">×</button>
       </div>
-      <div class="changelog-content markdown-body" v-html="parsedChangelogContent"></div>
+      <div class="changelog-content" v-html="parsedChangelogContent"></div>
       <div class="changelog-footer">
-        <button class="understood-button" @click="handleUnderstand">
+        <button class="action-btn" @click="handleUnderstand">
           I understood
         </button>
       </div>
@@ -18,9 +21,8 @@
 <script>
 import axios from 'axios';
 import { marked } from 'marked';
-import DOMPurify from 'dompurify'; // For security
+import DOMPurify from 'dompurify';
 
-import { nextTick } from 'vue'
 export default {
   name: 'ChangelogPopup',
   data() {
@@ -32,7 +34,6 @@ export default {
   },
   computed: {
     parsedChangelogContent() {
-      // Convert markdown to HTML and sanitize
       return DOMPurify.sanitize(marked(this.changelogContent));
     }
   },
@@ -42,11 +43,9 @@ export default {
   methods: {
     async checkChangelogUpdate() {
       try {
-        // Get current changelog
         const changelogResponse = await axios.get("/get_changelog");
         this.changelogContent = changelogResponse.data;
         
-        // Extract version from changelog
         let res = await axios.get('/get_lollms_webui_version', {});
         if (res) {
           res = res.data
@@ -57,31 +56,22 @@ export default {
           }
         }
         this.currentVersion = this.$store.state.version
-        console.log("checkChangelogUpdate")
-        console.log(this.$store.state.version)
         
-        // Get last viewed version
         const lastViewedResponse = await axios.get("/get_last_viewed_changelog_version");
         const lastViewedVersion = lastViewedResponse.data;
         
-        // Show popup if versions don't match
-                  
-
         this.$nextTick(() => {
           if (this.$store.state.config) {
             if (this.currentVersion !== lastViewedVersion && this.$store.state.config.app_show_changelogs) {
-              console.log("Showing changelog");
               this.showChangelogPopup = true;
             }
           } else {
-            // If config is not loaded yet, you can set up a watcher or retry after a delay
             const unwatch = this.$watch('$store.state.config', (newConfig) => {
               if (newConfig) {
                 if (this.currentVersion !== lastViewedVersion && newConfig.app_show_changelogs) {
-                  console.log("Showing changelog");
                   this.showChangelogPopup = true;
                 }
-                unwatch(); // Stop watching once the config is loaded
+                unwatch();
               }
             });
           }
@@ -109,122 +99,107 @@ export default {
 </script>
 
 <style scoped>
-.changelog-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.changelog-popup {
-  background: white;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
-}
-
+/* Header Styles */
 .changelog-header {
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  @apply p-6 flex justify-between items-center;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
 }
 
+.header-title {
+  @apply text-3xl font-bold text-white;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn {
+  @apply text-white text-3xl font-light w-10 h-10 flex items-center justify-center;
+  transition: all 0.2s ease-in-out;
+}
+
+.close-btn:hover {
+  @apply text-gray-200 bg-white/10;
+  border-radius: 50%;
+  transform: rotate(90deg);
+}
+
+/* Content Styles */
 .changelog-content {
-  padding: 1rem;
-  overflow-y: auto;
-  flex-grow: 1;
+  @apply p-6 overflow-y-auto flex-1;
+  font-family: 'Inter', sans-serif;
+  color: #1f2937;
 }
 
+.changelog-content :deep(h1) {
+  @apply text-3xl font-bold mt-8 mb-4;
+  color: #1e40af;
+}
+
+.changelog-content :deep(h2) {
+  @apply text-2xl font-semibold mt-6 mb-3;
+  color: #1e40af;
+}
+
+.changelog-content :deep(h3) {
+  @apply text-xl font-medium mt-4 mb-2;
+  color: #1e40af;
+}
+
+.changelog-content :deep(p) {
+  @apply mb-4 leading-relaxed;
+}
+
+.changelog-content :deep(ul),
+.changelog-content :deep(ol) {
+  @apply pl-8 mb-4;
+  list-style-position: outside;
+}
+
+.changelog-content :deep(ul) {
+  @apply list-disc;
+}
+
+.changelog-content :deep(ol) {
+  @apply list-decimal;
+}
+
+.changelog-content :deep(code) {
+  @apply px-1 py-0.5 text-sm bg-gray-100 rounded;
+  font-family: 'Fira Code', monospace;
+  color: #9d174d;
+}
+
+.changelog-content :deep(pre) {
+  @apply p-4 mb-4 bg-gray-50 rounded-lg;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-family: 'Fira Code', monospace;
+  color: #374151;
+}
+
+.changelog-content :deep(blockquote) {
+  @apply pl-4 py-2 my-4 border-l-4 border-blue-200 bg-blue-50;
+  color: #4b5563;
+  font-style: italic;
+}
+
+/* Footer Styles */
 .changelog-footer {
-  padding: 1rem;
-  border-top: 1px solid #eee;
-  text-align: right;
+  @apply p-6 border-t border-gray-200 flex justify-end;
 }
 
-.understood-button {
-  background: #4CAF50;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
+.action-btn {
+  @apply px-6 py-2 text-white rounded-lg;
+  background: linear-gradient(45deg, #10b981 0%, #14b8a6 100%);
+  transition: all 0.3s ease;
 }
 
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
+.action-btn:hover {
+  @apply scale-105;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-/* Markdown Styles */
-.markdown-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
-  word-wrap: break-word;
-}
-
-.markdown-body h1,
-.markdown-body h2,
-.markdown-body h3,
-.markdown-body h4,
-.markdown-body h5,
-.markdown-body h6 {
-  margin-top: 24px;
-  margin-bottom: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.markdown-body h1 { font-size: 2em; }
-.markdown-body h2 { font-size: 1.5em; }
-.markdown-body h3 { font-size: 1.25em; }
-
-.markdown-body p {
-  margin-top: 0;
-  margin-bottom: 16px;
-}
-
-.markdown-body ul,
-.markdown-body ol {
-  padding-left: 2em;
-  margin-top: 0;
-  margin-bottom: 16px;
-}
-
-.markdown-body code {
-  padding: 0.2em 0.4em;
-  margin: 0;
-  font-size: 85%;
-  background-color: rgba(27,31,35,0.05);
-  border-radius: 3px;
-}
-
-.markdown-body pre {
-  padding: 16px;
-  overflow: auto;
-  font-size: 85%;
-  line-height: 1.45;
-  background-color: #f6f8fa;
-  border-radius: 3px;
-}
-
-.markdown-body blockquote {
-  padding: 0 1em;
-  color: #6a737d;
-  border-left: 0.25em solid #dfe2e5;
-  margin: 0;
+.action-btn:active {
+  @apply scale-95;
 }
 </style>
