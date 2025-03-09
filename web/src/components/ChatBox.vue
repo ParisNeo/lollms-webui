@@ -169,6 +169,7 @@
               :help="'Function calls (WIP)'"
               :commandsList="functionCalls"
               :sendCommand="toggleFunctionCall"
+              :showSettings="showFunctionSettings"
               :on-show-toast-message="onShowToastMessage"
               ref="functioncalls"
             />
@@ -830,6 +831,54 @@ export default {
             await axios.post('/toggle_mount_rag_database', {"client_id":this.$store.state.client_id,"datalake_name":cmd})
             await this.$store.dispatch('refreshConfig');
             console.log("Refreshed")
+
+        },
+        
+        async showFunctionSettings(entry){
+            const func = entry
+            // Split the path by '/' and filter out empty segments
+            let normalizedPath = func.dir.replace(/\\/g, '/');
+            const segments = normalizedPath.split('/').filter(segment => segment !== '');
+ 
+            // Get the parent folder name (second-to-last segment)
+            const category = segments[segments.length - 2];
+            try {
+                this.isLoading = true
+                axios.post('/get_function_call_settings',{client_id:this.$store.state.client_id,category:category,name:func.name}).then(res => {
+                    this.isLoading = false
+                    if (res) {
+                        if (res.data && Object.keys(res.data).length > 0) {
+                            // open form
+                            this.$store.state.universalForm.showForm(res.data, "Function call settings - " +func.name, "Save changes", "Cancel").then(res => {
+                                // send new data
+                                try {
+                                    axios.post('/set_function_call_settings',
+                                        {client_id:this.$store.state.client_id,category:func.category,name:func.name, "settings":res}, {headers: this.posts_headers}).then(response => {
+                                            if (response && response.data) {
+                                                console.log('function call set with new settings', response.data)
+                                                this.$store.state.toast.showToast("function call settings updated successfully!", 4, true)
+                                            } else {
+                                                this.$store.state.toast.showToast("Did not get function call settings responses.\n" + response, 4, false)
+                                                this.isLoading = false
+                                            }
+                                        })
+                                } catch (error) {
+                                    this.$store.state.toast.showToast("Did not get function call settings responses.\n Endpoint error: " + error.message, 4, false)
+                                    this.isLoading = false
+                                }
+                            })
+                        } else {
+                            this.$store.state.toast.showToast("Function call has no settings", 4, false)
+                            this.isLoading = false
+                        }
+
+                    }
+                })
+
+            } catch (error) {
+                this.isLoading = false
+                this.$store.state.toast.showToast("Could not open function call settings. Endpoint error: " + error.message, 4, false)
+            }
 
         },
         async toggleFunctionCall(func){
