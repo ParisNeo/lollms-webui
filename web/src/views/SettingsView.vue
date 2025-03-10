@@ -617,6 +617,19 @@
                                                 <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
                                             </div>
                                         </div>
+                                        <div class="setting-row flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                                            <label class="font-bold text-sm text-gray-700 dark:text-gray-200">Keep thoughts in context</label>
+                                            <div class="relative inline-block w-12 h-6">
+                                                <input type="checkbox"
+                                                    v-model="configFile.keep_thoughts"
+                                                    @change="settingsChanged=true"
+                                                    class="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer
+                                                            transition-transform duration-200 ease-in-out checked:translate-x-6 checked:bg-blue-500">
+                                                <label class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 dark:bg-gray-600 cursor-pointer"></label>
+                                            </div>
+                                        </div>
+
+                                        
                                     </div>
                                 </div>
 
