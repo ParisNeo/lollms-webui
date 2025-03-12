@@ -34,7 +34,7 @@
     "mermaid": "^11.2.1",
     "monaco-editor-vue3": "^0.1.10",
     "papaparse": "^5.4.1",
-    "prismjs": "^1.29.0",
+    "prismjs": "^1.30.0",
     "socket.io-client": "^4.6.1",
     "three": "^0.159.0",
     "vue": "^3.5.10",
