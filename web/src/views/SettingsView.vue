@@ -7330,7 +7330,7 @@ export default {
                             this.$store.state.universalForm.showForm(res.data, "STT settings - " +this.$store.state.config.active_ttv_service, "Save changes", "Cancel").then(res => {
                                 // send new data
                                 try {
-                                    axios.post('/set_active_s_settings',
+                                    axios.post('/set_active_stt_settings',
                                         {client_id:this.$store.state.client_id, "settings":res}, {headers: this.posts_headers}).then(response => {
                                             if (response && response.data) {
                                                 console.log('stt set with new settings', response.data)
