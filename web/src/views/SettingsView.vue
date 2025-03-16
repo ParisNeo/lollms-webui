@@ -7877,6 +7877,8 @@ export default {
 
         async api_get_req(endpoint) {
             try {
+                console.log("getting :")
+                console.log(endpoint)
                 const res = await axios.get("/" + endpoint);
 
                 if (res) {
