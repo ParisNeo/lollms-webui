@@ -101,11 +101,11 @@ git submodule update --init --recursive
 ```bash
 python -m venv venv
 ```
-# On Windows:
+### On Windows:
 ```cmd
 .\venv\Scripts\activate
 ```
-# On Linux/Mac:
+### On Linux/Mac:
 ```bash
 source venv/bin/activate
 ```
