@@ -40,13 +40,21 @@ As an all-encompassing tool with access to over 500 AI expert conditioning acros
 - Copy, edit, and remove messages
 - Local database storage for your discussions
 - Search, export, and delete multiple discussions
-- Support for image/video generation based on stable diffusion
+- Support for image generation based on stable diffusion/flux/comfyui/open ai dall-e/Midjourney/Novita ai services
+- Support for video generation based lumalabs/cogvideo_x/runwayml/stable_diffusion/Novita ai services
 - Support for music generation based on musicgen
 - Support for multi generation peer to peer network through Lollms Nodes and Petals.
 - Support for Docker, conda, and manual virtual environment setups
-- Support for LM Studio as a backend
-- Support for Ollama as a backend
-- Support for vllm as a backend
+- Support for LLMs using multiple bindings:
+  - Hugging face local models
+  - GGUF/GGML local models
+  - EXLLama v2 local models (EXT/AWQ/GPTQ)
+  - Ollama service
+  - vllm service
+  - Openai service
+  - Anthropic service
+  - Open-router service
+  - Novita-ai service
 - Support for prompt Routing to various models depending on the complexity of the task
 
 ## Star History
@@ -73,57 +81,74 @@ The installation scripts are:
 ### Manual install:
 Since v 10.14, manual installation is back:
 
-# 1. First ensure Python 3.11 is installed
-# You can check your Python version with:
+1. First ensure Python 3.11 is installed
+You can check your Python version with:
+```bash
 python --version
+```
 
-# If you need to install Python 3.11, download it from:
-# https://www.python.org/downloads/release/python-3118/
+If you need to install Python 3.11, download it from:
+[https://www.python.org/downloads/release/python-3118/](https://www.python.org/downloads/release/python-3118/)
 
-# 2. Clone the repository with submodules
+2. Clone the repository with submodules
+```bash
 git clone --recursive https://github.com/ParisNeo/lollms-webui.git
 cd lollms-webui
 git submodule update --init --recursive
+```
 
-# 3. Create and activate a virtual environment (recommended)
+3. Create and activate a virtual environment (recommended)
+```bash
 python -m venv venv
+```
 # On Windows:
+```cmd
 .\venv\Scripts\activate
+```
 # On Linux/Mac:
+```bash
 source venv/bin/activate
-
-# 4. Install requirements
+```
+4. Install requirements
+```bash
 pip install -r requirements.txt
+```
 
-# 5. Create global_paths_cfg.yaml
+5. Create global_paths_cfg.yaml
+```bash
 cat > global_paths_cfg.yaml << EOL
 lollms_path: $(pwd)/lollms_core/lollms
 lollms_personal_path: $(pwd)/personal_data
 EOL
+```
 
-# 6. Install desired bindings
-# You can set environment variables to select which bindings to install
-# For example, to install ollama binding:
+6. Install desired bindings
+You can set environment variables to select which bindings to install
+For example, to install ollama binding:
+```bash
 python zoos/bindings_zoo/ollama/__init__.py
+```
 
-# List of available bindings and their installation commands:
-# elf:           python zoos/bindings_zoo/elf/__init__.py
-# openrouter:    python zoos/bindings_zoo/openrouter/__init__.py
-# openai:        python zoos/bindings_zoo/openai/__init__.py
-# groq:          python zoos/bindings_zoo/groq/__init__.py
-# mistralai:     python zoos/bindings_zoo/mistralai/__init__.py
-# ollama:        python zoos/bindings_zoo/ollama/__init__.py
-# vllm:          python zoos/bindings_zoo/vllm/__init__.py
-# litellm:       python zoos/bindings_zoo/litellm/__init__.py
-# exllamav2:     python zoos/bindings_zoo/exllamav2/__init__.py
-# python_llama_cpp: python zoos/bindings_zoo/python_llama_cpp/__init__.py
-# huggingface:   python zoos/bindings_zoo/huggingface/__init__.py
-# remote_lollms: python zoos/bindings_zoo/remote_lollms/__init__.py
-# xAI:           python zoos/bindings_zoo/xAI/__init__.py
-# gemini:        python zoos/bindings_zoo/gemini/__init__.py
-
-# 7. Run the server
+List of available bindings and their installation commands:
+elf:           python zoos/bindings_zoo/elf/__init__.py
+openrouter:    python zoos/bindings_zoo/openrouter/__init__.py
+openai:        python zoos/bindings_zoo/openai/__init__.py
+groq:          python zoos/bindings_zoo/groq/__init__.py
+mistralai:     python zoos/bindings_zoo/mistralai/__init__.py
+ollama:        python zoos/bindings_zoo/ollama/__init__.py
+vllm:          python zoos/bindings_zoo/vllm/__init__.py
+litellm:       python zoos/bindings_zoo/litellm/__init__.py
+exllamav2:     python zoos/bindings_zoo/exllamav2/__init__.py
+python_llama_cpp: python zoos/bindings_zoo/python_llama_cpp/__init__.py
+huggingface:   python zoos/bindings_zoo/huggingface/__init__.py
+remote_lollms: python zoos/bindings_zoo/remote_lollms/__init__.py
+xAI:           python zoos/bindings_zoo/xAI/__init__.py
+gemini:        python zoos/bindings_zoo/gemini/__init__.py
+novita_ai:     python zoos/bindings_zoo/novita_ai/__init__.py
+7. Run the server
+```bash
 python app.py
+```
 
 
 now you are ready to run lolmms: `python app.py` 
