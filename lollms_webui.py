@@ -78,9 +78,9 @@ def terminate_thread(thread):
 
 lollms_webui_version = {
     "version_main":19,
-    "version_secondary":0,
-    "version_type":"alpha",
-    "version_codename":"Omni 🔗"
+    "version_secondary":2242,
+    "version_type":"",
+    "version_codename":"Twins 🧑‍🤝‍🧑"
 }
 
 
