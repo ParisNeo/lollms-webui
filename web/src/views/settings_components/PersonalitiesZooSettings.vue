@@ -121,7 +121,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted, nextTick, reactive } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, nextTick, onUpdated } from 'vue';
 import feather from 'feather-icons';
 import PersonalityEntry from '@/components/PersonalityEntry.vue'; // Assuming this component exists
 import defaultPersonalityIcon from "@/assets/logo.png"; // Default icon for personalities

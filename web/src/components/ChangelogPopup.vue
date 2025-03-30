@@ -1,17 +1,26 @@
 <template>
-  <div v-if="showChangelogPopup" 
-       class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-300"
+  <div v-if="showChangelogPopup"
+       class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-200"
        :class="{ 'opacity-0': !showChangelogPopup, 'opacity-100': showChangelogPopup }">
-    <div class="bg-white rounded-xl w-[95%] max-w-6xl max-h-[90vh] flex flex-col shadow-2xl transform transition-all duration-300"
-         :class="{ 'scale-95': !showChangelogPopup, 'scale-100': showChangelogPopup }">
+    <div class="bg-white rounded-lg w-[95%] max-w-4xl max-h-[90vh] flex flex-col shadow-lg transform transition-opacity duration-200"
+         :class="{ 'opacity-0': !showChangelogPopup, 'opacity-100': showChangelogPopup }">
+      <!-- Header -->
       <div class="changelog-header">
-        <h2 class="header-title">What's New in LoLLMs</h2>
-        <button class="close-btn" @click="closePopup">×</button>
+        <h2 class="header-title">What's New</h2>
+        <button class="close-btn" @click="closePopup" aria-label="Close Changelog">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
+
+      <!-- Content -->
       <div class="changelog-content" v-html="parsedChangelogContent"></div>
+
+      <!-- Footer -->
       <div class="changelog-footer">
         <button class="action-btn" @click="handleUnderstand">
-          I understood
+          Got it
         </button>
       </div>
     </div>
@@ -29,66 +38,94 @@ export default {
     return {
       showChangelogPopup: false,
       changelogContent: '',
-      currentVersion: '0.0.0'
+      currentVersion: '0.0.0' // Initialize with a default
     }
   },
   computed: {
     parsedChangelogContent() {
-      return DOMPurify.sanitize(marked(this.changelogContent));
+      // Basic configuration for marked - adjust if needed
+      const markedOptions = {
+        breaks: true, // Interpret carriage returns as <br>
+        gfm: true,    // Use GitHub Flavored Markdown
+      };
+      const rawHtml = marked(this.changelogContent, markedOptions);
+      return DOMPurify.sanitize(rawHtml);
     }
   },
   async mounted() {
     await this.checkChangelogUpdate();
   },
   methods: {
+    async fetchVersion() {
+      try {
+        const res = await axios.get('/get_lollms_webui_version');
+        if (res && res.data) {
+          const { version_main, version_secondary, version_type, version_codename } = res.data;
+          let versionString = `${version_main}.${version_secondary}`;
+          if (version_type) {
+            versionString += ` ${version_type}`;
+          }
+          if (version_codename) {
+            versionString += ` (${version_codename})`;
+          }
+          this.$store.commit('setVersion', versionString); // Assuming a mutation exists
+          this.currentVersion = versionString;
+          return versionString;
+        }
+      } catch (error) {
+        console.error("Error fetching LoLLMs version:", error);
+      }
+      // Fallback if fetch fails or store isn't ready yet
+      return this.$store.state.version || '0.0.0';
+    },
     async checkChangelogUpdate() {
       try {
+        // Fetch changelog first
         const changelogResponse = await axios.get("/get_changelog");
-        this.changelogContent = changelogResponse.data;
-        
-        let res = await axios.get('/get_lollms_webui_version', {});
-        if (res) {
-          res = res.data
-          if(res.version_type != "") {
-            this.$store.state.version = `${res.version_main}.${res.version_secondary} ${res.version_type} (${res.version_codename})`
-          } else {
-            this.$store.state.version = `${res.version_main}.${res.version_secondary} (${res.version_codename})`
-          }
-        }
-        this.currentVersion = this.$store.state.version
-        
+        this.changelogContent = changelogResponse.data || '*No changelog content found.*'; // Provide fallback content
+
+        // Fetch current version
+        const currentVersion = await this.fetchVersion();
+
+        // Fetch last viewed version
         const lastViewedResponse = await axios.get("/get_last_viewed_changelog_version");
-        const lastViewedVersion = lastViewedResponse.data;
-        
-        this.$nextTick(() => {
-          if (this.$store.state.config) {
-            if (this.currentVersion !== lastViewedVersion && this.$store.state.config.app_show_changelogs) {
-              this.showChangelogPopup = true;
-            }
-          } else {
-            const unwatch = this.$watch('$store.state.config', (newConfig) => {
-              if (newConfig) {
-                if (this.currentVersion !== lastViewedVersion && newConfig.app_show_changelogs) {
-                  this.showChangelogPopup = true;
-                }
-                unwatch();
-              }
-            });
+        const lastViewedVersion = lastViewedResponse.data; // Assuming this returns a string directly
+
+        // Ensure config is loaded before checking visibility
+        const checkVisibility = (config) => {
+          if (config && config.app_show_changelogs && currentVersion !== lastViewedVersion && currentVersion !== '0.0.0') {
+             this.showChangelogPopup = true;
           }
-        });
+        };
+
+        if (this.$store.state.config) {
+          checkVisibility(this.$store.state.config);
+        } else {
+          // Watch for config changes if not yet available
+          const unwatch = this.$watch('$store.state.config', (newConfig) => {
+            if (newConfig) {
+              checkVisibility(newConfig);
+              unwatch(); // Stop watching once config is loaded
+            }
+          }, { immediate: false }); // Don't run immediately, wait for change
+        }
+
       } catch (error) {
         console.error("Error checking changelog:", error);
+        // Optionally inform the user or log centrally
       }
     },
     async handleUnderstand() {
       try {
         await axios.post("/set_last_viewed_changelog_version", {
-          client_id: this.$store.state.client_id,
+          client_id: this.$store.state.client_id, // Ensure client_id is available
           version: this.currentVersion
         });
         this.closePopup();
       } catch (error) {
-        console.error("Error setting changelog version:", error);
+        console.error("Error setting last viewed changelog version:", error);
+        // Optionally inform the user? Maybe just close the popup anyway.
+        this.closePopup(); // Close even if the API call fails
       }
     },
     closePopup() {
@@ -99,61 +136,70 @@ export default {
 </script>
 
 <style scoped>
+/* Overlay */
+.fixed.inset-0 {
+  /* Slightly lighter overlay */
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+/* Modal Container */
+.bg-white {
+  max-width: 56rem; /* Adjusted max-width (equivalent to max-w-5xl, slightly smaller than 6xl) */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Softer shadow (like shadow-lg) */
+}
+
 /* Header Styles */
 .changelog-header {
-  @apply p-6 flex justify-between items-center;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-  border-top-left-radius: 0.75rem;
-  border-top-right-radius: 0.75rem;
+  @apply p-4 flex justify-between items-center border-b border-gray-200 bg-gray-50; /* Lighter background, simple border */
+  border-top-left-radius: 0.5rem; /* Match rounded-lg */
+  border-top-right-radius: 0.5rem; /* Match rounded-lg */
 }
 
 .header-title {
-  @apply text-3xl font-bold text-white;
-  letter-spacing: 0.05em;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  @apply text-xl font-semibold text-gray-800; /* Smaller, standard weight, dark gray text */
 }
 
 .close-btn {
-  @apply text-white text-3xl font-light w-10 h-10 flex items-center justify-center;
-  transition: all 0.2s ease-in-out;
+  @apply p-1 text-gray-500 rounded-full transition-colors duration-150;
 }
 
 .close-btn:hover {
-  @apply text-gray-200 bg-white/10;
-  border-radius: 50%;
-  transform: rotate(90deg);
+  @apply text-gray-700 bg-gray-200; /* Simple hover effect */
 }
 
 /* Content Styles */
 .changelog-content {
-  @apply p-6 overflow-y-auto flex-1;
-  font-family: 'Inter', sans-serif;
-  color: #1f2937;
+  @apply p-6 overflow-y-auto flex-1 text-gray-700; /* Standard text color */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Use system font stack */
+  line-height: 1.6; /* Improved readability */
 }
 
-.changelog-content :deep(h1) {
-  @apply text-3xl font-bold mt-8 mb-4;
-  color: #1e40af;
+/* Markdown Element Styling (using :deep or >>> for scoped styles) */
+.changelog-content :deep(h1),
+.changelog-content :deep(h2),
+.changelog-content :deep(h3),
+.changelog-content :deep(h4),
+.changelog-content :deep(h5),
+.changelog-content :deep(h6) {
+  @apply font-semibold text-gray-800 mb-3 mt-5 first:mt-0;
 }
 
-.changelog-content :deep(h2) {
-  @apply text-2xl font-semibold mt-6 mb-3;
-  color: #1e40af;
-}
-
-.changelog-content :deep(h3) {
-  @apply text-xl font-medium mt-4 mb-2;
-  color: #1e40af;
-}
+.changelog-content :deep(h1) { @apply text-2xl border-b pb-2 mb-4; }
+.changelog-content :deep(h2) { @apply text-xl border-b pb-1 mb-3; }
+.changelog-content :deep(h3) { @apply text-lg; }
+.changelog-content :deep(h4) { @apply text-base; }
 
 .changelog-content :deep(p) {
-  @apply mb-4 leading-relaxed;
+  @apply mb-4;
 }
 
 .changelog-content :deep(ul),
 .changelog-content :deep(ol) {
-  @apply pl-8 mb-4;
-  list-style-position: outside;
+  @apply pl-6 mb-4;
+}
+
+.changelog-content :deep(li) {
+  @apply mb-1;
 }
 
 .changelog-content :deep(ul) {
@@ -165,41 +211,48 @@ export default {
 }
 
 .changelog-content :deep(code) {
-  @apply px-1 py-0.5 text-sm bg-gray-100 rounded;
-  font-family: 'Fira Code', monospace;
-  color: #9d174d;
+  @apply px-1 py-0.5 text-sm bg-gray-100 text-gray-800 rounded border border-gray-200; /* More subtle code style */
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace; /* Standard mono font stack */
 }
 
 .changelog-content :deep(pre) {
-  @apply p-4 mb-4 bg-gray-50 rounded-lg;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  font-family: 'Fira Code', monospace;
-  color: #374151;
+  @apply p-4 mb-4 bg-gray-50 rounded border border-gray-200 overflow-x-auto text-sm; /* Subtle pre block */
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+.changelog-content :deep(pre) code {
+    @apply bg-transparent border-none p-0 text-sm; /* Reset code style inside pre */
 }
 
 .changelog-content :deep(blockquote) {
-  @apply pl-4 py-2 my-4 border-l-4 border-blue-200 bg-blue-50;
-  color: #4b5563;
-  font-style: italic;
+  @apply pl-4 py-2 my-4 border-l-4 border-gray-300 bg-gray-50 text-gray-600 italic; /* Muted blockquote */
+}
+
+.changelog-content :deep(a) {
+ @apply text-blue-600 hover:text-blue-800 hover:underline; /* Standard link styling */
 }
 
 /* Footer Styles */
 .changelog-footer {
-  @apply p-6 border-t border-gray-200 flex justify-end;
+  @apply p-4 border-t border-gray-200 flex justify-end bg-gray-50; /* Lighter background */
+  border-bottom-left-radius: 0.5rem; /* Match rounded-lg */
+  border-bottom-right-radius: 0.5rem; /* Match rounded-lg */
 }
 
 .action-btn {
-  @apply px-6 py-2 text-white rounded-lg;
-  background: linear-gradient(45deg, #10b981 0%, #14b8a6 100%);
-  transition: all 0.3s ease;
+  @apply px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-md transition-colors duration-150;
+  /* Standard primary button style */
 }
 
 .action-btn:hover {
-  @apply scale-105;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  @apply bg-blue-700; /* Darken on hover */
+}
+
+.action-btn:focus {
+  @apply outline-none ring-2 ring-offset-2 ring-blue-500; /* Focus state */
 }
 
 .action-btn:active {
-  @apply scale-95;
+  @apply bg-blue-800; /* Slightly darker on active */
 }
+
 </style>

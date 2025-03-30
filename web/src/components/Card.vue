@@ -1,55 +1,118 @@
 <template>
-  <div>
-  <div v-if="isActive" class="overlay" @click="toggleCard"></div>
-  <div v-show="shrink===false"
-    :class="[
-      'border-blue-300 rounded-lg shadow-lg p-2',
-      cardWidthClass,
-      'm-2',
-      {'subcard': is_subcard},
-      {'bg-white dark:bg-gray-900': !is_subcard},
-      { hovered: !disableHoverAnimation && isHovered, active: isActive }
-    ]"
-    @mouseenter="isHovered = true"
-    @mouseleave="isHovered = false"
-    @click.self="toggleCard"
-    :style="{ cursor:!this.disableFocus  ?  'pointer' : ''}"
-  >
-    <!-- Title -->
-    <div v-if="title" @click="shrink=true" :class="{'text-center p-2 m-2 bg-gray-200':!is_subcard}" class="bg-gray-100 dark:bg-gray-500 rounded-lg pl-2 pr-2 mb-2  font-bold cursor-pointer">{{ title }}</div>
+  <div :class="marginClass">
+    <!-- Overlay for focused state -->
+    <div v-if="isActive" class="overlay" @click="blurCard"></div>
 
-    <div v-if="isHorizontal" class="flex flex-wrap">
-      <!-- Card Content -->
-      <slot></slot>
+    <!-- Expanded Card View -->
+    <div
+      v-show="!isShrunkInternal"
+      :id="contentId"
+      :class="[
+        'card-container relative border rounded-lg shadow-lg p-4 transition-all duration-300 ease-in-out', // Added transition-all, duration-300
+        cardWidth, // Apply base width always
+        // Glassmorphism Styles
+        'bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60', // Core glass effect: requires bg image/color behind it
+        'border border-gray-200/30', // Softer border
+        { 'bg-gray-100 dark:bg-gray-800': isSubcard }, // Base color tint for subcard (semi-transparent due to bg-opacity)
+        { 'bg-white dark:bg-gray-900': !isSubcard }, // Base color tint for main card (semi-transparent due to bg-opacity)
+        // { 'hover:scale-105': !disableHoverAnimation && !isActive && !disableFocus }, // REMOVED Hover zoom effect
+        { 'scale-110 z-[1001]': isActive }, // Active/focused effect (increased scale and z-index) - Kept focus zoom
+        { 'cursor-pointer': !disableFocus } // Pointer cursor if focus is enabled
+      ]"
+      @click.self="focusCard"
+    >
+      <!-- Close Button (Top Right) - Visible only when active -->
+      <button
+        v-if="isActive"
+        @click="blurCard"
+        class="absolute top-2 right-2 text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white text-2xl leading-none z-10 transition-colors"
+        aria-label="Close"
+      >
+        ×
+      </button>
+
+      <!-- Title Area -->
+      <div
+        v-if="title"
+        :class="[
+          'flex justify-between items-center rounded-t-lg pl-3 pr-3 pt-2 pb-2 mb-3 font-bold', // Adjusted padding slightly
+          // Removed specific background for title to blend with glass effect
+          'text-gray-800 dark:text-gray-100', // Ensure title text is visible
+          { 'cursor-pointer': canShrink }, // Cursor only if shrinkable
+        ]"
+        @click="toggleShrink"
+        role="button"
+        :aria-expanded="!isShrunkInternal"
+        :aria-controls="contentId"
+        :tabindex="canShrink ? 0 : -1"
+        @keydown.enter.space="toggleShrink"
+      >
+        <span>{{ title }}</span>
+        <!-- Shrink/Expand Chevron -->
+        <span v-if="canShrink" class="ml-2 text-sm">
+          {{ isShrunkInternal ? '▼' : '▲' }}
+        </span>
+      </div>
+
+      <!-- Card Content Area -->
+      <!-- Added text color for better visibility on potentially complex backgrounds -->
+      <div :class="[
+          'text-gray-700 dark:text-gray-200',
+         { 'flex flex-wrap': isHorizontal, 'mb-2': !isHorizontal }
+         ]">
+        <slot></slot>
+      </div>
     </div>
 
-    <div v-else class="mb-2">
-      <!-- Card Content -->
-      <slot></slot>
+    <!-- Shrunk Card View -->
+    <div
+      v-if="canShrink"
+      v-show="isShrunkInternal"
+      @click="expandCard"
+      :class="[
+        'shrunk-card border rounded-lg shadow-lg p-2 text-center cursor-pointer transition-all duration-300 ease-in-out', // Added transition-all, duration-300
+        cardWidth, // Apply base width always
+        // Glassmorphism Styles for shrunk card
+        'bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-70', // Slightly less blur/more opaque when shrunk? Adjust as needed.
+        'border border-gray-200/30', // Softer border
+        { 'bg-gray-100 dark:bg-gray-800': isSubcard }, // Base color tint for subcard (semi-transparent)
+        { 'bg-white dark:bg-gray-900': !isSubcard }, // Base color tint for main card (semi-transparent)
+        'hover:bg-opacity-80 dark:hover:bg-opacity-80', // Subtle hover: increase opacity slightly
+        { 'text-lg font-semibold text-gray-800 dark:text-gray-200': isSubcard }, // Adjusted shrunk text color
+        { 'text-xl font-bold text-gray-800 dark:text-gray-200': !isSubcard } // Adjusted shrunk text color
+      ]"
+      role="button"
+      :aria-label="`Expand ${title || 'Card'}`"
+      tabindex="0"
+      @keydown.enter.space="expandCard"
+    >
+      {{ title || 'Show Card' }} <span class="text-sm">▼</span>
     </div>
-  </div>
-  <div v-if="is_subcard" v-show="shrink===true"  @click="shrink=false" class="bg-white text-center text-xl bold dark:bg-gray-500 border-blue-300 rounded-lg shadow-lg p-2 h-10 cursor-pointer m-2">
-    {{ title }}    
-  </div>
-  <div v-else v-show="shrink===true"  @click="shrink=false" class="bg-white text-center text-2xl dark:bg-gray-500 border-2 border-blue-300 rounded-lg shadow-lg p-0 h-7 cursor-pointer hover:h-8 hover:bg-blue-300">
-    +    
-  </div>
   </div>
 </template>
+
 <script>
+// Script section remains the same as before
+import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
+
 export default {
+  name: 'EnhancedCard',
   props: {
-    is_subcard:{
-      type:Boolean,
-      default:false
+    isSubcard: {
+      type: Boolean,
+      default: false,
     },
-    is_shrunk: {
-      type:Boolean,
-      default:false
+    initiallyShrunk: {
+      type: Boolean,
+      default: false,
+    },
+    canShrink: {
+      type: Boolean,
+      default: true,
     },
     title: {
       type: String,
-      default: "",
+      default: '',
     },
     isHorizontal: {
       type: Boolean,
@@ -57,60 +120,101 @@ export default {
     },
     cardWidth: {
       type: String,
-      default: "w-3/4",
+      default: 'w-full',
+    },
+    marginClass: {
+      type: String,
+      default: 'm-2',
     },
     disableHoverAnimation: {
       type: Boolean,
-      default: true,
+      default: false, // This prop is now less relevant as hover zoom is removed
     },
     disableFocus: {
       type: Boolean,
       default: false,
     },
   },
-  data() {
-    return {
-      shrink: this.is_shrunk,
-      isHovered: false,
-      isActive: false,
-    };
-  },
-  computed: {
-    cardClass() {
-      return [
-        "bg-gray-50",
-        "border",
-        "border-gray-300",
-        "text-gray-900",
-        "text-sm",
-        "rounded-lg",
-        "focus:ring-blue-500",
-        "focus:border-blue-500",
+  emits: ['shrunk', 'expanded', 'focused', 'blurred'],
 
-        "w-full",
-        "p-2.5",
-        "dark:bg-gray-500",
-        "dark:border-gray-600",
-        "dark:placeholder-gray-400",
-        "dark:text-white",
-        "dark:focus:ring-blue-500",
-        "dark:focus:border-blue-500",
-        {
-          "cursor-pointer": !this.isActive && !this.disableFocus,
-          "w-auto": !this.isActive,
-        },
-      ];
-    },
-    cardWidthClass() {
-      return this.isActive ? this.cardWidth : "";
-    },
-  },
-  methods: {
-    toggleCard() {
-      if(!this.disableFocus){
-        this.isActive = !this.isActive;
+  setup(props, { emit }) {
+    const isShrunkInternal = ref(props.initiallyShrunk);
+    const isActive = ref(false);
+    const contentId = computed(() => `card-content-${Math.random().toString(36).substring(2, 9)}`);
+
+    const shrinkCard = () => {
+      if (props.canShrink && !isShrunkInternal.value) {
+        isShrunkInternal.value = true;
+        emit('shrunk');
+        if (isActive.value) {
+            blurCard();
+        }
       }
-    },
+    };
+
+    const expandCard = () => {
+      if (props.canShrink && isShrunkInternal.value) {
+        isShrunkInternal.value = false;
+        emit('expanded');
+      }
+    };
+
+    const toggleShrink = () => {
+        if (!props.canShrink) return;
+        if (isShrunkInternal.value) {
+            expandCard();
+        } else {
+            shrinkCard();
+        }
+    };
+
+    const focusCard = () => {
+      if (!props.disableFocus && !isActive.value) {
+        isActive.value = true;
+        emit('focused');
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    const blurCard = () => {
+      if (isActive.value) {
+        isActive.value = false;
+        emit('blurred');
+        document.body.style.overflow = '';
+      }
+    };
+
+    const handleEscKey = (event) => {
+        if (event.key === 'Escape' && isActive.value) {
+            blurCard();
+        }
+    };
+
+    onMounted(() => {
+        document.addEventListener('keydown', handleEscKey);
+        // Ensure backdrop-filter is enabled in your Tailwind config if using JIT or PurgeCSS
+        // Usually under theme.extend.backdropFilter = { ... }
+        // and variants.extend.backdropFilter = ['responsive']
+    });
+
+    onBeforeUnmount(() => {
+         document.removeEventListener('keydown', handleEscKey);
+         if (isActive.value) {
+             document.body.style.overflow = '';
+         }
+    });
+
+
+    return {
+      isShrunkInternal,
+      isActive,
+      contentId,
+      shrinkCard,
+      expandCard,
+      toggleShrink,
+      focusCard,
+      blurCard,
+    };
   },
 };
 </script>
@@ -122,18 +226,63 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  /* Slightly lighter overlay to complement glass */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Higher backdrop blur for the overlay itself if desired */
+  /* backdrop-filter: blur(4px); */
   z-index: 1000;
+  cursor: pointer;
 }
 
-.hovered {
-  transform: scale(1.05);
-  transition: transform 0.2s ease-in-out;
+/* Ensure the active card is above the overlay */
+.card-container.scale-110 {
+  z-index: 1001;
 }
 
-.active {
-  transform: scale(1.1);
-  transition: transform 0.2s ease-in-out;
+/* Smooth transition for more properties including background/blur */
+.card-container, .shrunk-card {
+    transition-property: transform, background-color, border-color, color, box-shadow, background-opacity, backdrop-filter; /* Added more properties */
+    transition-timing-function: ease-in-out;
+    transition-duration: 300ms; /* Slightly longer duration */
 }
+
+/* Improve focus visibility for keyboard navigation */
+.card-container:focus-within,
+.shrunk-card:focus {
+    /* Using Tailwind's ring utility for focus */
+    @apply ring-2 ring-offset-2 ring-blue-500 ring-offset-transparent;
+}
+/* Hide default outline when using custom focus style */
+.card-container, .shrunk-card, button {
+    outline: none;
+}
+
+/* IMPORTANT: For glassmorphism to work, the element needs something *behind* it
+   with color/texture to blur. Place this card over an image, gradient, or
+   colorful background. */
+body {
+  /* Example: Add a gradient background to the body or a parent container */
+  /* background: linear-gradient(to right, #ff7e5f, #feb47b); */
+}
+
+/* Ensure backdrop-filter utilities are available. If not, add to tailwind.config.js */
+/*
+module.exports = {
+  theme: {
+    extend: {
+      backdropBlur: {
+        xs: '2px',
+        // ... other blur values if needed
+      }
+    }
+  },
+  variants: {
+    extend: {
+      backdropBlur: ['responsive'], // Enable variants if needed
+      backgroundOpacity: ['hover', 'focus', 'dark'], // Ensure opacity variants are enabled
+    },
+  },
+  plugins: [],
+}
+*/
 </style>
-

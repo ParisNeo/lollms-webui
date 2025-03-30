@@ -17,7 +17,7 @@
                     <input
                         type="checkbox"
                         id="use_smart_routing"
-                        :checked="config.use_smart_routing"
+                        :checked="useSmartRouting"
                         @change="updateBoolean('use_smart_routing', $event.target.checked)"
                         class="sr-only peer"
                     >
@@ -26,7 +26,7 @@
             </div>
 
             <!-- Restore Model After Smart Routing Toggle -->
-            <div :class="['flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors', !config.use_smart_routing ? 'opacity-50 pointer-events-none' : '']">
+            <div :class="['flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors', !useSmartRouting ? 'opacity-50 pointer-events-none' : '']">
                 <label for="restore_model_after_smart_routing" class="text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer flex-1 mr-4">
                     Restore Original Model After Routing
                     <span class="block text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -37,9 +37,9 @@
                     <input
                         type="checkbox"
                         id="restore_model_after_smart_routing"
-                        :checked="config.restore_model_after_smart_routing"
+                        :checked="restoreModelAfterRouting"
                         @change="updateBoolean('restore_model_after_smart_routing', $event.target.checked)"
-                        :disabled="!config.use_smart_routing"
+                        :disabled="!useSmartRouting"
                          class="sr-only peer"
                    >
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-500 peer-checked:bg-primary"></div>
@@ -47,7 +47,7 @@
             </div>
 
              <!-- Router Model Input -->
-             <div :class="['p-3 rounded-lg space-y-2', !config.use_smart_routing ? 'opacity-50 pointer-events-none' : '']">
+             <div :class="['p-3 rounded-lg space-y-2', !useSmartRouting ? 'opacity-50 pointer-events-none' : '']">
                  <label for="smart_routing_router_model" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Router Model Name
                      <span class="block text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -57,16 +57,16 @@
                  <input
                      type="text"
                      id="smart_routing_router_model"
-                     :value="config.smart_routing_router_model"
+                     :value="routerModel"
                      @input="updateValue('smart_routing_router_model', $event.target.value)"
-                     :disabled="!config.use_smart_routing"
+                     :disabled="!useSmartRouting"
                      class="input-field w-full"
                      placeholder="Enter the router model name"
                  >
              </div>
 
              <!-- Models with Description Dictionary -->
-             <div :class="['p-3 rounded-lg space-y-2', !config.use_smart_routing ? 'opacity-50 pointer-events-none' : '']">
+             <div :class="['p-3 rounded-lg space-y-2', !useSmartRouting ? 'opacity-50 pointer-events-none' : '']">
                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Specialized Models & Descriptions
                      <span class="block text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -74,13 +74,13 @@
                     </span>
                 </label>
                 <DictManager
-                    :modelValue="config.smart_routing_models_description || {}"
+                    :modelValue="modelsDescription"
                     @update:modelValue="updateValue('smart_routing_models_description', $event)"
                     key-name="Model Path / Name"
                     value-name="Model Description (Task Capabilities)"
                     placeholder="Enter model name (e.g., openai/gpt-4) or path"
                     value-placeholder="Describe what this model is good at (e.g., 'Excellent for coding tasks and complex reasoning')"
-                    :disabled="!config.use_smart_routing"
+                    :disabled="!useSmartRouting"
                     class="flex-grow"
                  />
             </div>
@@ -88,31 +88,71 @@
     </div>
 </template>
 
-<script setup>
-import { defineProps, defineEmits } from 'vue';
+<script>
 import DictManager from '@/components/DictManager.vue'; // Adjust path as needed
+// Optionally import mapState if you prefer that over direct $store access
+// import { mapState } from 'vuex';
 
-// Props definition
-const props = defineProps({
-    config: { type: Object, required: true },
-    loading: { type: Boolean, default: false },
-    settingsChanged: { type: Boolean, default: false } // Optional: Can be used for local validation/UI hints
-});
+export default {
+    name: 'SmartRoutingConfig',
+    components: {
+        DictManager
+    },
+    props: {
+        loading: {
+            type: Boolean,
+            default: false
+        },
+        settingsChanged: { // Optional: Can be used for local validation/UI hints
+            type: Boolean,
+            default: false
+        }
+    },
+    emits: ['update:setting', 'settings-changed'], // Declare emitted events
+    computed: {
+        // Using computed properties to access store state for cleaner template
+        // This also makes it easier to switch to mapState if desired later
+        useSmartRouting() {
+            return this.$store.state.config.use_smart_routing;
+        },
+        restoreModelAfterRouting() {
+            return this.$store.state.config.restore_model_after_smart_routing;
+        },
+        routerModel() {
+            return this.$store.state.config.smart_routing_router_model;
+        },
+        modelsDescription() {
+            // Ensure a default empty object if the value might be initially undefined/null
+            return this.$store.state.config.smart_routing_models_description || {};
+        }
 
-// Emits definition for updating parent
-const emit = defineEmits(['update:setting', 'settings-changed']);
-
-// --- Methods ---
-const updateValue = (key, value) => {
-    // Simple update for text, numbers, or complex objects like dictionaries
-    emit('update:setting', { key, value });
-};
-
-const updateBoolean = (key, value) => {
-    // Ensures boolean values are correctly emitted
-    emit('update:setting', { key, value: Boolean(value) });
-};
-
+        // --- Alternative using mapState (requires importing mapState) ---
+        // ...mapState({
+        //     useSmartRouting: state => state.config.use_smart_routing,
+        //     restoreModelAfterRouting: state => state.config.restore_model_after_smart_routing,
+        //     routerModel: state => state.config.smart_routing_router_model,
+        //     modelsDescription: state => state.config.smart_routing_models_description || {}
+        // })
+    },
+    methods: {
+        updateValue(key, value) {
+            // Simple update for text, numbers, or complex objects like dictionaries
+            this.$emit('update:setting', { key, value });
+            // Optionally emit settings-changed if needed based on props usage
+             if (this.settingsChanged !== undefined) { // Check if the prop is actually being used/passed
+                 this.$emit('settings-changed', true);
+             }
+        },
+        updateBoolean(key, value) {
+            // Ensures boolean values are correctly emitted
+            this.$emit('update:setting', { key, value: Boolean(value) });
+            // Optionally emit settings-changed
+            if (this.settingsChanged !== undefined) {
+                this.$emit('settings-changed', true);
+            }
+        }
+    }
+}
 </script>
 
 <style scoped>

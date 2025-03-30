@@ -1,8 +1,14 @@
 <template>
     <div class="space-y-6 p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">
-            System Status
-        </h2>
+        <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                System Status
+            </h2>
+            <button @click="refreshHardwareUsage" title="Refresh Status" class="p-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors duration-150">
+                <i data-feather="refresh-cw" class="w-4 h-4"></i>
+            </button>
+        </div>
+
 
         <!-- Hardware Usage Summary -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
@@ -15,12 +21,13 @@
                  </div>
                  <div v-else class="flex-1">
                       <div class="font-medium">{{ vramUsage.gpus.length }}x GPUs</div>
-                      <!-- Maybe show average or total usage if needed -->
+                      <!-- Could show average/total usage if needed -->
+                      <div class="text-xs text-gray-500 dark:text-gray-400">Total: {{ computedFileSize(totalVramUsed) }} / {{ computedFileSize(totalVram) }} ({{ avgVramPercentage }}%)</div>
                  </div>
             </div>
-             <div v-else class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                 <i data-feather="cpu" class="w-5 h-5 text-gray-500"></i>
-                 <div class="flex-1 font-medium text-gray-500">No GPU Detected</div>
+             <div v-else class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400">
+                 <i data-feather="alert-circle" class="w-5 h-5"></i> <!-- Changed icon for clarity -->
+                 <div class="flex-1 font-medium">No GPU Detected</div>
              </div>
 
             <!-- RAM Usage -->
@@ -31,6 +38,10 @@
                      <div>{{ computedFileSize(ramUsage.ram_usage) }} / {{ computedFileSize(ramUsage.total_space) }} ({{ ramUsage.percent_usage }}%)</div>
                  </div>
             </div>
+             <div v-else class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400">
+                 <i data-feather="cpu" class="w-5 h-5"></i>
+                 <div class="flex-1 font-medium">RAM N/A</div>
+             </div>
 
             <!-- Disk Usage -->
             <div v-if="diskUsage" class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
@@ -40,6 +51,10 @@
                      <div>{{ computedFileSize(diskUsage.binding_models_usage) }} / {{ computedFileSize(diskUsage.total_space) }} ({{ diskUsage.percent_usage }}%)</div>
                  </div>
             </div>
+             <div v-else class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400">
+                  <i data-feather="hard-drive" class="w-5 h-5"></i>
+                  <div class="flex-1 font-medium">Disk N/A</div>
+             </div>
         </div>
 
         <!-- Detailed Hardware Usage -->
@@ -79,7 +94,7 @@
                  <div v-for="(item, index) in vramUsage.gpus" :key="index" class="p-4 border border-gray-200 dark:border-gray-600 rounded-md mb-4">
                     <label class="flex items-center gap-1 mb-2 text-sm font-medium text-gray-900 dark:text-white">
                         <img :src="SVGGPU" width="20" height="20" class="flex-shrink-0" alt="GPU Icon">
-                        GPU {{ index }} Usage Details
+                        GPU {{ index + 1 }} Usage Details <!-- Added +1 for better numbering -->
                     </label>
                     <div class="text-xs space-y-1 mb-2 text-gray-600 dark:text-gray-400">
                         <div><b>Model: </b>{{ item.gpu_model }}</div>
@@ -91,6 +106,9 @@
                      </div>
                  </div>
             </div>
+             <div v-else class="p-4 border border-dashed border-gray-300 dark:border-gray-600 rounded-md text-center text-gray-500 dark:text-gray-400">
+                 No GPU detected or VRAM information unavailable.
+             </div>
         </div>
 
         <!-- Folders Section -->
@@ -152,65 +170,167 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUpdated, nextTick, defineProps } from 'vue';
+import { ref, computed, onMounted, onUnmounted, onUpdated, nextTick } from 'vue';
 import feather from 'feather-icons';
-import filesize from '@/plugins/filesize'; // Assuming filesize plugin is setup
-import SVGGPU from '@/assets/gpu.svg'; // Import SVG
+import filesize from '@/plugins/filesize'; // Make sure this path is correct
+import SVGGPU from '@/assets/gpu.svg';
+import axios from 'axios';
 
+// --- Configuration ---
+const REFRESH_INTERVAL_MS = 15000; // Refresh stats every 15 seconds
+const VITE_LOLLMS_API_BASEURL = import.meta.env.VITE_LOLLMS_API_BASEURL || 'http://localhost:9600'; // Default API URL
 
-// Props definition - Receiving data and functions from parent
-const props = defineProps({
-    // Config object - might contain paths or other relevant static info
-    config: { type: Object, required: true },
-    // Direct hardware stats (assuming parent fetches these)
-    diskUsage: { type: Object, default: null },
-    ramUsage: { type: Object, default: null },
-    vramUsage: { type: Object, default: null },
-    // API Interaction Functions
-    api_post_req: { type: Function, required: true },
-    client_id: { type: String, required: true },
-    // Utility Functions
-    show_toast: { type: Function, required: true }
+// --- State ---
+const diskUsage = ref(null);
+const ramUsage = ref(null);
+const vramUsage = ref(null);
+const clientId = ref(''); // Will be fetched or set
+const refreshTimer = ref(null);
+
+// --- API Setup ---
+axios.defaults.baseURL = VITE_LOLLMS_API_BASEURL;
+const posts_headers = {
+    'accept': 'application/json',
+    'Content-Type': 'application/json'
+};
+
+// --- Computed Properties ---
+const totalVram = computed(() => {
+    if (!vramUsage.value || !vramUsage.value.gpus) return 0;
+    return vramUsage.value.gpus.reduce((sum, gpu) => sum + gpu.total_vram, 0);
+});
+
+const totalVramUsed = computed(() => {
+    if (!vramUsage.value || !vramUsage.value.gpus) return 0;
+    return vramUsage.value.gpus.reduce((sum, gpu) => sum + gpu.used_vram, 0);
+});
+
+const avgVramPercentage = computed(() => {
+    if (!vramUsage.value || !vramUsage.value.gpus || vramUsage.value.gpus.length === 0) return '0.00';
+    const totalPercentage = vramUsage.value.gpus.reduce((sum, gpu) => sum + gpu.percentage, 0);
+    return (totalPercentage / vramUsage.value.gpus.length).toFixed(2);
 });
 
 
-// Methods
-const computedFileSize = (size) => {
-    if (size === null || size === undefined) return 'N/A';
-    return filesize(size);
-};
-
-const handleFolderClick = async (folderType) => {
-    const payload = {
-        client_id: props.client_id,
-        folder: folderType,
-    };
+// --- Methods ---
+const api_get_req = async (endpoint) => {
     try {
-        const response = await props.api_post_req('open_personal_folder', payload);
-        if (response.status) {
-            console.log(`Successfully opened folder: ${folderType}`);
-            props.show_toast(`Opened ${folderType.replace('-', ' ')} folder`, 4, true);
-        } else {
-            console.error(`Failed to open folder: ${folderType}`, response.error);
-             props.show_toast(`Failed to open folder: ${response.error || 'Unknown error'}`, 4, false);
-        }
+        const res = await axios.get(`/${endpoint}`);
+        return res.data;
     } catch (error) {
-        console.error('Error calling open_personal_folder endpoint:', error);
-         props.show_toast(`Error opening folder: ${error.message}`, 4, false);
+        console.error(`API GET Error (${endpoint}):`, error.message);
+        // Optionally show a user-facing error, but avoid flooding
+        return null; // Return null to indicate failure
     }
 };
 
-// Lifecycle Hooks
+const api_post_req = async (endpoint, data = {}) => {
+    try {
+        const payload = { ...data, client_id: clientId.value }; // Always include client_id
+        const res = await axios.post(`/${endpoint}`, payload, { headers: posts_headers });
+        return res.data;
+    } catch (error) {
+        console.error(`API POST Error (${endpoint}):`, error.message);
+        // Optionally show a user-facing error
+        return { status: false, error: error.message }; // Return error status
+    }
+};
+
+const computedFileSize = (size) => {
+    if (size === null || size === undefined || isNaN(size)) return 'N/A';
+    try {
+        return filesize(size);
+    } catch (e) {
+        console.warn("Filesize calculation error:", e);
+        return 'Error';
+    }
+};
+
+const refreshHardwareUsage = async () => {
+    console.log("Refreshing hardware usage...");
+    // Fetch data concurrently
+    const [diskData, ramData, vramData] = await Promise.all([
+        api_get_req("disk_usage"),
+        api_get_req("ram_usage"),
+        api_get_req("vram_usage")
+    ]);
+
+    diskUsage.value = diskData;
+    ramUsage.value = ramData;
+    vramUsage.value = vramData;
+
+    // Ensure Feather icons are re-rendered after data update
+    nextTick(() => {
+        feather.replace();
+    });
+};
+
+const handleFolderClick = async (folderType) => {
+    if (!clientId.value) {
+        console.error("Client ID not available for handleFolderClick");
+        // Maybe show a toast here
+        return;
+    }
+    const payload = {
+        folder: folderType,
+        // client_id is added automatically by api_post_req
+    };
+    try {
+        const response = await api_post_req('open_personal_folder', payload);
+        if (response.status) {
+            console.log(`Successfully opened folder: ${folderType}`);
+            // Replace show_toast with console log or implement a local toast system
+            console.info(`Opened ${folderType.replace('-', ' ')} folder`);
+        } else {
+            console.error(`Failed to open folder: ${folderType}`, response.error);
+             console.error(`Failed to open folder: ${response.error || 'Unknown error'}`);
+        }
+    } catch (error) {
+        console.error('Error calling open_personal_folder endpoint:', error);
+         console.error(`Error opening folder: ${error.message}`);
+    }
+};
+
+// Function to get client ID (example - replace with your actual logic)
+const initializeClientId = () => {
+    // Try getting from localStorage, global variable, or an initial API call
+    const storedClientId = localStorage.getItem('lollms_client_id');
+    if (storedClientId) {
+        clientId.value = storedClientId;
+    } else {
+        // Fallback or generate/fetch a new one if necessary
+        // For demonstration, let's generate a simple one (NOT recommended for production)
+        clientId.value = `client_${Date.now()}_${Math.random().toString(16).substring(2, 8)}`;
+        localStorage.setItem('lollms_client_id', clientId.value);
+        console.warn("Generated temporary client ID:", clientId.value);
+    }
+};
+
+// --- Lifecycle Hooks ---
 onMounted(() => {
+    initializeClientId(); // Get the client ID first
+    refreshHardwareUsage(); // Initial fetch
+
+    // Set up auto-refresh timer
+    refreshTimer.value = setInterval(refreshHardwareUsage, REFRESH_INTERVAL_MS);
+
     nextTick(() => {
         feather.replace();
     });
 });
 
 onUpdated(() => {
+    // This ensures icons are updated if the template changes after initial mount
     nextTick(() => {
         feather.replace();
     });
+});
+
+onUnmounted(() => {
+    // Clear the timer when the component is destroyed
+    if (refreshTimer.value) {
+        clearInterval(refreshTimer.value);
+    }
 });
 
 </script>
@@ -221,10 +341,25 @@ onUpdated(() => {
     min-height: 100px; /* Ensure buttons have a minimum height */
 }
 .folder-button:hover {
-     @apply border-solid shadow-sm;
+     @apply border-solid shadow-sm bg-opacity-50; /* Added bg-opacity for subtle hover */
 }
 
 .folder-button span {
     line-height: 1.2; /* Adjust line height for better text wrapping */
+}
+
+/* Optional: Add specific hover background colors based on border color */
+.border-blue-500:hover { @apply bg-blue-50 dark:bg-blue-900/20; }
+.border-green-500:hover { @apply bg-green-50 dark:bg-green-900/20; }
+.border-yellow-500:hover { @apply bg-yellow-50 dark:bg-yellow-900/20; }
+.border-purple-500:hover { @apply bg-purple-50 dark:bg-purple-900/20; }
+.border-red-500:hover { @apply bg-red-50 dark:bg-red-900/20; }
+
+/* Make progress bars smoother */
+.transition-all {
+    transition-property: all;
+}
+.duration-300 {
+    transition-duration: 300ms;
 }
 </style>

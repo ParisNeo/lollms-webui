@@ -305,10 +305,10 @@
       },
       openFolderVsCode(){
         const json = JSON.stringify({
-                                        'client_id': this.client_id, 
-                                        'code': this.code, 
-                                        'discussion_id': this.discussion_id, 
-                                        'message_id': this.message_id
+                                      'client_id': this.client_id, 
+                                      'discussion_id': typeof this.discussion_id === 'string' ? parseInt(this.discussion_id) : this.discussion_id , 
+                                      'message_id': this.message_id,
+                                      'code': this.code
                                       })   
         console.log(json)     
         fetch(`${this.host}/open_discussion_folder_in_vs_code`, {

@@ -11,7 +11,7 @@
                  <span>Active: <span class="font-semibold">{{ currentModelInfo.name }}</span></span>
                  <!-- Add settings/info button if applicable to models -->
             </div>
-            <div v-else-if="!config.binding_name" class="text-sm font-medium text-orange-600 dark:text-orange-400 p-2 bg-orange-50 dark:bg-orange-900/20 rounded-md border border-orange-300 dark:border-orange-600 shrink-0">
+            <div v-else-if="!bindingNameFromStore" class="text-sm font-medium text-orange-600 dark:text-orange-400 p-2 bg-orange-50 dark:bg-orange-900/20 rounded-md border border-orange-300 dark:border-orange-600 shrink-0">
                  Select a Binding first!
              </div>
             <div v-else class="text-sm font-medium text-red-600 dark:text-red-400 p-2 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-300 dark:border-red-600 shrink-0">
@@ -23,7 +23,7 @@
         <p class="text-sm text-gray-500 dark:text-gray-400">
             Select a model compatible with your chosen binding (<span class="font-semibold">{{ currentBindingName || 'None Selected' }}</span>). Installed models are shown first.
         </p>
-         <div v-if="!config.binding_name" class="p-3 text-center text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 rounded-md border border-orange-200 dark:border-orange-700">
+         <div v-if="!bindingNameFromStore" class="p-3 text-center text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 rounded-md border border-orange-200 dark:border-orange-700">
             Please select a Binding from the 'Bindings' section to see available models.
         </div>
 
@@ -71,10 +71,10 @@
              <svg aria-hidden="true" class="w-8 h-8 mr-2 text-gray-300 animate-spin dark:text-gray-600 fill-primary" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/> <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/> </svg>
              <span>Loading models...</span>
         </div>
-        <div v-else-if="pagedModels.length === 0 && models.length > 0" class="text-center text-gray-500 dark:text-gray-400 py-10">
+        <div v-else-if="pagedModels.length === 0 && filteredModels.length > 0" class="text-center text-gray-500 dark:text-gray-400 py-10"> <!-- Check filteredModels here -->
              No models found matching filters{{ searchTerm ? ' and search "' + searchTerm + '"' : '' }}.
         </div>
-        <div v-else-if="models.length === 0 && !isLoadingModels && config.binding_name" class="text-center text-gray-500 dark:text-gray-400 py-10">
+        <div v-else-if="allModels.length === 0 && !isLoadingModels && bindingNameFromStore" class="text-center text-gray-500 dark:text-gray-400 py-10"> <!-- Check allModels here -->
              No models available for the selected binding. Try adding a reference below.
         </div>
 
@@ -85,7 +85,7 @@
                  v-for="model in pagedModels"
                 :key="model.id || model.name"
                 :model="model"
-                :is-selected="config.model_name === model.name"
+                :is-selected="modelNameFromStore === model.name"
                 @select="handleSelect(model)"
                 @install="handleInstall"
                  @uninstall="handleUninstall"
@@ -158,8 +158,7 @@
     </div>
 </template>
 
-<script setup>
-import { ref, computed, watch, onMounted, onUnmounted, nextTick, reactive } from 'vue';
+<script>
 import feather from 'feather-icons';
 import filesize from '@/plugins/filesize';
 import ModelEntry from '@/components/ModelEntry.vue';
@@ -167,602 +166,717 @@ import ChoiceDialog from '@/components/ChoiceDialog.vue'; // Assuming component 
 import socket from '@/services/websocket.js';
 import defaultModelIcon from "@/assets/default_model.png"; // Default icon
 
-// Props
-const props = defineProps({
-    config: { type: Object, required: true },
-    api_post_req: { type: Function, required: true },
-    api_get_req: { type: Function, required: true },
-    show_toast: { type: Function, required: true },
-    show_yes_no_dialog: { type: Function, required: true },
-    client_id: { type: String, required: true }
-});
+export default {
+    name: 'ModelsZoo',
+    components: {
+        ModelEntry,
+        ChoiceDialog
+    },
+    props: {
+        // config prop removed - will use this.$store.state.config
+        api_post_req: { type: Function, required: true },
+        api_get_req: { type: Function, required: true },
+        show_toast: { type: Function, required: true },
+        show_yes_no_dialog: { type: Function, required: true },
+        client_id: { type: String, required: true }
+    },
+    emits: ['update:setting'],
+    data() {
+        return {
+            allModels: [], // Holds the full list fetched from backend
+            filteredModels: [], // Holds models after search/filter/sort
+            pagedModels: [], // Holds the currently rendered models (for pagination/lazy load)
+            isLoadingModels: false,
+            isSearching: false, // Indicate background search/filter is happening
+            searchTerm: '',
+            sortOption: 'rank', // Default sort: rank
+            showInstalledOnly: false,
+            referencePath: '',
+            modelUrl: '', // For the download input field
+            isDownloading: false, // Tracks if *any* download is active
+            itemsPerPage: 15, // How many models to load/show at a time
+            currentPage: 1,
+            searchDebounceTimer: null,
+            observer: null, // IntersectionObserver instance
+            // Reactive objects remain similar
+            downloadProgress: {
+                visible: false,
+                name: '',
+                progress: 0,
+                speed: 0,
+                total_size: 0,
+                downloaded_size: 0,
+                details: null // Store full model object or identifier
+            },
+            variantSelectionDialog: {
+                visible: false,
+                title: "Select Model Variant",
+                choices: [],
+                modelToInstall: null,
+                selectedVariant: null
+            },
+            defaultIcon: defaultModelIcon // Make the import accessible in the template/methods
+        };
+    },
+    computed: {
+        // Access store state using this.$store.state
+        bindingNameFromStore() {
+            return this.$store.state.config.binding_name;
+        },
+        modelNameFromStore() {
+            return this.$store.state.config.model_name;
+        },
+        currentBindingName() {
+            return this.bindingNameFromStore || 'None Selected';
+        },
+        currentModelInfo() {
+            if (!this.modelNameFromStore || this.allModels.length === 0) {
+                return null;
+            }
+            const current = this.allModels.find(m => m.name === this.modelNameFromStore);
+            return current ? { name: current.name, icon: current.icon || this.defaultIcon } : null;
+        },
+        hasMoreModelsToLoad() {
+            return this.pagedModels.length < this.filteredModels.length;
+        },
+        speedComputed() {
+            return filesize(this.downloadProgress.speed || 0);
+        },
+        totalSizeComputed() {
+            return filesize(this.downloadProgress.total_size || 0);
+        },
+        downloadedSizeComputed() {
+            return filesize(this.downloadProgress.downloaded_size || 0);
+        },
+        // Computed property to aggregate watch sources
+        watchSources() {
+            return [
+                this.searchTerm,
+                this.sortOption,
+                this.showInstalledOnly,
+                this.bindingNameFromStore // Watch binding name from store
+            ];
+        }
+    },
+    watch: {
+        // Watch the computed property aggregating the sources
+        watchSources() {
+            console.log("Filter/Sort/Binding changed, resetting page and applying filters.");
+            this.currentPage = 1;
+            this.pagedModels = []; // Clear current page
+            this.applyFiltersAndSort(); // This will update filteredModels
+            this.loadMoreModels(); // Load the first page of the new filtered list
+        },
+        // Watch the master list changing (e.g., after fetching or local update)
+        allModels: {
+            handler() {
+                console.log("allModels changed, resetting page and applying filters.");
+                 // Don't reset page if only 'isInstalled' or 'isProcessing' changed?
+                 // Maybe only reset if length changes significantly or items are removed/added.
+                 // For simplicity now, we re-filter and reload the first page on any deep change.
+                this.currentPage = 1;
+                this.pagedModels = [];
+                this.applyFiltersAndSort();
+                this.loadMoreModels();
+            },
+            deep: true // Use deep watch as model properties like 'installed' can change
+        },
+         // Watch binding name specifically to trigger fetchModels
+         bindingNameFromStore(newBinding, oldBinding) {
+             if (newBinding !== oldBinding) {
+                console.log(`Binding changed from ${oldBinding} to ${newBinding}, fetching new models.`);
+                 this.fetchModels(); // Fetch models when binding changes
+                 // The 'watchSources' watcher will handle filtering/sorting/reloading page 1
+             }
+         }
+    },
+    methods: {
+        async fetchModels() {
+            const currentBinding = this.bindingNameFromStore; // Use computed property
+            if (!currentBinding) {
+                this.allModels = [];
+                this.filteredModels = []; // Reset filtered list too
+                this.pagedModels = []; // Reset paged list
+                console.log("No binding selected, clearing models.");
+                return;
+            }
+            this.isLoadingModels = true;
+            console.log(`Fetching models for binding: ${currentBinding}`);
+            try {
+                // 1. Get Zoo models
+                const zooModels = await this.api_get_req(`list_models?binding=${currentBinding}`);
 
-// Emits
-const emit = defineEmits(['update:setting']);
+                // 2. Get Installed models
+                const installedModels = await this.api_get_req(`get_installed_models?binding=${currentBinding}`);
+                const installedSet = new Set(installedModels.map(m => m.name)); // Efficient lookup
 
-// --- State ---
-const allModels = ref([]); // Holds the full list fetched from backend
-const filteredModels = ref([]); // Holds models after search/filter/sort
-const pagedModels = ref([]); // Holds the currently rendered models (for pagination/lazy load)
-const isLoadingModels = ref(false);
-const isSearching = ref(false); // Indicate background search/filter is happening
-const searchTerm = ref('');
-const sortOption = ref('rank'); // Default sort: rank
-const showInstalledOnly = ref(false);
-const referencePath = ref('');
-const modelUrl = ref(''); // For the download input field
-const isDownloading = ref(false); // Tracks if *any* download is active
+                // 3. Combine and Mark Installed Status
+                const combinedModels = (zooModels || []).map(model => ({
+                    ...model,
+                    isInstalled: installedSet.has(model.name),
+                    isProcessing: false, // For install/uninstall spinners
+                    icon: model.icon || this.defaultIcon, // Assign default icon here
+                    id: model.id || `${model.name}-${model.quantizer || ''}-${model.filename || ''}` // Create a more unique ID
+                }));
 
-const itemsPerPage = ref(15); // How many models to load/show at a time
-const currentPage = ref(1);
-
-const searchDebounceTimer = ref(null);
-
-const scrollContainer = ref(null); // Ref for the grid container
-const loadMoreTrigger = ref(null); // Ref for the element triggering more loads
-
-// Download Progress State
-const downloadProgress = reactive({
-    visible: false,
-    name: '',
-    progress: 0,
-    speed: 0,
-    total_size: 0,
-    downloaded_size: 0,
-    details: null // Store full model object or identifier
-});
-
-// Variant Selection Dialog State
-const variantSelectionDialog = reactive({
-    visible: false,
-    title: "Select Model Variant",
-    choices: [],
-    modelToInstall: null,
-    selectedVariant: null
-});
-
-// --- Computed ---
-
-const currentBindingName = computed(() => {
-    // Requires access to bindings list, potentially pass from parent or fetch here if needed
-    // Placeholder logic:
-    return props.config?.binding_name || 'None Selected';
-});
-
-const currentModelInfo = computed(() => {
-    if (!props.config || !props.config.model_name || allModels.value.length === 0) {
-        return null;
-    }
-    const current = allModels.value.find(m => m.name === props.config.model_name);
-     // Fallback to finding in currently paged models if full list is huge and not fully processed?
-     // const current = pagedModels.value.find(m => m.name === props.config.model_name) || allModels.value.find(m => m.name === props.config.model_name);
-    return current ? { name: current.name, icon: current.icon || defaultModelIcon } : null;
-});
-
-const hasMoreModelsToLoad = computed(() => {
-    return pagedModels.value.length < filteredModels.value.length;
-});
-
-// Computed properties for download progress display
-const speedComputed = computed(() => filesize(downloadProgress.speed || 0));
-const totalSizeComputed = computed(() => filesize(downloadProgress.total_size || 0));
-const downloadedSizeComputed = computed(() => filesize(downloadProgress.downloaded_size || 0));
-
-// --- Watchers ---
-watch([searchTerm, sortOption, showInstalledOnly, () => props.config.binding_name], () => {
-     // Reset pagination and re-apply filters when controls change or binding changes
-    currentPage.value = 1;
-    pagedModels.value = []; // Clear current page
-    applyFiltersAndSort(); // This will update filteredModels
-    loadMoreModels(); // Load the first page of the new filtered list
-});
-
-// Watch the master list changing (e.g., after fetching)
-watch(allModels, () => {
-    currentPage.value = 1;
-    pagedModels.value = [];
-    applyFiltersAndSort();
-    loadMoreModels();
-}, { deep: true }); // Use deep watch if model properties like 'installed' can change
-
-
-// --- Methods ---
-
-const fetchModels = async () => {
-    if (!props.config.binding_name) {
-        allModels.value = [];
-        console.log("No binding selected, clearing models.");
-        return;
-    }
-    isLoadingModels.value = true;
-    console.log(`Fetching models for binding: ${props.config.binding_name}`);
-    try {
-        // 1. Get Zoo models (potentially large list)
-        const zooModels = await props.api_get_req(`list_models?binding=${props.config.binding_name}`);
-
-        // 2. Get Installed models (usually a smaller list)
-        const installedModels = await props.api_get_req(`get_installed_models?binding=${props.config.binding_name}`);
-        const installedSet = new Set(installedModels.map(m => m.name)); // Efficient lookup
-
-        // 3. Combine and Mark Installed Status
-        const combinedModels = (zooModels || []).map(model => ({
-            ...model,
-            isInstalled: installedSet.has(model.name),
-            isProcessing: false, // For install/uninstall spinners
-            // Add a unique ID if the backend provides one, otherwise rely on name/path
-            id: model.id || `${model.name}-${model.quantizer || ''}`
-        }));
-
-        // 4. Add any installed models that weren't in the zoo list (custom references)
-        installedModels.forEach(installedModel => {
-             if (!combinedModels.some(m => m.name === installedModel.name)) {
-                combinedModels.push({
-                    ...installedModel, // Use data from get_installed_models
-                    name: installedModel.name,
-                    isInstalled: true,
-                    isProcessing: false,
-                    isCustomModel: true, // Flag it as potentially custom
-                    icon: installedModel.icon || defaultModelIcon, // Use provided icon or default
-                    id: installedModel.id || installedModel.name // Unique ID
+                // 4. Add any installed models that weren't in the zoo list (custom references)
+                installedModels.forEach(installedModel => {
+                    if (!combinedModels.some(m => m.name === installedModel.name)) {
+                        combinedModels.push({
+                            ...installedModel,
+                            name: installedModel.name,
+                            isInstalled: true,
+                            isProcessing: false,
+                            isCustomModel: true, // Flag it as potentially custom
+                            icon: installedModel.icon || this.defaultIcon, // Use provided icon or default
+                            id: installedModel.id || installedModel.name // Unique ID
+                        });
+                    }
                 });
+
+                this.allModels = combinedModels;
+                 // Don't reset pagination here, let the watcher handle it
+                // this.currentPage = 1;
+                // this.pagedModels = [];
+                // this.applyFiltersAndSort();
+                // this.loadMoreModels();
+                console.log(`Fetched ${this.allModels.length} total models.`);
+
+            } catch (error) {
+                this.show_toast("Failed to load models.", 4, false);
+                console.error("Error fetching models:", error);
+                this.allModels = [];
+                this.filteredModels = []; // Reset on error
+                this.pagedModels = []; // Reset on error
+            } finally {
+                this.isLoadingModels = false;
+                 // This should be triggered by the allModels watcher now
+                // this.$nextTick(feather.replace);
             }
-        });
+        },
 
+        applyFiltersAndSort() {
+            this.isSearching = true; // Indicate processing started
+            console.time("FilterSortModels");
 
-        allModels.value = combinedModels;
-        console.log(`Fetched ${allModels.value.length} total models.`);
+            let result = [...this.allModels];
 
-    } catch (error) {
-        props.show_toast("Failed to load models.", 4, false);
-        console.error("Error fetching models:", error);
-        allModels.value = [];
-    } finally {
-        isLoadingModels.value = false;
-        nextTick(feather.replace);
-    }
-};
-
-const applyFiltersAndSort = () => {
-    isSearching.value = true; // Indicate processing started
-    console.time("FilterSortModels"); // Start timing
-
-    let result = [...allModels.value];
-
-    // 1. Filter by "Installed Only"
-    if (showInstalledOnly.value) {
-        result = result.filter(m => m.isInstalled);
-    }
-
-    // 2. Filter by Search Term (case-insensitive, check multiple fields)
-    if (searchTerm.value) {
-        const lowerSearch = searchTerm.value.toLowerCase();
-        result = result.filter(m =>
-            m.name?.toLowerCase().includes(lowerSearch) ||
-            m.author?.toLowerCase().includes(lowerSearch) || // If author exists
-            m.quantizer?.toLowerCase().includes(lowerSearch) || // If quantizer exists
-            m.description?.toLowerCase().includes(lowerSearch) || // If description exists
-            m.license?.toLowerCase().includes(lowerSearch) // If license exists
-        );
-    }
-
-    // 3. Sort
-    result.sort((a, b) => {
-        // Always put installed models first regardless of other sort options
-        if (a.isInstalled && !b.isInstalled) return -1;
-        if (!a.isInstalled && b.isInstalled) return 1;
-
-        // Then apply the selected sort option
-        switch (sortOption.value) {
-            case 'rank':
-                return (b.rank ?? -Infinity) - (a.rank ?? -Infinity); // Higher rank first (handle missing rank)
-            case 'name':
-                return (a.name || '').localeCompare(b.name || '');
-            case 'last_commit_time': {
-                 // Handle potential null or invalid dates gracefully
-                 const dateA = a.last_commit_time ? new Date(a.last_commit_time) : null;
-                 const dateB = b.last_commit_time ? new Date(b.last_commit_time) : null;
-                 if (dateA && dateB) return dateB - dateA; // Descending date (newest first)
-                 if (dateA) return -1; // Put valid dates first
-                 if (dateB) return 1;
-                 return 0;
+            // 1. Filter by "Installed Only"
+            if (this.showInstalledOnly) {
+                result = result.filter(m => m.isInstalled);
             }
-            case 'quantizer':
-                 return (a.quantizer || '').localeCompare(b.quantizer || '');
-            case 'license':
-                 return (a.license || '').localeCompare(b.license || '');
-            default:
-                return 0;
-        }
-    });
 
-    filteredModels.value = result;
-    console.timeEnd("FilterSortModels"); // End timing
-    isSearching.value = false; // Indicate processing finished
-    console.log(`Filtered/Sorted models: ${filteredModels.value.length}`);
-};
+            // 2. Filter by Search Term
+            if (this.searchTerm) {
+                const lowerSearch = this.searchTerm.toLowerCase();
+                result = result.filter(m =>
+                    m.name?.toLowerCase().includes(lowerSearch) ||
+                    m.author?.toLowerCase().includes(lowerSearch) ||
+                    m.quantizer?.toLowerCase().includes(lowerSearch) ||
+                    m.description?.toLowerCase().includes(lowerSearch) ||
+                    m.license?.toLowerCase().includes(lowerSearch)
+                );
+            }
 
-const debounceSearch = () => {
-    isSearching.value = true; // Show spinner immediately on input
-    clearTimeout(searchDebounceTimer.value);
-    searchDebounceTimer.value = setTimeout(() => {
-        // Trigger the actual filter/sort which will set isSearching back to false
-         currentPage.value = 1;
-         pagedModels.value = [];
-         applyFiltersAndSort();
-         loadMoreModels();
-    }, 500); // Adjust debounce delay (ms) as needed
-};
+            // 3. Sort
+            result.sort((a, b) => {
+                if (a.isInstalled && !b.isInstalled) return -1;
+                if (!a.isInstalled && b.isInstalled) return 1;
 
-const loadMoreModels = () => {
-     if (isLoadingModels.value || isSearching.value) return; // Prevent loading during initial fetch or search debounce
+                switch (this.sortOption) {
+                    case 'rank':
+                        return (b.rank ?? -Infinity) - (a.rank ?? -Infinity);
+                    case 'name':
+                        return (a.name || '').localeCompare(b.name || '');
+                    case 'last_commit_time': {
+                        const dateA = a.last_commit_time ? new Date(a.last_commit_time) : null;
+                        const dateB = b.last_commit_time ? new Date(b.last_commit_time) : null;
+                        if (dateA && dateB) return dateB - dateA;
+                        if (dateA) return -1;
+                        if (dateB) return 1;
+                        return 0;
+                    }
+                    case 'quantizer':
+                        return (a.quantizer || '').localeCompare(b.quantizer || '');
+                    case 'license':
+                        return (a.license || '').localeCompare(b.license || '');
+                    default:
+                        return 0;
+                }
+            });
 
-     console.log(`Loading page ${currentPage.value}`);
-     const start = (currentPage.value - 1) * itemsPerPage.value;
-     const end = start + itemsPerPage.value;
-     const nextPageItems = filteredModels.value.slice(start, end);
+            this.filteredModels = result;
+            console.timeEnd("FilterSortModels");
+            this.isSearching = false; // Indicate processing finished
+            console.log(`Filtered/Sorted models: ${this.filteredModels.length}`);
+        },
 
-     pagedModels.value.push(...nextPageItems);
-     currentPage.value++;
-     nextTick(feather.replace); // Ensure icons render for new items
-};
+        debounceSearch() {
+            this.isSearching = true; // Show spinner immediately on input
+            clearTimeout(this.searchDebounceTimer);
+            this.searchDebounceTimer = setTimeout(() => {
+                 // The watcher 'watchSources' will trigger the filter/sort/load
+                 // No need to call explicitly here anymore
+                 // this.currentPage = 1;
+                 // this.pagedModels = [];
+                 // this.applyFiltersAndSort();
+                 // this.loadMoreModels();
+            }, 500); // Adjust debounce delay (ms) as needed
+        },
 
-// --- Model Actions ---
-const handleSelect = (model) => {
-    if (!model.isInstalled) {
-        props.show_toast(`Model "${model.name}" is not installed.`, 3, false);
-        return;
-    }
-    if (props.config.model_name !== model.name) {
-         // Set loading state specific to model selection if needed
-        props.show_toast(`Selecting model: ${model.name}...`, 2, true);
-        emit('update:setting', { key: 'model_name', value: model.name });
-        // The parent watcher on config.model_name should handle backend updates/checks
-    }
-};
+        loadMoreModels() {
+             if (this.isLoadingModels || this.isSearching) return; // Prevent loading during initial fetch or search debounce
 
-const handleInstall = (modelEntryData) => {
-     const model = modelEntryData.model; // Extract the core model data
-     console.log("Initiating install for:", model);
+             console.log(`Loading page ${this.currentPage} for models`);
+             const start = (this.currentPage - 1) * this.itemsPerPage;
+             const end = start + this.itemsPerPage;
+             const nextPageItems = this.filteredModels.slice(start, end);
 
-     // Check if variants exist
-     if (model.variants && model.variants.length > 0) {
-         variantSelectionDialog.choices = model.variants.map(v => ({
-             ...v, // Spread variant properties like name, size, etc.
-             id: v.name, // Use variant name as unique ID for ChoiceDialog
-             label: `${v.name} (${filesize(v.size || 0)})` // Example label
-         }));
-         variantSelectionDialog.modelToInstall = model; // Store the main model info
-         variantSelectionDialog.visible = true;
-     } else {
-         // No variants, proceed with direct install using the main model URL/path if available
-         const path = model.path || `https://huggingface.co/${model.quantizer || 'Unknown'}/${model.name}/resolve/main/${model.filename || model.name}`; // Construct path if needed
-        startDownload(model, path, model.filename || model.name);
-     }
-};
+             // Check if items already exist to prevent duplicates during rapid triggers
+             const newItems = nextPageItems.filter(newItem =>
+                 !this.pagedModels.some(existingItem => (existingItem.id || existingItem.name) === (newItem.id || newItem.name))
+             );
 
-const handleVariantSelected = (choice) => {
-    variantSelectionDialog.selectedVariant = choice;
-};
+            if (newItems.length > 0) {
+                 this.pagedModels.push(...newItems);
+                 this.currentPage++;
+                this.$nextTick(feather.replace); // Ensure icons render for new items
+            } else if (nextPageItems.length > 0) {
+                console.log("Skipping loadMoreModels, items might already be loaded.");
+            }
+        },
 
-const handleVariantValidated = (choice) => {
-     if (!choice || !variantSelectionDialog.modelToInstall) {
-        console.error("No variant selected or model info missing.");
-        closeVariantDialog();
-        return;
-     }
-     const model = variantSelectionDialog.modelToInstall;
-     const variant = choice; // The validated choice object from ChoiceDialog
-    const path = variant.path || `https://huggingface.co/${model.quantizer || 'Unknown'}/${model.name}/resolve/main/${variant.name}`; // Construct path
+        handleSelect(model) {
+            if (!model.isInstalled) {
+                this.show_toast(`Model "${model.name}" is not installed.`, 3, false);
+                return;
+            }
+            if (this.modelNameFromStore !== model.name) {
+                this.show_toast(`Selecting model: ${model.name}...`, 2, true);
+                // Emit the event to the parent to handle the state update via its own logic
+                this.$emit('update:setting', { key: 'model_name', value: model.name });
+            }
+        },
 
-    startDownload(model, path, variant.name); // Pass variant name
-    closeVariantDialog();
-};
+        handleInstall(modelEntryData) {
+            const model = modelEntryData.model;
+            console.log("Initiating install for:", model);
 
-const closeVariantDialog = () => {
-    variantSelectionDialog.visible = false;
-    variantSelectionDialog.choices = [];
-    variantSelectionDialog.modelToInstall = null;
-    variantSelectionDialog.selectedVariant = null;
-};
+            if (model.variants && model.variants.length > 0) {
+                this.variantSelectionDialog.choices = model.variants.map(v => ({
+                    ...v,
+                    id: v.name, // Use variant name as unique ID for ChoiceDialog
+                    label: `${v.name} (${filesize(v.size || 0)})`
+                }));
+                this.variantSelectionDialog.modelToInstall = model;
+                this.variantSelectionDialog.visible = true;
+            } else {
+                // Construct path carefully, using filename if available
+                const filename = model.filename || model.name; // Fallback to model name if filename is missing
+                const quantizer = model.quantizer || 'Unknown'; // Handle missing quantizer
+                const path = model.path || `https://huggingface.co/${quantizer}/${model.name}/resolve/main/${filename}`;
+                this.startDownload(model, path, filename); // Pass the determined filename as variantName here
+            }
+        },
 
-const startDownload = (model, path, variantName) => {
-    console.log(`Starting download for: ${model.name}, Variant: ${variantName}, Path: ${path}`);
-    if (isDownloading.value) {
-        props.show_toast("Another download is already in progress.", 3, false);
-        return;
-    }
-     setModelProcessing(model.id || model.name, true); // Use model ID or name as key
-    isDownloading.value = true;
-    downloadProgress.visible = true;
-    downloadProgress.name = `${model.name}${variantName !== model.name ? ` (${variantName})` : ''}`;
-    downloadProgress.progress = 0;
-    downloadProgress.speed = 0;
-    downloadProgress.total_size = 0;
-    downloadProgress.downloaded_size = 0;
-    downloadProgress.details = { // Store identifiers needed for cancellation
-        model_name: model.name,
-        binding_folder: props.config.binding_name, // Assuming current binding
-        model_url: path,
-        variant_name: variantName,
-        model_id: model.id || model.name // Use the same key as setModelProcessing
-        // patreon: model.patreon?model.patreon:"None" // If needed by backend cancel
-    };
+        handleVariantSelected(choice) {
+            this.variantSelectionDialog.selectedVariant = choice;
+        },
 
-     // Emit install request via socket
-    socket.emit('install_model', {
-        path: path,
-        name: model.name,
-        variant_name: variantName,
-        type: model.type || 'gguf', // Provide type if available
-        binding: props.config.binding_name // Send current binding
-    });
-};
+        handleVariantValidated(choice) {
+            if (!choice || !this.variantSelectionDialog.modelToInstall) {
+                console.error("No variant selected or model info missing.");
+                this.closeVariantDialog();
+                return;
+            }
+            const model = this.variantSelectionDialog.modelToInstall;
+            const variant = choice;
+            const quantizer = model.quantizer || 'Unknown';
+            // Use variant.path if provided, otherwise construct from model/variant info
+            const path = variant.path || `https://huggingface.co/${quantizer}/${model.name}/resolve/main/${variant.name}`;
 
-const handleUninstall = async (modelEntryData) => {
-    const model = modelEntryData.model;
-    const yes = await props.show_yes_no_dialog(`Are you sure you want to uninstall model "${model.name}"?`, 'Uninstall', 'Cancel');
-    if (!yes) return;
+            this.startDownload(model, path, variant.name); // Pass variant name
+            this.closeVariantDialog();
+        },
 
-    setModelProcessing(model.id || model.name, true);
-    isDownloading.value = true; // Use this to prevent other actions
-    downloadProgress.visible = true; // Show a generic "uninstalling" message
-    downloadProgress.name = `Uninstalling ${model.name}...`;
-    downloadProgress.progress = 50; // Indicate activity
-    downloadProgress.details = { model_id: model.id || model.name }; // Store identifier
+        closeVariantDialog() {
+            this.variantSelectionDialog.visible = false;
+            this.variantSelectionDialog.choices = [];
+            this.variantSelectionDialog.modelToInstall = null;
+            this.variantSelectionDialog.selectedVariant = null;
+        },
 
-    try {
-         // Backend needs to know which file(s) to delete based on model name/variant
-         // This might require listing installed files first or passing enough info
-        const response = await props.api_post_req('uninstall_model', {
-            name: model.name,
-             // variant: model.installed_variant // If backend tracks this
-             binding: props.config.binding_name // Send current binding
-        });
+        startDownload(model, path, variantName) {
+             const modelId = model.id || model.name; // Use consistent identifier
+            console.log(`Starting download for: ${model.name}, Variant: ${variantName}, Path: ${path}, ID: ${modelId}`);
+            if (this.isDownloading) {
+                this.show_toast("Another download is already in progress.", 3, false);
+                return;
+            }
+            this.setModelProcessing(modelId, true);
+            this.isDownloading = true;
+            this.downloadProgress.visible = true;
+            this.downloadProgress.name = `${model.name}${variantName !== model.name ? ` (${variantName})` : ''}`;
+            this.downloadProgress.progress = 0;
+            this.downloadProgress.speed = 0;
+            this.downloadProgress.total_size = 0;
+            this.downloadProgress.downloaded_size = 0;
+            this.downloadProgress.details = {
+                model_name: model.name,
+                binding_folder: this.bindingNameFromStore, // Use store value
+                model_url: path,
+                variant_name: variantName,
+                model_id: modelId // Use the consistent ID
+            };
 
-        if (response && response.status) {
-             props.show_toast(`Model "${model.name}" uninstalled successfully.`, 4, true);
-             // Update local state immediately
-             const index = allModels.value.findIndex(m => (m.id || m.name) === (model.id || model.name));
-             if (index !== -1) {
-                 allModels.value[index].isInstalled = false;
-                // Trigger reactivity for computed properties
-                 allModels.value = [...allModels.value];
+            socket.emit('install_model', {
+                path: path,
+                name: model.name,
+                variant_name: variantName,
+                type: model.type || 'gguf',
+                binding: this.bindingNameFromStore // Use store value
+            });
+        },
+
+        async handleUninstall(modelEntryData) {
+            const model = modelEntryData.model;
+            const modelId = model.id || model.name;
+            const yes = await this.show_yes_no_dialog(`Are you sure you want to uninstall model "${model.name}"?`, 'Uninstall', 'Cancel');
+            if (!yes) return;
+
+            this.setModelProcessing(modelId, true);
+            this.isDownloading = true; // Reuse flag to block other actions
+            this.downloadProgress.visible = true;
+            this.downloadProgress.name = `Uninstalling ${model.name}...`;
+            this.downloadProgress.progress = 50;
+            this.downloadProgress.details = { model_id: modelId };
+
+            try {
+                const response = await this.api_post_req('uninstall_model', {
+                    name: model.name,
+                    binding: this.bindingNameFromStore // Use store value
+                });
+
+                if (response && response.status) {
+                    this.show_toast(`Model "${model.name}" uninstalled successfully.`, 4, true);
+                    // Update local state immediately
+                    const index = this.allModels.findIndex(m => (m.id || m.name) === modelId);
+                    if (index !== -1) {
+                        // Modify the existing object for reactivity (Vue 3 handles this better)
+                        this.allModels[index].isInstalled = false;
+                         // Trigger the watcher by creating a new array reference
+                        this.allModels = [...this.allModels];
+                    }
+                     // The allModels watcher will handle re-filtering and pagination update
+                } else {
+                    this.show_toast(`Failed to uninstall model "${model.name}": ${response?.error || 'Unknown error'}`, 4, false);
+                }
+            } catch (error) {
+                this.show_toast(`Error uninstalling model "${model.name}": ${error.message}`, 4, false);
+                console.error(`Error uninstalling ${model.name}:`, error);
+            } finally {
+                // Reset state even if it wasn't the primary model being uninstalled
+                const finalIndex = this.allModels.findIndex(m => (m.id || m.name) === modelId);
+                if (finalIndex !== -1) {
+                    this.setModelProcessing(modelId, false); // Ensure processing state is reset
+                } else {
+                     console.warn("Model not found after uninstall to reset processing state:", modelId);
+                }
+                this.downloadProgress.visible = false;
+                this.isDownloading = false;
+            }
+        },
+
+        handleCancelInstall(downloadDetails) {
+             if (!downloadDetails) return;
+             console.log('Cancelling install for:', downloadDetails);
+             // Ensure all necessary details are present for the backend
+             if (!downloadDetails.model_name || !downloadDetails.binding_folder || !downloadDetails.model_url || !downloadDetails.variant_name) {
+                console.error("Cannot cancel install: Missing details.", downloadDetails);
+                this.show_toast("Cannot cancel install: information missing.", 3, false);
+                // Reset local state anyway?
+                this.downloadProgress.visible = false;
+                this.isDownloading = false;
+                if (downloadDetails.model_id) {
+                    this.setModelProcessing(downloadDetails.model_id, false);
+                }
+                return;
              }
-             // No need to call fetchModels() if we update locally
-        } else {
-            props.show_toast(`Failed to uninstall model "${model.name}": ${response?.error || 'Unknown error'}`, 4, false);
-        }
-    } catch (error) {
-        props.show_toast(`Error uninstalling model "${model.name}": ${error.message}`, 4, false);
-        console.error(`Error uninstalling ${model.name}:`, error);
-    } finally {
-        setModelProcessing(model.id || model.name, false);
-        downloadProgress.visible = false;
-        isDownloading.value = false;
-    }
-};
+             socket.emit('cancel_install', {
+                 model_name: downloadDetails.model_name,
+                 binding_folder: downloadDetails.binding_folder,
+                 model_url: downloadDetails.model_url,
+                 variant_name: downloadDetails.variant_name
+                 // Add patreon if needed: patreon: downloadDetails.patreon
+             });
+             // State reset is handled by the 'install_progress' listener receiving a cancel/fail status
+        },
 
-const handleCancelInstall = (downloadDetails) => {
-     if (!downloadDetails) return;
-     console.log('Cancelling install for:', downloadDetails);
-     socket.emit('cancel_install', {
-         model_name: downloadDetails.model_name,
-         binding_folder: downloadDetails.binding_folder,
-         model_url: downloadDetails.model_url,
-         variant_name: downloadDetails.variant_name
-         // patreon: downloadDetails.patreon // If needed
-     });
-     // State reset is handled by the 'install_progress' listener receiving a cancel/fail status
-};
+        handleCopy(modelEntryData) {
+            const model = modelEntryData.model;
+            let content = `Model: ${model.name}\n`;
+            if (model.quantizer) content += `Quantizer: ${model.quantizer}\n`;
+            if (model.rank) content += `Rank: ${model.rank}\n`;
+            if (model.license) content += `License: ${model.license}\n`;
+            if (model.description) content += `Description: ${model.description}\n`;
+            if (!model.isCustomModel && model.quantizer && model.name) content += `Link: https://huggingface.co/${model.quantizer}/${model.name}\n`;
 
-const handleCopy = (modelEntryData) => {
-     const model = modelEntryData.model;
-    let content = `Model: ${model.name}\n`;
-    if (model.quantizer) content += `Quantizer: ${model.quantizer}\n`;
-    if (model.rank) content += `Rank: ${model.rank}\n`;
-    if (model.license) content += `License: ${model.license}\n`;
-    if (model.description) content += `Description: ${model.description}\n`;
-    if (!model.isCustomModel) content += `Link: https://huggingface.co/${model.quantizer || 'Unknown'}/${model.name}\n`;
+            navigator.clipboard.writeText(content.trim())
+                .then(() => this.show_toast("Model info copied!", 3, true))
+                .catch(err => this.show_toast("Failed to copy info.", 3, false));
+        },
 
-    navigator.clipboard.writeText(content.trim())
-        .then(() => props.show_toast("Model info copied!", 3, true))
-        .catch(err => props.show_toast("Failed to copy info.", 3, false));
-};
+        handleCopyLink(modelEntryData) {
+            const model = modelEntryData.model;
+            const link = model.isCustomModel ? `Local reference: ${model.name}` : (model.quantizer && model.name ? `https://huggingface.co/${model.quantizer}/${model.name}` : model.name);
+            navigator.clipboard.writeText(link)
+                .then(() => this.show_toast("Link copied!", 3, true))
+                .catch(err => this.show_toast("Failed to copy link.", 3, false));
+        },
 
-const handleCopyLink = (modelEntryData) => {
-     const model = modelEntryData.model;
-    const link = model.isCustomModel ? model.name : `https://huggingface.co/${model.quantizer || 'Unknown'}/${model.name}`;
-    navigator.clipboard.writeText(link)
-        .then(() => props.show_toast("Link copied!", 3, true))
-        .catch(err => props.show_toast("Failed to copy link.", 3, false));
-};
+        async createReference() {
+            if (!this.referencePath) {
+                this.show_toast("Please enter a path for the local model reference.", 3, false);
+                return;
+            }
+            this.isLoadingModels = true; // Indicate activity
+            try {
+                // Backend needs the binding context, include it
+                const response = await this.api_post_req("add_reference_to_local_model", {
+                     path: this.referencePath,
+                     binding: this.bindingNameFromStore
+                });
+                if (response.status) {
+                    this.show_toast("Reference created successfully.", 4, true);
+                    this.referencePath = ''; // Clear input
+                    await this.fetchModels(); // Refresh the model list
+                } else {
+                    this.show_toast(`Couldn't create reference: ${response.error || 'Unknown error'}`, 4, false);
+                }
+            } catch (error) {
+                this.show_toast(`Error creating reference: ${error.message}`, 4, false);
+            } finally {
+                this.isLoadingModels = false;
+            }
+        },
 
-const createReference = async () => {
-    if (!referencePath.value) {
-        props.show_toast("Please enter a path for the local model reference.", 3, false);
-        return;
-    }
-    isLoadingModels.value = true; // Indicate activity
-    try {
-        const response = await props.api_post_req("add_reference_to_local_model", { path: referencePath.value });
-        if (response.status) {
-            props.show_toast("Reference created successfully.", 4, true);
-            referencePath.value = ''; // Clear input
-            await fetchModels(); // Refresh the model list
-        } else {
-            props.show_toast(`Couldn't create reference: ${response.error || 'Unknown error'}`, 4, false);
-        }
-    } catch (error) {
-        props.show_toast(`Error creating reference: ${error.message}`, 4, false);
-    } finally {
-        isLoadingModels.value = false;
-    }
-};
+        installFromInput() {
+             if (!this.modelUrl) {
+                this.show_toast("Please enter a Model URL or Hugging Face ID.", 3, false);
+                return;
+             }
 
-const installFromInput = () => {
-     if (!modelUrl.value) {
-        props.show_toast("Please enter a Model URL or Hugging Face ID.", 3, false);
-        return;
-     }
-     // Basic check if it looks like a HF ID (e.g., contains '/')
-     let path = modelUrl.value;
-     let modelNameGuess = modelUrl.value;
-     let modelQuantizerGuess = 'Unknown';
-     if (modelUrl.value.includes('/') && !modelUrl.value.startsWith('http')) {
-         const parts = modelUrl.value.split('/');
-         if (parts.length >= 2) {
-            modelQuantizerGuess = parts[0];
-            modelNameGuess = parts[1];
-             // Attempt to construct a likely path, backend might need more robust handling
-             path = `https://huggingface.co/${modelQuantizerGuess}/${modelNameGuess}`;
-         }
-     } else if (!modelUrl.value.startsWith('http')) {
-         props.show_toast("Invalid Hugging Face ID format. Use 'User/Model'.", 4, false);
-         return;
-     }
+             let path = this.modelUrl.trim();
+             let modelNameGuess = path;
+             let modelQuantizerGuess = 'Unknown';
+             let filenameGuess = null; // Try to determine filename
 
-     // Create a placeholder model object for the download process
-     const placeholderModel = {
-         name: modelNameGuess,
-         quantizer: modelQuantizerGuess,
-         type: 'gguf', // Assume GGUF or let backend determine
-         id: modelNameGuess // Use name as temporary ID
-     };
+             // Check for Hugging Face ID format (e.g., TheBloke/Llama-2-7B-Chat-GGUF)
+             const hfIdRegex = /^([a-zA-Z0-9\-_.]+)\/([a-zA-Z0-9\-_.]+)(\/resolve\/main\/([a-zA-Z0-9\-_.]+))?$/;
+             const hfIdMatchSimple = path.match(/^([a-zA-Z0-9\-_.]+)\/([a-zA-Z0-9\-_.]+)$/);
 
-     // Currently doesn't support variant selection for direct URL/ID input
-     startDownload(placeholderModel, path, modelNameGuess);
-     modelUrl.value = ''; // Clear input after starting
-};
+             if (hfIdMatchSimple && !path.startsWith('http')) {
+                 modelQuantizerGuess = hfIdMatchSimple[1];
+                 modelNameGuess = hfIdMatchSimple[2];
+                 // Cannot reliably guess filename from simple ID, backend needs to handle this or list variants
+                 filenameGuess = modelNameGuess; // Best guess
+                 path = `https://huggingface.co/${modelQuantizerGuess}/${modelNameGuess}`; // Base path for repo
+                 console.log(`Detected HF ID: ${modelQuantizerGuess}/${modelNameGuess}. Backend needs to resolve filename/variants.`);
+                 // Consider triggering variant selection if possible, or show message.
+                 // For now, proceed with a guess.
+                 this.show_toast("Detected Hugging Face ID. Attempting download (may require specific file selection on backend).", 2, true);
 
+             } else if (path.startsWith('http')) {
+                 // Assume it's a direct URL
+                 try {
+                    const url = new URL(path);
+                    // Try to guess name from path segments
+                    const pathParts = url.pathname.split('/').filter(p => p);
+                    if (pathParts.length > 0) {
+                        filenameGuess = pathParts[pathParts.length - 1]; // Last part as filename guess
+                         // Maybe try to get model name from earlier parts if HF URL structure
+                        if (url.hostname === 'huggingface.co' && pathParts.length >= 2) {
+                             modelQuantizerGuess = pathParts[0];
+                             modelNameGuess = pathParts[1];
+                        } else {
+                             modelNameGuess = filenameGuess; // Fallback
+                        }
+                    } else {
+                        modelNameGuess = url.hostname; // Fallback
+                        filenameGuess = modelNameGuess;
+                    }
+                 } catch (e) {
+                     this.show_toast("Invalid URL provided.", 4, false);
+                     return;
+                 }
+             } else {
+                 this.show_toast("Invalid input. Use a full URL or Hugging Face ID (e.g., User/Model).", 4, false);
+                 return;
+             }
 
-const imgPlaceholder = (event) => {
-    event.target.src = defaultModelIcon;
-};
-
-const setModelProcessing = (modelId, state) => {
-    const index = allModels.value.findIndex(m => (m.id || m.name) === modelId);
-    if (index !== -1) {
-        allModels.value[index].isProcessing = state;
-        // Also update pagedModels if the item exists there for immediate UI feedback
-        const pagedIndex = pagedModels.value.findIndex(m => (m.id || m.name) === modelId);
-        if (pagedIndex !== -1) {
-            pagedModels.value[pagedIndex].isProcessing = state;
-        }
-    } else {
-        console.warn("Couldn't find model to set processing state for ID:", modelId);
-    }
-};
-
-// --- Socket Listeners ---
-const installProgressListener = (response) => {
-    console.log("Socket install_progress:", response);
-
-     const modelId = response.model_id || response.model_name; // Use ID if available
-
-     if (response.status === 'progress' || response.status === 'downloading') {
-         downloadProgress.visible = true;
-         downloadProgress.name = `${response.model_name}${response.variant_name !== response.model_name ? ` (${response.variant_name})` : ''}`;
-         downloadProgress.progress = response.progress || 0;
-         downloadProgress.speed = response.speed || 0;
-         downloadProgress.total_size = response.total_size || 0;
-         downloadProgress.downloaded_size = response.downloaded_size || 0;
-         // Ensure the details object is populated if it wasn't already
-         if (!downloadProgress.details || downloadProgress.details.model_id !== modelId) {
-             downloadProgress.details = {
-                 model_name: response.model_name,
-                 binding_folder: response.binding_folder,
-                 model_url: response.model_url,
-                 variant_name: response.variant_name,
-                 model_id: modelId
+             const placeholderModel = {
+                 name: modelNameGuess,
+                 quantizer: modelQuantizerGuess,
+                 type: 'gguf', // Assume GGUF or let backend determine
+                 id: modelNameGuess, // Use name as temporary ID
+                 filename: filenameGuess // Pass the guessed filename
              };
-         }
-         // Update processing state on the actual model entry
-         setModelProcessing(modelId, true);
 
-     } else if (response.status === 'succeeded') {
-         props.show_toast(`Model "${response.model_name}" installed successfully!`, 4, true);
-         downloadProgress.visible = false;
-         isDownloading.value = false;
-         setModelProcessing(modelId, false);
-         // Update installed status in the main list
-         const index = allModels.value.findIndex(m => (m.id || m.name) === modelId);
-         if (index !== -1) {
-             allModels.value[index].isInstalled = true;
-             allModels.value = [...allModels.value]; // Trigger reactivity
-         }
+             // Use filenameGuess as the variantName for startDownload
+             this.startDownload(placeholderModel, path, filenameGuess || modelNameGuess);
+             this.modelUrl = ''; // Clear input after starting
+        },
 
-     } else if (response.status === 'failed' || response.status === 'cancelled') {
-         props.show_toast(`Model "${response.model_name}" installation ${response.status}: ${response.error || ''}`, 4, false);
-         downloadProgress.visible = false;
-         isDownloading.value = false;
-         setModelProcessing(modelId, false);
-     }
-};
+        imgPlaceholder(event) {
+            event.target.src = this.defaultIcon; // Use data property
+        },
 
-// --- Infinite Scroll ---
-let observer = null;
-const setupIntersectionObserver = () => {
-     const options = {
-         root: null, // Use the viewport
-         rootMargin: '0px',
-         threshold: 0.1 // Trigger when 10% of the trigger element is visible
-     };
+        setModelProcessing(modelId, state) {
+            const index = this.allModels.findIndex(m => (m.id || m.name) === modelId);
+            if (index !== -1) {
+                // Directly modify the property. Vue 3's reactivity handles this well for objects in arrays.
+                 if (this.allModels[index].isProcessing !== state) {
+                    this.allModels[index].isProcessing = state;
+                    // Don't need to create new array reference just for this in Vue 3 Options API usually
+                 }
+            }
+            // Also update pagedModels if the item exists there for immediate UI feedback
+            const pagedIndex = this.pagedModels.findIndex(m => (m.id || m.name) === modelId);
+            if (pagedIndex !== -1) {
+                if (this.pagedModels[pagedIndex].isProcessing !== state) {
+                    this.pagedModels[pagedIndex].isProcessing = state;
+                }
+            }
+             // No $forceUpdate or $set typically needed here in Vue 3
+        },
 
-     observer = new IntersectionObserver((entries) => {
-         entries.forEach(entry => {
-             if (entry.isIntersecting && hasMoreModelsToLoad.value && !isLoadingModels.value && !isSearching.value) {
-                 console.log("Intersection observer triggered: Loading more models.");
-                 loadMoreModels();
+        // Socket listener method
+        installProgressListener(response) {
+            console.log("Socket install_progress received:", response);
+
+            // Use model_id if provided, otherwise fallback to name (ensure consistency)
+            const modelId = response.model_id || response.model_name;
+             if (!modelId) {
+                 console.error("Install progress message missing model identifier:", response);
+                 return;
              }
-         });
-     }, options);
 
-     if (loadMoreTrigger.value) {
-         observer.observe(loadMoreTrigger.value);
-     } else {
-         console.warn("Load more trigger element not found for IntersectionObserver.");
-     }
+             if (response.status === 'progress' || response.status === 'downloading') {
+                 this.downloadProgress.visible = true;
+                 this.downloadProgress.name = `${response.model_name}${response.variant_name && response.variant_name !== response.model_name ? ` (${response.variant_name})` : ''}`;
+                 this.downloadProgress.progress = response.progress || 0;
+                 this.downloadProgress.speed = response.speed || 0;
+                 this.downloadProgress.total_size = response.total_size || 0;
+                 this.downloadProgress.downloaded_size = response.downloaded_size || 0;
+                 // Ensure the details object is consistent, especially the model_id
+                 if (!this.downloadProgress.details || this.downloadProgress.details.model_id !== modelId) {
+                     this.downloadProgress.details = {
+                         model_name: response.model_name,
+                         binding_folder: response.binding_folder || this.bindingNameFromStore, // Use current binding if missing
+                         model_url: response.model_url,
+                         variant_name: response.variant_name,
+                         model_id: modelId // Store the consistent ID
+                     };
+                 }
+                 this.setModelProcessing(modelId, true); // Make sure the model itself shows processing
+
+             } else if (response.status === 'succeeded') {
+                 this.show_toast(`Model "${response.model_name}" installed successfully!`, 4, true);
+                 this.downloadProgress.visible = false;
+                 this.isDownloading = false;
+                 this.setModelProcessing(modelId, false);
+                 // Update installed status in the main list
+                 const index = this.allModels.findIndex(m => (m.id || m.name) === modelId);
+                 if (index !== -1) {
+                     this.allModels[index].isInstalled = true;
+                     // Trigger watcher by creating new array reference
+                     this.allModels = [...this.allModels];
+                 } else {
+                     // Maybe the model wasn't in the list before (e.g., installed from URL) - fetch again
+                     console.log(`Model ${modelId} installed successfully, refetching list.`);
+                    this.fetchModels();
+                 }
+
+             } else if (response.status === 'failed' || response.status === 'cancelled') {
+                 this.show_toast(`Model "${response.model_name}" installation ${response.status}: ${response.error || ''}`, 4, false);
+                 this.downloadProgress.visible = false;
+                 this.isDownloading = false;
+                 this.setModelProcessing(modelId, false);
+             }
+        },
+
+        // --- Intersection Observer Methods ---
+        setupIntersectionObserver() {
+            if (this.observer) return; // Already setup
+
+             const options = {
+                 root: null, // Use the viewport
+                 rootMargin: '100px 0px', // Load a bit before it enters viewport
+                 threshold: 0 // Trigger as soon as it starts entering margin
+             };
+
+             this.observer = new IntersectionObserver((entries) => {
+                 entries.forEach(entry => {
+                     if (entry.isIntersecting && this.hasMoreModelsToLoad && !this.isLoadingModels && !this.isSearching) {
+                         console.log("Intersection observer triggered: Loading more models.");
+                         this.loadMoreModels();
+                     }
+                 });
+             }, options);
+
+             if (this.$refs.loadMoreTrigger) {
+                 this.observer.observe(this.$refs.loadMoreTrigger);
+                 console.log("IntersectionObserver observing loadMoreTrigger.");
+             } else {
+                 console.warn("Load more trigger element not found for IntersectionObserver setup.");
+             }
+        },
+
+        destroyIntersectionObserver() {
+            if (this.observer) {
+                if (this.$refs.loadMoreTrigger) {
+                    this.observer.unobserve(this.$refs.loadMoreTrigger);
+                }
+                this.observer.disconnect();
+                this.observer = null;
+                console.log("IntersectionObserver destroyed.");
+            }
+        }
+    },
+    mounted() {
+        this.fetchModels(); // Initial fetch
+        socket.on('install_progress', this.installProgressListener); // Use the method defined in 'methods'
+        this.$nextTick(() => {
+            feather.replace();
+             // Setup observer after initial render
+            this.setupIntersectionObserver();
+        });
+    },
+    unmounted() {
+        socket.off('install_progress', this.installProgressListener); // Unbind the listener
+        this.destroyIntersectionObserver(); // Clean up observer
+        clearTimeout(this.searchDebounceTimer.value); // Clear any pending debounce timer
+    },
+    updated() {
+        // This lifecycle hook is called after data changes and the DOM re-renders.
+        this.$nextTick(() => {
+             // Re-apply feather icons if new icons were added
+            feather.replace();
+             // Ensure observer is still attached, especially if v-if might remove/add the trigger
+             if (this.$refs.loadMoreTrigger && !this.observer) {
+                console.log("Re-setting up IntersectionObserver in updated hook.");
+                this.setupIntersectionObserver();
+             } else if (!this.$refs.loadMoreTrigger && this.observer) {
+                console.log("Trigger element removed, destroying IntersectionObserver in updated hook.");
+                 this.destroyIntersectionObserver();
+             }
+        });
+    }
 };
-
-// --- Lifecycle Hooks ---
-onMounted(() => {
-    fetchModels(); // Initial fetch
-    socket.on('install_progress', installProgressListener);
-    nextTick(() => {
-        feather.replace();
-         if (loadMoreTrigger.value) {
-            setupIntersectionObserver();
-        }
-    });
-});
-
-onUnmounted(() => {
-    socket.off('install_progress', installProgressListener);
-     if (observer && loadMoreTrigger.value) {
-        observer.unobserve(loadMoreTrigger.value);
-     }
-     if (observer) {
-        observer.disconnect();
-     }
-     clearTimeout(searchDebounceTimer.value);
-});
-
-onUpdated(() => {
-    nextTick(() => {
-        feather.replace();
-        // Ensure observer is attached if the trigger element becomes available after an update
-        if (!observer && loadMoreTrigger.value) {
-             setupIntersectionObserver();
-        } else if (observer && loadMoreTrigger.value) {
-             // Re-observe in case the element was replaced
-            observer.disconnect();
-            observer.observe(loadMoreTrigger.value);
-        }
-    });
-});
-
 </script>
+
 <style scoped>
+/* Styles remain identical to the Composition API version */
 /* Shared styles */
 .input-field {
      /* Standard focus, background, border */
@@ -814,5 +928,10 @@ onUpdated(() => {
 }
 .hover\:bg-primary-dark\/20:hover { /* Hover effect */
     @apply hover:bg-blue-200;
+}
+
+/* Ensure feather icons align vertically if needed */
+[data-feather].w-4 {
+    @apply inline-block align-middle;
 }
 </style>

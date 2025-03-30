@@ -12,7 +12,7 @@
         <div class="toggle-item !justify-start gap-4 border border-gray-200 dark:border-gray-600 rounded-lg p-3">
             <ToggleSwitch
                 id="override_personality_model_parameters"
-                :checked="config.override_personality_model_parameters"
+                :checked="$store.state.config.override_personality_model_parameters"
                 @update:checked="updateBoolean('override_personality_model_parameters', $event)"
             />
             <label for="override_personality_model_parameters" class="toggle-label !flex-none">
@@ -32,7 +32,7 @@
                 <input
                     type="number"
                     id="seed"
-                    :value="config.seed"
+                    :value="$store.state.config.seed"
                     @input="updateValue('seed', parseInt($event.target.value))"
                     class="input-field-sm w-full md:w-32"
                     step="1"
@@ -48,8 +48,8 @@
                      <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Controls randomness. Lower values (e.g., 0.2) make output more focused and deterministic, higher values (e.g., 0.8) make it more creative and random."></i>
                 </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
-                    <input id="temperature-range" :value="config.temperature" @input="updateValue('temperature', parseFloat($event.target.value))" type="range" min="0" max="2" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
-                    <input id="temperature-number" :value="config.temperature" @input="updateValue('temperature', parseFloat($event.target.value))" type="number" min="0" max="2" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                    <input id="temperature-range" :value="$store.state.config.temperature" @input="updateValue('temperature', parseFloat($event.target.value))" type="range" min="0" max="2" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
+                    <input id="temperature-number" :value="$store.state.config.temperature" @input="updateValue('temperature', parseFloat($event.target.value))" type="number" min="0" max="2" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
                  </div>
             </div>
 
@@ -60,8 +60,8 @@
                      <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Maximum number of tokens the model is allowed to generate in a single response."></i>
                 </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
-                     <input id="n_predict-range" :value="config.n_predict" @input="updateValue('n_predict', parseInt($event.target.value))" type="range" min="32" max="8192" step="32" class="range-input flex-grow" :disabled="isDisabled">
-                     <input id="n_predict-number" :value="config.n_predict" @input="updateValue('n_predict', parseInt($event.target.value))" type="number" min="32" max="8192" step="32" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                     <input id="n_predict-range" :value="$store.state.config.n_predict" @input="updateValue('n_predict', parseInt($event.target.value))" type="range" min="32" max="8192" step="32" class="range-input flex-grow" :disabled="isDisabled">
+                     <input id="n_predict-number" :value="$store.state.config.n_predict" @input="updateValue('n_predict', parseInt($event.target.value))" type="number" min="32" max="8192" step="32" class="input-field-sm w-24 text-center" :disabled="isDisabled">
                  </div>
              </div>
 
@@ -72,8 +72,8 @@
                     <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Limits generation to the K most likely next tokens. Reduces repetition but can make output less creative. 0 disables it."></i>
                  </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
-                    <input id="top_k-range" :value="config.top_k" @input="updateValue('top_k', parseInt($event.target.value))" type="range" min="0" max="100" step="1" class="range-input flex-grow" :disabled="isDisabled">
-                    <input id="top_k-number" :value="config.top_k" @input="updateValue('top_k', parseInt($event.target.value))" type="number" min="0" max="100" step="1" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                    <input id="top_k-range" :value="$store.state.config.top_k" @input="updateValue('top_k', parseInt($event.target.value))" type="range" min="0" max="100" step="1" class="range-input flex-grow" :disabled="isDisabled">
+                    <input id="top_k-number" :value="$store.state.config.top_k" @input="updateValue('top_k', parseInt($event.target.value))" type="number" min="0" max="100" step="1" class="input-field-sm w-24 text-center" :disabled="isDisabled">
                  </div>
              </div>
 
@@ -84,8 +84,8 @@
                      <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Considers only the most probable tokens whose cumulative probability exceeds P. Allows for dynamic vocabulary size. 1.0 disables it. Common values: 0.9, 0.95."></i>
                  </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
-                     <input id="top_p-range" :value="config.top_p" @input="updateValue('top_p', parseFloat($event.target.value))" type="range" min="0" max="1" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
-                     <input id="top_p-number" :value="config.top_p" @input="updateValue('top_p', parseFloat($event.target.value))" type="number" min="0" max="1" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                     <input id="top_p-range" :value="$store.state.config.top_p" @input="updateValue('top_p', parseFloat($event.target.value))" type="range" min="0" max="1" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
+                     <input id="top_p-number" :value="$store.state.config.top_p" @input="updateValue('top_p', parseFloat($event.target.value))" type="number" min="0" max="1" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
                 </div>
              </div>
 
@@ -96,8 +96,8 @@
                      <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Penalizes tokens that have appeared recently. Higher values (e.g., 1.1, 1.2) reduce repetition. 1.0 disables it."></i>
                 </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
-                    <input id="repeat_penalty-range" :value="config.repeat_penalty" @input="updateValue('repeat_penalty', parseFloat($event.target.value))" type="range" min="0.5" max="2.0" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
-                    <input id="repeat_penalty-number" :value="config.repeat_penalty" @input="updateValue('repeat_penalty', parseFloat($event.target.value))" type="number" min="0.5" max="2.0" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                    <input id="repeat_penalty-range" :value="$store.state.config.repeat_penalty" @input="updateValue('repeat_penalty', parseFloat($event.target.value))" type="range" min="0.5" max="2.0" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
+                    <input id="repeat_penalty-number" :value="$store.state.config.repeat_penalty" @input="updateValue('repeat_penalty', parseFloat($event.target.value))" type="number" min="0.5" max="2.0" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
                  </div>
              </div>
 
@@ -108,90 +108,99 @@
                     <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Number of recent tokens to consider when applying the repeat penalty. 0 disables considering previous tokens specifically for penalty."></i>
                  </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
-                    <input id="repeat_last_n-range" :value="config.repeat_last_n" @input="updateValue('repeat_last_n', parseInt($event.target.value))" type="range" min="0" max="512" step="8" class="range-input flex-grow" :disabled="isDisabled">
-                    <input id="repeat_last_n-number" :value="config.repeat_last_n" @input="updateValue('repeat_last_n', parseInt($event.target.value))" type="number" min="0" max="512" step="8" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                    <input id="repeat_last_n-range" :value="$store.state.config.repeat_last_n" @input="updateValue('repeat_last_n', parseInt($event.target.value))" type="range" min="0" max="512" step="8" class="range-input flex-grow" :disabled="isDisabled">
+                    <input id="repeat_last_n-number" :value="$store.state.config.repeat_last_n" @input="updateValue('repeat_last_n', parseInt($event.target.value))" type="number" min="0" max="512" step="8" class="input-field-sm w-24 text-center" :disabled="isDisabled">
                  </div>
              </div>
         </div>
     </div>
 </template>
 
-<script setup>
-import { defineProps, defineEmits, computed, onMounted, nextTick } from 'vue';
+<script>
+import { nextTick } from 'vue'; // Import nextTick
 import feather from 'feather-icons';
 import ToggleSwitch from '@/components/ToggleSwitch.vue';
 
-// Props definition
-const props = defineProps({
-    config: { type: Object, required: true },
-    loading: { type: Boolean, default: false }
-});
-
-// Emits definition
-const emit = defineEmits(['update:setting']);
-
-// Computed property to check if parameters should be disabled
-const isDisabled = computed(() => {
-    return !props.config.override_personality_model_parameters;
-});
-
-// --- Methods ---
-const updateValue = (key, value) => {
-    // Ensure correct type (Number for ranges/numbers, leave Seed as potentially string/number)
-    let finalValue = value;
-     if (key !== 'seed' && typeof value !== 'boolean') {
-         finalValue = Number(value);
-         if (isNaN(finalValue)) {
-             console.warn(`Invalid number input for ${key}:`, value);
-             // Optionally revert or set to a default if NaN
-             // For now, we let it pass, backend might handle validation
-            finalValue = value; // Keep original if parse fails, might be intermediate typing
+export default {
+    name: 'ModelGenerationParameters',
+    components: {
+        ToggleSwitch
+    },
+    props: {
+        loading: { // Although not directly used in this template conversion, keeping it for completeness
+            type: Boolean,
+            default: false
         }
-    } else if (key === 'seed') {
-        // Allow -1 or positive integers for seed
-        finalValue = parseInt(value);
-         if (isNaN(finalValue) && value !== '-') { // Allow typing '-' for negative
-             finalValue = -1; // Default to random if invalid input
-        } else if (value === '-') {
-            finalValue = '-'; // Allow '-' intermediate state
-        } else if (finalValue < -1) {
-            finalValue = -1; // Enforce minimum of -1
+    },
+    emits: ['update:setting'],
+    computed: {
+        // Computed property to check if parameters should be disabled
+        isDisabled() {
+            // Access props using 'this' in Options API
+            return !this.$store.state.config.override_personality_model_parameters;
         }
+    },
+    methods: {
+        updateValue(key, value) {
+            // Ensure correct type (Number for ranges/numbers, leave Seed as potentially string/number)
+            let finalValue = value;
+             if (key !== 'seed' && typeof value !== 'boolean') {
+                 finalValue = Number(value);
+                 if (isNaN(finalValue)) {
+                     console.warn(`Invalid number input for ${key}:`, value);
+                     // Optionally revert or set to a default if NaN
+                     // For now, we let it pass, backend might handle validation
+                    finalValue = value; // Keep original if parse fails, might be intermediate typing
+                }
+            } else if (key === 'seed') {
+                // Allow -1 or positive integers for seed
+                finalValue = parseInt(value);
+                 if (isNaN(finalValue) && String(value) !== '-') { // Allow typing '-' for negative. Use String() to handle the raw input value safely.
+                     finalValue = -1; // Default to random if invalid input
+                } else if (String(value) === '-') {
+                    finalValue = '-'; // Allow '-' intermediate state
+                } else if (finalValue < -1) {
+                    finalValue = -1; // Enforce minimum of -1
+                }
+            }
+
+            // Avoid emitting NaN during intermediate number input states
+            if (key !== 'seed' && typeof finalValue === 'number' && isNaN(finalValue)) {
+                 return;
+            }
+            if (key === 'seed' && finalValue === '-') {
+                return; // Don't emit just the hyphen
+            }
+
+            // Use 'this.$emit' in Options API
+            this.$emit('update:setting', { key, value: finalValue });
+        },
+
+        updateBoolean(key, value) {
+             // Use 'this.$emit' in Options API
+            this.$emit('update:setting', { key, value: Boolean(value) });
+        },
+
+        // Method to replace feather icons, called in lifecycle hooks
+        replaceFeatherIcons() {
+             nextTick(() => {
+                feather.replace();
+             });
+        }
+    },
+    mounted() {
+        // Call replaceFeatherIcons on mount
+        this.replaceFeatherIcons();
+    },
+    updated() {
+        // Call replaceFeatherIcons on update to handle potential dynamic changes
+        this.replaceFeatherIcons();
     }
-
-    // Avoid emitting NaN during intermediate number input states
-    if (key !== 'seed' && typeof finalValue === 'number' && isNaN(finalValue)) {
-         return;
-    }
-    if (key === 'seed' && finalValue === '-') {
-        return; // Don't emit just the hyphen
-    }
-
-
-    emit('update:setting', { key, value: finalValue });
-};
-
-const updateBoolean = (key, value) => {
-    emit('update:setting', { key, value: Boolean(value) });
-};
-
-
-// Lifecycle Hooks
-onMounted(() => {
-    nextTick(() => {
-        feather.replace();
-    });
-});
-onUpdated(() => {
-     nextTick(() => {
-        feather.replace();
-     });
-});
-
+}
 </script>
 
 <style scoped>
-/* Using shared styles */
+/* Using shared styles - these remain unchanged */
 .setting-item {
     @apply flex flex-col md:flex-row md:items-center gap-2 md:gap-4 py-2;
 }

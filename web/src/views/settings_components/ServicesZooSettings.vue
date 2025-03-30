@@ -16,12 +16,12 @@
                 <div class="setting-item-grid">
                     <label for="active_tts_service" class="setting-label">Text-to-Speech (TTS)</label>
                     <div class="setting-input-group">
-                        <select id="active_tts_service" :value="config.active_tts_service" @change="updateValue('active_tts_service', $event.target.value)" class="input-field flex-grow">
+                        <select id="active_tts_service" :value="$store.state.config.active_tts_service" @change="updateValue('active_tts_service', $event.target.value)" class="input-field flex-grow">
                              <option value="None">None</option>
                              <option value="browser">Browser TTS</option>
                              <option v-for="service in ttsServices" :key="`tts-${service.name}`" :value="service.name">{{ service.caption || service.name }}</option>
                         </select>
-                         <button @click="showServiceSettings('tts', config.active_tts_service)" :disabled="!config.active_tts_service || config.active_tts_service === 'None' || config.active_tts_service === 'browser'" class="button-secondary-sm p-2" title="Configure Selected TTS Service">
+                         <button @click="showServiceSettings('tts', $store.state.config.active_tts_service)" :disabled="!$store.state.config.active_tts_service || $store.state.config.active_tts_service === 'None' || $store.state.config.active_tts_service === 'browser'" class="button-secondary-sm p-2" title="Configure Selected TTS Service">
                              <i data-feather="settings" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -31,11 +31,11 @@
                  <div class="setting-item-grid">
                     <label for="active_stt_service" class="setting-label">Speech-to-Text (STT)</label>
                     <div class="setting-input-group">
-                         <select id="active_stt_service" :value="config.active_stt_service" @change="updateValue('active_stt_service', $event.target.value)" class="input-field flex-grow">
+                         <select id="active_stt_service" :value="$store.state.config.active_stt_service" @change="updateValue('active_stt_service', $event.target.value)" class="input-field flex-grow">
                              <option value="None">None</option>
                              <option v-for="service in sttServices" :key="`stt-${service.name}`" :value="service.name">{{ service.caption || service.name }}</option>
                         </select>
-                         <button @click="showServiceSettings('stt', config.active_stt_service)" :disabled="!config.active_stt_service || config.active_stt_service === 'None'" class="button-secondary-sm p-2" title="Configure Selected STT Service">
+                         <button @click="showServiceSettings('stt', $store.state.config.active_stt_service)" :disabled="!$store.state.config.active_stt_service || $store.state.config.active_stt_service === 'None'" class="button-secondary-sm p-2" title="Configure Selected STT Service">
                             <i data-feather="settings" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -45,11 +45,11 @@
                  <div class="setting-item-grid">
                     <label for="active_tti_service" class="setting-label">Text-to-Image (TTI)</label>
                      <div class="setting-input-group">
-                        <select id="active_tti_service" :value="config.active_tti_service" @change="updateValue('active_tti_service', $event.target.value)" class="input-field flex-grow">
+                        <select id="active_tti_service" :value="$store.state.config.active_tti_service" @change="updateValue('active_tti_service', $event.target.value)" class="input-field flex-grow">
                              <option value="None">None</option>
                              <option v-for="service in ttiServices" :key="`tti-${service.name}`" :value="service.name">{{ service.caption || service.name }}</option>
                         </select>
-                        <button @click="showServiceSettings('tti', config.active_tti_service)" :disabled="!config.active_tti_service || config.active_tti_service === 'None'" class="button-secondary-sm p-2" title="Configure Selected TTI Service">
+                        <button @click="showServiceSettings('tti', $store.state.config.active_tti_service)" :disabled="!$store.state.config.active_tti_service || $store.state.config.active_tti_service === 'None'" class="button-secondary-sm p-2" title="Configure Selected TTI Service">
                              <i data-feather="settings" class="w-4 h-4"></i>
                          </button>
                     </div>
@@ -59,11 +59,11 @@
                  <div class="setting-item-grid">
                     <label for="active_ttm_service" class="setting-label">Text-to-Music (TTM)</label>
                      <div class="setting-input-group">
-                        <select id="active_ttm_service" :value="config.active_ttm_service" @change="updateValue('active_ttm_service', $event.target.value)" class="input-field flex-grow">
+                        <select id="active_ttm_service" :value="$store.state.config.active_ttm_service" @change="updateValue('active_ttm_service', $event.target.value)" class="input-field flex-grow">
                              <option value="None">None</option>
                              <option v-for="service in ttmServices" :key="`ttm-${service.name}`" :value="service.name">{{ service.caption || service.name }}</option>
                         </select>
-                        <button @click="showServiceSettings('ttm', config.active_ttm_service)" :disabled="!config.active_ttm_service || config.active_ttm_service === 'None'" class="button-secondary-sm p-2" title="Configure Selected TTM Service">
+                        <button @click="showServiceSettings('ttm', $store.state.config.active_ttm_service)" :disabled="!$store.state.config.active_ttm_service || $store.state.config.active_ttm_service === 'None'" class="button-secondary-sm p-2" title="Configure Selected TTM Service">
                             <i data-feather="settings" class="w-4 h-4"></i>
                         </button>
                     </div>
@@ -73,11 +73,11 @@
                 <div class="setting-item-grid">
                      <label for="active_ttv_service" class="setting-label">Text-to-Video (TTV)</label>
                      <div class="setting-input-group">
-                        <select id="active_ttv_service" :value="config.active_ttv_service" @change="updateValue('active_ttv_service', $event.target.value)" class="input-field flex-grow">
+                        <select id="active_ttv_service" :value="$store.state.config.active_ttv_service" @change="updateValue('active_ttv_service', $event.target.value)" class="input-field flex-grow">
                              <option value="None">None</option>
                              <option v-for="service in ttvServices" :key="`ttv-${service.name}`" :value="service.name">{{ service.caption || service.name }}</option>
                         </select>
-                        <button @click="showServiceSettings('ttv', config.active_ttv_service)" :disabled="!config.active_ttv_service || config.active_ttv_service === 'None'" class="button-secondary-sm p-2" title="Configure Selected TTV Service">
+                        <button @click="showServiceSettings('ttv', $store.state.config.active_ttv_service)" :disabled="!$store.state.config.active_ttv_service || $store.state.config.active_ttv_service === 'None'" class="button-secondary-sm p-2" title="Configure Selected TTV Service">
                             <i data-feather="settings" class="w-4 h-4"></i>
                          </button>
                     </div>
@@ -92,25 +92,25 @@
              <!-- Use Negative Prompt Toggle -->
              <div class="toggle-item">
                 <label for="use_negative_prompt" class="toggle-label">Use Negative Prompt</label>
-                <ToggleSwitch id="use_negative_prompt" :checked="config.use_negative_prompt" @update:checked="updateBoolean('use_negative_prompt', $event)" />
+                <ToggleSwitch id="use_negative_prompt" :checked="$store.state.config.use_negative_prompt" @update:checked="updateBoolean('use_negative_prompt', $event)" />
              </div>
 
             <!-- Use AI Generated Negative Prompt -->
-            <div class="toggle-item" :class="{ 'opacity-50 pointer-events-none': !config.use_negative_prompt }">
+            <div class="toggle-item" :class="{ 'opacity-50 pointer-events-none': !$store.state.config.use_negative_prompt }">
                  <label for="use_ai_generated_negative_prompt" class="toggle-label">Generate Negative Prompt with AI</label>
-                <ToggleSwitch id="use_ai_generated_negative_prompt" :checked="config.use_ai_generated_negative_prompt" @update:checked="updateBoolean('use_ai_generated_negative_prompt', $event)" :disabled="!config.use_negative_prompt"/>
+                <ToggleSwitch id="use_ai_generated_negative_prompt" :checked="$store.state.config.use_ai_generated_negative_prompt" @update:checked="updateBoolean('use_ai_generated_negative_prompt', $event)" :disabled="!$store.state.config.use_negative_prompt"/>
             </div>
 
             <!-- Negative Prompt Generation Prompt -->
-            <div class="setting-item-grid" :class="{ 'opacity-50 pointer-events-none': !config.use_negative_prompt || !config.use_ai_generated_negative_prompt }">
+            <div class="setting-item-grid" :class="{ 'opacity-50 pointer-events-none': !$store.state.config.use_negative_prompt || !$store.state.config.use_ai_generated_negative_prompt }">
                 <label for="negative_prompt_generation_prompt" class="setting-label">AI Negative Prompt Generator Instruction</label>
-                <input type="text" id="negative_prompt_generation_prompt" :value="config.negative_prompt_generation_prompt" @input="updateValue('negative_prompt_generation_prompt', $event.target.value)" class="input-field" placeholder="e.g., Generate a list of negative keywords..." :disabled="!config.use_negative_prompt || !config.use_ai_generated_negative_prompt">
+                <input type="text" id="negative_prompt_generation_prompt" :value="$store.state.config.negative_prompt_generation_prompt" @input="updateValue('negative_prompt_generation_prompt', $event.target.value)" class="input-field" placeholder="e.g., Generate a list of negative keywords..." :disabled="!$store.state.config.use_negative_prompt || !$store.state.config.use_ai_generated_negative_prompt">
             </div>
 
             <!-- Default Negative Prompt -->
-             <div class="setting-item-grid" :class="{ 'opacity-50 pointer-events-none': !config.use_negative_prompt || config.use_ai_generated_negative_prompt }">
+             <div class="setting-item-grid" :class="{ 'opacity-50 pointer-events-none': !$store.state.config.use_negative_prompt || $store.state.config.use_ai_generated_negative_prompt }">
                 <label for="default_negative_prompt" class="setting-label">Default Negative Prompt</label>
-                <input type="text" id="default_negative_prompt" :value="config.default_negative_prompt" @input="updateValue('default_negative_prompt', $event.target.value)" class="input-field" placeholder="e.g., blurry, low quality, text, signature..." :disabled="!config.use_negative_prompt || config.use_ai_generated_negative_prompt">
+                <input type="text" id="default_negative_prompt" :value="$store.state.config.default_negative_prompt" @input="updateValue('default_negative_prompt', $event.target.value)" class="input-field" placeholder="e.g., blurry, low quality, text, signature..." :disabled="!$store.state.config.use_negative_prompt || $store.state.config.use_ai_generated_negative_prompt">
              </div>
         </section>
 
@@ -122,48 +122,48 @@
                  <!-- Listening Threshold -->
                  <div class="setting-item-grid !items-center">
                      <label for="stt_listening_threshold" class="setting-label">Listening Threshold</label>
-                    <input id="stt_listening_threshold" :value="config.stt_listening_threshold" @input="updateValue('stt_listening_threshold', parseInt($event.target.value))" type="number" min="0" step="10" class="input-field-sm w-24">
+                    <input id="stt_listening_threshold" :value="$store.state.config.stt_listening_threshold" @input="updateValue('stt_listening_threshold', parseInt($event.target.value))" type="number" min="0" step="10" class="input-field-sm w-24">
                 </div>
                  <!-- Silence Duration -->
                 <div class="setting-item-grid !items-center">
                     <label for="stt_silence_duration" class="setting-label">Silence Duration (s)</label>
-                    <input id="stt_silence_duration" :value="config.stt_silence_duration" @input="updateValue('stt_silence_duration', parseInt($event.target.value))" type="number" min="0" step="1" class="input-field-sm w-24">
+                    <input id="stt_silence_duration" :value="$store.state.config.stt_silence_duration" @input="updateValue('stt_silence_duration', parseInt($event.target.value))" type="number" min="0" step="1" class="input-field-sm w-24">
                 </div>
                  <!-- Sound Threshold % -->
                 <div class="setting-item-grid !items-center">
                      <label for="stt_sound_threshold_percentage" class="setting-label">Min Sound Percentage</label>
-                     <input id="stt_sound_threshold_percentage" :value="config.stt_sound_threshold_percentage" @input="updateValue('stt_sound_threshold_percentage', parseInt($event.target.value))" type="number" min="0" max="100" step="1" class="input-field-sm w-24">
+                     <input id="stt_sound_threshold_percentage" :value="$store.state.config.stt_sound_threshold_percentage" @input="updateValue('stt_sound_threshold_percentage', parseInt($event.target.value))" type="number" min="0" max="100" step="1" class="input-field-sm w-24">
                 </div>
                  <!-- Volume Amplification -->
                 <div class="setting-item-grid !items-center">
                      <label for="stt_gain" class="setting-label">Volume Amplification</label>
-                    <input id="stt_gain" :value="config.stt_gain" @input="updateValue('stt_gain', parseInt($event.target.value))" type="number" min="0" step="1" class="input-field-sm w-24">
+                    <input id="stt_gain" :value="$store.state.config.stt_gain" @input="updateValue('stt_gain', parseInt($event.target.value))" type="number" min="0" step="1" class="input-field-sm w-24">
                 </div>
                 <!-- Audio Rate -->
                 <div class="setting-item-grid !items-center">
                     <label for="stt_rate" class="setting-label">Audio Rate (Hz)</label>
-                    <input id="stt_rate" :value="config.stt_rate" @input="updateValue('stt_rate', parseInt($event.target.value))" type="number" min="8000" step="1000" class="input-field-sm w-24">
+                    <input id="stt_rate" :value="$store.state.config.stt_rate" @input="updateValue('stt_rate', parseInt($event.target.value))" type="number" min="8000" step="1000" class="input-field-sm w-24">
                 </div>
                 <!-- Channels -->
                  <div class="setting-item-grid !items-center">
                      <label for="stt_channels" class="setting-label">Channels</label>
-                    <input id="stt_channels" :value="config.stt_channels" @input="updateValue('stt_channels', parseInt($event.target.value))" type="number" min="1" max="2" step="1" class="input-field-sm w-24">
+                    <input id="stt_channels" :value="$store.state.config.stt_channels" @input="updateValue('stt_channels', parseInt($event.target.value))" type="number" min="1" max="2" step="1" class="input-field-sm w-24">
                 </div>
                 <!-- Buffer Size -->
                 <div class="setting-item-grid !items-center">
                      <label for="stt_buffer_size" class="setting-label">Buffer Size</label>
-                    <input id="stt_buffer_size" :value="config.stt_buffer_size" @input="updateValue('stt_buffer_size', parseInt($event.target.value))" type="number" min="512" step="512" class="input-field-sm w-24">
+                    <input id="stt_buffer_size" :value="$store.state.config.stt_buffer_size" @input="updateValue('stt_buffer_size', parseInt($event.target.value))" type="number" min="512" step="512" class="input-field-sm w-24">
                 </div>
 
                  <!-- Activate Word Detection -->
                 <div class="toggle-item md:col-span-2">
                     <label for="stt_activate_word_detection" class="toggle-label">Activate Wake Word Detection</label>
-                     <ToggleSwitch id="stt_activate_word_detection" :checked="config.stt_activate_word_detection" @update:checked="updateBoolean('stt_activate_word_detection', $event)" />
+                     <ToggleSwitch id="stt_activate_word_detection" :checked="$store.state.config.stt_activate_word_detection" @update:checked="updateBoolean('stt_activate_word_detection', $event)" />
                 </div>
                  <!-- Word Detection File -->
-                <div class="setting-item-grid md:col-span-2" :class="{ 'opacity-50 pointer-events-none': !config.stt_activate_word_detection }">
+                <div class="setting-item-grid md:col-span-2" :class="{ 'opacity-50 pointer-events-none': !$store.state.config.stt_activate_word_detection }">
                     <label for="stt_word_detection_file" class="setting-label">Wake Word File (.wav)</label>
-                     <input type="text" id="stt_word_detection_file" :value="config.stt_word_detection_file" @input="updateValue('stt_word_detection_file', $event.target.value)" class="input-field" placeholder="Path to wake word wav file" :disabled="!config.stt_activate_word_detection">
+                     <input type="text" id="stt_word_detection_file" :value="$store.state.config.stt_word_detection_file" @input="updateValue('stt_word_detection_file', $event.target.value)" class="input-field" placeholder="Path to wake word wav file" :disabled="!$store.state.config.stt_activate_word_detection">
                  </div>
              </div>
         </section>
@@ -178,7 +178,7 @@
                  <!-- Input Device -->
                  <div class="setting-item-grid">
                     <label for="stt_input_device" class="setting-label">Audio Input Device</label>
-                     <select id="stt_input_device" :value="config.stt_input_device" @change="updateValue('stt_input_device', parseInt($event.target.value))" class="input-field">
+                     <select id="stt_input_device" :value="$store.state.config.stt_input_device" @change="updateValue('stt_input_device', parseInt($event.target.value))" class="input-field">
                          <option v-for="(device, index) in audioInputDevices" :key="`in-${index}`" :value="audioInputDeviceIndexes[index]">
                              {{ device }}
                          </option>
@@ -187,7 +187,7 @@
                  <!-- Output Device -->
                 <div class="setting-item-grid">
                      <label for="tts_output_device" class="setting-label">Audio Output Device</label>
-                    <select id="tts_output_device" :value="config.tts_output_device" @change="updateValue('tts_output_device', parseInt($event.target.value))" class="input-field">
+                    <select id="tts_output_device" :value="$store.state.config.tts_output_device" @change="updateValue('tts_output_device', parseInt($event.target.value))" class="input-field">
                         <option v-for="(device, index) in audioOutputDevices" :key="`out-${index}`" :value="audioOutputDeviceIndexes[index]">
                              {{ device }}
                          </option>
@@ -204,17 +204,17 @@
             <!-- Example: OpenAI Keys -->
             <div class="setting-item-grid">
                 <label for="openai_whisper_key" class="setting-label">OpenAI API Key (STT/TTS)</label>
-                <input type="password" id="openai_whisper_key" :value="config.openai_whisper_key" @input="updateValue('openai_whisper_key', $event.target.value)" class="input-field" placeholder="sk-...">
+                <input type="password" id="openai_whisper_key" :value="$store.state.config.openai_whisper_key" @input="updateValue('openai_whisper_key', $event.target.value)" class="input-field" placeholder="sk-...">
             </div>
              <div class="setting-item-grid">
                  <label for="dall_e_key" class="setting-label">OpenAI API Key (Dall-E TTI)</label>
-                 <input type="password" id="dall_e_key" :value="config.dall_e_key" @input="updateValue('dall_e_key', $event.target.value)" class="input-field" placeholder="sk-...">
+                 <input type="password" id="dall_e_key" :value="$store.state.config.dall_e_key" @input="updateValue('dall_e_key', $event.target.value)" class="input-field" placeholder="sk-...">
              </div>
 
              <!-- Example: ElevenLabs -->
              <div class="setting-item-grid">
                 <label for="elevenlabs_tts_key" class="setting-label">ElevenLabs API Key (TTS)</label>
-                 <input type="password" id="elevenlabs_tts_key" :value="config.elevenlabs_tts_key" @input="updateValue('elevenlabs_tts_key', $event.target.value)" class="input-field" placeholder="Enter ElevenLabs Key">
+                 <input type="password" id="elevenlabs_tts_key" :value="$store.state.config.elevenlabs_tts_key" @input="updateValue('elevenlabs_tts_key', $event.target.value)" class="input-field" placeholder="Enter ElevenLabs Key">
              </div>
              <!-- Add other ElevenLabs settings if static (voice ID dropdown might need fetching) -->
 
@@ -246,13 +246,12 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, nextTick, defineProps, defineEmits } from 'vue';
+import { ref, reactive, computed, onMounted, nextTick, defineProps, defineEmits, onUpdated } from 'vue';
 import feather from 'feather-icons';
 import ToggleSwitch from '@/components/ToggleSwitch.vue';
 
 // Props
 const props = defineProps({
-    config: { type: Object, required: true },
     loading: { type: Boolean, default: false },
     api_post_req: { type: Function, required: true },
     api_get_req: { type: Function, required: true },

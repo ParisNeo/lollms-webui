@@ -115,7 +115,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted, nextTick, reactive } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted, nextTick, reactive, onUpdated } from 'vue';
 import feather from 'feather-icons';
 import FunctionEntry from '@/components/FunctionEntry.vue'; // Assuming this component exists
 import defaultFunctionIcon from "@/assets/default_function.png"; // Default icon

@@ -1,73 +1,109 @@
 <template>
-    <transition name="fade-and-fly">
-        <div v-if="!isReady" class="fixed top-0 left-0 w-screen h-screen flex items-center justify-center overflow-hidden">
-            <!-- Falling stars -->
-            <div v-if="$store.state.theme_vars.activate_dropping_animation" class="absolute inset-0 pointer-events-none overflow-hidden">
-                <div v-for="n in 50" :key="n" class="absolute animate-fall animate-giggle"
-                    :style="{
-                    left: `${Math.random() * 100}%`,
-                    top: `-20px`,
-                    animationDuration: `${3 + Math.random() * 7}s`,
-                    animationDelay: `${Math.random() * 5}s`
-                    }">
-                {{$store.state.theme_vars.falling_object}}
-                </div>
-            </div>
+  <!-- Transition for the entire welcome screen -->
+  <transition name="fade-smooth">
+    <div
+      v-if="!isReady"
+      class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden theme-bg-primary theme-text-primary"
+      
+    >
+      <!--
+        The `theme-bg-primary` and `theme-text-primary` classes should be defined
+        by your theme system to set the appropriate background and default text color
+        for both light and dark modes.
+      -->
 
-            <div class="flex flex-col items-center text-center max-w-4xl w-full px-4 relative z-10">
-                <div class="mb-8 w-full">
-                    <div class="text-5xl md:text-6xl font-bold mb-2 hover:scale-105 transition-transform lollms-title-style">
-                        {{$store.state.config!=null&&$store.state.config.app_custom_name!=null&&$store.state.config.app_custom_name!=""?$store.state.config.app_custom_name:$store.state.theme_vars.lollms_title}}
-                    </div>
-
-                    <p class="text-2xl italic">
-                        {{$store.state.config!=null&&$store.state.config.app_custom_slogan!=null&&$store.state.config.app_custom_slogan!=""?$store.state.config.app_custom_slogan:"One tool to rule them all"}}
-                    </p>
-                    <p v-if="shouldShowLollmsParagraphs" class="text-xl mb-6">
-                        by ParisNeo
-                    </p>
-
-
-                    <p class="bottom-0 text-2xl italic">
-                        {{ version_info }}
-                    </p>
-
-                    <!-- Clickable interesting fact card -->
-                    <div v-if="shouldShowLollmsFunFacts" class="interesting-facts transition-transform duration-300 cursor-pointer"
-                        @click="updateRandomFact">
-                        <p class="text-lg ">
-                            <span class="font-semibold">🤔 Fun Fact: </span>
-                            <span v-html="randomFact"></span>
-                        </p>
-                    </div>
-
-
-                    <!-- Animated Progress Bar -->
-                    <div class="animated-progressbar-bg">
-                        <!-- Progress Background -->
-                        <div class="animated-progressbar-fg"
-                            :style="{ width: `${loading_progress}%` }">
-                        </div>
-                        <!-- Star that moves with progress -->
-                        <div class="absolute top-0 h-full flex items-center transition-all duration-300"
-                            :style="{ left: `${loading_progress}%`, transform: 'translateX(-50%)' }">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="w-full max-w-2xl">
-                    <div role="status" class="w-full">
-                        <p class="text-xl">
-                            {{ loading_infos }}...
-                        </p>
-                        <p class="text-2xl font-bold mt-2">
-                            {{ Math.round(loading_progress) }}%
-                        </p>
-                    </div>
-                </div>
-            </div>
+      <!-- Optional: Falling Stars Background Effect -->
+      <div
+        v-if="$store.state.theme_vars.activate_dropping_animation"
+        class="absolute inset-0 pointer-events-none overflow-hidden opacity-70"
+      >
+        <div
+          v-for="n in 60"
+          :key="n"
+          class="absolute animate-fall text-xs theme-falling-object-color"
+          :style="{
+            left: `${Math.random() * 100}%`,
+            top: `-30px`,
+            animationDuration: `${4 + Math.random() * 8}s`,
+            animationDelay: `${Math.random() * 6}s`,
+            opacity: `${0.3 + Math.random() * 0.5}`
+          }"
+        >
+           {{ $store.state.theme_vars.falling_object || '·' }}
         </div>
-    </transition>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="relative z-10 flex w-full max-w-4xl flex-col items-center px-6 text-center">
+
+        <!-- Logo/Title Section -->
+        <div class="mb-10 w-full">
+          <!-- Optional Logo -->
+          <!-- <img src="/path/to/logo.svg" alt="LoLLMs Logo" class="h-16 mx-auto mb-6 theme-logo-filter"> -->
+          <!-- theme-logo-filter could apply invert(1) or brightness(0) depending on theme -->
+
+          <h1 class="lollms-title-style mb-3 text-5xl font-extrabold tracking-tight drop-shadow-md md:text-7xl transition-transform duration-300 hover:scale-[1.03] theme-text-title">
+            <!-- Use a specific class for title if needed, otherwise inherits theme-text-primary -->
+            {{ $store.state.config?.app_custom_name || $store.state.theme_vars.lollms_title || 'LoLLMs' }}
+          </h1>
+          <p class="text-xl italic md:text-2xl theme-text-secondary">
+            <!-- Secondary text color class -->
+            {{ $store.state.config?.app_custom_slogan || 'One tool to rule them all' }}
+          </p>
+          <p v-if="shouldShowLollmsParagraphs" class="mt-4 text-base theme-text-muted">
+            <!-- Muted text color class -->
+            by ParisNeo
+          </p>
+           <p class="mt-1 text-sm theme-text-muted">
+             <!-- Muted text color class -->
+             {{ version_info }}
+           </p>
+        </div>
+
+        <!-- Fun Fact Card -->
+         <div v-if="shouldShowLollmsFunFacts && randomFact"
+              class="mb-8 w-full max-w-xl cursor-pointer rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300 theme-card-bg theme-card-border hover:theme-card-bg-hover hover:theme-card-border-hover"
+              @click="updateRandomFact">
+              <!--
+                Theme classes for card background, border, and their hover states.
+                The theme CSS should handle background opacity/blur if desired.
+              -->
+             <p class="text-base theme-text-card-body">
+                <!-- Specific text color for card body, might differ from theme-text-muted -->
+                 <span class="font-semibold theme-text-highlight">🤔 Fun Fact: </span>
+                 <!-- Highlight color class -->
+                 <span v-html="randomFact" class="italic"></span>
+             </p>
+         </div>
+
+
+        <!-- Progress Section -->
+        <div class="w-full max-w-lg">
+          <!-- Enhanced Progress Bar -->
+          <div class="mb-3 h-3 w-full overflow-hidden rounded-full shadow-inner animated-progressbar-bg">
+            <!-- Progress bar background track class -->
+            <div
+              class="h-full rounded-full shadow-md transition-all duration-500 ease-out animated-progressbar-fg"
+              :style="{ width: `${loading_progress}%` }"
+            ></div>
+          </div>
+
+          <!-- Loading Status Text -->
+          <div role="status" class="w-full">
+            <p class="mb-1 text-lg transition-opacity duration-300 theme-text-secondary" :key="loading_infos">
+              <!-- Secondary text color class -->
+              {{ loading_infos }}...
+            </p>
+            <p class="text-2xl font-semibold theme-text-primary">
+              <!-- Primary text color class -->
+              {{ Math.round(loading_progress) }}%
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </transition>
     <transition name="slide-right">
     <div  v-if="showLeftPanel"
         class="relative flex flex-col no-scrollbar shadow-lg w-[16rem] "
@@ -3962,15 +3998,11 @@ export default {
             const slp = !(this.$store.state.config && 
                 this.$store.state.config.app_custom_name && 
                 (this.$store.state.config.app_custom_name != ''));
-            console.log("shouldShowLollmsParagraphs")
-            console.log(slp)
             return slp;
         },  
         shouldShowLollmsFunFacts() {
             const slf = (this.$store.state.config && 
                 this.$store.state.config.app_show_fun_facts);
-            console.log("shouldShowLollmsFunFacts")
-            console.log(slf)
             return slf;
         },          
         // Get unique placeholders while preserving order

@@ -15,7 +15,7 @@
                 <input
                     type="text"
                     id="app_custom_name"
-                    :value="config.app_custom_name"
+                    :value="$store.state.config.app_custom_name"
                     @input="updateValue('app_custom_name', $event.target.value)"
                     class="input-field"
                     placeholder="Default: LoLLMs"
@@ -28,7 +28,7 @@
                 <input
                     type="text"
                     id="app_custom_slogan"
-                    :value="config.app_custom_slogan"
+                    :value="$store.state.config.app_custom_slogan"
                     @input="updateValue('app_custom_slogan', $event.target.value)"
                     class="input-field"
                     placeholder="Default: Lord of Large Language Models"
@@ -45,15 +45,17 @@
                     <div class="flex gap-2">
                         <label class="button-primary text-sm cursor-pointer">
                             Upload Logo
-                            <input type="file" @change="uploadLogo" accept="image/*" class="hidden">
+                            <input type="file" @change="uploadLogo" accept="image/*" class="hidden" :disabled="isUploadingLogo">
                         </label>
                          <button
-                            v-if="config.app_custom_logo"
+                            v-if="$store.state.config.app_custom_logo"
                             @click="removeLogo"
-                            class="button-danger text-sm">
+                            class="button-danger text-sm"
+                            :disabled="isUploadingLogo">
                             Remove Logo
                         </button>
                     </div>
+                     <span v-if="isUploadingLogo" class="text-xs text-gray-500 dark:text-gray-400 italic ml-2">Uploading...</span>
                 </div>
             </div>
 
@@ -62,7 +64,7 @@
                  <label for="app_custom_welcome_message" class="setting-label pt-2">Custom Welcome Message</label>
                  <textarea
                     id="app_custom_welcome_message"
-                    :value="config.app_custom_welcome_message"
+                    :value="$store.state.config.app_custom_welcome_message"
                     @input="updateValue('app_custom_welcome_message', $event.target.value)"
                     class="input-field min-h-[80px] resize-y"
                     placeholder="Enter a custom welcome message shown on the main page (leave blank for default)."
@@ -80,7 +82,7 @@
                     Automatic Discussion Naming
                      <span class="toggle-description">Let AI name your discussions automatically based on the first message.</span>
                 </label>
-                <ToggleSwitch id="auto_title" :checked="config.auto_title" @update:checked="updateBoolean('auto_title', $event)" />
+                <ToggleSwitch id="auto_title" :checked="$store.state.config.auto_title" @update:checked="updateBoolean('auto_title', $event)" />
             </div>
 
             <!-- Show Browser -->
@@ -89,7 +91,7 @@
                     Auto-launch Browser
                      <span class="toggle-description">Open the default web browser automatically when LoLLMs starts.</span>
                 </label>
-                <ToggleSwitch id="auto_show_browser" :checked="config.auto_show_browser" @update:checked="updateBoolean('auto_show_browser', $event)" />
+                <ToggleSwitch id="auto_show_browser" :checked="$store.state.config.auto_show_browser" @update:checked="updateBoolean('auto_show_browser', $event)" />
             </div>
 
              <!-- Show Change Log -->
@@ -98,7 +100,7 @@
                     Show Startup Changelog
                      <span class="toggle-description">Display the changelog modal window when the application starts after an update.</span>
                 </label>
-                <ToggleSwitch id="app_show_changelogs" :checked="config.app_show_changelogs" @update:checked="updateBoolean('app_show_changelogs', $event)" />
+                <ToggleSwitch id="app_show_changelogs" :checked="$store.state.config.app_show_changelogs" @update:checked="updateBoolean('app_show_changelogs', $event)" />
             </div>
 
              <!-- Show Fun Facts -->
@@ -107,7 +109,7 @@
                     Show Fun Facts
                      <span class="toggle-description">Display fun facts related to AI and LLMs while loading or waiting.</span>
                 </label>
-                <ToggleSwitch id="app_show_fun_facts" :checked="config.app_show_fun_facts" @update:checked="updateBoolean('app_show_fun_facts', $event)" />
+                <ToggleSwitch id="app_show_fun_facts" :checked="$store.state.config.app_show_fun_facts" @update:checked="updateBoolean('app_show_fun_facts', $event)" />
             </div>
 
              <!-- Enhanced Copy -->
@@ -116,7 +118,7 @@
                     Enhanced Message Copy
                      <span class="toggle-description">Include metadata (sender, model, etc.) when copying messages from discussions.</span>
                 </label>
-                 <ToggleSwitch id="copy_to_clipboard_add_all_details" :checked="config.copy_to_clipboard_add_all_details" @update:checked="updateBoolean('copy_to_clipboard_add_all_details', $event)" />
+                 <ToggleSwitch id="copy_to_clipboard_add_all_details" :checked="$store.state.config.copy_to_clipboard_add_all_details" @update:checked="updateBoolean('copy_to_clipboard_add_all_details', $event)" />
             </div>
         </div>
 
@@ -136,7 +138,7 @@
                              <strong class="block mt-1">Only enable if you understand the risks and have secured your network.</strong>
                          </p>
                     </label>
-                    <ToggleSwitch id="force_accept_remote_access" :checked="config.force_accept_remote_access" @update:checked="updateBoolean('force_accept_remote_access', $event)" />
+                    <ToggleSwitch id="force_accept_remote_access" :checked="$store.state.config.force_accept_remote_access" @update:checked="updateBoolean('force_accept_remote_access', $event)" />
                 </div>
             </div>
 
@@ -146,111 +148,141 @@
                     Headless Server Mode
                      <span class="toggle-description">Run LoLLMs without the Web UI. Useful for server deployments or API-only usage. This setting requires a restart.</span>
                 </label>
-                 <ToggleSwitch id="headless_server_mode" :checked="config.headless_server_mode" @update:checked="updateBoolean('headless_server_mode', $event)" />
+                 <ToggleSwitch id="headless_server_mode" :checked="$store.state.config.headless_server_mode" @update:checked="updateBoolean('headless_server_mode', $event)" />
             </div>
         </div>
 
     </div>
 </template>
 
-<script setup>
-import { defineProps, defineEmits, computed, ref, onMounted, nextTick } from 'vue';
+<script>
 import axios from 'axios';
 import feather from 'feather-icons';
+import { nextTick } from 'vue';
 import ToggleSwitch from '@/components/ToggleSwitch.vue';
 import defaultLogoPlaceholder from "@/assets/logo.png"; // Your default logo
 
-// Props definition
-const props = defineProps({
-    config: { type: Object, required: true },
-    loading: { type: Boolean, default: false },
-    settingsChanged: { type: Boolean, default: false },
-    api_post_req: { type: Function, required: true }, // Assuming parent provides this for upload/remove
-    show_toast: { type: Function, required: true },
-     client_id: { type: String, required: true }
-});
+export default {
+    name: 'MainConfigSettings',
+    components: {
+        ToggleSwitch
+    },
+    props: {
+        loading: { type: Boolean, default: false }, // Note: loading prop is defined but not used in the template/script
+        settingsChanged: { type: Boolean, default: false }, // Note: settingsChanged prop is defined but not used in the template/script
+        api_post_req: { type: Function, required: true },
+        show_toast: { type: Function, required: true },
+        client_id: { type: String, required: true }
+    },
+    emits: ['update:setting', 'settings-changed'], // settings-changed is emitted but not explicitly triggered here, maybe in parent?
 
-// Emits definition
-const emit = defineEmits(['update:setting', 'settings-changed']);
+    data() {
+        return {
+            isUploadingLogo: false,
+            // defaultLogoPlaceholder is used directly in computed, no need for data property unless it changes
+        };
+    },
 
-const isUploadingLogo = ref(false);
-
-// --- Computed ---
-const logoSrc = computed(() => {
-    if (props.config.app_custom_logo) {
-        return `${axios.defaults.baseURL}/user_infos/${props.config.app_custom_logo}`;
-    }
-    return defaultLogoPlaceholder;
-});
-
-// --- Methods ---
-const updateValue = (key, value) => {
-    emit('update:setting', { key, value });
-};
-
-const updateBoolean = (key, value) => {
-    emit('update:setting', { key: key, value: Boolean(value) });
-};
-
-const uploadLogo = async (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    isUploadingLogo.value = true;
-    const formData = new FormData();
-    formData.append('logo', file);
-     formData.append('client_id', props.client_id);
-
-    try {
-        const response = await axios.post('/upload_logo', formData, {
-             headers: { 'Content-Type': 'multipart/form-data' }
-        });
-
-        if (response.data && response.data.status) {
-             props.show_toast("Logo uploaded successfully!", 4, true);
-             emit('update:setting', { key: 'app_custom_logo', value: response.data.filename });
-        } else {
-            props.show_toast(`Logo upload failed: ${response.data.error || 'Unknown error'}`, 4, false);
+    computed: {
+        logoSrc() {
+            if (this.$store.state.config.app_custom_logo) {
+                // Assuming axios.defaults.baseURL is configured globally
+                return `${axios.defaults.baseURL}/user_infos/${this.$store.state.config.app_custom_logo}`;
+            }
+            return defaultLogoPlaceholder;
         }
-    } catch (error) {
-        console.error('Error uploading logo:', error);
-        props.show_toast(`Error uploading logo: ${error.message}`, 4, false);
-    } finally {
-        isUploadingLogo.value = false;
-        event.target.value = null;
-    }
-};
+    },
 
-const removeLogo = async () => {
-    try {
-        const response = await props.api_post_req('/remove_logo');
-        if (response.status) {
-            props.show_toast("Logo removed successfully!", 4, true);
-             emit('update:setting', { key: 'app_custom_logo', value: null });
-       } else {
-            props.show_toast(`Failed to remove logo: ${response.error || 'Unknown error'}`, 4, false);
+    methods: {
+        updateValue(key, value) {
+            this.$emit('update:setting', { key, value });
+            this.$emit('settings-changed', true); // Optionally emit settings-changed on any update
+        },
+
+        updateBoolean(key, value) {
+            this.$emit('update:setting', { key: key, value: Boolean(value) });
+             this.$emit('settings-changed', true); // Optionally emit settings-changed on any update
+        },
+
+        async uploadLogo(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            this.isUploadingLogo = true;
+            const formData = new FormData();
+            formData.append('logo', file);
+            formData.append('client_id', this.client_id); // Include client_id if required by backend
+
+            try {
+                const response = await axios.post('/upload_logo', formData, {
+                     headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                if (response.data && response.data.status) {
+                     this.show_toast("Logo uploaded successfully!", 4, true);
+                     // Emit update for the parent to handle config change
+                     this.$emit('update:setting', { key: 'app_custom_logo', value: response.data.filename });
+                     this.$emit('settings-changed', true);
+                } else {
+                    this.show_toast(`Logo upload failed: ${response.data.error || 'Unknown error'}`, 4, false);
+                }
+            } catch (error) {
+                console.error('Error uploading logo:', error);
+                this.show_toast(`Error uploading logo: ${error.response?.data?.error || error.message || 'Unknown error'}`, 4, false);
+            } finally {
+                this.isUploadingLogo = false;
+                // Reset file input for potential re-upload of the same file
+                if (event.target) {
+                    event.target.value = null;
+                }
+            }
+        },
+
+        async removeLogo() {
+            this.isUploadingLogo = true; // Prevent actions during removal
+             try {
+                // Use the provided api_post_req function prop for consistency
+                const response = await this.api_post_req('/remove_logo',{client_id: this.client_id}); // Send client_id if needed
+                if (response.status) {
+                    this.show_toast("Logo removed successfully!", 4, true);
+                    // Emit update for the parent to handle config change
+                     this.$emit('update:setting', { key: 'app_custom_logo', value: null });
+                     this.$emit('settings-changed', true);
+                } else {
+                    this.show_toast(`Failed to remove logo: ${response.error || 'Unknown error'}`, 4, false);
+                }
+            } catch (error) {
+                console.error('Error removing logo:', error);
+                this.show_toast(`Error removing logo: ${error.response?.data?.error || error.message || 'Unknown error'}`, 4, false);
+            } finally {
+                this.isUploadingLogo = false;
+            }
+        },
+        // Helper to ensure Feather icons are rendered after DOM updates
+        replaceFeatherIcons() {
+             nextTick(() => {
+                 try {
+                    feather.replace();
+                 } catch (e) {
+                    console.error("Feather icons replacement failed:", e);
+                 }
+            });
         }
-    } catch (error) {
-        console.error('Error removing logo:', error);
-        props.show_toast(`Error removing logo: ${error.message}`, 4, false);
+    },
+
+    mounted() {
+        this.replaceFeatherIcons();
+    },
+
+    updated() {
+        // Re-run feather replace if the component updates (e.g., v-if changes)
+        this.replaceFeatherIcons();
     }
 };
-
-// Lifecycle Hooks
-onMounted(() => {
-    nextTick(() => {
-        feather.replace();
-    });
-});
-onUpdated(() => {
-     nextTick(() => {
-        feather.replace();
-     });
-});
-
 </script>
 
 <style scoped>
+/* Styles remain the same */
 .setting-item {
     @apply flex flex-col md:flex-row md:items-center gap-2 md:gap-4 py-2;
 }
@@ -277,9 +309,9 @@ onUpdated(() => {
 /* Updated Button Styles */
 .button-primary {
     /* Assuming 'primary' is defined as blue-600 in config or default */
-    @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50;
+    @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
 }
 .button-danger {
-    @apply px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50;
+    @apply px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
 }
 </style>
