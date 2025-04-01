@@ -1,76 +1,75 @@
 <template>
     <div
-        class="relative message w-full group rounded-lg m-2 shadow-lg  hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent flex flex-col flex-grow flex-wrap overflow-visible p-4 pb-2 ">
-        <div class="flex flex-row  gap-2 ">
-            <div class=" flex-shrink-0">
+        class="message group border-2 border-transparent hover:border-blue-400 dark:hover:border-blue-500">
+        <div class="flex flex-row gap-2">
+            <div class="flex-shrink-0">
                 <!-- AVATAR -->
-                <div class="group/avatar " >
+                <div class="group/avatar">
                     <img :src="getImgUrl()" @error="defaultImg($event)" :data-popover-target="'avatar' + message.id" data-popover-placement="bottom"
-                        class="w-10 h-10 rounded-full object-fill text-red-700">
+                        class="w-10 h-10 rounded-full object-fill border border-blue-300 dark:border-blue-600">
                 </div>
-                
             </div>
 
-            <div class="flex flex-col w-full flex-grow-0 ">
-                <div class="flex flex-row flex-grow items-start ">
-                    <!-- SENDER NAME -->
+            <div class="flex flex-col w-full flex-grow">
+                <div class="flex flex-row flex-grow items-start">
+                    <!-- SENDER NAME & TIMESTAMP -->
                     <div class="flex flex-col mb-2">
-                        <div class="drop-shadow-sm text-lg text-opacity-95 font-bold grow ">{{ message.sender }}
-                            <!-- <button @click="toggleModel"  class="expand-button">{{ expanded ? ' - ' : ' + ' }}</button>
-                        <p v-if="expanded" class="drop-shadow-sm text-lg text-opacity-95 font-bold grow">
-                        {{ message.model }}
-                        </p> -->
-
-                        </div>
-                        <div class="text-sm text-gray-400 font-thin" v-if="message.created_at"
+                        <div class="message-header text-blue-800 dark:text-blue-100 font-bold text-lg ">{{ message.sender }}</div>
+                        <div class="text-xs text-blue-500 dark:text-blue-400 font-thin" v-if="message.created_at"
                             :title="'Created at: ' + created_at_parsed">
                             {{ created_at }}
-
                         </div>
                     </div>
-                    <div class="flex-grow ">
-
-                    </div>
-
+                    <div class="flex-grow"></div>
                 </div>
 
-                <div class="overflow-x-auto w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary space-y-2">
+                <div class="message-content overflow-x-auto w-full overflow-y-auto scrollbar space-y-2">
                     <!-- MESSAGE CONTENT -->
-                    
                     <MarkdownRenderer ref="mdRender" v-if="!editMsgMode" :host="host" :markdown-text="message.content" :message_id="message.id" :discussion_id="message.discussion_id" :client_id="this.$store.state.client_id">
                     </MarkdownRenderer>
-                    <div >
-                        <textarea v-if="message.open" ref="mdTextarea" @keydown.tab.prevent="insertTab"
-                        class="block min-h-[500px] p-2.5 w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 overflow-y-scroll flex flex-col shadow-lg p-10 pt-0 overflow-y-scroll dark:bg-bg-dark scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
-                        :rows="4" 
+                    
+                    <!-- EDIT MODE TEXTAREA -->
+                    <div v-if="editMsgMode">
+                        <textarea ref="mdTextarea" @keydown.tab.prevent="insertTab"
+                        class="input w-full min-h-[200px] p-2.5 text-blue-900 dark:text-blue-100 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-400 scrollbar shadow-inner"
+                        :rows="Math.max(4, message.content.split('\n').length)" 
                         placeholder="Enter message here..."
                         v-model="message.content">
                         </textarea>
                     </div>
-                    <div  v-if="message.metadata !== null">
-                        <div v-for="(metadata, index) in (message.metadata?.filter(metadata => metadata!=null && metadata.hasOwnProperty('title') && metadata.hasOwnProperty('content')) || [])" :key="'json-' + message.id + '-' + index" class="json font-bold">
+
+                    <!-- METADATA/JSON VIEWER -->
+                    <div v-if="message.metadata !== null && !editMsgMode">
+                        <div v-for="(metadata, index) in (message.metadata?.filter(metadata => metadata!=null && metadata.hasOwnProperty('title') && metadata.hasOwnProperty('content')) || [])" :key="'json-' + message.id + '-' + index" class="mt-2">
                             <JsonViewer :title="metadata.title" :data="metadata.content" :key="'msgjson-' + message.id" />
                         </div>
                     </div>
-                    <DynamicUIRenderer v-if="message.ui" ref="ui" class="w-full" :ui="message.ui" :key="'msgui-' + message.id" />
                     
-                    <audio controls v-if="audio_url!=null" :key="audio_url">
-                        <source :src="audio_url" type="audio/wav"  ref="audio_player" >
+                    <!-- DYNAMIC UI RENDERER -->
+                    <DynamicUIRenderer v-if="message.ui && !editMsgMode" ref="ui" class="w-full mt-2" :ui="message.ui" :key="'msgui-' + message.id" />
+                    
+                    <!-- AUDIO PLAYER -->
+                    <audio controls v-if="audio_url!=null && !editMsgMode" class="w-full mt-2" :key="audio_url">
+                        <source :src="audio_url" type="audio/wav" ref="audio_player">
                         Your browser does not support the audio element.
                     </audio>
-                    <div class="message-details w-full max-w-4xl mx-auto">
+
+                    <!-- DETAILS SECTION (STEPS & HTML/JS) -->
+                    <div class="message-details w-full max-w-4xl mx-auto mt-2">
                         <!-- Processing Steps Section -->
-                        <div v-if="message.steps.length > 0" class="steps-container bg-white/50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700 text-sm mb-2">
+                         <div v-if="message.steps.length > 0 && !editMsgMode" class="steps-container bg-blue-50/50 dark:bg-blue-800/50 border border-blue-200 dark:border-blue-700 rounded-md mb-2 text-sm">
                             <div 
-                                class="flex items-center p-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200"
+                                class="steps-header flex items-center p-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700/50 transition-colors duration-200"
                                 @click="toggleExpanded"
                             >
                                 <StatusIcon :status="message.status_message" :icon="true" class="w-4 h-4 mr-2" />
-                                <span class="text-gray-600 dark:text-gray-300 flex-grow">{{ message.status_message }}</span>
+                                <span class="steps-status text-blue-600 dark:text-blue-300 flex-grow">{{ message.status_message }}</span>
                                 <span 
-                                    class="text-xs text-gray-400 transform transition-transform duration-200"
+                                    class="toggle-icon text-xs text-blue-500 dark:text-blue-400 transform transition-transform duration-200"
                                     :class="{ 'rotate-180': expanded }"
-                                >▼</span>
+                                >
+                                    <i data-feather="chevron-down" class="w-4 h-4"></i>
+                                </span>
                             </div>
 
                             <transition
@@ -81,12 +80,12 @@
                                 leave-from-class="opacity-100 max-h-[500px]"
                                 leave-to-class="opacity-0 max-h-0"
                             >
-                                <div v-if="expanded" class="overflow-hidden">
+                                <div v-if="expanded" class="steps-content overflow-hidden">
                                     <div class="px-2 pb-2 space-y-1">
                                         <div 
                                             v-for="(step, index) in message.steps" 
                                             :key="`step-${message.id}-${index}`"
-                                            class="animate-fadeIn"
+                                            class="animate-fadeIn step-item"
                                             :style="{ animationDelay: `${index * 50}ms` }"
                                         >
                                             <Step 
@@ -94,7 +93,7 @@
                                                 :text="step.text"
                                                 :status="step.status"
                                                 :description="step.description"
-                                                class="text-xs rounded bg-gray-50/50 dark:bg-gray-700/50 p-2 hover:bg-gray-100 dark:hover:bg-gray-600/50"
+                                                class="text-xs rounded bg-blue-100/50 dark:bg-blue-700/50 p-1.5 hover:bg-blue-200/70 dark:hover:bg-blue-600/50"
                                             />
                                         </div>
                                     </div>
@@ -102,17 +101,15 @@
                             </transition>
                         </div>
 
-
-
-                        <!-- Content Renderer Section -->
+                        <!-- Content Renderer Section (HTML/JS) -->
                         <div 
-                            v-if="message.html_js_s && message.html_js_s.length"
-                            class="flex flex-col items-start w-full overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary"
+                            v-if="message.html_js_s && message.html_js_s.length && !editMsgMode"
+                            class="mt-2 flex flex-col items-start w-full overflow-y-auto scrollbar"
                         >
                             <div 
                                 v-for="(html_js, index) in message.html_js_s" 
                                 :key="`htmljs-${message.id}-${index}`" 
-                                class="font-bold animate-fadeIn"
+                                class="w-full animate-fadeIn"
                                 :style="{ animationDelay: `${index * 200}ms` }"
                             >
                                 <RenderHTMLJS :htmlContent="html_js" />
@@ -120,177 +117,136 @@
                         </div>
                     </div>
                 </div>
-                <!-- MESSAGE CONTROLS -->
-                <div class="flex-row justify-end mx-2">
-                    <div class="invisible group-hover:visible flex flex-row ">
-                        <!-- MESSAGE CONTROLS -->
-                        <!-- EDIT CONFIRMATION -->
-                        <div v-if="editMsgMode">
-                            <ToolbarButton @click.stop="editMsgMode = false" title="Cancel edit" icon="x" />
-                            <ToolbarButton @click.stop="updateMessage" title="Update message" icon="check" />
-                            <DropdownMenu title="Add Block">
-                                <!-- Programming Languages -->
+
+                <!-- MESSAGE CONTROLS TOOLBAR -->
+                 <div class="flex flex-row justify-end items-center mt-1 mx-2">
+                    <div class="absolute bottom-2 right-2 invisible group-hover:visible flex flex-row items-center gap-1 bg-blue-200/70 dark:bg-blue-900/70 rounded-md p-1 shadow">
+                        <!-- EDIT CONTROLS -->
+                        <div v-if="editMsgMode" class="flex items-center gap-1">
+                            <ToolbarButton @click.stop="editMsgMode = false" title="Cancel edit" icon="x" class="svg-button text-red-500 hover:bg-red-100 dark:hover:bg-red-900" />
+                            <ToolbarButton @click.stop="updateMessage" title="Update message" icon="check" class="svg-button text-green-500 hover:bg-green-100 dark:hover:bg-green-900" />
+                            
+                            <!-- Add Block Dropdown (only in edit mode) -->
+                            <DropdownMenu title="Add Block" icon="plus-square" class="svg-button">
                                 <DropdownSubmenu title="Programming Languages" icon="code">
-                                    <ToolbarButton @click.stop="addBlock('python')" title="Python" icon="python" />
-                                    <ToolbarButton @click.stop="addBlock('javascript')" title="JavaScript" icon="js" />
-                                    <ToolbarButton @click.stop="addBlock('typescript')" title="TypeScript" icon="typescript" />
-                                    <ToolbarButton @click.stop="addBlock('java')" title="Java" icon="java" />
-                                    <ToolbarButton @click.stop="addBlock('c++')" title="C++" icon="cplusplus" />
-                                    <ToolbarButton @click.stop="addBlock('csharp')" title="C#" icon="csharp" />
-                                    <ToolbarButton @click.stop="addBlock('go')" title="Go" icon="go" />
-                                    <ToolbarButton @click.stop="addBlock('rust')" title="Rust" icon="rust" />
-                                    <ToolbarButton @click.stop="addBlock('swift')" title="Swift" icon="swift" />
-                                    <ToolbarButton @click.stop="addBlock('kotlin')" title="Kotlin" icon="kotlin" />
-                                    <ToolbarButton @click.stop="addBlock('r')" title="R" icon="r-project" />
+                                    <ToolbarButton @click.stop="addBlock('python')" title="Python" icon="python" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('javascript')" title="JavaScript" icon="js" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('typescript')" title="TypeScript" icon="typescript" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('java')" title="Java" icon="java" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('c++')" title="C++" icon="cplusplus" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('csharp')" title="C#" icon="csharp" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('go')" title="Go" icon="go" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('rust')" title="Rust" icon="rust" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('swift')" title="Swift" icon="swift" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('kotlin')" title="Kotlin" icon="kotlin" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('r')" title="R" icon="r-project" class="svg-button"/>
                                 </DropdownSubmenu>
-
-                                <!-- Web Technologies -->
-                                <DropdownSubmenu title="Web Technologies" icon="web">
-                                    <ToolbarButton @click.stop="addBlock('html')" title="HTML" icon="html5" />
-                                    <ToolbarButton @click.stop="addBlock('css')" title="CSS" icon="css3" />
-                                    <ToolbarButton @click.stop="addBlock('vue')" title="Vue.js" icon="vuejs" />
-                                    <ToolbarButton @click.stop="addBlock('react')" title="React" icon="react" />
-                                    <ToolbarButton @click.stop="addBlock('angular')" title="Angular" icon="angular" />
+                                <DropdownSubmenu title="Web Technologies" icon="chrome">
+                                    <ToolbarButton @click.stop="addBlock('html')" title="HTML" icon="html5" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('css')" title="CSS" icon="css3" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('vue')" title="Vue.js" icon="vuejs" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('react')" title="React" icon="react" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('angular')" title="Angular" icon="angular" class="svg-button"/>
                                 </DropdownSubmenu>
-
-                                <!-- Markup and Data Formats -->
-                                <DropdownSubmenu title="Markup and Data" icon="file-code">
-                                    <ToolbarButton @click.stop="addBlock('xml')" title="XML" icon="xml" />
-                                    <ToolbarButton @click.stop="addBlock('json')" title="JSON" icon="json" />
-                                    <ToolbarButton @click.stop="addBlock('yaml')" title="YAML" icon="yaml" />
-                                    <ToolbarButton @click.stop="addBlock('markdown')" title="Markdown" icon="markdown" />
-                                    <ToolbarButton @click.stop="addBlock('latex')" title="LaTeX" icon="latex" />
+                                <DropdownSubmenu title="Markup and Data" icon="file-text">
+                                    <ToolbarButton @click.stop="addBlock('xml')" title="XML" icon="xml" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('json')" title="JSON" icon="json" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('yaml')" title="YAML" icon="yaml" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('markdown')" title="Markdown" icon="markdown" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('latex')" title="LaTeX" icon="latex" class="svg-button"/>
                                 </DropdownSubmenu>
-
-                                <!-- Scripting and Shell -->
                                 <DropdownSubmenu title="Scripting and Shell" icon="terminal">
-                                    <ToolbarButton @click.stop="addBlock('bash')" title="Bash" icon="bash" />
-                                    <ToolbarButton @click.stop="addBlock('powershell')" title="PowerShell" icon="powershell" />
-                                    <ToolbarButton @click.stop="addBlock('perl')" title="Perl" icon="perl" />
+                                    <ToolbarButton @click.stop="addBlock('bash')" title="Bash" icon="bash" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('powershell')" title="PowerShell" icon="powershell" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('perl')" title="Perl" icon="perl" class="svg-button"/>
                                 </DropdownSubmenu>
-
-                                <!-- Diagramming -->
-                                <DropdownSubmenu title="Diagramming" icon="sitemap">
-                                    <ToolbarButton @click.stop="addBlock('mermaid')" title="Mermaid" icon="mermaid" />
-                                    <ToolbarButton @click.stop="addBlock('graphviz')" title="Graphviz" icon="graphviz" />
-                                    <ToolbarButton @click.stop="addBlock('plantuml')" title="PlantUML" icon="plantuml" />
+                                <DropdownSubmenu title="Diagramming" icon="git-branch">
+                                    <ToolbarButton @click.stop="addBlock('mermaid')" title="Mermaid" icon="mermaid" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('graphviz')" title="Graphviz" icon="graphviz" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('plantuml')" title="PlantUML" icon="plantuml" class="svg-button"/>
                                 </DropdownSubmenu>
-
-                                <!-- Database -->
                                 <DropdownSubmenu title="Database" icon="database">
-                                    <ToolbarButton @click.stop="addBlock('sql')" title="SQL" icon="sql" />
-                                    <ToolbarButton @click.stop="addBlock('mongodb')" title="MongoDB" icon="mongodb" />
+                                    <ToolbarButton @click.stop="addBlock('sql')" title="SQL" icon="sql" class="svg-button"/>
+                                    <ToolbarButton @click.stop="addBlock('mongodb')" title="MongoDB" icon="mongodb" class="svg-button"/>
                                 </DropdownSubmenu>
-
-                                <!-- Other -->
-                                <ToolbarButton @click.stop="addBlock('')" title="Generic Block" icon="code" />
+                                <ToolbarButton @click.stop="addBlock('')" title="Generic Block" icon="code" class="svg-button"/>
                             </DropdownMenu>
                         </div>
-                        <div v-else>
-                            <ToolbarButton @click.stop="editMsgMode = true" title="Edit message" icon="edit" />
-                        </div>
-                        <ToolbarButton @click="copyContentToClipboard" title="Copy message to clipboard" icon="copy" />
-                        <div v-if="!editMsgMode && message.sender !== $store.state.mountedPers.name">
-                            <ToolbarButton @click.stop="resendMessage('full_context')" title="Resend message with full context" icon="send" />
-                            <ToolbarButton @click.stop="resendMessage('full_context_with_internet')" title="Resend message with internet search" icon="globe" />
-                            <ToolbarButton @click.stop="resendMessage('simple_question')" title="Resend message without context" icon="sendSimple" />
-                        </div>
-                        <div v-if="!editMsgMode && message.sender === $store.state.mountedPers.name">
-                            <ToolbarButton @click.stop="continueMessage" title="Continue message" icon="fastForward" />
-                        </div>
-                        <!-- DELETE CONFIRMATION -->
-                        <div v-if="deleteMsgMode" class="flex items-center duration-75">
-                            <button class="text-2xl hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer"
-                                title="Cancel removal" type="button" @click.stop="deleteMsgMode = false">
-                                <i data-feather="x"></i>
-                            </button>
-                            <button class="text-2xl hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer"
-                                title="Confirm removal" type="button" @click.stop="deleteMsg()">
-                                <i data-feather="check"></i>
-                            </button>
 
-                        </div>
-                        <div v-if="!editMsgMode && !deleteMsgMode" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer"
-                            title="Remove message" @click="deleteMsgMode = true">
-                            <i data-feather="trash"></i>
-                        </div>
-                        <div class="text-lg hover:text-secondary duration-75 active:scale-90 p-2 cursor-pointer" title="Upvote"
-                            @click.stop="rankUp()">
-                            <i data-feather="thumbs-up"></i>
-                        </div>
-                        <div class="flex flex-row items-center">
-                            <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" title="Downvote"
-                                @click.stop="rankDown()">
-                                <i data-feather="thumbs-down"></i>
-                            </div>
-                            <div v-if="message.rank != 0"
-                                class="rounded-full px-2 text-sm flex items-center justify-center font-bold cursor-pointer"
-                                :class="message.rank > 0 ? 'bg-secondary' : 'bg-red-600'" title="Rank">{{
-                                    message.rank }}
-                            </div>
-                        </div>
-                        <div class="flex flex-row items-center">
-                            <div class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" 
-                                title="speak"
-                                v-if ="this.$store.state.config.active_tts_service!='None'"
-                                @click.stop="speak()"
-                                :class="{ 'text-red-500': isTalking }">
-                                <i data-feather="volume-2"></i>
-                            </div>
-                        </div>    
-                        <div v-if="this.$store.state.config.xtts_enable && !this.$store.state.config.xtts_use_streaming_mode" class="flex flex-row items-center">
-                            <div v-if="!isSynthesizingVoice" class="text-lg hover:text-red-600 duration-75 active:scale-90 p-2 cursor-pointer" 
-                                title="generate_audio"
-                                @click.stop="read()"
-                            >
-                                <i data-feather="voicemail"></i>
-                            </div>
-                            <img v-else :src="loading_svg">
+                        <!-- STANDARD VIEW CONTROLS -->
+                         <div v-else class="flex items-center gap-1">
+                            <ToolbarButton @click.stop="editMsgMode = true" title="Edit message" icon="edit" class="svg-button" />
+                            <ToolbarButton @click="copyContentToClipboard" title="Copy message to clipboard" icon="copy" class="svg-button" />
                             
-                        </div>                                                       
-                    </div>
-                </div>                
-                <!-- FOOTER -->
-                <div class="text-sm text-gray-400 mt-2">
-                    <div class="flex flex-row items-center gap-2">
-                        <p v-if="message.binding">Binding: <span class="font-thin">{{ message.binding }}</span></p>
-                        <p v-if="message.model">Model: <span class="font-thin">{{ message.model }}</span></p>
-                        <p v-if="message.seed">Seed: <span class="font-thin">{{ message.seed }}</span></p>
-                        <p v-if="message.nb_tokens">Number of tokens: <span class="font-thin"
-                                :title="'Number of Tokens: ' + message.nb_tokens">{{ message.nb_tokens }}</span></p>
-                        <p v-if="warmup_duration">Warmup duration: <span class="font-thin"
-                                :title="'Warmup duration: ' + warmup_duration">{{ warmup_duration }}</span></p>
-                        <p v-if="time_spent">Generation duration: <span class="font-thin"
-                                :title="'Finished generating: ' + time_spent">{{ time_spent }}</span></p>
-                        <p v-if="generation_rate">Rate: <span class="font-thin"
-                                :title="'Generation rate: ' + generation_rate">{{ generation_rate }}</span></p>
-                    </div>
+                            <!-- Resend options (only if not user message) -->
+                            <div v-if="message.sender !== $store.state.mountedPers.name" class="flex items-center gap-1">
+                                <ToolbarButton @click.stop="resendMessage('full_context')" title="Resend message with full context" icon="send" class="svg-button" />
+                                <ToolbarButton @click.stop="resendMessage('full_context_with_internet')" title="Resend message with internet search" icon="globe" class="svg-button" />
+                                <ToolbarButton @click.stop="resendMessage('simple_question')" title="Resend message without context" icon="refresh-cw" class="svg-button" />
+                            </div>
+                            
+                            <!-- Continue option (only if user message) -->
+                            <div v-if="message.sender === $store.state.mountedPers.name" class="flex items-center gap-1">
+                                <ToolbarButton @click.stop="continueMessage" title="Continue message" icon="fast-forward" class="svg-button" />
+                            </div>
+                            
+                            <!-- Delete Button/Confirmation -->
+                            <div v-if="deleteMsgMode" class="flex items-center gap-1">
+                                <ToolbarButton @click.stop="deleteMsgMode = false" title="Cancel removal" icon="x" class="svg-button text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-700" />
+                                <ToolbarButton @click.stop="deleteMsg()" title="Confirm removal" icon="check" class="svg-button text-red-500 hover:bg-red-100 dark:hover:bg-red-900" />
+                            </div>
+                            <ToolbarButton v-else title="Remove message" icon="trash" @click="deleteMsgMode = true" class="svg-button text-red-500 hover:bg-red-100 dark:hover:bg-red-900" />
 
+                            <!-- Ranking Buttons -->
+                            <ToolbarButton @click.stop="rankUp()" title="Upvote" icon="thumbs-up" class="svg-button text-blue-500 dark:text-blue-400" />
+                            <div class="flex items-center">
+                                <ToolbarButton @click.stop="rankDown()" title="Downvote" icon="thumbs-down" class="svg-button text-red-500 dark:text-red-400" />
+                                <div v-if="message.rank != 0"
+                                    class="text-xs font-bold rounded-full px-1.5 py-0.5 flex items-center justify-center cursor-default"
+                                    :class="message.rank > 0 ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'" title="Rank">{{ message.rank }}
+                                </div>
+                            </div>
+
+                            <!-- Speak/Audio Generation Buttons -->
+                            <div v-if="this.$store.state.config.active_tts_service!='None'" class="flex items-center gap-1">
+                                <ToolbarButton 
+                                    title="Speak message" 
+                                    icon="volume-2" 
+                                    @click.stop="speak()" 
+                                    class="svg-button" 
+                                    :class="{ 'text-red-500 dark:text-red-400 animate-pulse': isTalking }"
+                                />
+                            </div>
+                            <div v-if="this.$store.state.config.xtts_enable && !this.$store.state.config.xtts_use_streaming_mode" class="flex items-center gap-1">
+                                <ToolbarButton v-if="!isSynthesizingVoice" 
+                                    title="Generate audio" 
+                                    icon="mic" 
+                                    @click.stop="read()" 
+                                    class="svg-button" 
+                                />
+                                <img v-else :src="loading_svg" class="w-5 h-5 animate-spin text-blue-500 dark:text-blue-400">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FOOTER DETAILS -->
+                 <div class="text-xs text-blue-500 dark:text-blue-400 mt-2">
+                    <div class="flex flex-row flex-wrap items-center gap-x-3 gap-y-1">
+                        <p v-if="message.binding" class="footer-item">Binding: <span class="footer-value">{{ message.binding }}</span></p>
+                        <p v-if="message.model" class="footer-item">Model: <span class="footer-value">{{ message.model }}</span></p>
+                        <p v-if="message.seed" class="footer-item">Seed: <span class="footer-value">{{ message.seed }}</span></p>
+                        <p v-if="message.nb_tokens" class="footer-item">Tokens: <span class="footer-value">{{ message.nb_tokens }}</span></p>
+                        <p v-if="warmup_duration" class="footer-item">Warmup: <span class="footer-value">{{ warmup_duration }}</span></p>
+                        <p v-if="time_spent" class="footer-item">Gen time: <span class="footer-value">{{ time_spent }}</span></p>
+                        <p v-if="generation_rate" class="footer-item">Rate: <span class="footer-value">{{ generation_rate }}</span></p>
+                    </div>
                 </div>
             </div>
-
-
         </div>
-
-
-
     </div>
 </template>
-<style scoped>
-.expand-button {
-    margin-left: 10px;
-    /* Add space between sender and expand button */
-    margin-right: 10px;
-    /* Add space between sender and expand button */
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-}
-.htmljs{
-    background: none;
-}
-</style>
+
 <script>
 import botImgPlaceholder from "../assets/logo.png"
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL
@@ -301,6 +257,7 @@ import MarkdownRenderer from './MarkdownRenderer.vue';
 import RenderHTMLJS from './RenderHTMLJS.vue';
 import JsonViewer from "./JsonViewer.vue";
 import Step from './Step.vue';
+import StatusIcon from './StatusIcon.vue'; // Make sure StatusIcon is imported
 import axios from 'axios';
 
 import code_block from '@/assets/code_block.svg';
@@ -321,7 +278,6 @@ import sendGlobe from "../assets/send_globe.svg"
 
 import ToolbarButton from './ToolbarButton.vue'
 import DropdownMenu from './DropdownMenu.vue'
-
 export default {
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Message',
@@ -329,11 +285,12 @@ export default {
     components: {
         MarkdownRenderer,
         Step,
+        StatusIcon, // Register StatusIcon
         RenderHTMLJS,
         JsonViewer,
         DynamicUIRenderer,
         ToolbarButton,
-        DropdownMenu
+        DropdownMenu,
     },
     props: {
         host: {
@@ -369,7 +326,7 @@ export default {
             isSpeaking:false,
             speechSynthesis: null,
             voices: [],            
-            expanded: false,
+            expanded: false, // For steps expansion
             showConfirmation: false,
             editMsgMode_: false,
             deleteMsgMode: false,
@@ -389,7 +346,7 @@ export default {
             if (this.voices.length === 0) {
                 this.speechSynthesis.addEventListener('voiceschanged', this.onVoicesChanged);
             } else {
-                console.log("No voices found")
+                console.log("Voices available:", this.voices.length)
             }
         } else {
         console.error('Speech synthesis is not supported in this browser.');
@@ -397,7 +354,9 @@ export default {
 
         nextTick(() => {
             feather.replace()
-            this.mdRenderHeight = this.$refs.mdRender.$el.offsetHeight
+            if (this.$refs.mdRender && this.$refs.mdRender.$el) {
+                 this.mdRenderHeight = this.$refs.mdRender.$el.offsetHeight
+            }
         })
         console.log("Checking metadata")
         console.log(this.message)
@@ -424,20 +383,18 @@ export default {
     }, 
     methods: {
         toggleExpanded() {
-        this.expanded = !this.expanded
+           this.expanded = !this.expanded
+           nextTick(() => {
+               feather.replace() // Re-render icons if needed inside the expanded section
+           })
         },
         computeTimeDiff(startTime, endTime){
             let timeDiff = endTime.getTime() - startTime.getTime();
 
-
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
-
             timeDiff -= hours * (1000 * 60 * 60);
 
-
-
             const mins = Math.floor(timeDiff / (1000 * 60));
-
             timeDiff -= mins * (1000 * 60);
 
             const secs = Math.floor(timeDiff / 1000)
@@ -445,94 +402,86 @@ export default {
 
             return [hours, mins, secs]
         },
-
-
         insertTab(event) {
             const textarea = event.target;
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
             const isShiftPressed = event.shiftKey;
+            const tab = '    '; // 4 spaces for a tab
 
             if (start === end) {
-                // If no text is selected, insert a tab or backtab as usual
+                // No text selected, insert tab/backtab
                 if (isShiftPressed) {
-                    if(textarea.value.substring(start - 4,start)=="    "){
-                        // Backtab
-                        const textBefore = textarea.value.substring(0, start - 4);
+                    // Backtab: Check if the characters before cursor are the tab string
+                    if (textarea.value.substring(start - tab.length, start) === tab) {
+                        const textBefore = textarea.value.substring(0, start - tab.length);
                         const textAfter = textarea.value.substring(end);
-
-                        // Remove the tab character (or spaces if you prefer) before the cursor position
-                        const newText = textBefore + textAfter;
-
-                        // Update the textarea content and cursor position
-                        this.message.content = newText;
+                        this.message.content = textBefore + textAfter;
                         this.$nextTick(() => {
-                            textarea.selectionStart = textarea.selectionEnd = start - 4;
+                            textarea.selectionStart = textarea.selectionEnd = start - tab.length;
                         });
                     }
-
                 } else {
-                // Tab
-                const textBefore = textarea.value.substring(0, start);
-                const textAfter = textarea.value.substring(end);
-
-                // Insert a tab character (or spaces if you prefer) at the cursor position
-                const newText = textBefore + '    ' + textAfter;
-
-                // Update the textarea content and cursor position
-                this.message.content = newText;
-                this.$nextTick(() => {
-                    textarea.selectionStart = textarea.selectionEnd = start + 4;
-                });
+                    // Tab: Insert tab character
+                    const textBefore = textarea.value.substring(0, start);
+                    const textAfter = textarea.value.substring(end);
+                    this.message.content = textBefore + tab + textAfter;
+                    this.$nextTick(() => {
+                        textarea.selectionStart = textarea.selectionEnd = start + tab.length;
+                    });
                 }
             } else {
-                // If text is selected, insert a tab or backtab at the beginning of each selected line
-                const lines = textarea.value.substring(start, end).split('\n');
-                const updatedLines = lines.map((line) => {
-                if (line.trim() === '') {
-                    return line; // Skip empty lines
-                } else if (isShiftPressed) {
-                    // Backtab
-                    if (line.startsWith('    ')) {
-                    return line.substring(4); // Remove the tab character (or spaces if you prefer)
+                // Text is selected, indent/unindent lines
+                const selectedText = textarea.value.substring(start, end);
+                const lines = selectedText.split('\n');
+                let changeInLength = 0;
+
+                const updatedLines = lines.map((line, index) => {
+                    if (isShiftPressed) {
+                        // Backtab selected lines
+                        if (line.startsWith(tab)) {
+                            changeInLength -= tab.length;
+                            return line.substring(tab.length);
+                        }
+                        return line;
                     } else {
-                    return line; // Line doesn't start with a tab, skip backtab
+                        // Tab selected lines
+                        changeInLength += tab.length;
+                        return tab + line;
                     }
-                } else {
-                    // Tab
-                    return '    ' + line; // Insert a tab character (or spaces if you prefer) at the beginning of the line
-                }
                 });
 
                 const textBefore = textarea.value.substring(0, start);
                 const textAfter = textarea.value.substring(end);
+                this.message.content = textBefore + updatedLines.join('\n') + textAfter;
 
-                // Update the textarea content with the modified lines
-                const newText = textBefore + updatedLines.join('\n') + textAfter;
-                this.message.content = newText;
-
-                // Update the textarea selection range
                 this.$nextTick(() => {
-                textarea.selectionStart = start;
-                textarea.selectionEnd = end + (updatedLines.length * 4); // Adjust selection end based on the added tabs
+                    textarea.selectionStart = start;
+                    textarea.selectionEnd = end + changeInLength;
                 });
             }
-
-            event.preventDefault();
+            event.preventDefault(); // Prevent default tab behavior
+            this.adjustTextareaHeight(textarea); // Adjust height after modification
         },
-
+        adjustTextareaHeight(textarea) {
+            textarea.style.height = 'auto'; // Temporarily shrink height
+            textarea.style.height = textarea.scrollHeight + 'px'; // Set to scroll height
+        },
         onVoicesChanged() {
-        // This event will be triggered when the voices are loaded
-        this.voices = this.speechSynthesis.getVoices();
+            // This event will be triggered when the voices are loaded
+            this.voices = this.speechSynthesis.getVoices();
+            console.log("Voices loaded:", this.voices.length);
         },
         read(){
             if(this.isSynthesizingVoice){
                 this.isSynthesizingVoice=false
-                this.$refs.audio_player.pause()
+                if (this.$refs.audio_player) {
+                    this.$refs.audio_player.pause()
+                }
             }
             else{
                 this.isSynthesizingVoice=true
-                axios.post("./text2wav",{text:this.message.content}).then(response => {
+                axios.post(`${this.host}/text2wav`,{text:this.message.content}).then(response => {
                     this.isSynthesizingVoice=false
                     let url = response.data.url
                     console.log(url)
@@ -544,161 +493,215 @@ export default {
                     let found = false;
 
                     for(let metadata_entry of this.message.metadata){
-                        if (Object.prototype.hasOwnProperty.call(metadata_entry, "audio_url")){
+                        if (metadata_entry && Object.prototype.hasOwnProperty.call(metadata_entry, "audio_url")){
                             metadata_entry.audio_url = this.audio_url;
                             found = true;
+                            break; // Exit loop once updated
                         }
                     }
 
                     if (!found) {
                         this.message.metadata.push({audio_url: this.audio_url});
                     }
-                    this.$emit('updateMessage', this.message.id, this.message.content, this.audio_url)
+                    // Only emit update if the content hasn't changed (audio URL is metadata)
+                    // this.$emit('updateMessage', this.message.id, this.message.content, this.message.metadata) // Maybe send metadata?
+                    // For now, let's assume audio generation doesn't require saving immediately unless user explicitly saves.
+                     nextTick(()=>{
+                        if (this.$refs.audio_player) {
+                            this.$refs.audio_player.load(); // Ensure the new source is loaded
+                            this.$refs.audio_player.play(); // Optional: auto-play
+                        }
+                     })
+
                 }).catch(ex=>{
-                    this.$store.state.toast.showToast(`Error: ${ex}`,4,false)
+                    this.$store.state.toast.showToast(`Error generating audio: ${ex.message || ex}`,4,false)
                     this.isSynthesizingVoice=false
                 });
             }
         },
         async speak() {
-            if(this.$store.state.config.active_tts_service!="browser" && this.$store.state.config.active_tts_service!="None"){
-                if(!this.isSpeaking){
-                    this.isSpeaking = true;
-                    axios.post("./text2Audio",{client_id:this.$store.state.client_id, text:this.message.content}).then(response => {
-                        this.isSpeaking = false;
-                    }).catch(ex=>{
-                        this.$store.state.toast.showToast(`Error: ${ex}`,4,false)
-                        this.isSpeaking = false;
-                    });
-                }
-                else{
-                    this.isSpeaking = true;
-                    axios.post("./stop",{text:this.message.content}).then(response => {
-                        this.isSpeaking = false;
-                    }).catch(ex=>{
-                        this.$store.state.toast.showToast(`Error: ${ex}`,4,false)
-                        this.isSpeaking = false;
-                    });
-                }
-            }
-            else{
-                if (this.msg) {
-                    this.speechSynthesis.cancel();
-                    this.msg = null;
-                    this.isSpeaking = false;
-                    return;
-                }
-                let startIndex =0;
-                // Set isSpeaking to true before starting synthesis
-                console.log("voice on")
-                this.isSpeaking = true;
+            if (this.isSpeaking) {
+                 // If already speaking, try to stop
+                 if (this.$store.state.config.active_tts_service !== "browser" && this.$store.state.config.active_tts_service !== "None") {
+                     axios.post(`${this.host}/stop_audio`, { client_id: this.$store.state.client_id }).then(response => {
+                         this.isSpeaking = false;
+                     }).catch(ex => {
+                         this.$store.state.toast.showToast(`Error stopping audio: ${ex.message || ex}`, 4, false);
+                         // Force state change even if stop fails, to allow trying again
+                         this.isSpeaking = false;
+                     });
+                 } else if (this.speechSynthesis) {
+                     this.speechSynthesis.cancel();
+                     this.msg = null;
+                     this.isSpeaking = false;
+                 }
+                 return; // Exit after attempting to stop
+             }
 
-                const chunkSize = 200; // You can adjust the chunk size as needed
-                this.message.content;
+            // Start speaking
+            this.isSpeaking = true;
+            console.log("Starting speech...");
 
-                // Create a new SpeechSynthesisUtterance instance
+            if (this.$store.state.config.active_tts_service !== "browser" && this.$store.state.config.active_tts_service !== "None") {
+                // Use backend TTS service
+                axios.post(`${this.host}/text2Audio`, { client_id: this.$store.state.client_id, text: this.message.content }).then(response => {
+                    // Backend handles streaming or completion, we just update state when done/stopped
+                    // The backend should ideally notify when finished, or we assume stop means finished.
+                    // For now, we rely on the stop button press to set isSpeaking = false.
+                     console.log("Backend TTS request sent.");
+                     // Need a mechanism from backend/websocket to know when speech ends naturally
+                     // Assuming for now, it only stops when user clicks stop again.
+                }).catch(ex => {
+                    this.$store.state.toast.showToast(`Error starting backend TTS: ${ex.message || ex}`, 4, false);
+                    this.isSpeaking = false; // Reset state on error
+                });
+            } else if (this.speechSynthesis) {
+                // Use browser speech synthesis
+                let startIndex = 0;
+                const chunkSize = 180; // Slightly smaller chunk size for browser limits
+                const contentToSpeak = this.message.content;
+
                 this.msg = new SpeechSynthesisUtterance();
-                this.msg.pitch = this.$store.state.config.audio_pitch;
+                this.msg.pitch = this.$store.state.config.audio_pitch || 1;
+                this.msg.rate = this.$store.state.config.audio_rate || 1; // Add rate control if desired
 
-                // Optionally, set the voice and other parameters as before
-                if (this.voices.length > 0) {
-                    this.msg.voice = this.voices.filter(voice => voice.name === this.$store.state.config.audio_out_voice)[0];
+                const selectedVoice = this.voices.find(voice => voice.name === this.$store.state.config.audio_out_voice);
+                if (selectedVoice) {
+                    this.msg.voice = selectedVoice;
+                    console.log("Using voice:", selectedVoice.name);
+                } else {
+                    console.warn("Selected voice not found, using default.");
                 }
 
-
-                // Function to find the index of the last sentence that fits within the chunk size
-                const findLastSentenceIndex = (startIndex) => {
-                    let txt = this.message.content.substring(startIndex, startIndex+chunkSize)
-                    // Define an array of characters that represent end of sentence markers.
-                    const endOfSentenceMarkers = ['.', '!', '?', '\n'];
-
-                    // Initialize a variable to store the index of the last end of sentence marker.
+                const findLastSentenceIndex = (startIdx) => {
+                    let textChunk = contentToSpeak.substring(startIdx, startIdx + chunkSize);
+                    const endOfSentenceMarkers = ['.', '!', '?', '\n', ';', ':']; // Added more markers
                     let lastIndex = -1;
 
-                    // Iterate through the end of sentence markers and find the last occurrence in the txt string.
                     endOfSentenceMarkers.forEach(marker => {
-                    const markerIndex = txt.lastIndexOf(marker);
-                    if (markerIndex > lastIndex) {
-                        lastIndex = markerIndex;
-                    }
+                        const markerIndex = textChunk.lastIndexOf(marker);
+                        if (markerIndex > lastIndex) {
+                            lastIndex = markerIndex;
+                        }
                     });
-                    if(lastIndex==-1){lastIndex=txt.length}
-                    console.log(lastIndex)
-                    return lastIndex+startIndex+1;
+
+                    if (lastIndex === -1 && textChunk.length === chunkSize) {
+                       // If no sentence end and chunk is full, find last space
+                       lastIndex = textChunk.lastIndexOf(' ');
+                       if (lastIndex === -1) {
+                           // No space found, just cut at chunk size
+                           lastIndex = chunkSize -1;
+                       }
+                    } else if (lastIndex === -1) {
+                        // No sentence end and chunk is not full (end of text)
+                        lastIndex = textChunk.length -1;
+                    }
+
+                    return lastIndex + startIdx + 1; // Return index relative to original string
                 };
 
-                // Function to speak a chunk of text
                 const speakChunk = () => {
-                    if (this.message.status_message=='Done' || this.message.content.includes('.')||this.message.content.includes('?')||this.message.content.includes('!')){
-                        const endIndex = findLastSentenceIndex(startIndex);
-                        const chunk = this.message.content.substring(startIndex, endIndex);
-                        this.msg.text = chunk;
-                        startIndex = endIndex + 1;
-                        this.msg.onend = (event) => {
-                            if (startIndex < this.message.content.length-2) {
-                                // Use setTimeout to add a brief delay before speaking the next chunk
-                                setTimeout(() => {
-                                    speakChunk();
-                                }, 1); // Adjust the delay as needed
-                            } else {
-                                this.isSpeaking = false;
-                                console.log("voice off :",this.message.content.length,"  ",endIndex)
-                            }
-                        };
-                        this.speechSynthesis.speak(this.msg);
-
+                    if (!this.isSpeaking || startIndex >= contentToSpeak.length) {
+                        console.log("Speech stopped or finished.");
+                        this.isSpeaking = false;
+                        this.msg = null;
+                        return;
                     }
-                    else{
-                        setTimeout(() => {
-                                speakChunk();
-                            }, 1); // Adjust the delay as needed
+
+                    const endIndex = findLastSentenceIndex(startIndex);
+                    const chunk = contentToSpeak.substring(startIndex, endIndex).trim();
+                    startIndex = endIndex; // Move start index for next chunk
+
+                    if (chunk) {
+                        console.log("Speaking chunk:", chunk);
+                        this.msg = new SpeechSynthesisUtterance(chunk); // Create new utterance for each chunk
+                        this.msg.pitch = this.$store.state.config.audio_pitch || 1;
+                        this.msg.rate = this.$store.state.config.audio_rate || 1;
+                        if (selectedVoice) this.msg.voice = selectedVoice;
+
+                        this.msg.onend = (event) => {
+                            console.log("Chunk ended.");
+                            // Use setTimeout for a tiny delay between chunks if needed
+                             setTimeout(speakChunk, 50);
+                            //speakChunk(); // Speak next chunk immediately
+                        };
+                        this.msg.onerror = (event) => {
+                           console.error("Speech synthesis error:", event.error);
+                           this.isSpeaking = false; // Stop on error
+                           this.msg = null;
+                        };
+
+                        this.speechSynthesis.speak(this.msg);
+                    } else if (startIndex < contentToSpeak.length) {
+                         // If chunk was empty but content remains, try next chunk
+                         speakChunk();
+                    } else {
+                         // Empty chunk and end of content
+                         this.isSpeaking = false;
+                         this.msg = null;
+                         console.log("Finished speaking naturally.");
                     }
                 };
 
-                // Speak the first chunk
-                console.log("Speaking chunk")
-                speakChunk();
+                console.log("Starting first chunk...");
+                speakChunk(); // Start the process
+            } else {
+                 console.error("Speech synthesis not available.");
+                 this.isSpeaking = false; // Reset state if speech is unavailable
             }
-
-
-
-
-
         },
    
         toggleModel() {
-            this.expanded = !this.expanded;
+            // This seemed unused, repurposing for step expansion?
+            // this.expanded = !this.expanded;
+            // Keeping the step expansion logic separate in toggleExpanded()
+            console.warn("toggleModel function called but seems unused.");
         },
         addBlock(bloc_name){
-            let ss =this.$refs.mdTextarea.selectionStart
-            let se =this.$refs.mdTextarea.selectionEnd
-            if(ss==se){
-                if(speechSynthesis==0 || this.message.content[ss-1]=="\n"){
-                    this.message.content = this.message.content.slice(0, ss) + "```"+bloc_name+"\n\n```\n" + this.message.content.slice(ss)
-                    ss = ss+4+bloc_name.length
-                }
-                else{
-                    this.message.content = this.message.content.slice(0, ss) + "\n```"+bloc_name+"\n\n```\n" + this.message.content.slice(ss)
-                    ss = ss+3+bloc_name.length
-                }
-            }
-            else{
-                if(speechSynthesis==0 || this.message.content[ss-1]=="\n"){
-                    this.message.content = this.message.content.slice(0, ss) + "```"+bloc_name+"\n"+this.message.content.slice(ss, se)+"\n```\n" + this.message.content.slice(se)
-                    ss = ss+4+bloc_name.length
-                }
-                else{
-                    this.message.content = this.message.content.slice(0, ss) + "\n```"+bloc_name+"\n"+this.message.content.slice(ss, se)+"\n```\n" + this.message.content.slice(se)
-                    p = p+3+bloc_name.length
-                }
+            if (!this.$refs.mdTextarea) return; // Ensure textarea exists
+
+            let textarea = this.$refs.mdTextarea;
+            let ss = textarea.selectionStart;
+            let se = textarea.selectionEnd;
+            let selectedText = this.message.content.slice(ss, se);
+            let blockStart = "```" + bloc_name + "\n";
+            let blockEnd = "\n```";
+            let finalInsertion = "";
+            let cursorPos = ss; // Default cursor position
+
+             // Check if cursor is at the beginning of a line or file
+            let isOnNewLine = ss === 0 || this.message.content[ss - 1] === '\n';
+            
+            let prefix = isOnNewLine ? "" : "\n"; // Add newline before if not already on one
+            let suffix = "\n"; // Always add newline after block
+
+            if (selectedText) {
+                // Wrap selected text
+                finalInsertion = prefix + blockStart + selectedText + blockEnd + suffix;
+                this.message.content = this.message.content.slice(0, ss) + finalInsertion + this.message.content.slice(se);
+                cursorPos = ss + prefix.length + blockStart.length + selectedText.length + blockEnd.length; // Place cursor after the block
+            } else {
+                // Insert empty block
+                finalInsertion = prefix + blockStart + blockEnd + suffix;
+                this.message.content = this.message.content.slice(0, ss) + finalInsertion + this.message.content.slice(ss);
+                cursorPos = ss + prefix.length + blockStart.length; // Place cursor inside the block
             }
 
-            this.$refs.mdTextarea.focus();
-            this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = p;
+
+            this.$nextTick(() => {
+                textarea.focus();
+                textarea.selectionStart = textarea.selectionEnd = cursorPos;
+                this.adjustTextareaHeight(textarea); // Adjust height after adding block
+            });
         },
         copyContentToClipboard() {
-            this.$emit('copy', this)
-
+            navigator.clipboard.writeText(this.message.content).then(() => {
+                this.$store.state.toast.showToast("Message copied to clipboard!", 4, true);
+            }).catch(err => {
+                this.$store.state.toast.showToast("Failed to copy message: " + err, 4, false);
+            });
+            // Original emit might be needed for other integrations
+            // this.$emit('copy', this) 
         },
         deleteMsg() {
             this.$emit('delete', this.message.id)
@@ -713,7 +716,8 @@ export default {
 
         },
         updateMessage() {
-            this.$emit('updateMessage', this.message.id, this.message.content, this.audio_url)
+             // Include metadata when updating
+            this.$emit('updateMessage', this.message.id, this.message.content, this.message.metadata);
             this.editMsgMode = false
         },
         resendMessage(msg_type) {
@@ -724,130 +728,149 @@ export default {
             this.$emit('continueMessage', this.message.id, this.message.content)
         },
         getImgUrl() {
-            if (this.avatar) {
-                return bUrl + this.avatar
+            if (this.avatar && this.avatar.startsWith('http')) {
+                return this.avatar; // If avatar is a full URL
+            } else if (this.avatar) {
+                 // Assuming avatar is a relative path on the server
+                return (this.host || '') + '/' + this.avatar.split('/').pop(); // Use host + filename
             }
-            console.log("No avatar found")
+            //console.log("No valid avatar found, using placeholder.")
             return botImgPlaceholder;
-
         },
         defaultImg(event) {
+            console.warn("Failed to load avatar, using placeholder.")
             event.target.src = botImgPlaceholder
         },
-        parseDate(tdate) {
+        parseDate(tdate) { // Kept original logic, but prettyDate is used
             let system_date = new Date(Date.parse(tdate));
             let user_date = new Date();
+            if (isNaN(system_date)) return tdate; // Handle invalid date
 
             let diff = Math.floor((user_date - system_date) / 1000);
-            if (diff <= 1) {
-                return "just now";
-            }
-            if (diff < 20) {
-                return diff + " seconds ago";
-            }
-            if (diff < 40) {
-                return "half a minute ago";
-            }
-            if (diff < 60) {
-                return "less than a minute ago";
-            }
-            if (diff <= 90) {
-                return "one minute ago";
-            }
-            if (diff <= 3540) {
-                return Math.round(diff / 60) + " minutes ago";
-            }
-            if (diff <= 5400) {
-                return "1 hour ago";
-            }
-            if (diff <= 86400) {
-                return Math.round(diff / 3600) + " hours ago";
-            }
-            if (diff <= 129600) {
-                return "1 day ago";
-            }
-            if (diff < 604800) {
-                return Math.round(diff / 86400) + " days ago";
-            }
-            if (diff <= 777600) {
-                return "1 week ago";
-            }
-            return tdate;
+            if (diff <= 1) { return "just now"; }
+            if (diff < 20) { return diff + " seconds ago"; }
+            if (diff < 40) { return "half a minute ago"; }
+            if (diff < 60) { return "less than a minute ago"; }
+            if (diff <= 90) { return "one minute ago"; }
+            if (diff <= 3540) { return Math.round(diff / 60) + " minutes ago"; }
+            if (diff <= 5400) { return "1 hour ago"; }
+            if (diff <= 86400) { return Math.round(diff / 3600) + " hours ago"; }
+            if (diff <= 129600) { return "1 day ago"; }
+            if (diff < 604800) { return Math.round(diff / 86400) + " days ago"; }
+            if (diff <= 777600) { return "1 week ago"; }
+            // Format older dates more conventionally
+             const options = { year: 'numeric', month: 'short', day: 'numeric' };
+             return system_date.toLocaleDateString(undefined, options);
         },
         prettyDate(time) {
-            let date = new Date((time || "").replace(/-/g, "/").replace(/[TZ]/g, " ")),
-                diff = (((new Date()).getTime() - date.getTime()) / 1000),
-                day_diff = Math.floor(diff / 86400);
+            if (!time) return "";
+            let date;
+            try {
+                 date = new Date((time || "").replace(/-/g, "/").replace(/[TZ]/g, " "));
+                 if (isNaN(date)) throw new Error("Invalid date");
+            } catch(e) {
+                console.error("Error parsing date:", time, e);
+                return time; // Return original string if parsing fails
+            }
 
-            if (isNaN(day_diff) || day_diff < 0 || day_diff >= 31)
-                return;
+            let diff = (((new Date()).getTime() - date.getTime()) / 1000);
+            let day_diff = Math.floor(diff / 86400);
 
-            return day_diff == 0 && (
-                diff < 60 && "just now" ||
-                diff < 120 && "1 minute ago" ||
-                diff < 3600 && Math.floor(diff / 60) + " minutes ago" ||
-                diff < 7200 && "1 hour ago" ||
-                diff < 86400 && Math.floor(diff / 3600) + " hours ago") ||
-                day_diff == 1 && "Yesterday" ||
-                day_diff < 7 && day_diff + " days ago" ||
-                day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
+            if (day_diff < 0) { // Handle future dates?
+                 return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+            }
+
+            if (day_diff === 0) {
+                if (diff < 60) return "just now";
+                if (diff < 120) return "1 minute ago";
+                if (diff < 3600) return Math.floor(diff / 60) + " minutes ago";
+                if (diff < 7200) return "1 hour ago";
+                return Math.floor(diff / 3600) + " hours ago";
+            } else if (day_diff === 1) {
+                return "Yesterday";
+            } else if (day_diff < 7) {
+                return day_diff + " days ago";
+            } else if (day_diff < 31) {
+                 return Math.ceil(day_diff / 7) + " weeks ago";
+            } else {
+                 const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                 return date.toLocaleDateString(undefined, options);
+            }
         },
         checkForFullSentence() {
-            if(this.message.content.trim().split(" ").length>3){
-                // If the sentence contains at least 3 words, call the speak() method
-                this.speak();
-                return; // Exit the loop after the first full sentence is found
-            }
+            // Basic check: Does the new content end with a sentence terminator?
+             const trimmedContent = this.message.content.trim();
+             const lastChar = trimmedContent.slice(-1);
+             const sentenceEnders = ['.', '!', '?', '\n']; // Consider newline as ender too
+
+             if (sentenceEnders.includes(lastChar)) {
+                 // More robust check: has at least a few words?
+                 if (trimmedContent.split(/\s+/).length > 2) {
+                     this.speak();
+                 }
+             }
         },
 
     }, watch: {
         audio_url(newUrl) {
-            if (newUrl) {
-                this.$refs.audio_player.src = newUrl;
+             nextTick(()=>{
+                 if (newUrl && this.$refs.audio_player) {
+                     this.$refs.audio_player.load(); // Load the new source
+                 }
+             })
+        },
+        'message.content': function (newContent, oldContent) {
+             if (this.editMsgMode && this.$refs.mdTextarea) {
+                 this.$nextTick(() => {
+                     this.adjustTextareaHeight(this.$refs.mdTextarea); // Adjust height while editing
+                 });
+             } else if (this.$store.state.config.auto_speak &&
+                       !(this.$store.state.config.xtts_enable && this.$store.state.config.xtts_use_streaming_mode) &&
+                       !this.isSpeaking && newContent !== oldContent) {
+                 // Only check for sentence if content actually changed and we're not editing
+                 this.checkForFullSentence();
+             }
+        },
+        'message.ui': function (newUI, oldUI) {
+            if (JSON.stringify(newUI) !== JSON.stringify(oldUI)) { // Basic change detection
+                console.log("UI changed detected", newUI)
+                this.ui_componentKey++; // Force re-render if UI structure changes significantly
             }
         },
-        'message.content': function (newContent) {
-            if(this.$store.state.config.auto_speak)
-                if(!(this.$store.state.config.xtts_enable && this.$store.state.config.xtts_use_streaming_mode)){
-                    if(!this.isSpeaking){
-                        // Watch for changes to this.message.content and call the checkForFullSentence method
-                        this.checkForFullSentence();
-                    }
-                }
+        showConfirmation(newVal) {
+            if (newVal) {
+                nextTick(() => { feather.replace() });
+            }
         },
-        'message.ui': function (newContent) {
-            console.log("ui changed to", newContent)
-            this.ui_componentKey++;
+        deleteMsgMode(newVal) {
+            nextTick(() => { feather.replace() });
         },
-        showConfirmation() {
-            nextTick(() => {
-                feather.replace()
-
-            })
-        },
-
-        deleteMsgMode() {
-            nextTick(() => {
-                feather.replace()
-
-            })
-        },
+        editMsgMode(newVal) {
+             nextTick(() => {
+                 feather.replace();
+                 if (newVal && this.$refs.mdTextarea) {
+                     this.$refs.mdTextarea.focus();
+                     this.adjustTextareaHeight(this.$refs.mdTextarea); // Adjust height when entering edit mode
+                 }
+             });
+        }
     },
     computed: {
         editMsgMode:{
             get(){
-                if(this.message.hasOwnProperty('open'))
+                // Ensure message.open reflects the internal edit state if property exists
+                if(this.message && this.message.hasOwnProperty('open')) {
                     return this.editMsgMode_ || this.message.open;
-                else
+                }
                 return this.editMsgMode_;
             },
             set(value){
-                this.message.open = value
-                this.editMsgMode_ = value
-                nextTick(() => {
-                    feather.replace()
-
-                })
+                // Update both internal state and message property if it exists
+                 if(this.message && this.message.hasOwnProperty('open')) {
+                    this.message.open = value;
+                }
+                this.editMsgMode_ = value;
+                // Feather replace is handled by the watcher now
             }
         },
         isTalking :{
@@ -857,119 +880,88 @@ export default {
         },
         created_at() {
             return this.prettyDate(this.message.created_at)
-
         },
         created_at_parsed() {
-            return new Date(Date.parse(this.message.created_at)).toLocaleString()
-
+             try {
+                return new Date(Date.parse(this.message.created_at)).toLocaleString()
+             } catch (e) { return this.message.created_at; }
         },
         finished_generating_at_parsed() {
-            return new Date(Date.parse(this.message.finished_generating_at)).toLocaleString()
-
+             try {
+                return new Date(Date.parse(this.message.finished_generating_at)).toLocaleString()
+             } catch (e) { return this.message.finished_generating_at; }
         },
 
         time_spent() {
-            const startTime = new Date(Date.parse(this.message.started_generating_at))
-            const endTime = new Date(Date.parse(this.message.finished_generating_at))
+            if (!this.message.started_generating_at || !this.message.finished_generating_at) return undefined;
+            try {
+                const startTime = new Date(Date.parse(this.message.started_generating_at));
+                const endTime = new Date(Date.parse(this.message.finished_generating_at));
+                if (isNaN(startTime) || isNaN(endTime)) return undefined;
 
-            //const spentTime = new Date(endTime - startTime)
-            const same = endTime.getTime() === startTime.getTime();
-            if (same) {
-                return undefined
-            }
+                const same = endTime.getTime() === startTime.getTime();
+                if (same) { return "0s"; } // Indicate zero duration clearly
 
-            if (!startTime.getTime() || !endTime.getTime()) {
-                return undefined
-            }
-            let [hours, mins, secs] = this.computeTimeDiff(startTime, endTime)
+                let [hours, mins, secs] = this.computeTimeDiff(startTime, endTime);
 
-            // let spentTime = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
-            // const result = spentTime.getSeconds();
+                function addZero(i) { return i < 10 ? "0" + i : i; }
 
-            function addZero(i) {
-                if (i < 10) { i = "0" + i }
-                return i;
-            }
+                let parts = [];
+                if (hours > 0) parts.push(addZero(hours) + "h");
+                if (mins > 0) parts.push(addZero(mins) + "m");
+                if (secs >= 0) parts.push(addZero(secs) + 's'); // Always show seconds if > 0 or if total time is < 1 min
+                
+                return parts.join(':') || "0s"; // Ensure something is returned
 
-            // const d = new Date();
-            // let h = addZero(spentTime.getHours());
-            // let m = addZero(spentTime.getMinutes());
-            // let s = addZero(spentTime.getSeconds());
-            const time = addZero(hours) + "h:" + addZero(mins) + "m:" + addZero(secs) + 's';
-
-
-            return time
-
-
+            } catch (e) { return undefined; }
         },
         warmup_duration() {
-            const createdTime = new Date(Date.parse(this.message.created_at))
-            const endTime = new Date(Date.parse(this.message.started_generating_at))
-            console.log("Computing the warmup duration, ",createdTime," -> ", endTime)
-            //const spentTime = new Date(endTime - startTime)
-            const same = endTime.getTime() === createdTime.getTime();
-            if (same) {
-                return 0
-            }
-
-            if (!createdTime.getTime() || !endTime.getTime()) {
-                return undefined
-            }
-            let hours, mins, secs;
-            [hours, mins, secs] = this.computeTimeDiff(createdTime, endTime)
-
-            // let spentTime = Math.floor((endTime.getTime() - startTime.getTime()) / 1000);
-            // const result = spentTime.getSeconds();
-
-            function addZero(i) {
-                if (i < 10) { i = "0" + i }
-                return i;
-            }
-
-            // const d = new Date();
-            // let h = addZero(spentTime.getHours());
-            // let m = addZero(spentTime.getMinutes());
-            // let s = addZero(spentTime.getSeconds());
-            const time = addZero(hours) + "h:" + addZero(mins) + "m:" + addZero(secs) + 's';
+            if (!this.message.created_at || !this.message.started_generating_at) return undefined;
+            try {
+                const createdTime = new Date(Date.parse(this.message.created_at));
+                const startTime = new Date(Date.parse(this.message.started_generating_at));
+                 if (isNaN(createdTime) || isNaN(startTime)) return undefined;
 
 
-            return time
+                const same = startTime.getTime() === createdTime.getTime();
+                if (same || startTime < createdTime ) { return "0s"; } // No warmup or invalid times
 
+                let [hours, mins, secs] = this.computeTimeDiff(createdTime, startTime);
 
+                function addZero(i) { return i < 10 ? "0" + i : i; }
+
+                 let parts = [];
+                 if (hours > 0) parts.push(addZero(hours) + "h");
+                 if (mins > 0) parts.push(addZero(mins) + "m");
+                 if (secs >= 0) parts.push(addZero(secs) + 's');
+
+                return parts.join(':') || "0s";
+
+            } catch (e) { return undefined; }
         },
         generation_rate() {
-            const startTime = new Date(Date.parse(this.message.started_generating_at))
-            const endTime = new Date(Date.parse(this.message.finished_generating_at))
-            const nb_tokens = this.message.nb_tokens
-            //const spentTime = new Date(endTime - startTime)
-            const same = endTime.getTime() === startTime.getTime();
-            if (same) {
-                return undefined
-            }
-            if (!nb_tokens){
-                return undefined
-            }
-            if (!startTime.getTime() || !endTime.getTime()) {
-                return undefined
-            }
-            let timeDiff = endTime.getTime() - startTime.getTime();
-            const secs = Math.floor(timeDiff / 1000)
+            if (!this.message.started_generating_at || !this.message.finished_generating_at || !this.message.nb_tokens || this.message.nb_tokens <= 0) return undefined;
+             try {
+                const startTime = new Date(Date.parse(this.message.started_generating_at));
+                const endTime = new Date(Date.parse(this.message.finished_generating_at));
+                const nb_tokens = this.message.nb_tokens;
+                 if (isNaN(startTime) || isNaN(endTime)) return undefined;
 
-            const rate = nb_tokens/secs;
+                const timeDiff = endTime.getTime() - startTime.getTime();
+                if (timeDiff <= 0) { return undefined; } // Avoid division by zero or negative time
 
+                const secs = timeDiff / 1000;
+                const rate = nb_tokens / secs;
 
-            return Math.round(rate) + " t/s"
-
-
+                return Math.round(rate) + " t/s";
+             } catch(e) { return undefined; }
         }
-
     }
-
-
 }
 </script>
 
 <style scoped>
+/* Keep custom animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -979,22 +971,45 @@ export default {
   animation: fadeIn 0.5s ease-out forwards;
 }
 
-details[open] summary ~ * {
-  animation: slideDown 0.3s ease-in-out;
+/* Keep specific height adjustments or other non-theme styles if necessary */
+.htmljs{
+    background: none; /* Assuming this is intentional */
 }
 
-details summary::marker {
-  display: none;
+/* Ensure Feather icons in toolbar buttons are sized correctly */
+.svg-button i[data-feather] {
+    @apply w-4 h-4; 
 }
 
-details summary::-webkit-details-marker {
-  display: none;
+/* Optional: Style for the loading spinner */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.animate-pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+
+/* Refined footer item styling (moved from inline for clarity) */
+.footer-item {
+    @apply text-blue-500 dark:text-blue-400;
+}
+.footer-value {
+    @apply font-normal text-blue-600 dark:text-blue-300 ml-1;
 }
 
-
+/* Target the textarea specifically for height adjustment based on content */
+textarea {
+    overflow-y: hidden; /* Prevent scrollbar unless needed */
+    resize: none; /* Disable manual resize */
+    min-height: 5em; /* Ensure a minimum height */
+}
 </style>
