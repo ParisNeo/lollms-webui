@@ -96,10 +96,10 @@
                 :key="func.id || func.full_path"
                 :ref="el => setFunctionRef(func.id || func.full_path, el)"
                 :function_call="func"
-                :is-mounted="func.isMounted" <!-- Pass reactive isMounted -->
+                :is-mounted="func.isMounted"
                 :is-processing="func.isProcessing"
-                :get-icon-url="getFunctionIcon" <!-- Pass utility method if needed -->
-                :on-img-error="imgPlaceholder" <!-- Pass utility method if needed -->
+                :get-icon-url="getFunctionIcon"
+                :on-img-error="imgPlaceholder"
                 @mount="handleMount(func)"
                 @unmount="handleUnmount(func)"
                 @remount="handleRemount(func)"
