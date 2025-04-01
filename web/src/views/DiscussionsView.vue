@@ -901,6 +901,7 @@
     
     <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>
     <ChangelogPopup/>
+    <Animation />
 </template>
 
 
@@ -1253,6 +1254,7 @@ animation: bounce 1s infinite;
 }
 </style>
 <script>
+import Animation from '@/components/Animation.vue'; // Adjust path if needed
 import PersonalityEditor from "@/components/PersonalityEditor.vue"
 import PopupViewer from '@/components/PopupViewer.vue';
 import ActionButton from '@/components/ActionButton.vue'
@@ -1500,7 +1502,18 @@ export default {
                 "Did you know? Chuck Norris actually served in the United States Air Force as an Air Policeman in South Korea!",
                 "When the Boogeyman goes to sleep every night, he checks his closet for Chuck Norris!",
                 "Did you know? Chuck Norris holds the record for the most consecutive push-ups without rest at 5,000!",
-                "Time waits for no man. Unless that man is Chuck Norris!"                
+                "Time waits for no man. Unless that man is Chuck Norris!",
+                "**Fishy Origins v19.1!** 🐠 That swimming mascot of the 'Fish Edition'? Its path isn't just code, it's a 'Quantum Cold Pizza Fluctuation' algorithm. Peak v19.1 engineering!",
+                "**Feeling Blue in v19.1?** Try searching 'sad' in settings. 50% chance the UI turns blue, 50% chance the v19.1 Fish mascot just gives you side-eye. 😠",
+                "**Warning: v19.1 Imaginary Lag!** The 'Prime Time Performance Boost'™ is real... but during non-prime seconds, things slow down by `sqrt(-1)`%. We call it 'v19.1 procrastinational processing'.",
+                "**Hear the Ocean in v19.1?** Using the 'Deep Sea Debug' theme might cause sonar pings. It's not a bug, it's *v19.1 immersion*. Report any Kraken sightings! 🦑",
+                "**v19.1: Salmon-Powered Purple!** The 'Prankster Purple' theme's shifts? Totally tied to the global market price of farmed salmon. Seemed logical for the Fish Edition!",
+                "**Poetry Isn't Dead (Thanks, v19.1!)** The iambic pentameter bug lives! There's a tiny chance v19.1 will critique your prompts with a Shakespearean sonnet on digital despair. 🎭",
+                "**Quantum Knob Jiggling (v19.1 Special):** Max out the 'Quantum Entanglement Level'. Will it link your v19.1 to another dimension? Or just turn the Fish mascot pink? Only one way to find out! ✨",
+                "**Dragon Mode (v19.1 Safety Hazard)!** Clicking 'Here Be Dragons' 5 times won't summon *real* dragons (legal vetoed that for v19.1), but it *will* fill your screen with ASCII flames! 🔥",
+                "**v19.1 Bubble Secrets:** Lean in... the Fish mascot's bubbles? Rumored to secretly display hex codes for *next* version's theme colors. Can you decode the v19.1 Fish's message?",
+                "**Cookie Monster Theme (v19.1 Edition):** Beware the 'Gone Phishing Gradient'. It uses v19.1's advanced subliminal tech to learn your favorite virtual cookie. Resistance is crumbly! 🍪",
+                "**Binary Brain Teaser:** The version number contains a secret message: `01100001 01110010 01110000 01101001 01101100 00100000 01100110 01101111 01101111 01101100`. If you decoded that, you truly understand the spirit of v19.1 'Fish Edition'!"                                
             ],
             currentVersion: null,
             showChangelogPopup: false,
@@ -3926,7 +3939,8 @@ export default {
         MountedPersonalities,
 
         ChatBarButton,
-        ChangelogPopup
+        ChangelogPopup,
+        Animation
 
     },
     watch: {        
