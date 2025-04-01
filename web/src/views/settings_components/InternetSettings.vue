@@ -1,16 +1,16 @@
 <template>
-    <div class="space-y-6 p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">
+    <div class="user-settings-panel space-y-6">
+        <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-100 border-b border-blue-300 dark:border-blue-600 pb-2">
             Internet Search
         </h2>
 
-         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+         <p class="text-sm text-blue-600 dark:text-blue-400 mb-4">
             Configure how LoLLMs interacts with the internet to answer questions or find information. Requires a model capable of function calling or specific instruction following.
         </p>
 
         <!-- Internet Search Toggles -->
-        <section class="space-y-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
-            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Activation & Behavior</h3>
+        <section class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
+            <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Activation & Behavior</h3>
 
             <!-- Activate Internet Search -->
             <div class="toggle-item">
@@ -50,18 +50,18 @@
         </section>
 
         <!-- Internet Search Parameters -->
-        <section :class="['space-y-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg', !$store.state.config.activate_internet_search ? 'opacity-50 pointer-events-none' : '']">
-            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Search Parameters</h3>
+        <section :class="['space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color', !$store.state.config.activate_internet_search ? 'opacity-50 pointer-events-none' : '']">
+            <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Search Parameters</h3>
 
             <!-- Number of Search Pages/Results -->
             <div class="setting-item">
                 <label for="internet_nb_search_pages" class="setting-label">
                     Number of Search Results
-                     <span class="block text-xs font-normal text-gray-500 dark:text-gray-400 mt-1">Controls how many search result snippets are initially retrieved.</span>
+                     <span class="block text-xs font-normal text-blue-500 dark:text-blue-400 mt-1">Controls how many search result snippets are initially retrieved.</span>
                 </label>
                 <div class="flex-1 flex items-center gap-4">
                     <input id="internet_nb_search_pages-range" :value="$store.state.config.internet_nb_search_pages" @input="updateValue('internet_nb_search_pages', $event.target.value)" type="range" min="1" max="20" step="1" class="range-input" :disabled="!$store.state.config.activate_internet_search">
-                    <input id="internet_nb_search_pages-number" :value="$store.state.config.internet_nb_search_pages" @input="updateValue('internet_nb_search_pages', $event.target.value)" type="number" min="1" max="20" step="1" class="input-field-sm w-20 text-center" :disabled="!$store.state.config.activate_internet_search">
+                    <input id="internet_nb_search_pages-number" :value="$store.state.config.internet_nb_search_pages" @input="updateValue('internet_nb_search_pages', $event.target.value)" type="number" min="1" max="20" step="1" class="input-sm w-20 text-center" :disabled="!$store.state.config.activate_internet_search">
                 </div>
             </div>
 
@@ -69,11 +69,11 @@
             <div class="setting-item">
                 <label for="internet_vectorization_chunk_size" class="setting-label">
                      Content Chunk Size
-                    <span class="block text-xs font-normal text-gray-500 dark:text-gray-400 mt-1">Size of text chunks when processing content from searched web pages (if applicable).</span>
+                    <span class="block text-xs font-normal text-blue-500 dark:text-blue-400 mt-1">Size of text chunks when processing content from searched web pages (if applicable).</span>
                  </label>
                 <div class="flex-1 flex items-center gap-4">
                      <input id="internet_vectorization_chunk_size-range" :value="$store.state.config.internet_vectorization_chunk_size" @input="updateValue('internet_vectorization_chunk_size', $event.target.value)" type="range" min="100" max="1000" step="50" class="range-input" :disabled="!$store.state.config.activate_internet_search">
-                    <input id="internet_vectorization_chunk_size-number" :value="$store.state.config.internet_vectorization_chunk_size" @input="updateValue('internet_vectorization_chunk_size', $event.target.value)" type="number" min="100" max="1000" step="50" class="input-field-sm w-20 text-center" :disabled="!$store.state.config.activate_internet_search">
+                    <input id="internet_vectorization_chunk_size-number" :value="$store.state.config.internet_vectorization_chunk_size" @input="updateValue('internet_vectorization_chunk_size', $event.target.value)" type="number" min="100" max="1000" step="50" class="input-sm w-20 text-center" :disabled="!$store.state.config.activate_internet_search">
                  </div>
             </div>
 
@@ -81,11 +81,11 @@
              <div class="setting-item">
                 <label for="internet_vectorization_overlap_size" class="setting-label">
                      Content Overlap Size
-                     <span class="block text-xs font-normal text-gray-500 dark:text-gray-400 mt-1">Overlap between text chunks when processing web page content.</span>
+                     <span class="block text-xs font-normal text-blue-500 dark:text-blue-400 mt-1">Overlap between text chunks when processing web page content.</span>
                 </label>
                 <div class="flex-1 flex items-center gap-4">
                      <input id="internet_vectorization_overlap_size-range" :value="$store.state.config.internet_vectorization_overlap_size" @input="updateValue('internet_vectorization_overlap_size', $event.target.value)" type="range" min="0" max="200" step="10" class="range-input" :disabled="!$store.state.config.activate_internet_search">
-                     <input id="internet_vectorization_overlap_size-number" :value="$store.state.config.internet_vectorization_overlap_size" @input="updateValue('internet_vectorization_overlap_size', $event.target.value)" type="number" min="0" max="200" step="10" class="input-field-sm w-20 text-center" :disabled="!$store.state.config.activate_internet_search">
+                     <input id="internet_vectorization_overlap_size-number" :value="$store.state.config.internet_vectorization_overlap_size" @input="updateValue('internet_vectorization_overlap_size', $event.target.value)" type="number" min="0" max="200" step="10" class="input-sm w-20 text-center" :disabled="!$store.state.config.activate_internet_search">
                 </div>
              </div>
 
@@ -93,11 +93,11 @@
              <div class="setting-item">
                 <label for="internet_vectorization_nb_chunks" class="setting-label">
                      Number of Content Chunks to Use
-                     <span class="block text-xs font-normal text-gray-500 dark:text-gray-400 mt-1">Maximum number of processed text chunks from web pages to include in the context.</span>
+                     <span class="block text-xs font-normal text-blue-500 dark:text-blue-400 mt-1">Maximum number of processed text chunks from web pages to include in the context.</span>
                 </label>
                  <div class="flex-1 flex items-center gap-4">
                      <input id="internet_vectorization_nb_chunks-range" :value="$store.state.config.internet_vectorization_nb_chunks" @input="updateValue('internet_vectorization_nb_chunks', $event.target.value)" type="range" min="1" max="20" step="1" class="range-input" :disabled="!$store.state.config.activate_internet_search">
-                     <input id="internet_vectorization_nb_chunks-number" :value="$store.state.config.internet_vectorization_nb_chunks" @input="updateValue('internet_vectorization_nb_chunks', $event.target.value)" type="number" min="1" max="20" step="1" class="input-field-sm w-20 text-center" :disabled="!$store.state.config.activate_internet_search">
+                     <input id="internet_vectorization_nb_chunks-number" :value="$store.state.config.internet_vectorization_nb_chunks" @input="updateValue('internet_vectorization_nb_chunks', $event.target.value)" type="number" min="1" max="20" step="1" class="input-sm w-20 text-center" :disabled="!$store.state.config.activate_internet_search">
                 </div>
             </div>
 

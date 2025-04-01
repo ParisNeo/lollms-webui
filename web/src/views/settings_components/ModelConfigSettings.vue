@@ -1,15 +1,15 @@
 <template>
-    <div class="space-y-6 p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">
+    <div class="user-settings-panel space-y-6">
+        <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-100 border-b border-blue-300 dark:border-blue-600 pb-2">
             Model Generation Parameters
         </h2>
 
-         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+         <p class="text-sm text-blue-600 dark:text-blue-400 mb-4">
             Adjust the core parameters that influence how the AI generates text. These settings can be overridden by specific personalities unless the option below is checked.
         </p>
 
         <!-- Override Personality Toggle -->
-        <div class="toggle-item !justify-start gap-4 border border-gray-200 dark:border-gray-600 rounded-lg p-3">
+        <div class="toggle-item !justify-start gap-4 border border-blue-200 dark:border-blue-700 rounded-lg p-3 panels-color"> <!-- Use toggle-item and add panel color -->
             <ToggleSwitch
                 id="override_personality_model_parameters"
                 :checked="$store.state.config.override_personality_model_parameters"
@@ -27,14 +27,14 @@
             <div class="setting-item">
                 <label for="seed" class="setting-label flex items-center">
                     Seed
-                     <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Controls randomness. Set to -1 for random, or a specific number for reproducible results."></i>
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                  </label>
                 <input
                     type="number"
                     id="seed"
                     :value="$store.state.config.seed"
                     @input="updateValue('seed', parseInt($event.target.value))"
-                    class="input-field-sm w-full md:w-32"
+                    class="input-sm w-full md:w-32"
                     step="1"
                     placeholder="-1"
                     :disabled="isDisabled"
@@ -42,74 +42,74 @@
             </div>
 
             <!-- Temperature -->
-            <div class="setting-item items-start md:items-center">
+            <div class="setting-item items-start md:items-center border-t border-blue-200 dark:border-blue-700 pt-4 mt-4">
                  <label for="temperature-range" class="setting-label flex items-center">
                     Temperature
-                     <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Controls randomness. Lower values (e.g., 0.2) make output more focused and deterministic, higher values (e.g., 0.8) make it more creative and random."></i>
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
                     <input id="temperature-range" :value="$store.state.config.temperature" @input="updateValue('temperature', parseFloat($event.target.value))" type="range" min="0" max="2" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
-                    <input id="temperature-number" :value="$store.state.config.temperature" @input="updateValue('temperature', parseFloat($event.target.value))" type="number" min="0" max="2" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                    <input id="temperature-number" :value="$store.state.config.temperature" @input="updateValue('temperature', parseFloat($event.target.value))" type="number" min="0" max="2" step="0.01" class="input-sm w-24 text-center" :disabled="isDisabled">
                  </div>
             </div>
 
             <!-- N Predict (Max Tokens) -->
-             <div class="setting-item items-start md:items-center">
+             <div class="setting-item items-start md:items-center border-t border-blue-200 dark:border-blue-700 pt-4 mt-4">
                  <label for="n_predict-range" class="setting-label flex items-center">
                     Max New Tokens
-                     <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Maximum number of tokens the model is allowed to generate in a single response."></i>
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
                      <input id="n_predict-range" :value="$store.state.config.n_predict" @input="updateValue('n_predict', parseInt($event.target.value))" type="range" min="32" max="8192" step="32" class="range-input flex-grow" :disabled="isDisabled">
-                     <input id="n_predict-number" :value="$store.state.config.n_predict" @input="updateValue('n_predict', parseInt($event.target.value))" type="number" min="32" max="8192" step="32" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                     <input id="n_predict-number" :value="$store.state.config.n_predict" @input="updateValue('n_predict', parseInt($event.target.value))" type="number" min="32" max="8192" step="32" class="input-sm w-24 text-center" :disabled="isDisabled">
                  </div>
              </div>
 
              <!-- Top-K -->
-             <div class="setting-item items-start md:items-center">
+             <div class="setting-item items-start md:items-center border-t border-blue-200 dark:border-blue-700 pt-4 mt-4">
                 <label for="top_k-range" class="setting-label flex items-center">
                      Top-K Sampling
-                    <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Limits generation to the K most likely next tokens. Reduces repetition but can make output less creative. 0 disables it."></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                  </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
                     <input id="top_k-range" :value="$store.state.config.top_k" @input="updateValue('top_k', parseInt($event.target.value))" type="range" min="0" max="100" step="1" class="range-input flex-grow" :disabled="isDisabled">
-                    <input id="top_k-number" :value="$store.state.config.top_k" @input="updateValue('top_k', parseInt($event.target.value))" type="number" min="0" max="100" step="1" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                    <input id="top_k-number" :value="$store.state.config.top_k" @input="updateValue('top_k', parseInt($event.target.value))" type="number" min="0" max="100" step="1" class="input-sm w-24 text-center" :disabled="isDisabled">
                  </div>
              </div>
 
              <!-- Top-P -->
-             <div class="setting-item items-start md:items-center">
+             <div class="setting-item items-start md:items-center border-t border-blue-200 dark:border-blue-700 pt-4 mt-4">
                  <label for="top_p-range" class="setting-label flex items-center">
                     Top-P (Nucleus) Sampling
-                     <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Considers only the most probable tokens whose cumulative probability exceeds P. Allows for dynamic vocabulary size. 1.0 disables it. Common values: 0.9, 0.95."></i>
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                  </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
                      <input id="top_p-range" :value="$store.state.config.top_p" @input="updateValue('top_p', parseFloat($event.target.value))" type="range" min="0" max="1" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
-                     <input id="top_p-number" :value="$store.state.config.top_p" @input="updateValue('top_p', parseFloat($event.target.value))" type="number" min="0" max="1" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                     <input id="top_p-number" :value="$store.state.config.top_p" @input="updateValue('top_p', parseFloat($event.target.value))" type="number" min="0" max="1" step="0.01" class="input-sm w-24 text-center" :disabled="isDisabled">
                 </div>
              </div>
 
              <!-- Repeat Penalty -->
-             <div class="setting-item items-start md:items-center">
+             <div class="setting-item items-start md:items-center border-t border-blue-200 dark:border-blue-700 pt-4 mt-4">
                 <label for="repeat_penalty-range" class="setting-label flex items-center">
                      Repeat Penalty
-                     <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Penalizes tokens that have appeared recently. Higher values (e.g., 1.1, 1.2) reduce repetition. 1.0 disables it."></i>
+                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
                     <input id="repeat_penalty-range" :value="$store.state.config.repeat_penalty" @input="updateValue('repeat_penalty', parseFloat($event.target.value))" type="range" min="0.5" max="2.0" step="0.01" class="range-input flex-grow" :disabled="isDisabled">
-                    <input id="repeat_penalty-number" :value="$store.state.config.repeat_penalty" @input="updateValue('repeat_penalty', parseFloat($event.target.value))" type="number" min="0.5" max="2.0" step="0.01" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                    <input id="repeat_penalty-number" :value="$store.state.config.repeat_penalty" @input="updateValue('repeat_penalty', parseFloat($event.target.value))" type="number" min="0.5" max="2.0" step="0.01" class="input-sm w-24 text-center" :disabled="isDisabled">
                  </div>
              </div>
 
             <!-- Repeat Last N -->
-            <div class="setting-item items-start md:items-center">
+            <div class="setting-item items-start md:items-center border-t border-blue-200 dark:border-blue-700 pt-4 mt-4">
                  <label for="repeat_last_n-range" class="setting-label flex items-center">
                     Repeat Penalty Lookback
-                    <i data-feather="info" class="w-4 h-4 ml-1 text-gray-400 cursor-help" title="Number of recent tokens to consider when applying the repeat penalty. 0 disables considering previous tokens specifically for penalty."></i>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                  </label>
                  <div class="flex-1 flex flex-col sm:flex-row items-center gap-4 w-full">
                     <input id="repeat_last_n-range" :value="$store.state.config.repeat_last_n" @input="updateValue('repeat_last_n', parseInt($event.target.value))" type="range" min="0" max="512" step="8" class="range-input flex-grow" :disabled="isDisabled">
-                    <input id="repeat_last_n-number" :value="$store.state.config.repeat_last_n" @input="updateValue('repeat_last_n', parseInt($event.target.value))" type="number" min="0" max="512" step="8" class="input-field-sm w-24 text-center" :disabled="isDisabled">
+                    <input id="repeat_last_n-number" :value="$store.state.config.repeat_last_n" @input="updateValue('repeat_last_n', parseInt($event.target.value))" type="number" min="0" max="512" step="8" class="input-sm w-24 text-center" :disabled="isDisabled">
                  </div>
              </div>
         </div>

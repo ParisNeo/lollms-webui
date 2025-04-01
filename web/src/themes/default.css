@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 :root {
-  --lollms-title: Lo🧑‍🤝‍🧑MS;
+  --lollms-title: L🐠llMS;
   --falling-object: "";
   --activate-dropping-animation: 0;
   --lollms-welcome-short-message: Welcome to LoLLMS;
@@ -361,41 +361,6 @@ button:hover {
   @apply scrollbar-thin scrollbar-track-blue-200 scrollbar-thumb-blue-400 hover:scrollbar-thumb-blue-500 dark:scrollbar-track-blue-700 dark:scrollbar-thumb-blue-600 dark:hover:scrollbar-thumb-blue-500;
 }
 
-.card-title {
-  @apply text-xl font-bold text-blue-800 dark:text-blue-100 mb-2;
-}
-
-.card-content {
-  @apply text-blue-600 dark:text-blue-300;
-}
-
-.card-footer {
-  @apply mt-4 flex justify-between items-center;
-}
-
-.card-footer-button {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
-}
-
-.subcard {
-  @apply bg-blue-50 dark:bg-blue-800 rounded-lg shadow-md p-4;
-}
-
-.subcard-title {
-  @apply text-lg font-bold text-blue-800 dark:text-blue-100 mb-2;
-}
-
-.subcard-content {
-  @apply text-blue-600 dark:text-blue-300;
-}
-
-.subcard-footer {
-  @apply mt-4 flex justify-between items-center;
-}
-
-.subcard-footer-button {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
-}
 
 .animated-progressbar-bg{
   @apply w-full h-5 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg
@@ -510,6 +475,7 @@ background-clip: text;
   0% { background-position: 0 0; }
   100% { background-position: 0 1000px; }
 }
+
 @layer components {
   .context-menu {
     @apply absolute bg-opacity-90 bg-green-900 border border-green-500 shadow-lg shadow-green-500/50 rounded-none py-2 min-w-[150px] z-[1000] font-mono;
@@ -556,6 +522,456 @@ background-clip: text;
   .context-menu-item:hover::after {
     @apply scale-x-100;
   }
+}
+
+
+
+/* Steps theming */
+/* steps.css */
+
+/* Steps Container Styles */
+.steps-container {
+  @apply border border-gray-200 rounded-md mb-4;
+}
+
+.steps-header {
+  @apply flex items-center p-4 bg-gray-50 dark:bg-gray-900 cursor-pointer;
+}
+
+.steps-icon {
+  @apply mr-4;
+}
+
+.steps-summary {
+  @apply flex-grow;
+}
+
+.steps-title {
+  @apply m-0 text-base font-semibold;
+}
+
+.steps-status {
+  @apply m-0 text-sm text-gray-600;
+}
+
+.toggle-icon {
+  @apply text-sm text-gray-500;
+}
+
+.steps-content {
+  @apply p-4;
+}
+
+.steps-list {
+  @apply list-none p-0 m-0;
+}
+
+.step-item {
+  @apply mb-2 pl-4 border-l-2 border-gray-200 last:mb-0;
+}
+
+/* Step Component Styles */
+/* Steps Container Styles */
+.steps-container {
+  @apply border border-gray-200 rounded-md mb-4 bg-gray-50 dark:bg-gray-800;
+}
+
+.steps-header {
+  @apply flex items-center p-4 cursor-pointer border-b border-gray-200 dark:border-gray-700;
+}
+
+.steps-icon {
+  @apply mr-4;
+}
+
+.steps-summary {
+  @apply flex-grow;
+}
+
+.steps-title {
+  @apply m-0 text-base font-semibold text-gray-700 dark:text-gray-300;
+}
+
+.steps-status {
+  @apply m-0 text-sm text-gray-600 dark:text-gray-400;
+}
+
+.toggle-icon {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.steps-content {
+  @apply p-4;
+}
+
+.steps-list {
+  @apply list-none p-0 m-0;
+}
+
+.step-item {
+  @apply mb-2 pl-4 border-l-2 border-gray-300 dark:border-gray-600 last:mb-0;
+}
+
+/* Step Component Styles */
+.step-container {
+  @apply mb-4 transition-all duration-300 ease-in-out;
+}
+
+.step-wrapper {
+  @apply flex items-start p-3 rounded-md bg-white dark:bg-gray-800;
+}
+
+.step-icon {
+  @apply flex-shrink-0 w-6 h-6 mr-3;
+}
+
+.icon-success {
+  @apply w-6 h-6 text-green-500 dark:text-green-400;
+}
+
+.icon-fail {
+  @apply w-6 h-6 text-red-500 dark:text-red-400;
+}
+
+.icon-spinner {
+  @apply w-6 h-6 border-2 border-blue-500 dark:border-blue-400 border-t-transparent rounded-full animate-spin;
+}
+
+.step-content {
+  @apply flex-grow;
+}
+
+.step-text {
+  @apply text-base font-medium text-gray-700 dark:text-gray-300;
+}
+
+.step-description {
+  @apply mt-1 text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* Transition Styles */
+.fade-enter-active, .fade-leave-active {
+  @apply transition-opacity duration-300;
+}
+
+.fade-enter, .fade-leave-to {
+  @apply opacity-0;
+}
+
+/* Status Icon Styles */
+.status-icon {
+  @apply cursor-pointer transition-colors duration-300;
+}
+
+.icon {
+  @apply w-6 h-6;
+}
+
+.icon-success {
+  @apply text-green-500 dark:text-green-400;
+}
+
+.icon-fail {
+  @apply text-red-500 dark:text-red-400;
+}
+
+.icon-text {
+  @apply text-xl font-bold text-gray-700 dark:text-gray-300;
+}
+
+
+/* Add or update this rule in your theme CSS file */
+.user-settings-panel {
+  @apply bg-blue-100 dark:bg-blue-900 space-y-6 p-4 md:p-6 rounded-lg shadow-md text-blue-900 dark:text-blue-100;
+  /* Added dark:bg-blue-900 for dark background */
+  /* Added default text colors text-blue-900 dark:text-blue-100 for better contrast */
+}
+
+/* Base class for folder items in the System Status panel */
+.folder-item-base {
+  @apply flex flex-col items-center justify-center p-4 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md;
+  @apply bg-blue-100 dark:bg-blue-800; /* Or a slightly different background if needed */
+  @apply hover:bg-blue-200 dark:hover:bg-blue-700;
+  @apply border; /* Add a default border */
+}
+
+/* Class for the icon within a folder item */
+.folder-item-icon {
+  @apply w-10 h-10 group-hover:scale-110 transition-transform duration-200 mb-2; /* Added margin */
+}
+
+/* Class for the text label within a folder item */
+.folder-item-label {
+  @apply mt-2 text-xs text-center text-blue-700 dark:text-blue-200;
+}
+
+/* Modifier classes for specific border/icon colors (optional, can still be applied inline) */
+.folder-item-personalities { @apply border-blue-400 dark:border-blue-500; }
+.folder-item-icon-personalities { @apply text-blue-500 dark:text-blue-400; }
+
+.folder-item-functions { @apply border-green-500 dark:border-green-400; }
+.folder-item-icon-functions { @apply text-green-500 dark:text-green-400; }
+
+.folder-item-configs { @apply border-yellow-500 dark:border-yellow-400; }
+.folder-item-icon-configs { @apply text-yellow-500 dark:text-yellow-400; }
+
+.folder-item-outputs { @apply border-purple-500 dark:border-purple-400; }
+.folder-item-icon-outputs { @apply text-purple-500 dark:text-purple-400; }
+
+.folder-item-discussions { @apply border-red-500 dark:border-red-400; }
+.folder-item-icon-discussions { @apply text-red-500 dark:text-red-400; }
+
+@layer components {
+  /* Helper class for consistent spacing and alignment in setting rows */
+  .setting-item {
+      @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-2;
+  }
+
+  /* Label style for setting items, takes fixed width on medium screens */
+  .setting-label {
+      @apply label md:w-48 flex-shrink-0; /* Use label class styles + width */
+  }
+
+  /* Helper class for toggle rows */
+  .toggle-item {
+      @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-2 border-t border-blue-200 dark:border-blue-700 pt-3 mt-2;
+  }
+
+  /* Label style for toggles, allowing text wrapping */
+  .toggle-label {
+      @apply label !mb-0 flex-grow cursor-pointer mr-4; /* Use label styles, remove bottom margin */
+  }
+
+  /* Description style for toggles */
+  .toggle-description {
+      @apply block text-xs text-blue-500 dark:text-blue-400 font-normal mt-1;
+  }
+
+  /* Style adjustments for range inputs */
+  input[type='range']::-webkit-slider-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out;
+      margin-top: -6px; /* Adjust thumb position */
+  }
+  input[type='range']::-moz-range-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+      @apply h-2 bg-blue-200 dark:bg-blue-700 rounded-full w-full;
+  }
+  input[type='range']::-moz-range-track {
+      @apply h-2 bg-blue-200 dark:bg-blue-700 rounded-full w-full;
+  }
+
+  /* Success button variant */
+  .btn-success {
+    @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800;
+  }
+
+  /* Small button size modifier */
+  .btn-sm {
+    @apply py-1 px-2 text-sm;
+  }
+
+  /* Small input size modifier (inherits base .input styles) */
+  .input-sm {
+      @apply input px-3 py-1 text-sm rounded-md; /* Use .input styles and adjust padding/text/rounding */
+  }
+
+  /* Range input base style */
+  .range-input {
+      @apply h-2 bg-blue-200 dark:bg-blue-700 rounded-lg appearance-none cursor-pointer w-full; /* Base track */
+  }
+
+  /* Add thumb styles directly as they are pseudo-elements */
+  .range-input::-webkit-slider-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out;
+      margin-top: -6px; /* Adjust thumb position to center on track */
+  }
+  .range-input::-moz-range-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out;
+  }  
+
+  /* Add specific status dot colors */
+  .bg-status-healthy { @apply bg-green-500 dark:bg-green-400; }
+  .bg-status-unhealthy { @apply bg-red-500 dark:bg-red-400; }
+  .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-400; }
+  .bg-status-unknown { @apply bg-gray-400 dark:bg-gray-500; }
+}
+
+@layer components {
+  /* Success button variant */
+  .btn-success {
+    @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800;
+  }
+
+  /* Small button size modifier */
+  .btn-sm {
+    @apply py-1 px-2 text-sm;
+  }
+
+  /* Small input size modifier (inherits base .input styles) */
+  .input-sm {
+      @apply input px-3 py-1 text-sm rounded-md; /* Use .input styles and adjust padding/text/rounding */
+  }
+
+  /* Range input base style */
+  .range-input {
+      @apply h-2 bg-blue-200 dark:bg-blue-700 rounded-lg appearance-none cursor-pointer w-full; /* Base track */
+  }
+
+  /* Add thumb styles directly as they are pseudo-elements */
+  .range-input::-webkit-slider-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out;
+      margin-top: -6px; /* Adjust thumb position to center on track */
+  }
+  .range-input::-moz-range-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out;
+  }
+}
+
+/* Ensure status dot classes exist (copied from theme for clarity) */
+@layer utilities {
+  .bg-status-healthy { @apply bg-green-500 dark:bg-green-400; }
+  .bg-status-unhealthy { @apply bg-red-500 dark:bg-red-400; }
+  .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-400; }
+  .bg-status-unknown { @apply bg-gray-400 dark:bg-gray-500; }
+}
+
+@layer components {
+  .prose-blue {
+    h3 { @apply text-xl font-semibold text-blue-700 dark:text-blue-300 mb-3 mt-5 border-b border-blue-200 dark:border-blue-700 pb-1; }
+    ul { @apply list-disc pl-6 space-y-1.5 mb-4 text-blue-800 dark:text-blue-200; }
+    li::marker { color: theme('colors.blue.500'); }
+    code { @apply bg-blue-200 dark:bg-blue-700 px-1.5 py-0.5 rounded text-sm font-mono text-blue-700 dark:text-blue-200; }
+    blockquote { @apply border-l-4 border-blue-400 dark:border-blue-500 pl-4 italic text-blue-600 dark:text-blue-400 my-4 py-1; }
+    a { @apply link font-medium; }
+    p { @apply mb-3 leading-relaxed text-blue-800 dark:text-blue-200; }
+  }
+
+  .dark .dark\:prose-invert {
+  }
+}
+/* Enhance Tailwind Prose for better visuals - Prefixed with 'thinking-' */
+.thinking-prose {
+  /* Base styles for the custom prose container */
+}
+
+/* Define dark mode variables specifically for our prefixed class */
+.dark .thinking-prose {
+  --tw-prose-headings: theme('colors.gray.100');
+  --tw-prose-links: theme('colors.blue.400');
+  --tw-prose-code: theme('colors.gray.300');
+  --tw-prose-pre-code: theme('colors.gray.300');
+  --tw-prose-pre-bg: rgba(0, 0, 0, 0.2);
+  --tw-prose-quotes: theme('colors.gray.400');
+  --tw-prose-quote-borders: theme('colors.gray.600');
+  /* --tw-prose-body: theme('colors.gray.300'); /* Example if you need to override body text color */
+}
+
+.thinking-prose h1,
+.thinking-prose h2,
+.thinking-prose h3,
+.thinking-prose h4,
+.thinking-prose h5,
+.thinking-prose h6 {
+@apply mt-5 mb-2 font-semibold;
+}
+/* Use Tailwind's responsive variants if needed, e.g., prose-sm */
+/* These styles might need adjustment if `prose-sm` isn't applying correctly */
+.thinking-prose h1 { @apply text-xl; }
+.thinking-prose h2 { @apply text-lg; }
+.thinking-prose h3 { @apply text-base; }
+
+.thinking-prose p {
+@apply my-3 leading-relaxed;
+}
+
+.thinking-prose ul,
+.thinking-prose ol {
+@apply my-3 pl-6;
+}
+
+.thinking-prose li > p {
+  @apply my-1; /* Reduce margin for paragraphs inside list items */
+}
+
+.thinking-prose code:not(pre code) {
+/* Specific styles for inline code within our custom prose */
+@apply px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-sm font-mono before:content-none after:content-none;
+/* Use the CSS variables for color if inheriting from base dark:prose-invert doesn't work */
+/* color: var(--tw-prose-code); */
+}
+
+.thinking-prose pre {
+/* Specific styles for pre blocks within our custom prose */
+@apply p-4 rounded-lg overflow-x-auto my-4 shadow-inner;
+ background-color: var(--tw-prose-pre-bg, theme('colors.gray.100')); /* Use variable with fallback */
+}
+/* Ensure dark mode pre background is applied */
+.dark .thinking-prose pre {
+  background-color: var(--tw-prose-pre-bg, rgba(0, 0, 0, 0.2));
+}
+
+
+.thinking-prose pre code {
+ /* Specific styles for code within pre blocks */
+ @apply p-0 bg-transparent text-sm;
+ color: var(--tw-prose-pre-code, inherit); /* Use variable */
+}
+/* Ensure dark mode pre code color */
+.dark .thinking-prose pre code {
+  color: var(--tw-prose-pre-code, theme('colors.gray.300'));
+}
+
+
+.thinking-prose blockquote {
+/* Specific styles for blockquotes */
+@apply pl-4 py-1 border-l-4 italic my-4;
+color: var(--tw-prose-quotes, theme('colors.gray.600'));
+border-color: var(--tw-prose-quote-borders, theme('colors.gray.300'));
+}
+/* Ensure dark mode blockquote colors */
+.dark .thinking-prose blockquote {
+color: var(--tw-prose-quotes, theme('colors.gray.400'));
+border-color: var(--tw-prose-quote-borders, theme('colors.gray.600'));
+}
+
+.thinking-prose a {
+/* Specific styles for links */
+@apply hover:underline break-words;
+color: var(--tw-prose-links, theme('colors.blue.600'));
+}
+/* Ensure dark mode link color */
+.dark .thinking-prose a {
+color: var(--tw-prose-links, theme('colors.blue.400'));
+}
+
+/* Custom Scrollbar for the content area (targeting the prefixed class) */
+.thinking-prose::-webkit-scrollbar {
+@apply w-2 h-2;
+}
+
+.thinking-prose::-webkit-scrollbar-track {
+@apply bg-gray-100 dark:bg-gray-700/50 rounded-lg;
+}
+
+.thinking-prose::-webkit-scrollbar-thumb {
+@apply bg-gray-400 dark:bg-gray-500 rounded-full hover:bg-gray-500 dark:hover:bg-gray-400 transition-colors duration-150;
+}
+
+/* Smooth scrolling behavior (applied to the prefixed class) */
+.thinking-prose {
+scroll-behavior: smooth; /* Use with caution if content updates very rapidly */
+}
+
+/* Bounce animation for thinking dots (Keyframe name doesn't need prefixing) */
+@keyframes bounce {
+0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+/* Utility class applying the animation (Tailwind class, no prefix needed) */
+.animate-bounce {
+animation: bounce 1s infinite;
 }
 
 @keyframes matrix-rain {

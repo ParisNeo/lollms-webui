@@ -42,7 +42,7 @@ methods: {
 };
 </script>
 
-<style>
+<style scoped>
 .active-tab {
 /* Style the active tab as you like */
 font-weight: bold;

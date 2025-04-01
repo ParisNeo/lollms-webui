@@ -376,7 +376,7 @@
     },
   };
   </script>
-  <style>
+  <style scoped>
   .code-container {
     display: flex;
     margin: 0; /* Remove the default margin */

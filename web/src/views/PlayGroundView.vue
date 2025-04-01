@@ -1091,7 +1091,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
   .slider-value {
       display: inline-block;
       margin-left: 10px;

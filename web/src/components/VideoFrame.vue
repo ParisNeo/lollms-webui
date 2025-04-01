@@ -89,7 +89,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .floating-frame {
   margin: 15px;
   float: left;

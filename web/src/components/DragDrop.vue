@@ -170,7 +170,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .list-move,
 /* apply transition to moving elements */
 .list-enter-active,

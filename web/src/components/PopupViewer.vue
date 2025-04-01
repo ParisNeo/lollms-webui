@@ -1,14 +1,16 @@
 <template>
   <transition name="fade">
-    <div v-if="showPopup" class="fixed inset-0 flex items-center justify-center z-50">
-      <div class="popup-container">
-        <button @click="hide" class="close-button">
-          X
+    <div v-if="showPopup" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+      <div class="relative panels-color p-6 rounded-lg shadow-xl max-w-3xl w-full mx-4">
+        <button @click="hide" class="absolute top-2 right-2 svg-button z-10" title="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
         </button>
-        <iframe :src="webpageUrl" class="iframe-content"></iframe>
-        <div class="checkbox-container">
-          <input type="checkbox" id="startup" class="styled-checkbox" v-model="this.$store.state.config.show_news_panel" @change="save_configuration">
-          <label for="startup" class="checkbox-label">Show at startup</label>
+        <iframe :src="webpageUrl" class="w-full h-[70vh] rounded-md border border-blue-300 dark:border-blue-600 bg-white dark:bg-blue-900"></iframe>
+        <div class="flex items-center mt-4">
+          <input type="checkbox" id="startup" class="rounded border-blue-300 dark:border-blue-600 text-blue-600 focus:ring-blue-500 dark:bg-blue-700 dark:focus:ring-offset-blue-800" v-model="this.$store.state.config.show_news_panel" @change="save_configuration">
+          <label for="startup" class="ml-2 label !mb-0 cursor-pointer">Show at startup</label> <!-- Use label class from theme -->
         </div>
       </div>
     </div>

@@ -1,57 +1,65 @@
 <template>
-    <div class="space-y-6 p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+    <!-- Root container: Applied soft bluish theme panel styling -->
+    <div class="user-settings-panel"> <!-- user-settings-panel defined in theme css -->
+
+        <!-- Header Section: Styled with theme colors and border -->
+        <div class="flex justify-between items-center border-b border-blue-300 dark:border-blue-600 pb-2 mb-4">
+            <!-- Using h2 style from theme -->
+            <h2 class="h2"> <!-- Applied theme h2 class -->
                 System Status
             </h2>
-            <button @click="refreshHardwareUsage" title="Refresh Status" class="p-1 text-gray-500 hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400 transition-colors duration-150">
+             <!-- Using svg-button style from theme -->
+             <button @click="refreshHardwareUsage" title="Refresh Status" class="svg-button">
                 <i data-feather="refresh-cw" class="w-4 h-4"></i>
             </button>
         </div>
 
-
         <!-- Hardware Usage Summary -->
+        <!-- Grid layout for summary items -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
             <!-- VRAM Usage -->
-             <div v-if="vramUsage && vramUsage.gpus && vramUsage.gpus.length > 0" class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+             <!-- Summary item container: Used a contrasting background -->
+             <div v-if="vramUsage && vramUsage.gpus && vramUsage.gpus.length > 0" class="flex items-center space-x-2 p-3 panels-color rounded-md shadow"> <!-- Used panels-color for background -->
                  <img :src="SVGGPU" width="25" height="25" class="flex-shrink-0" alt="GPU Icon">
                  <div v-if="vramUsage.gpus.length === 1" class="flex-1">
-                     <div class="font-medium">GPU VRAM</div>
-                     <div>{{ computedFileSize(vramUsage.gpus[0].used_vram) }} / {{ computedFileSize(vramUsage.gpus[0].total_vram) }} ({{ vramUsage.gpus[0].percentage }}%)</div>
+                     <!-- Used theme text colors -->
+                     <div class="font-medium text-blue-800 dark:text-blue-100">GPU VRAM</div>
+                     <div class="text-blue-600 dark:text-blue-300">{{ computedFileSize(vramUsage.gpus[0].used_vram) }} / {{ computedFileSize(vramUsage.gpus[0].total_vram) }} ({{ vramUsage.gpus[0].percentage }}%)</div>
                  </div>
                  <div v-else class="flex-1">
-                      <div class="font-medium">{{ vramUsage.gpus.length }}x GPUs</div>
-                      <!-- Could show average/total usage if needed -->
-                      <div class="text-xs text-gray-500 dark:text-gray-400">Total: {{ computedFileSize(totalVramUsed) }} / {{ computedFileSize(totalVram) }} ({{ avgVramPercentage }}%)</div>
+                      <div class="font-medium text-blue-800 dark:text-blue-100">{{ vramUsage.gpus.length }}x GPUs</div>
+                      <!-- Used muted theme text color -->
+                      <div class="text-xs text-blue-500 dark:text-blue-400">Total: {{ computedFileSize(totalVramUsed) }} / {{ computedFileSize(totalVram) }} ({{ avgVramPercentage }}%)</div>
                  </div>
             </div>
-             <div v-else class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400">
-                 <i data-feather="alert-circle" class="w-5 h-5"></i> <!-- Changed icon for clarity -->
+             <!-- Fallback item: Muted text and styling -->
+             <div v-else class="flex items-center space-x-2 p-3 panels-color rounded-md text-blue-500 dark:text-blue-400 shadow"> <!-- Used panels-color and muted text -->
+                 <i data-feather="alert-circle" class="w-5 h-5"></i>
                  <div class="flex-1 font-medium">No GPU Detected</div>
              </div>
 
             <!-- RAM Usage -->
-            <div v-if="ramUsage" class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                 <i data-feather="cpu" class="w-5 h-5 text-blue-500 flex-shrink-0"></i>
+            <div v-if="ramUsage" class="flex items-center space-x-2 p-3 panels-color rounded-md shadow"> <!-- Used panels-color -->
+                 <i data-feather="cpu" class="w-5 h-5 text-blue-500 dark:text-blue-400 flex-shrink-0"></i> <!-- Used theme accent color -->
                  <div class="flex-1">
-                     <div class="font-medium">CPU RAM</div>
-                     <div>{{ computedFileSize(ramUsage.ram_usage) }} / {{ computedFileSize(ramUsage.total_space) }} ({{ ramUsage.percent_usage }}%)</div>
+                     <div class="font-medium text-blue-800 dark:text-blue-100">CPU RAM</div>
+                     <div class="text-blue-600 dark:text-blue-300">{{ computedFileSize(ramUsage.ram_usage) }} / {{ computedFileSize(ramUsage.total_space) }} ({{ ramUsage.percent_usage }}%)</div>
                  </div>
             </div>
-             <div v-else class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400">
+             <div v-else class="flex items-center space-x-2 p-3 panels-color rounded-md text-blue-500 dark:text-blue-400 shadow"> <!-- Used panels-color and muted text -->
                  <i data-feather="cpu" class="w-5 h-5"></i>
                  <div class="flex-1 font-medium">RAM N/A</div>
              </div>
 
             <!-- Disk Usage -->
-            <div v-if="diskUsage" class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                 <i data-feather="hard-drive" class="w-5 h-5 text-green-500 flex-shrink-0"></i>
+            <div v-if="diskUsage" class="flex items-center space-x-2 p-3 panels-color rounded-md shadow"> <!-- Used panels-color -->
+                 <i data-feather="hard-drive" class="w-5 h-5 text-green-500 dark:text-green-400 flex-shrink-0"></i> <!-- Kept green color as per original intention -->
                  <div class="flex-1">
-                     <div class="font-medium">Disk (Models/DB)</div>
-                     <div>{{ computedFileSize(diskUsage.binding_models_usage) }} / {{ computedFileSize(diskUsage.total_space) }} ({{ diskUsage.percent_usage }}%)</div>
+                     <div class="font-medium text-blue-800 dark:text-blue-100">Disk (Models/DB)</div>
+                     <div class="text-blue-600 dark:text-blue-300">{{ computedFileSize(diskUsage.binding_models_usage) }} / {{ computedFileSize(diskUsage.total_space) }} ({{ diskUsage.percent_usage }}%)</div>
                  </div>
             </div>
-             <div v-else class="flex items-center space-x-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-md text-gray-500 dark:text-gray-400">
+             <div v-else class="flex items-center space-x-2 p-3 panels-color rounded-md text-blue-500 dark:text-blue-400 shadow"> <!-- Used panels-color and muted text -->
                   <i data-feather="hard-drive" class="w-5 h-5"></i>
                   <div class="flex-1 font-medium">Disk N/A</div>
              </div>
@@ -60,114 +68,123 @@
         <!-- Detailed Hardware Usage -->
         <div class="space-y-4">
             <!-- RAM Details -->
-             <div v-if="ramUsage" class="p-4 border border-gray-200 dark:border-gray-600 rounded-md">
-                <label class=" flex items-center gap-1 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                     <i data-feather="cpu" class="w-4 h-4 text-blue-500"></i>
+             <!-- Detail card: Applied theme border and background -->
+             <div v-if="ramUsage" class="p-4 border border-blue-300 dark:border-blue-600 rounded-md chatbox-color"> <!-- Used chatbox-color for background -->
+                <!-- Label: Using 'label' class styling, theme accent for icon -->
+                <label class="label flex items-center gap-1 mb-2"> <!-- Applied theme label class -->
+                     <i data-feather="cpu" class="w-4 h-4 text-blue-500 dark:text-blue-400"></i>
                      CPU RAM Usage Details
                  </label>
-                 <div class="text-xs space-y-1 mb-2 text-gray-600 dark:text-gray-400">
+                 <!-- Detail text: Secondary/muted theme text -->
+                 <div class="text-xs space-y-1 mb-2 text-blue-600 dark:text-blue-300">
                      <div><b>Available: </b>{{ computedFileSize(ramUsage.available_space) }}</div>
                      <div><b>Usage: </b> {{ computedFileSize(ramUsage.ram_usage) }} / {{ computedFileSize(ramUsage.total_space) }} ({{ ramUsage.percent_usage }}%)</div>
                  </div>
-                 <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600">
-                     <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" :style="{ width: ramUsage.percent_usage + '%' }"></div>
+                 <!-- Progress Bar: Use animated theme background and foreground classes -->
+                 <div class="animated-progressbar-bg h-2.5">
+                     <div class="animated-progressbar-fg h-2.5 rounded-full" :style="{ width: ramUsage.percent_usage + '%' }"></div>
                  </div>
              </div>
 
             <!-- Disk Details -->
-             <div v-if="diskUsage" class="p-4 border border-gray-200 dark:border-gray-600 rounded-md">
-                <label class="flex items-center gap-1 mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                     <i data-feather="hard-drive" class="w-4 h-4 text-green-500"></i>
+             <div v-if="diskUsage" class="p-4 border border-blue-300 dark:border-blue-600 rounded-md chatbox-color"> <!-- Used chatbox-color -->
+                <label class="label flex items-center gap-1 mb-2"> <!-- Applied theme label class -->
+                     <i data-feather="hard-drive" class="w-4 h-4 text-green-500 dark:text-green-400"></i> <!-- Kept green -->
                      Disk Usage Details
                  </label>
-                 <div class="text-xs space-y-1 mb-2 text-gray-600 dark:text-gray-400">
+                 <div class="text-xs space-y-1 mb-2 text-blue-600 dark:text-blue-300">
                      <div><b>Available: </b>{{ computedFileSize(diskUsage.available_space) }}</div>
                      <div><b>Usage (Models/DB): </b> {{ computedFileSize(diskUsage.binding_models_usage) }} / {{ computedFileSize(diskUsage.total_space) }} ({{ diskUsage.percent_usage }}%)</div>
                  </div>
-                 <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600">
-                     <div class="bg-green-600 h-2.5 rounded-full transition-all duration-300" :style="{ width: diskUsage.percent_usage + '%' }"></div>
+                 <div class="animated-progressbar-bg h-2.5">
+                     <div class="animated-progressbar-fg h-2.5 rounded-full" :style="{ width: diskUsage.percent_usage + '%' }"></div>
                  </div>
              </div>
 
             <!-- GPU Details -->
             <div v-if="vramUsage && vramUsage.gpus && vramUsage.gpus.length > 0">
-                 <div v-for="(item, index) in vramUsage.gpus" :key="index" class="p-4 border border-gray-200 dark:border-gray-600 rounded-md mb-4">
-                    <label class="flex items-center gap-1 mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                 <div v-for="(item, index) in vramUsage.gpus" :key="index" class="p-4 border border-blue-300 dark:border-blue-600 rounded-md mb-4 chatbox-color"> <!-- Used chatbox-color -->
+                    <label class="label flex items-center gap-1 mb-2"> <!-- Applied theme label class -->
                         <img :src="SVGGPU" width="20" height="20" class="flex-shrink-0" alt="GPU Icon">
-                        GPU {{ index + 1 }} Usage Details <!-- Added +1 for better numbering -->
+                        GPU {{ index + 1 }} Usage Details
                     </label>
-                    <div class="text-xs space-y-1 mb-2 text-gray-600 dark:text-gray-400">
+                    <div class="text-xs space-y-1 mb-2 text-blue-600 dark:text-blue-300">
                         <div><b>Model: </b>{{ item.gpu_model }}</div>
                         <div><b>Available VRAM: </b>{{ computedFileSize(item.available_space) }}</div>
                         <div><b>Usage: </b> {{ computedFileSize(item.used_vram) }} / {{ computedFileSize(item.total_vram) }} ({{ item.percentage }}%)</div>
                     </div>
-                     <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-600">
-                         <div class="bg-purple-600 h-2.5 rounded-full transition-all duration-300" :style="{ width: item.percentage + '%' }"></div>
+                     <div class="animated-progressbar-bg h-2.5">
+                         <div class="animated-progressbar-fg h-2.5 rounded-full" :style="{ width: item.percentage + '%' }"></div>
                      </div>
                  </div>
             </div>
-             <div v-else class="p-4 border border-dashed border-gray-300 dark:border-gray-600 rounded-md text-center text-gray-500 dark:text-gray-400">
+             <!-- Fallback: Use theme border and muted text -->
+             <div v-else class="p-4 border border-dashed border-blue-300 dark:border-blue-600 rounded-md text-center text-blue-500 dark:text-blue-400 chatbox-color"> <!-- Used chatbox-color -->
                  No GPU detected or VRAM information unavailable.
              </div>
         </div>
 
         <!-- Folders Section -->
-        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">Common Folders</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <!-- Separator: Use theme border -->
+        <div class="pt-4 border-t border-blue-300 dark:border-blue-600">
+             <!-- Using h3 style from theme -->
+             <h3 class="h3">Common Folders</h3> <!-- Applied theme h3 class -->
+             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <!-- Using dedicated folder item classes from the theme -->
                 <!-- Custom Personalities Folder -->
                 <div
-                    class="folder-button group border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    class="folder-item-base folder-item-personalities group"
                     @click="handleFolderClick('custom-personalities')"
                     title="Open Custom Personalities folder"
                 >
-                    <i data-feather="users" class="w-10 h-10 text-blue-500 group-hover:scale-110 transition-transform duration-200"></i>
-                    <span class="mt-2 text-xs text-center text-gray-700 dark:text-gray-300">Custom Personalities</span>
+                    <i data-feather="users" class="folder-item-icon folder-item-icon-personalities"></i> <!-- Applied icon classes -->
+                    <span class="folder-item-label">Custom Personalities</span> <!-- Applied label class -->
                 </div>
 
                 <!-- Custom Function Calls Folder -->
                 <div
-                    class="folder-button group border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20"
+                    class="folder-item-base folder-item-functions group"
                     @click="handleFolderClick('custom-function-calls')"
                      title="Open Custom Function Calls folder"
                >
-                    <i data-feather="tool" class="w-10 h-10 text-green-500 group-hover:scale-110 transition-transform duration-200"></i>
-                    <span class="mt-2 text-xs text-center text-gray-700 dark:text-gray-300">Custom Functions</span>
+                     <i data-feather="tool" class="folder-item-icon folder-item-icon-functions"></i> <!-- Applied icon classes -->
+                    <span class="folder-item-label">Custom Functions</span> <!-- Applied label class -->
                 </div>
 
                 <!-- Configurations Folder -->
                  <div
-                    class="folder-button group border-yellow-500 hover:bg-yellow-50 dark:hover:bg-yellow-900/20"
+                    class="folder-item-base folder-item-configs group"
                     @click="handleFolderClick('configurations')"
                      title="Open Configurations folder"
                >
-                     <i data-feather="settings" class="w-10 h-10 text-yellow-500 group-hover:scale-110 transition-transform duration-200"></i>
-                     <span class="mt-2 text-xs text-center text-gray-700 dark:text-gray-300">Configurations</span>
+                      <i data-feather="settings" class="folder-item-icon folder-item-icon-configs"></i> <!-- Applied icon classes -->
+                     <span class="folder-item-label">Configurations</span> <!-- Applied label class -->
                  </div>
 
                 <!-- AI Outputs Folder -->
                  <div
-                    class="folder-button group border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                    class="folder-item-base folder-item-outputs group"
                     @click="handleFolderClick('ai-outputs')"
                      title="Open AI Outputs folder"
                >
-                     <i data-feather="gift" class="w-10 h-10 text-purple-500 group-hover:scale-110 transition-transform duration-200"></i>
-                     <span class="mt-2 text-xs text-center text-gray-700 dark:text-gray-300">AI Outputs</span>
+                      <i data-feather="gift" class="folder-item-icon folder-item-icon-outputs"></i> <!-- Applied icon classes -->
+                     <span class="folder-item-label">AI Outputs</span> <!-- Applied label class -->
                  </div>
 
                 <!-- Discussions Folder -->
                  <div
-                    class="folder-button group border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    class="folder-item-base folder-item-discussions group"
                     @click="handleFolderClick('discussions')"
                      title="Open Discussions folder"
                >
-                     <i data-feather="message-square" class="w-10 h-10 text-red-500 group-hover:scale-110 transition-transform duration-200"></i>
-                     <span class="mt-2 text-xs text-center text-gray-700 dark:text-gray-300">Discussions</span>
+                     <i data-feather="message-square" class="folder-item-icon folder-item-icon-discussions"></i> <!-- Applied icon classes -->
+                    <span class="folder-item-label">Discussions</span> <!-- Applied label class -->
                  </div>
             </div>
         </div>
     </div>
 </template>
+
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, onUpdated, nextTick } from 'vue';

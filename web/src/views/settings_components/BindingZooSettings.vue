@@ -1,29 +1,29 @@
 <template>
-    <div class="space-y-6 p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
+    <div class="user-settings-panel space-y-6 p-4 md:p-6">
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 dark:border-gray-700 pb-3 mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2 sm:mb-0">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-blue-300 dark:border-blue-600 pb-3 mb-4">
+            <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-200 mb-2 sm:mb-0"> <!-- Changed h2 styling, kept font size -->
                 Binding Zoo
             </h2>
             <!-- Current Binding Display -->
             <!-- Use props.config directly -->
-            <div v-if="currentBindingInfo" class="flex items-center gap-2 text-sm font-medium p-2 bg-primary-light dark:bg-primary-dark/20 rounded-md border border-primary-dark/30">
+            <div v-if="currentBindingInfo" class="flex items-center gap-2 text-sm font-medium p-2 bg-blue-200 dark:bg-blue-800 rounded-md border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-200">
                 <img :src="getIconPath(currentBindingInfo.icon)" @error="imgPlaceholder" class="w-6 h-6 rounded-full object-cover flex-shrink-0" alt="Current Binding Icon">
                 <span>Active: <span class="font-semibold">{{ currentBindingInfo.name }}</span></span>
 
-                <button @click="handleSettings($store.state.config.binding_name)" :disabled="isLoadingAction || loading" class="ml-2 p-1 rounded-full hover:bg-primary-dark/20 focus:outline-none focus:ring-2 focus:ring-primary-dark/50 disabled:opacity-50 disabled:cursor-not-allowed" title="Configure Active Binding">
+                <button @click="handleSettings($store.state.config.binding_name)" :disabled="isLoadingAction || loading" class="svg-button ml-2 disabled:opacity-50 disabled:cursor-not-allowed" title="Configure Active Binding">
                     <i data-feather="settings" class="w-4 h-4"></i>
                 </button>
-                 <button @click="handleReload($store.state.config.binding_name)" :disabled="isLoadingAction || loading" class="ml-1 p-1 rounded-full hover:bg-primary-dark/20 focus:outline-none focus:ring-2 focus:ring-primary-dark/50 disabled:opacity-50 disabled:cursor-not-allowed" title="Reload Active Binding">
+                 <button @click="handleReload($store.state.config.binding_name)" :disabled="isLoadingAction || loading" class="svg-button ml-1 disabled:opacity-50 disabled:cursor-not-allowed" title="Reload Active Binding">
                     <i data-feather="refresh-cw" class="w-4 h-4"></i>
                 </button>
             </div>
-            <div v-else class="text-sm font-medium text-red-600 dark:text-red-400 p-2 bg-red-50 dark:bg-red-900/20 rounded-md border border-red-300 dark:border-red-600">
+            <div v-else class="text-sm font-medium text-red-600 dark:text-red-400 p-2 bg-red-100 dark:bg-red-900/30 rounded-md border border-red-300 dark:border-red-600"> <!-- Adjusted red colors slightly -->
                 No binding selected!
             </div>
         </div>
 
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="text-sm text-blue-600 dark:text-blue-400"> <!-- Use theme paragraph styling, adjusted size -->
             Bindings are the engines that run the AI models. Select an installed binding to enable model selection and generation.
         </p>
 
@@ -32,13 +32,13 @@
             <!-- Search Input -->
             <div class="relative flex-grow">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i data-feather="search" class="w-5 h-5 text-gray-400"></i>
+                    <i data-feather="search" class="w-5 h-5 text-blue-400 dark:text-blue-500"></i> <!-- Adjusted icon color -->
                 </div>
                 <input
                     type="search"
                     v-model="searchTerm"
                     placeholder="Search bindings by name or author..."
-                    class="input-field pl-10 w-full"
+                    class="search-input pl-10 w-full" 
                     aria-label="Search bindings"
                     :disabled="isLoadingBindings || loading"
                 />
@@ -46,7 +46,7 @@
             <!-- Sort Select -->
             <div class="flex-shrink-0">
                  <label for="binding-sort" class="sr-only">Sort bindings by</label>
-                 <select id="binding-sort" v-model="sortOption" class="input-field" aria-label="Sort bindings by" :disabled="isLoadingBindings || loading">
+                 <select id="binding-sort" v-model="sortOption" class="input w-full sm:w-auto" aria-label="Sort bindings by" :disabled="isLoadingBindings || loading"> <!-- Use input class -->
                      <option value="name">Sort by Name</option>
                      <option value="author">Sort by Author</option>
                      <option value="status">Sort by Status</option>
@@ -57,26 +57,29 @@
         <!-- Bindings Grid -->
         <div v-if="isLoadingBindings" class="flex justify-center items-center p-10">
              <!-- Spinner SVG -->
-             <svg aria-hidden="true" role="status" class="w-8 h-8 text-gray-300 animate-spin dark:text-gray-600 fill-primary" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/> <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/> </svg>
-            <span class="ml-2 text-gray-500 dark:text-gray-400">Loading bindings...</span>
+             <svg aria-hidden="true" role="status" class="w-8 h-8 text-blue-300 animate-spin dark:text-blue-600 fill-blue-600 dark:fill-blue-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"> <!-- Adjusted spinner colors -->
+                 <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                 <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+             </svg>
+            <span class="ml-2 text-loading">Loading bindings...</span> <!-- Use text-loading class -->
         </div>
-        <div v-else-if="sortedBindings.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-10">
+        <div v-else-if="sortedBindings.length === 0" class="text-center text-blue-500 dark:text-blue-400 py-10"> <!-- Adjusted text color -->
             No bindings found{{ searchTerm ? ' matching "' + searchTerm + '"' : '' }}.
         </div>
         <!-- Grid rendering -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 scrollbar"> <!-- Added scrollbar class for potential overflow -->
             <BindingEntry
-                v-for="binding_item in sortedBindings"  
-                :key="binding_item.folder"              
-                :binding="binding_item"               
-                :selected="config?.binding_name === binding_item.folder" 
-                :is-processing="binding_item.isProcessing" 
-                @select="handleSelect"        
-                @install="handleInstall"       
-                @uninstall="handleUninstall"   
-                @reinstall="handleReinstall"   
-                @settings="handleSettingsFromEntry" 
-                @reload-binding="handleReloadFromEntry" 
+                v-for="binding_item in bindingsToDisplay"
+                :key="binding_item.folder"
+                :binding="binding_item"
+                :selected="isBindingSelected(binding_item)"
+                :is-processing="binding_item.isProcessing"
+                @select="handleSelect"
+                @install="handleInstall"
+                @uninstall="handleUninstall"
+                @reinstall="handleReinstall"
+                @settings="handleSettingsFromEntry"
+                @reload-binding="handleReloadFromEntry"
             />
         </div>
          <!-- Save/Cancel Footer REMOVED - Parent handles this -->
@@ -88,6 +91,8 @@ import { nextTick } from 'vue';
 import feather from 'feather-icons';
 import BindingEntry from '@/components/BindingEntry.vue'; // Ensure this path is correct
 import defaultBindingIcon from "@/assets/default_binding.png"; // Ensure this path is correct
+
+import { mapState } from 'vuex'; // Example using Vuex
 
 export default {
     name: 'BindingZooSettings', // Changed name to avoid conflict if used elsewhere
@@ -106,7 +111,7 @@ export default {
         client_id: { type: String, required: true },
         show_universal_form: { type: Function, required: true },
     },
-    emits: ['update:setting', 'settings-changed'], // Declare emitted events
+    emits: ['settings-changed'], // Declare emitted events
 
     data() {
         return {
@@ -119,6 +124,18 @@ export default {
     },
 
     computed: {
+        ...mapState({
+        // Assumes your bindings are in the store like this
+        allBindings: state => state.bindingsZoo || [],
+        // Assumes selected binding name is stored like this
+        selectedBindingName: state => state.config.binding_name,
+        // Assumes you have a way to track processing state per binding
+        processingBindings: state => state.processingBindingFolders || {} // e.g., { 'binding-folder': true }
+        }),        
+        // Use sortedBindings for display
+        bindingsToDisplay() {
+            return this.sortedBindings;
+        },
         currentBindingInfo() {
             // Use prop config
             if (!this.$store.state.config || !this.$store.state.config.binding_name || this.bindings.length === 0) {
@@ -146,6 +163,12 @@ export default {
 
             // Sort
             filtered.sort((a, b) => {
+                const isASelected = a.folder === this.selectedBindingName;
+                const isBSelected = b.folder === this.selectedBindingName;
+
+                // Rule 1: Selected binding comes first
+                if (isASelected && !isBSelected) return -1;
+                if (!isASelected && isBSelected) return 1;                
                 switch (this.sortOption) {
                     case 'status':
                         if (a.installed && !b.installed) return -1;
@@ -164,6 +187,12 @@ export default {
     },
 
     methods: {
+        isBindingSelected(binding) {
+            return binding.folder === this.selectedBindingName;
+        },
+        isBindingProcessing(binding) {
+            return !!this.processingBindings[binding.folder];
+        },        
         // Helper to construct full icon path
         getIconPath(iconRelativePath) {
             console.log(`iconRelativePath: ${iconRelativePath}`)
@@ -234,7 +263,7 @@ export default {
             }
         },
 
-        handleSelect(binding) {
+        async handleSelect(binding) {
             console.log("received selection of binding")
             console.log(binding)
             if (!binding || !binding.folder) {
@@ -247,9 +276,12 @@ export default {
                 return;
             }
             // Use prop config
-            if (this.$store.state.config.binding_name !== binding.name) {
-                this.$store.state.config.binding_name = binding.name
+            if (this.$store.state.config.binding_name !== binding.folder) {
+                this.$store.state.config.binding_name = binding.folder
                 this.$store.state.config.model_name = null
+                await this.$store.dispatch('refreshModelsZoo');
+                await this.$store.dispatch('refreshModels');
+
                 // Emit events for parent to handle state update
                 this.$emit('settings-changed', true); // Inform parent about the change
                 this.show_toast(`Selected binding: ${binding.name}`, 3, true);
@@ -367,6 +399,8 @@ export default {
         },
 
         async handleSettings(bindingFolder) {
+            console.log("Handling settings from")
+            console.log(bindingFolder)
              if (!bindingFolder) {
                 this.show_toast("No binding specified.", 3, false);
                 return;

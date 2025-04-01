@@ -1,13 +1,12 @@
-// src/components/settings_components/MainConfigSettings.vue
 <template>
-    <div class="space-y-6 p-4 md:p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">
+    <div class="user-settings-panel space-y-6">
+        <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-100 border-b border-blue-300 dark:border-blue-600 pb-2">
             Main Configuration
         </h2>
 
         <!-- Application Branding Section -->
-        <div class="space-y-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
-            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Application Branding</h3>
+        <div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
+            <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Application Branding</h3>
 
             <!-- App Name -->
             <div class="setting-item">
@@ -17,7 +16,7 @@
                     id="app_custom_name"
                     :value="$store.state.config.app_custom_name"
                     @input="updateValue('app_custom_name', $event.target.value)"
-                    class="input-field"
+                    class="input flex-grow"
                     placeholder="Default: LoLLMs"
                 >
             </div>
@@ -30,7 +29,7 @@
                     id="app_custom_slogan"
                     :value="$store.state.config.app_custom_slogan"
                     @input="updateValue('app_custom_slogan', $event.target.value)"
-                    class="input-field"
+                    class="input flex-grow"
                     placeholder="Default: Lord of Large Language Models"
                 >
             </div>
@@ -39,23 +38,23 @@
             <div class="setting-item items-start">
                 <label class="setting-label pt-2">Application Logo</label>
                 <div class="flex-1 flex items-center gap-4">
-                     <div class="w-12 h-12 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 ring-2 ring-offset-2 dark:ring-offset-gray-800 ring-gray-300 dark:ring-gray-600">
+                     <div class="w-12 h-12 rounded-full overflow-hidden bg-blue-200 dark:bg-blue-700 ring-2 ring-offset-2 dark:ring-offset-blue-900 ring-blue-300 dark:ring-blue-600">
                          <img :src="logoSrc" class="w-full h-full object-cover" alt="App Logo">
                      </div>
                     <div class="flex gap-2">
-                        <label class="button-primary text-sm cursor-pointer">
+                        <label class="btn btn-secondary btn-sm cursor-pointer">
                             Upload Logo
                             <input type="file" @change="uploadLogo" accept="image/*" class="hidden" :disabled="isUploadingLogo">
                         </label>
                          <button
                             v-if="$store.state.config.app_custom_logo"
                             @click="removeLogo"
-                            class="button-danger text-sm"
+                            class="btn btn-secondary btn-sm text-red-500 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-700"
                             :disabled="isUploadingLogo">
                             Remove Logo
                         </button>
                     </div>
-                     <span v-if="isUploadingLogo" class="text-xs text-gray-500 dark:text-gray-400 italic ml-2">Uploading...</span>
+                     <span v-if="isUploadingLogo" class="text-xs text-blue-500 dark:text-blue-400 italic ml-2">Uploading...</span>
                 </div>
             </div>
 
@@ -66,15 +65,15 @@
                     id="app_custom_welcome_message"
                     :value="$store.state.config.app_custom_welcome_message"
                     @input="updateValue('app_custom_welcome_message', $event.target.value)"
-                    class="input-field min-h-[80px] resize-y"
+                    class="input flex-grow min-h-[80px] resize-y"
                     placeholder="Enter a custom welcome message shown on the main page (leave blank for default)."
                  ></textarea>
              </div>
         </div>
 
         <!-- UI Behavior Section -->
-         <div class="space-y-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
-            <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">UI & Behavior</h3>
+         <div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
+            <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">UI & Behavior</h3>
 
             <!-- Auto Title -->
             <div class="toggle-item">
@@ -123,17 +122,18 @@
         </div>
 
         <!-- Server & Access Section -->
-        <div class="space-y-4 p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
-             <h3 class="text-lg font-medium text-gray-700 dark:text-gray-300 mb-3">Server & Access</h3>
+        <div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
+             <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Server & Access</h3>
 
             <!-- Remote Access Warning & Toggle -->
-             <div class="setting-item items-start p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700">
+             <div class="setting-item items-start p-4 bg-red-100 dark:bg-red-900/30 rounded-lg border border-red-300 dark:border-red-700">
                 <div class="flex justify-between items-start w-full">
                     <label for="force_accept_remote_access" class="flex-1 mr-4">
                         <span class="font-bold text-sm text-red-700 dark:text-red-400 flex items-center gap-2">
-                             <i data-feather="alert-triangle" class="w-5 h-5"></i> Enable Remote Access (Security Risk)
+                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 feather feather-alert-triangle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                             Enable Remote Access (Security Risk)
                          </span>
-                         <p class="mt-2 text-xs text-red-600 dark:text-red-400/90">
+                         <p class="mt-2 text-xs text-red-600 dark:text-red-500/90">
                              <strong>Warning:</strong> Enabling this allows connections from any device on your network (or potentially the internet if port-forwarded).
                              <strong class="block mt-1">Only enable if you understand the risks and have secured your network.</strong>
                          </p>

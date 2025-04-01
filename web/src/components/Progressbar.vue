@@ -15,7 +15,7 @@
   };
   </script>
   
-  <style>
+  <style scoped>
   .progress-bar-container {
     background-color: #f0f0f0;
     border-radius: 4px;

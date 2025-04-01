@@ -1,30 +1,40 @@
 <template>
-  <div v-if="showChangelogPopup"
-       class="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-200"
-       :class="{ 'opacity-0': !showChangelogPopup, 'opacity-100': showChangelogPopup }">
-    <div class="bg-white rounded-lg w-[95%] max-w-4xl max-h-[90vh] flex flex-col shadow-lg transform transition-opacity duration-200"
-         :class="{ 'opacity-0': !showChangelogPopup, 'opacity-100': showChangelogPopup }">
-      <!-- Header -->
-      <div class="changelog-header">
-        <h2 class="header-title">What's New</h2>
-        <button class="close-btn" @click="closePopup" aria-label="Close Changelog">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+  <transition name="fade">
+    <div v-if="showChangelogPopup"
+         class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] transition-opacity duration-300"
+         :class="{ 'opacity-0 pointer-events-none': !showChangelogPopup, 'opacity-100': showChangelogPopup }">
 
-      <!-- Content -->
-      <div class="changelog-content" v-html="parsedChangelogContent"></div>
+      <div class="panels-color rounded-lg w-[95%] max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden transform transition-all duration-300 ease-out border border-blue-300 dark:border-blue-600"
+           :class="{ 'opacity-0 scale-95': !showChangelogPopup, 'opacity-100 scale-100': showChangelogPopup }">
 
-      <!-- Footer -->
-      <div class="changelog-footer">
-        <button class="action-btn" @click="handleUnderstand">
-          Got it
-        </button>
+        <!-- Header -->
+        <div class="flex justify-between items-center p-4 px-6 border-b border-blue-300 dark:border-blue-600 flex-shrink-0 unicolor-panels-color"> 
+          <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-100">What's New</h2>
+          <button class="svg-button" @click="closePopup" aria-label="Close Changelog">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <!-- Added scrollbar class from theme and slightly more padding -->
+        <div class="p-6 md:p-8 flex-grow overflow-y-auto scrollbar text-blue-900 dark:text-blue-200">
+             <!-- Apply prose classes if Tailwind Typography plugin is used for better markdown styling -->
+             <!-- Or ensure h*, p, ul, ol, li, code, blockquote styles from the theme are sufficient -->
+            <div class="prose prose-blue dark:prose-invert max-w-none" v-html="parsedChangelogContent">
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end p-4 px-6 border-t border-blue-300 dark:border-blue-600 flex-shrink-0 unicolor-panels-color"> <!-- Used unicolor for footer bg -->
+          <button class="btn btn-primary" @click="handleUnderstand">
+            Got it
+          </button>
+        </div>
       </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>

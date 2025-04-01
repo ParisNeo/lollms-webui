@@ -163,7 +163,7 @@
   };
   </script>
   
-  <style>
+  <style scoped>
   #webglContainer {
     top: 0;
     left: 0;

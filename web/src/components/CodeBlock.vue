@@ -1386,7 +1386,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 /* Base button styles */
 .code-block-button { @apply p-1 rounded text-gray-600 dark:text-gray-300 hover:bg-primary dark:hover:bg-primary hover:text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-gray-600 dark:disabled:hover:text-gray-300; }
 .feather-small { @apply w-3 h-3 inline-block align-middle; } /* For small icons like in function call header */

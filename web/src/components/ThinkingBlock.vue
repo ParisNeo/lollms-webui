@@ -56,7 +56,7 @@
       <div v-show="isOpen" class="content-wrapper" :id="contentId">
         <div
           ref="contentContainer"
-          class="p-4 text-gray-700 dark:text-gray-300 prose prose-sm dark:prose-invert max-w-none overflow-y-auto max-h-[400px] bg-gray-50 dark:bg-gray-800/50"
+          class="p-4 text-gray-700 dark:text-gray-300 thinking-prose prose-sm max-w-none overflow-y-auto max-h-[400px] bg-gray-50 dark:bg-gray-800/50"
         >
           <!-- Slot for potential custom rendering -->
           <slot v-if="$slots.default"></slot>
@@ -139,16 +139,7 @@ export default {
 
     const scrollToBottom = () => {
       if (contentContainer.value) {
-        // Smooth scroll if the content isn't changing too rapidly,
-        // otherwise jump scroll might feel better during rapid streaming.
-        // Add a check to see if user scrolled up manually? (more complex)
         contentContainer.value.scrollTop = contentContainer.value.scrollHeight;
-        // Alternatively for smooth scroll:
-        // contentContainer.value.scrollTo({
-        //   top: contentContainer.value.scrollHeight,
-        //   behavior: 'smooth'
-        // });
-        // Be cautious with smooth scroll during rapid updates, can be jittery.
       }
     };
 
@@ -167,18 +158,12 @@ export default {
     // Watch for content changes to scroll down, especially when open
     watch(() => props.content, () => {
       if (isOpen.value) {
-        // Use nextTick to ensure the DOM has updated with new content
         nextTick(scrollToBottom);
       }
     });
 
-    // Watch for `isDone` changing to potentially open the block automatically
+    // Watch for `isDone` changing
     watch(() => props.isDone, (newValue) => {
-        if(newValue && !isOpen.value && !props.startOpen) {
-            // Optionally automatically open when done if it wasn't open already
-            // You might want to make this behavior configurable via a prop
-            // isOpen.value = true;
-        }
         // Ensure scroll happens if it finishes while open
         if (newValue && isOpen.value) {
              nextTick(scrollToBottom);
@@ -200,97 +185,7 @@ export default {
       contentId,
       toggle,
       downloadMarkdown,
-      // No need to expose scrollToBottom publicly
     };
   }
 }
 </script>
-
-<style>
-/* Enhance Tailwind Prose for better visuals */
-.prose {
-    /* Reset base color inherited from parent if needed */
-    /* color: inherit; */
-}
-
-.dark .dark\:prose-invert {
-    /* Ensure headings, links etc contrast well in dark mode */
-    --tw-prose-headings: theme('colors.gray.100');
-    --tw-prose-links: theme('colors.blue.400');
-    --tw-prose-code: theme('colors.gray.300');
-    --tw-prose-pre-code: theme('colors.gray.300');
-    --tw-prose-pre-bg: rgba(0, 0, 0, 0.2); /* Slightly darker/transparent pre background */
-     --tw-prose-quotes: theme('colors.gray.400');
-    --tw-prose-quote-borders: theme('colors.gray.600');
-}
-
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-  @apply mt-5 mb-2 font-semibold;
-}
-.prose h1 { @apply text-xl; }
-.prose h2 { @apply text-lg; }
-.prose h3 { @apply text-base; }
-
-.prose p {
-  @apply my-3 leading-relaxed;
-}
-
-.prose ul, .prose ol {
-  @apply my-3 pl-6;
-}
-
-.prose li > p {
-    @apply my-1; /* Reduce margin for paragraphs inside list items */
-}
-
-.prose code:not(pre code) {
-  @apply px-1 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-sm font-mono before:content-none after:content-none;
-}
-
-.prose pre {
-  @apply bg-gray-100 dark:bg-gray-900/50 p-4 rounded-lg overflow-x-auto my-4 shadow-inner;
-}
-
-.prose pre code {
-   @apply p-0 bg-transparent text-sm; /* Reset code styles within pre */
-}
-
-.prose blockquote {
-  @apply pl-4 py-1 border-l-4 border-gray-300 dark:border-gray-600 italic my-4 text-gray-600 dark:text-gray-400;
-}
-
-.prose a {
-  @apply text-blue-600 dark:text-blue-400 hover:underline break-words;
-}
-
-/* Custom Scrollbar for the content area */
-.prose::-webkit-scrollbar {
-  @apply w-2 h-2;
-}
-
-.prose::-webkit-scrollbar-track {
-  @apply bg-gray-100 dark:bg-gray-700/50 rounded-lg;
-}
-
-.prose::-webkit-scrollbar-thumb {
-  @apply bg-gray-400 dark:bg-gray-500 rounded-full hover:bg-gray-500 dark:hover:bg-gray-400 transition-colors duration-150;
-}
-
-/* Smooth scrolling behavior */
-.prose {
-  scroll-behavior: smooth; /* Use with caution if content updates very rapidly */
-}
-
-/* Bounce animation for thinking dots */
-@keyframes bounce {
-  0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
-  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
-}
-.animate-bounce {
-  animation: bounce 1s infinite;
-}
-
-/* Pulse animation for cursor */
-/* Tailwind already provides animate-pulse */
-
-</style>

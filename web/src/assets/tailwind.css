@@ -5,6 +5,14 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --lollms-title: L🐠llMS;
+  --falling-object: "";
+  --activate-dropping-animation: 0;
+  --lollms-welcome-short-message: Welcome to LoLLMS;
+  --lollms-welcome-message: Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.;
+}
+
 @layer base {
   html {
     @apply scroll-smooth;
@@ -55,28 +63,6 @@ p {
   }
 }
 
-table {
-  @apply 
-    border-collapse 
-    border 
-    border-gray-300 
-    dark:border-gray-700;
-}
-
-th, td {
-  @apply 
-    border 
-    border-gray-700 
-    dark:border-gray-300 
-    p-2;
-}
-
-/* Optional: Add hover effect for better interaction */
-tr:hover {
-  @apply 
-    bg-gray-50 
-    dark:bg-gray-800;
-}
 
 /* Base list styling */
 ul, ol {
@@ -166,6 +152,10 @@ textarea, input, select {
   @apply bg-blue-200 dark:bg-blue-700;
 }
 
+.chatbox-color {
+  @apply bg-blue-50 dark:bg-blue-800;
+}
+
 .message {
   @apply relative w-full m-2 shadow-lg rounded-lg border border-blue-300 dark:border-blue-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
   @apply bg-blue-100 text-blue-900 dark:bg-gradient-to-br dark:from-blue-900 dark:to-blue-800 dark:text-blue-100; /* Added gradient for dark mode */
@@ -196,7 +186,7 @@ body {
 }
 
 .discussion {
-  @apply mr-2 text-xs hover:bg-blue-300;
+  @apply mr-2 text-xs;
 }
 
 .discussion-hilighted {
@@ -267,15 +257,6 @@ body {
   text-shadow: 1px 1px 0px #e0e0e0, -1px -1px 0px #e0e0e0, 1px -1px 0px #e0e0e0, -1px 1px 0px #e0e0e0;
 }
 
-
-.animated-progressbar-bg {
-  @apply w-full h-10 relative overflow-hidden bg-gradient-to-r from-blue-950 to-blue-900 dark:from-black dark:to-blue-950 rounded-sm shadow-[0_0_15px_rgba(245,158,11,0.2)]
-}
-
-.animated-progressbar-fg {
-  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-blue-400 dark:from-blue-400 dark:to-blue-500 transition-all duration-300
-}
-
 .menu-item {
   @apply mb-2 px-4 py-2 text-blue-600 dark:text-blue-300 font-bold text-lg transition-all duration-300 ease-in-out;
   @apply hover:text-blue-800 hover:dark:text-blue-200 hover:transform hover:-translate-y-1;
@@ -320,7 +301,7 @@ body {
 }
 
 .app-card {
-  @apply transition-all duration-300 ease-in-out bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 shadow-md hover:shadow-lg;
+  @apply transition-all duration-300 ease-in-out bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 border rounded-xl shadow-lg p-6 hover:shadow-xl ;
 }
 
 .app-card:hover {
@@ -380,47 +361,17 @@ button:hover {
   @apply scrollbar-thin scrollbar-track-blue-200 scrollbar-thumb-blue-400 hover:scrollbar-thumb-blue-500 dark:scrollbar-track-blue-700 dark:scrollbar-thumb-blue-600 dark:hover:scrollbar-thumb-blue-500;
 }
 
-.card-title {
-  @apply text-xl font-bold text-blue-800 dark:text-blue-100 mb-2;
-}
 
-.card-content {
-  @apply text-blue-600 dark:text-blue-300;
+.animated-progressbar-bg{
+  @apply w-full h-5 relative overflow-hidden bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-800 dark:to-purple-800 rounded-full shadow-lg
 }
-
-.card-footer {
-  @apply mt-4 flex justify-between items-center;
+.animated-progressbar-fg{
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-600 dark:to-purple-600 transition-all duration-300
 }
-
-.card-footer-button {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
-}
-
-.subcard {
-  @apply bg-blue-50 dark:bg-blue-800 rounded-lg shadow-md p-4;
-}
-
-.subcard-title {
-  @apply text-lg font-bold text-blue-800 dark:text-blue-100 mb-2;
-}
-
-.subcard-content {
-  @apply text-blue-600 dark:text-blue-300;
-}
-
-.subcard-footer {
-  @apply mt-4 flex justify-between items-center;
-}
-
-.subcard-footer-button {
-  @apply bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded;
-}
-
 
 .discussion-toolbox{
   @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
 }
-
 .lollms-title-style{
   text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
   2px 2px 0px white, 
@@ -433,10 +384,11 @@ background-clip: text;
 }
 
 .chat-bar {
-  @apply relative text-green-400 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-green-700;
+  @apply relative text-blue-700 dark:text-blue-300 grow flex cursor-pointer select-none items-center gap-2 bg-blue-100 dark:bg-blue-900 p-1 shadow-sm hover:shadow-none dark:border-purple-300;
   height: 50px;
   transition: all 0.3s ease;
 }
+
 
 .chat-bar:hover {
   box-shadow: 0 4px 6px -1px rgba(0, 255, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
@@ -481,6 +433,7 @@ background-clip: text;
 @apply text-blue-500; /* Assuming #007bff is close to Tailwind's blue-500 */
 }
 
+
 .context-menu {
   position: absolute;
   background-color: #ffffff;
@@ -518,6 +471,59 @@ background-clip: text;
 .context-menu-item-icon {
   margin-right: 8px;
 }
+@keyframes matrix-rain {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 1000px; }
+}
+
+@layer components {
+  .context-menu {
+    @apply absolute bg-opacity-90 bg-green-900 border border-green-500 shadow-lg shadow-green-500/50 rounded-none py-2 min-w-[150px] z-[1000] font-mono;
+    
+    @apply dark:bg-opacity-90 dark:bg-green-950 dark:border-green-400 dark:shadow-green-400/50;
+  }
+
+  .context-menu::before {
+    @apply content-[''] absolute inset-0 bg-gradient-to-b from-green-500/10 via-green-500/5 to-transparent bg-[length:100%_1000px] opacity-30 -z-10;
+  }
+
+  .context-menu-item {
+    @apply px-4 py-2 text-sm text-green-500 cursor-pointer transition-all duration-300 ease-in-out shadow-green-500/70;
+    
+    @apply hover:bg-green-500/20 hover:scale-105;
+    
+    @apply dark:text-green-400 dark:hover:bg-green-400/20;
+  }
+
+  .context-menu-separator {
+    @apply h-px bg-green-500 my-1 shadow-green-500;
+    
+    @apply dark:bg-green-400 dark:shadow-green-400;
+  }
+
+  .context-menu-item-disabled {
+    @apply text-green-800 cursor-not-allowed shadow-none;
+    
+    @apply dark:text-green-700;
+  }
+
+  .context-menu-item-icon {
+    @apply mr-2 text-green-500;
+    
+    @apply dark:text-green-400;
+  }
+
+  .context-menu-item::after {
+    @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-transparent via-green-500 to-transparent scale-x-0 origin-center transition-transform duration-300 ease-in-out;
+    
+    @apply dark:via-green-400;
+  }
+
+  .context-menu-item:hover::after {
+    @apply scale-x-100;
+  }
+}
+
 
 
 /* Steps theming */
@@ -671,4 +677,171 @@ background-clip: text;
 
 .icon-text {
   @apply text-xl font-bold text-gray-700 dark:text-gray-300;
+}
+
+
+/* Add or update this rule in your theme CSS file */
+.user-settings-panel {
+  @apply bg-blue-100 dark:bg-blue-900 space-y-6 p-4 md:p-6 rounded-lg shadow-md text-blue-900 dark:text-blue-100;
+  /* Added dark:bg-blue-900 for dark background */
+  /* Added default text colors text-blue-900 dark:text-blue-100 for better contrast */
+}
+
+/* Base class for folder items in the System Status panel */
+.folder-item-base {
+  @apply flex flex-col items-center justify-center p-4 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md;
+  @apply bg-blue-100 dark:bg-blue-800; /* Or a slightly different background if needed */
+  @apply hover:bg-blue-200 dark:hover:bg-blue-700;
+  @apply border; /* Add a default border */
+}
+
+/* Class for the icon within a folder item */
+.folder-item-icon {
+  @apply w-10 h-10 group-hover:scale-110 transition-transform duration-200 mb-2; /* Added margin */
+}
+
+/* Class for the text label within a folder item */
+.folder-item-label {
+  @apply mt-2 text-xs text-center text-blue-700 dark:text-blue-200;
+}
+
+/* Modifier classes for specific border/icon colors (optional, can still be applied inline) */
+.folder-item-personalities { @apply border-blue-400 dark:border-blue-500; }
+.folder-item-icon-personalities { @apply text-blue-500 dark:text-blue-400; }
+
+.folder-item-functions { @apply border-green-500 dark:border-green-400; }
+.folder-item-icon-functions { @apply text-green-500 dark:text-green-400; }
+
+.folder-item-configs { @apply border-yellow-500 dark:border-yellow-400; }
+.folder-item-icon-configs { @apply text-yellow-500 dark:text-yellow-400; }
+
+.folder-item-outputs { @apply border-purple-500 dark:border-purple-400; }
+.folder-item-icon-outputs { @apply text-purple-500 dark:text-purple-400; }
+
+.folder-item-discussions { @apply border-red-500 dark:border-red-400; }
+.folder-item-icon-discussions { @apply text-red-500 dark:text-red-400; }
+
+@layer components {
+  /* Helper class for consistent spacing and alignment in setting rows */
+  .setting-item {
+      @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-2;
+  }
+
+  /* Label style for setting items, takes fixed width on medium screens */
+  .setting-label {
+      @apply label md:w-48 flex-shrink-0; /* Use label class styles + width */
+  }
+
+  /* Helper class for toggle rows */
+  .toggle-item {
+      @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-2 border-t border-blue-200 dark:border-blue-700 pt-3 mt-2;
+  }
+
+  /* Label style for toggles, allowing text wrapping */
+  .toggle-label {
+      @apply label !mb-0 flex-grow cursor-pointer mr-4; /* Use label styles, remove bottom margin */
+  }
+
+  /* Description style for toggles */
+  .toggle-description {
+      @apply block text-xs text-blue-500 dark:text-blue-400 font-normal mt-1;
+  }
+
+  /* Style adjustments for range inputs */
+  input[type='range']::-webkit-slider-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out;
+      margin-top: -6px; /* Adjust thumb position */
+  }
+  input[type='range']::-moz-range-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+      @apply h-2 bg-blue-200 dark:bg-blue-700 rounded-full w-full;
+  }
+  input[type='range']::-moz-range-track {
+      @apply h-2 bg-blue-200 dark:bg-blue-700 rounded-full w-full;
+  }
+
+  /* Success button variant */
+  .btn-success {
+    @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800;
+  }
+
+  /* Small button size modifier */
+  .btn-sm {
+    @apply py-1 px-2 text-sm;
+  }
+
+  /* Small input size modifier (inherits base .input styles) */
+  .input-sm {
+      @apply input px-3 py-1 text-sm rounded-md; /* Use .input styles and adjust padding/text/rounding */
+  }
+
+  /* Range input base style */
+  .range-input {
+      @apply h-2 bg-blue-200 dark:bg-blue-700 rounded-lg appearance-none cursor-pointer w-full; /* Base track */
+  }
+
+  /* Add thumb styles directly as they are pseudo-elements */
+  .range-input::-webkit-slider-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out;
+      margin-top: -6px; /* Adjust thumb position to center on track */
+  }
+  .range-input::-moz-range-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out;
+  }  
+
+  /* Add specific status dot colors */
+  .bg-status-healthy { @apply bg-green-500 dark:bg-green-400; }
+  .bg-status-unhealthy { @apply bg-red-500 dark:bg-red-400; }
+  .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-400; }
+  .bg-status-unknown { @apply bg-gray-400 dark:bg-gray-500; }
+}
+
+@layer components {
+  /* Success button variant */
+  .btn-success {
+    @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800;
+  }
+
+  /* Small button size modifier */
+  .btn-sm {
+    @apply py-1 px-2 text-sm;
+  }
+
+  /* Small input size modifier (inherits base .input styles) */
+  .input-sm {
+      @apply input px-3 py-1 text-sm rounded-md; /* Use .input styles and adjust padding/text/rounding */
+  }
+
+  /* Range input base style */
+  .range-input {
+      @apply h-2 bg-blue-200 dark:bg-blue-700 rounded-lg appearance-none cursor-pointer w-full; /* Base track */
+  }
+
+  /* Add thumb styles directly as they are pseudo-elements */
+  .range-input::-webkit-slider-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out;
+      margin-top: -6px; /* Adjust thumb position to center on track */
+  }
+  .range-input::-moz-range-thumb {
+      @apply w-5 h-5 bg-blue-500 dark:bg-blue-400 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out;
+  }
+}
+
+/* Ensure status dot classes exist (copied from theme for clarity) */
+@layer utilities {
+  .bg-status-healthy { @apply bg-green-500 dark:bg-green-400; }
+  .bg-status-unhealthy { @apply bg-red-500 dark:bg-red-400; }
+  .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-400; }
+  .bg-status-unknown { @apply bg-gray-400 dark:bg-gray-500; }
+}
+
+@keyframes matrix-rain {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 1000px;
+  }
 }
