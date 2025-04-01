@@ -2,12 +2,14 @@
 
     <!-- Welcome Card -->
     <div class="mb-8">
-        <!-- Added a slight skew for fun, keep other styles -->
-        <div class="bg-gradient-welcome card p-8 rounded-lg shadow-xl transform hover:scale-101 hover:skew-x-1 transition-transform duration-300 border border-purple-500/30 matrix-pulse-subtle">
+        <!-- Applying card and theme gradient, keeping custom animations -->
+        <div class="card bg-gradient-welcome p-8 rounded-lg shadow-xl transform hover:scale-101 hover:skew-x-1 transition-transform duration-300 border border-purple-500/30 matrix-pulse-subtle">
             <h3 class="text-gradient-title text-4xl font-bold mb-4 animate-fade-in">
+                <!-- Using h3 class from theme, but keeping text-gradient-title -->
                 🐠 Hooked on v19.1 "Omni" (Fish Edition)! Happy April 1st! 🐠
             </h3>
-            <p class="text-lg text-purple-300 mb-6 opacity-90 animate-fade-in anim-delay-200">
+            <p class="text-lg text-purple-300 dark:text-purple-400 mb-6 opacity-90 animate-fade-in anim-delay-200">
+                <!-- Adjusted text color for dark mode consistency, applied p styling implicitly -->
                 Warning: May contain traces of digital plankton. We've rebuilt LoLLMs based on quantum fluctuations, lunar cycles*, and questionable caffeine intake*. Results *will* vary.
                 <span class="text-xs opacity-70 block mt-1">(*Sensor integration and planetary alignment permitting)</span>
             </p>
@@ -16,49 +18,49 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
 
                 <!-- Feature 1: Styling & Theming -->
+                <!-- Keeping custom feature card styles as they are theme-specific -->
                 <div class="feature-card matrix-glow p-5 rounded-lg bg-opacity-20 backdrop-blur-sm flex flex-col items-center text-center animate-fade-up anim-delay-400 border border-pink-500/20">
-                    <span class="text-4xl mb-3 animate-spin" style="animation-duration: 5s;">🌀</span> <!-- Spinning Icon -->
-                    <h4 class="text-xl font-semibold mb-2">Hyper-Dynamic Theming™</h4>
-                    <p class="text-sm opacity-90">
+                    <span class="text-4xl mb-3 animate-spin" style="animation-duration: 5s;">🌀</span>
+                    <h4 class="text-xl font-semibold mb-2 text-blue-500 dark:text-blue-400">Hyper-Dynamic Theming™</h4> <!-- Applied h4 styling -->
+                    <p class="text-sm opacity-90 text-blue-700 dark:text-blue-300">
                         Experience themes like 'Prankster Purple' & 'Deep Sea Debug' that adapt to... well, things. Probably. Now 75% more holographic!
                     </p>
                 </div>
 
                 <!-- Feature 2: Settings Overhaul -->
                 <div class="feature-card matrix-glow p-5 rounded-lg bg-opacity-20 backdrop-blur-sm flex flex-col items-center text-center animate-fade-up anim-delay-600 border border-orange-500/20">
-                    <!-- Question Mark Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-3 text-orange-400 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mb-3 text-orange-400 dark:text-orange-500 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <h4 class="text-xl font-semibold mb-2">Settings Re-Imagined (?)</h4>
-                    <p class="text-sm opacity-90">
+                    <h4 class="text-xl font-semibold mb-2 text-blue-500 dark:text-blue-400">Settings Re-Imagined (?)</h4> <!-- Applied h4 styling -->
+                    <p class="text-sm opacity-90 text-blue-700 dark:text-blue-300">
                         Explore brave new categories like "Esoteric Knobs" & "Here Be Dragons". Search now understands emotions! Try searching "feeling kinda blue".
                     </p>
                 </div>
 
                 <!-- Feature 3: Performance & Misc -->
                 <div class="feature-card matrix-glow p-5 rounded-lg bg-opacity-20 backdrop-blur-sm flex flex-col items-center text-center animate-fade-up anim-delay-800 border border-cyan-500/20">
-                    <span class="text-4xl mb-3">🚀</span> <!-- Rocket Icon -->
-                    <h4 class="text-xl font-semibold mb-2">Prime Number Performance</h4>
-                    <p class="text-sm opacity-90">
+                    <span class="text-4xl mb-3">🚀</span>
+                    <h4 class="text-xl font-semibold mb-2 text-blue-500 dark:text-blue-400">Prime Number Performance</h4> <!-- Applied h4 styling -->
+                    <p class="text-sm opacity-90 text-blue-700 dark:text-blue-300">
                         Optimized loops run faster when the current second is prime! Fixed bugs causing iambic pentameter & playful wiggles (mostly). Find the new easter egg!
                     </p>
                 </div>
 
             </div>
              <!-- Acknowledge the fish -->
-            <p class="text-center text-xs text-cyan-300 opacity-70 mt-6 animate-fade-in anim-delay-1000">
+            <p class="text-center text-xs text-cyan-400 dark:text-cyan-500 opacity-70 mt-6 animate-fade-in anim-delay-1000">
                 P.S. Enjoy the swimming companion at the top! We think it adds... character.
             </p>
         </div>
     </div>
 
     <!-- Concluding Section -->
-    <div class="text-center mt-12 space-y-5 animate-fade-up anim-delay-1200"> <!-- Increased delay -->
-        <p class="text-2xl font-bold text-gradient-title matrix-text">
+    <div class="text-center mt-12 space-y-5 animate-fade-up anim-delay-1200">
+        <p class="text-2xl font-bold text-gradient-title matrix-text"> <!-- Keeping custom gradient/matrix text -->
             Thanks for swimming along with this *very serious* update!
         </p>
-        <p class="text-xl text-progress opacity-95">
+        <p class="text-xl text-progress opacity-95"> <!-- Using text-progress class -->
             Together, we're making AI interaction... well, certainly *something* different. Let's see what happens!
         </p>
 
@@ -66,47 +68,64 @@
 
 </div>
 
-<!-- CSS (Keep existing styles, maybe add slight color tweaks if desired) -->
+<!-- CSS (Kept as requested, although ideally this would be in a separate file or <style scoped>) -->
 <style>
 /* --- Re-use most of the previous CSS --- */
 
 /* Assume TailwindCSS is handling base styles */
 
-/* Define Gradients (if not using Tailwind config) */
+/* Define Gradients (if not using Tailwind config) - These might conflict/override theme CSS */
+/* Using theme's bg-gradient-welcome class instead now */
+/*
 .bg-gradient-welcome {
-    /* Example: Slightly more chaotic gradient? */
-    background: linear-gradient(135deg, rgba(30, 10, 40, 0.9), rgba(10, 0, 15, 0.95)); /* Purplish */
+    background: linear-gradient(135deg, rgba(30, 10, 40, 0.9), rgba(10, 0, 15, 0.95));
 }
+*/
+/* Using theme's text-gradient-title class */
+/*
 .text-gradient-title {
-    /* Example: Maybe a fishy gradient? */
-    background: linear-gradient(90deg, #00ffee, #ff00cc); /* Cyan to Magenta */
+    background: linear-gradient(90deg, #00ffee, #ff00cc);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-fill-color: transparent;
 }
+*/
+/* Using theme's text-progress class */
+/*
 .text-progress {
-    color: #88aadd; /* Lighter blue */
+    color: #88aadd;
 }
+*/
+/* These specific colors might override theme text colors, use with caution or map to theme vars/classes */
 .text-purple-300 { color: #c084fc; } /* Tailwind purple-300 approx */
+.dark .dark\:text-purple-400 { color: #a855f7; } /* Mapped dark variant */
 .text-cyan-300 { color: #67e8f9; } /* Tailwind cyan-300 approx */
+.dark .dark\:text-cyan-500 { color: #22d3ee; } /* Mapped dark variant */
+
+/* Keeping border colors as they are specific to the joke theme */
 .border-purple-500\/30 { border-color: rgba(168, 85, 247, 0.3); }
 .border-pink-500\/20 { border-color: rgba(236, 72, 153, 0.2); }
 .border-orange-500\/20 { border-color: rgba(249, 115, 22, 0.2); }
 .border-cyan-500\/20 { border-color: rgba(6, 182, 212, 0.2); }
+/* Button colors - not used in template, keep commented or remove */
+/*
 .bg-purple-600 { background-color: #9333ea; }
 .hover\:bg-purple-500:hover { background-color: #a855f7; }
 .bg-teal-600 { background-color: #0d9488; }
 .hover\:bg-teal-500:hover { background-color: #14b8a6; }
+*/
 
 /* Matrix Effects (Keep as is or adjust colors) */
 .matrix-glow {
-    box-shadow: 0 0 8px rgba(100, 0, 255, 0.1), 0 0 15px rgba(100, 0, 255, 0.08); /* Purplish glow */
-    border: 1px solid rgba(100, 0, 255, 0.15); /* Purplish border */
-    background: rgba(30, 10, 40, 0.2); /* Darker purplish background */
+    /* Using a slightly less intense purple glow to align better with theme */
+    box-shadow: 0 0 8px rgba(100, 80, 220, 0.1), 0 0 15px rgba(100, 80, 220, 0.08);
+    border: 1px solid rgba(100, 80, 220, 0.15);
+    background: rgba(30, 10, 40, 0.2); /* Keep dark purplish background for contrast */
 }
 .matrix-text {
-    text-shadow: 0 0 8px rgba(100, 0, 255, 0.5); /* Purplish text shadow */
+    /* Aligning text shadow with theme blues */
+    text-shadow: 0 0 8px rgba(74, 144, 226, 0.5); /* Corresponds to --color-primary */
 }
 
 /* Subtle Pulse for Welcome Card */
@@ -114,23 +133,23 @@
     animation: pulse-subtle 3s infinite ease-in-out;
 }
 @keyframes pulse-subtle {
-    /* Adjusted pulse colors */
-    0% { box-shadow: 0 0 10px rgba(150, 50, 255, 0.05); border-color: rgba(150, 50, 255, 0.1); }
-    50% { box-shadow: 0 0 18px rgba(150, 50, 255, 0.15); border-color: rgba(150, 50, 255, 0.25); }
-    100% { box-shadow: 0 0 10px rgba(150, 50, 255, 0.05); border-color: rgba(150, 50, 255, 0.1); }
+    /* Adjusted pulse colors to be more theme-aligned */
+    0% { box-shadow: 0 0 10px rgba(74, 144, 226, 0.05); border-color: rgba(74, 144, 226, 0.1); }
+    50% { box-shadow: 0 0 18px rgba(74, 144, 226, 0.15); border-color: rgba(74, 144, 226, 0.25); }
+    100% { box-shadow: 0 0 10px rgba(74, 144, 226, 0.05); border-color: rgba(74, 144, 226, 0.1); }
 }
 
 /* Feature Card Enhancements (Adjusted colors) */
 .feature-card {
-    background: rgba(40, 20, 50, 0.3); /* Darker purple tint */
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; /* Added border transition */
+    /* background: rgba(40, 20, 50, 0.3); */ /* Removing specific bg, will inherit from matrix-glow or card */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     backdrop-filter: blur(4px);
 }
 .feature-card:hover {
     transform: translateY(-6px) scale(1.03);
-    box-shadow: 0 0 15px rgba(150, 50, 255, 0.2), 0 0 25px rgba(150, 50, 255, 0.15); /* Enhanced purple glow */
-    /* Add hover border color if desired */
-    /* border-color: rgba(200, 100, 255, 0.4); */
+    /* Enhanced glow using theme primary color */
+    box-shadow: 0 0 15px rgba(74, 144, 226, 0.2), 0 0 25px rgba(74, 144, 226, 0.15);
+    /* border-color: rgba(74, 144, 226, 0.4); */ /* Optional hover border */
 }
 
 /* Base Animations & Delays (Keep as is) */
@@ -141,7 +160,7 @@
 .anim-delay-600 { animation-delay: 0.6s; }
 .anim-delay-800 { animation-delay: 0.8s; }
 .anim-delay-1000 { animation-delay: 1.0s; }
-.anim-delay-1200 { animation-delay: 1.2s; } /* Added delay */
+.anim-delay-1200 { animation-delay: 1.2s; }
 
 /* Ensure flex alignment for feature cards */
 .feature-card {
