@@ -1,3 +1,48 @@
+# LoLLMs v19.1 (Fish 🐠 - April Fool's Edition) Changelog
+Date: April 01, 2025
+
+(Binary Hint: 01100001 01110010 01110000 01101001 01101100 00100000 01100110 01101111 01101111 01101100)
+
+Welcome to a very special release of LoLLMs! We've been hard at work implementing features that are sure to make a splash.
+
+🎨 UI & Theming Revolution
+Complete Styling Metamorphosis: Forget everything you thought you knew about LoLLMs' appearance. We've thrown the old CSS out the window (responsibly, into the recycling bin) and introduced a revolutionary, adaptive styling engine based on pseudo-random quantum fluctuations. It's probably stable.
+
+Introducing: Hyper-Dynamic Theming™: Why settle for static themes? LoLLMs v19.1 introduces themes that subtly shift based on ambient room temperature*, lunar cycles*, and the developer's current caffeine level*. (*Feature availability may vary based on sensor integration and planetary alignment).
+
+New Theme Bonanza: Prepare your eyeballs for a visual feast! Added several stunning new themes, including:
+
+Deep Sea Debug: Dark, mysterious, and occasionally emits bioluminescent tooltips.
+
+Coral Code: Vibrant, organic, and may attract digital clownfish.
+
+Prankster Purple: Unpredictably changes shades. Use with caution.
+
+Gone Phishing Gradient: A soothing, yet slightly suspicious, blue-green gradient.
+
+Classic (Holographic Edition): The familiar look, now with 75% more shimmer!
+
+⚙️ Settings Megastructure Re-Imagining
+Total Settings Page Overhaul: We didn't just rework the settings; we sent them to a spa retreat and they came back completely transformed. The entire settings interface has been rebuilt from the ground up for maximum configurability and minimal predictability.
+
+Intuitive Navigation (Probably): Finding settings is now an adventure! We've reorganized options into exciting new categories like "Esoteric Knobs," "Possibly Important Toggles," and "Here Be Dragons."
+
+Search Functionality Enhanced: The settings search bar now understands vague intentions and emotional states. Try searching for "make it feel more Tuesday" or "that thingy that does the stuff." Results may vary.
+
+Theme-Aware Settings: The settings page now dynamically adapts its layout and color scheme to perfectly complement the selected theme, ensuring a consistently inconsistent experience.
+
+Miscellaneous Marvels & Minor Mischief
+Performance Enhancements: Optimized core loops to run slightly faster when the system clock's seconds value is a prime number.
+
+Bug Fixes: Addressed a peculiar issue where the AI occasionally responded in iambic pentameter. Squashed a bug that caused buttons to wiggle playfully when hovered over (or was that a feature?).
+
+New Easter Egg: We've hidden a new secret somewhere. It might involve fish. Or fools. Or maybe just a very specific shade of purple. Good luck!
+
+A Note from the Developers:
+
+Happy April Fool's Day! While we did genuinely rework the settings page structure and make significant strides in styling and theming capabilities (preparing for much more customization!), some elements of this changelog might be slightly... exaggerated for comedic effect. We hope you enjoy the real improvements and have a fin-tastic day! Don't get hooked on any prank calls! 😉
+
+
 # LoLLMs v19.0 (alpha) Changelog
 *Date: March 06, 2025*
 
