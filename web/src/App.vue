@@ -1,35 +1,25 @@
 <template>
   <div :class="['flex flex-col h-screen font-sans background-color text-slate-950 dark:bg-bg-dark dark:text-slate-50 w-full overflow-hidden', currentThemeClass]">
-    <!-- TopBar Component - Remains fixed for animations -->
+    <!-- TopBar Component -->
     <TopBar @update:occupying-space="updateSpaceOccupation" />
 
-    <!--
-      Placeholder Div: REMOVED. We will directly translate the main content instead.
-    -->
-    <!-- <div
+    <!-- Placeholder Div -->
+    <div
       :class="[
-        'transition-height duration-300 ease-in-out',
-        shouldOccupySpace ? 'h-14' : 'h-0'
+        'transition-height duration-300 ease-in-out', // Smooth height transition
+        shouldOccupySpace ? 'h-14' : 'h-0'         // Dynamic height (h-14 = 56px)
       ]"
-    ></div> -->
+      style="flex-shrink: 0;"
+      ></div>
 
-    <!-- Main Content Area -->
-    <!-- Apply dynamic transform and padding-top -->
-    <div :class="[
-           'flex overflow-hidden flex-grow w-full',
-           'transition-transform duration-300 ease-in-out', // Add transition for transform
-           shouldOccupySpace ? 'translate-y-14' : 'translate-y-0' // Translate down when TopBar is visible
-         ]"
-         >
-      <!-- VIEW CONTAINER -->
-      <!-- Add padding-top to compensate for the translation so scroll container starts correctly -->
-       <div class="flex-1 overflow-y-auto" :class="[shouldOccupySpace ? 'pt-0' : 'pt-0']">
-          <RouterView v-slot="{ Component }">
-              <KeepAlive>
-                <component :is="Component" />
-              </KeepAlive>
-          </RouterView>
-       </div>
+    <!-- Main Content Area - No transform needed here -->
+    <div class="flex overflow-hidden flex-grow w-full">
+      <!-- VIEW CONTAINER - Directly contains RouterView -->
+      <RouterView v-slot="{ Component }">
+        <KeepAlive>
+          <component :is="Component" />
+        </KeepAlive>
+      </RouterView>
     </div>
 
     <!-- FOOTER (Optional) -->
@@ -46,16 +36,18 @@ import TopBar from './components/TopBar.vue';
 
 const store = useStore();
 
-// State to track if TopBar should be occupying visual space
+// State to control the placeholder's height
 const shouldOccupySpace = ref(false);
 
-// Method to update state based on TopBar's effective visibility
+// Method to update the state when TopBar emits the event
 const updateSpaceOccupation = (isOccupying) => {
   shouldOccupySpace.value = isOccupying;
 };
 
-// Compute the current theme class (optional, depends on global styling)
+// Compute the current theme class (optional)
 const currentThemeClass = computed(() => {
+    // Using localStorage might cause a flicker on load if theme changes often.
+    // Consider managing theme via store for better reactivity if needed.
     return localStorage.getItem('preferred-theme') || 'default';
 });
 
@@ -73,11 +65,12 @@ onMounted(() => {
 </script>
 
 <style>
-/* Ensure CSS transitions are defined if not using Tailwind defaults fully */
-/* Tailwind handles transition-transform, duration, and ease */
+.transition-height {
+  transition-property: height;
+  /* Ensure transition duration/easing match TopBar if desired */
+  /* transition-duration: 300ms; */
+  /* transition-timing-function: ease-in-out; */
+}
 
-/* Body/html overflow might need to be hidden if strange scrollbars appear */
-/* html, body {
-  overflow: hidden;
-} */
+/* Add other global styles if needed */
 </style>
