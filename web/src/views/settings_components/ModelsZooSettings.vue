@@ -964,7 +964,6 @@ export default {
     },
     unmounted() {
         socket.off('install_progress', this.installProgressListener);
-        this.destroyIntersectionObserver();
         clearTimeout(this.searchDebounceTimer);
     },
     async updated() {        

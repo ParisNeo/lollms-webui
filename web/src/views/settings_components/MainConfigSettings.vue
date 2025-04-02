@@ -152,6 +152,201 @@
             </div>
         </div>
 
+        <!-- Model Template Section -->
+        <div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
+            <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Model Template Configuration</h3>
+             <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-600">
+                 <!-- Template Selection -->
+                 <div class="setting-item">
+                     <label for="template_type_select" class="setting-label">Template Type</label>
+                     <select id="template_type_select" @change="handleTemplateSelection"
+                             class="input form-select flex-grow">
+                         <option value="lollms">Lollms communication template</option>
+                         <option value="lollms_simplified">Lollms simplified communication template</option>
+                         <option value="bare">Bare, useful when in chat mode</option>
+                         <option value="llama3">LLama3 communication template</option>
+                         <option value="lucie">Lucie communication template</option>
+                         <option value="mistral">Mistral communication template</option>
+                         <option value="deepseek">DeepSeek communication template</option>
+                     </select>
+                 </div>
+
+                 <!-- Header Templates -->
+                 <div class="grid md:grid-cols-2 gap-4">
+                     <div class="setting-item !flex-col !items-start md:!flex-row md:!items-center">
+                         <label for="start_header_id_template" class="setting-label !w-auto md:!w-1/3">Start Header Template</label>
+                         <input type="text" id="start_header_id_template"
+                            :value="$store.state.config.start_header_id_template"
+                            @input="updateValue('start_header_id_template', $event.target.value)"
+                            class="input flex-grow">
+                     </div>
+                     <div class="setting-item !flex-col !items-start md:!flex-row md:!items-center">
+                         <label for="end_header_id_template" class="setting-label !w-auto md:!w-1/3">End Header Template</label>
+                         <input type="text" id="end_header_id_template"
+                            :value="$store.state.config.end_header_id_template"
+                            @input="updateValue('end_header_id_template', $event.target.value)"
+                            class="input flex-grow">
+                     </div>
+                 </div>
+
+                 <!-- User Templates -->
+                 <div class="grid md:grid-cols-2 gap-4">
+                     <div class="setting-item !flex-col !items-start md:!flex-row md:!items-center">
+                         <label for="start_user_header_id_template" class="setting-label !w-auto md:!w-1/3">Start User Header Template</label>
+                         <input type="text" id="start_user_header_id_template"
+                            :value="$store.state.config.start_user_header_id_template"
+                            @input="updateValue('start_user_header_id_template', $event.target.value)"
+                            class="input flex-grow">
+                     </div>
+                     <div class="setting-item !flex-col !items-start md:!flex-row md:!items-center">
+                         <label for="end_user_header_id_template" class="setting-label !w-auto md:!w-1/3">End User Header Template</label>
+                         <input type="text" id="end_user_header_id_template"
+                            :value="$store.state.config.end_user_header_id_template"
+                            @input="updateValue('end_user_header_id_template', $event.target.value)"
+                            class="input flex-grow">
+                     </div>
+                 </div>
+
+                 <!-- AI Templates -->
+                 <div class="grid md:grid-cols-2 gap-4">
+                     <div class="setting-item !flex-col !items-start md:!flex-row md:!items-center">
+                         <label for="start_ai_header_id_template" class="setting-label !w-auto md:!w-1/3">Start AI Header Template</label>
+                         <input type="text" id="start_ai_header_id_template"
+                            :value="$store.state.config.start_ai_header_id_template"
+                            @input="updateValue('start_ai_header_id_template', $event.target.value)"
+                            class="input flex-grow">
+                     </div>
+                     <div class="setting-item !flex-col !items-start md:!flex-row md:!items-center">
+                         <label for="end_ai_header_id_template" class="setting-label !w-auto md:!w-1/3">End AI Header Template</label>
+                         <input type="text" id="end_ai_header_id_template"
+                            :value="$store.state.config.end_ai_header_id_template"
+                            @input="updateValue('end_ai_header_id_template', $event.target.value)"
+                            class="input flex-grow">
+                     </div>
+                 </div>
+
+                 <!-- Message End Templates -->
+                 <div class="grid md:grid-cols-2 gap-4">
+                     <div class="setting-item !flex-col !items-start md:!flex-row md:!items-center">
+                         <label for="end_user_message_id_template" class="setting-label !w-auto md:!w-1/3">End User Message Template</label>
+                         <input type="text" id="end_user_message_id_template"
+                            :value="$store.state.config.end_user_message_id_template"
+                            @input="updateValue('end_user_message_id_template', $event.target.value)"
+                            class="input flex-grow">
+                     </div>
+                     <div class="setting-item !flex-col !items-start md:!flex-row md:!items-center">
+                         <label for="end_ai_message_id_template" class="setting-label !w-auto md:!w-1/3">End AI Message Template</label>
+                         <input type="text" id="end_ai_message_id_template"
+                            :value="$store.state.config.end_ai_message_id_template"
+                            @input="updateValue('end_ai_message_id_template', $event.target.value)"
+                            class="input flex-grow">
+                     </div>
+                 </div>
+
+                 <!-- Separator and System Templates -->
+                 <div class="setting-item items-start">
+                     <label for="separator_template" class="setting-label pt-2">Separator Template</label>
+                     <textarea id="separator_template"
+                            :value="$store.state.config.separator_template"
+                            @input="updateValue('separator_template', $event.target.value)"
+                            class="input flex-grow min-h-[60px] resize-y">
+                     </textarea>
+                 </div>
+
+                 <div class="setting-item">
+                     <label for="system_message_template" class="setting-label">System Message Template</label>
+                     <input type="text" id="system_message_template"
+                        :value="$store.state.config.system_message_template"
+                        @input="updateValue('system_message_template', $event.target.value)"
+                        class="input flex-grow">
+                 </div>
+
+                 <!-- Full Template Preview -->
+                 <div class="setting-item items-start">
+                     <label class="setting-label pt-2">Full Template Preview</label>
+                     <div class="p-4 bg-gray-100 dark:bg-gray-900 rounded-md flex-grow border border-gray-200 dark:border-gray-700 overflow-x-auto text-sm">
+                         <div v-html="full_template" class="whitespace-pre-wrap break-words"></div>
+                     </div>
+                 </div>
+
+                 <!-- Continue Message Toggle -->
+                 <div class="toggle-item">
+                    <label for="use_continue_message" class="toggle-label">
+                        Use Continue Message
+                        <span class="toggle-description">If supported by the model, use a specific token or phrase to indicate the AI should continue its response.</span>
+                    </label>
+                    <ToggleSwitch id="use_continue_message" :checked="$store.state.config.use_continue_message" @update:checked="updateBoolean('use_continue_message', $event)" />
+                </div>
+             </div>
+        </div>
+
+
+        <!-- Thinking Methods Section -->
+        <div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
+            <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Thinking Methods</h3>
+             <div class="grid gap-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border border-gray-200 dark:border-gray-600">
+                 <!-- Thinking Prompt and Preset Selection -->
+                 <div class="space-y-4">
+                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                         <label for="thinking_prompt_textarea" class="setting-label !w-auto sm:!w-1/3">
+                             Thinking Prompt
+                             <span class="block text-xs text-gray-500 dark:text-gray-400 mt-1 font-normal">Prompt used by the AI to structure its thought process. Use `thinking` tags.</span>
+                         </label>
+                         <div class="flex items-center gap-2 flex-wrap">
+                             <select id="thinking_preset_select" @change="selectPreset($event.target.value)" class="input form-select flex-grow min-w-[150px]">
+                                 <option value="" disabled :selected="!selectedPresetName">-- Select Preset --</option>
+                                 <option v-for="preset in allThinkingPresets" :key="preset.name" :value="preset.name" :selected="preset.name === selectedPresetName">
+                                     {{ preset.name }} {{ preset.isLocal ? '(Local)' : '' }}
+                                 </option>
+                             </select>
+                             <button @click="showAddThinkingPresetForm = !showAddThinkingPresetForm" class="btn btn-secondary btn-sm whitespace-nowrap">
+                                 {{ showAddThinkingPresetForm ? 'Cancel Add' : 'Add New Preset' }}
+                             </button>
+                         </div>
+                     </div>
+                     <textarea
+                         id="thinking_prompt_textarea"
+                         :value="$store.state.config.thinking_prompt"
+                         @input="updateValue('thinking_prompt', $event.target.value)"
+                         class="input w-full p-4 bg-gray-100 dark:bg-gray-900 rounded-md text-sm min-h-[150px] resize-y font-mono border border-gray-200 dark:border-gray-700"
+                         placeholder="<thinking>...</thinking>"
+                     ></textarea>
+                 </div>
+
+                 <!-- Add New Thinking Preset Form (Inline, Collapsible) -->
+                 <div v-if="showAddThinkingPresetForm" class="mt-4 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 space-y-4">
+                    <h4 class="text-md font-semibold text-gray-800 dark:text-gray-200">Add New Local Preset</h4>
+                     <form @submit.prevent="saveNewPreset" class="space-y-4">
+                         <div class="setting-item !py-0">
+                             <label for="new_preset_name" class="setting-label">Name <span class="text-red-500">*</span></label>
+                             <input id="new_preset_name" v-model="newPreset.name" class="input flex-grow" required>
+                         </div>
+                         <div class="setting-item !py-0">
+                             <label for="new_preset_desc" class="setting-label">Description <span class="text-red-500">*</span></label>
+                             <input id="new_preset_desc" v-model="newPreset.description" class="input flex-grow" required>
+                         </div>
+                         <div class="setting-item !py-0">
+                             <label for="new_preset_author" class="setting-label">Author <span class="text-red-500">*</span></label>
+                             <input id="new_preset_author" v-model="newPreset.author" class="input flex-grow" required>
+                         </div>
+                         <div class="setting-item !py-0 items-start">
+                             <label for="new_preset_prompt" class="setting-label pt-2">Thinking Prompt <span class="text-red-500">*</span></label>
+                             <textarea
+                                 id="new_preset_prompt"
+                                 v-model="newPreset.prompt"
+                                 class="input w-full min-h-[100px] resize-y font-mono flex-grow"
+                                 required
+                                 placeholder="Enter the thinking prompt. Use <thinking>...</thinking> tags."
+                             ></textarea>
+                         </div>
+                         <div class="flex justify-end space-x-2">
+                             <button type="submit" class="btn btn-primary btn-sm">Save Preset</button>
+                         </div>
+                     </form>
+                 </div>
+             </div>
+        </div>
+
     </div>
 </template>
 
@@ -160,48 +355,98 @@ import axios from 'axios';
 import feather from 'feather-icons';
 import { nextTick } from 'vue';
 import ToggleSwitch from '@/components/ToggleSwitch.vue';
-import defaultLogoPlaceholder from "@/assets/logo.png"; // Your default logo
+import defaultLogoPlaceholder from "@/assets/logo.png";
 
 export default {
     name: 'MainConfigSettings',
     components: {
-        ToggleSwitch
+        ToggleSwitch,
     },
     props: {
-        loading: { type: Boolean, default: false }, // Note: loading prop is defined but not used in the template/script
-        settingsChanged: { type: Boolean, default: false }, // Note: settingsChanged prop is defined but not used in the template/script
+        loading: { type: Boolean, default: false },
+        settingsChanged: { type: Boolean, default: false },
         api_post_req: { type: Function, required: true },
         show_toast: { type: Function, required: true },
         client_id: { type: String, required: true }
     },
-    emits: ['update:setting', 'settings-changed'], // settings-changed is emitted but not explicitly triggered here, maybe in parent?
+    emits: ['update:setting', 'settings-changed'],
 
     data() {
         return {
             isUploadingLogo: false,
-            // defaultLogoPlaceholder is used directly in computed, no need for data property unless it changes
+            showAddThinkingPresetForm: false, // To toggle the inline form
+            thinkingPresets: [], // Combined list of backend + local
+            localThinkingPresets: [], // User-created presets stored locally
+            newPreset: {
+                name: '',
+                description: '',
+                author: '',
+                prompt: ''
+            },
+            selectedPresetName: '', // To manage the select dropdown value
         };
     },
 
     computed: {
         logoSrc() {
             if (this.$store.state.config.app_custom_logo) {
-                // Assuming axios.defaults.baseURL is configured globally
-                return `${axios.defaults.baseURL}/user_infos/${this.$store.state.config.app_custom_logo}`;
+                const baseURL = (axios.defaults.baseURL || '').replace(/\/$/, '');
+                const logoPath = (this.$store.state.config.app_custom_logo || '').replace(/^\//, '');
+                return `${baseURL}/user_infos/${logoPath}`;
             }
             return defaultLogoPlaceholder;
+        },
+        full_template() {
+             if (!this.$store.state.config) return '';
+             const config = this.$store.state.config;
+             const parts = [
+                 config.start_header_id_template,
+                 config.system_message_template,
+                 config.end_header_id_template,
+                 " system message",
+                 config.separator_template,
+                 config.start_user_header_id_template,
+                 "user name",
+                 config.end_user_header_id_template,
+                 " User prompt",
+                 config.separator_template,
+                 config.end_user_message_id_template,
+                 config.separator_template,
+                 config.start_ai_header_id_template,
+                 "ai personality",
+                 config.end_ai_header_id_template,
+                 "ai response",
+                 config.end_ai_message_id_template
+             ];
+             return parts.map(part => part || '').join('').replace(/\n/g, "<br>");
+        },
+        allThinkingPresets() {
+             // Combine backend and local presets, ensure no duplicates by name (local takes precedence)
+             const combined = [...this.localThinkingPresets];
+             const localNames = new Set(this.localThinkingPresets.map(p => p.name));
+             this.thinkingPresets.forEach(p => {
+                 if (!localNames.has(p.name)) {
+                     combined.push(p);
+                 }
+             });
+             // Sort alphabetically for the dropdown
+             return combined.sort((a, b) => a.name.localeCompare(b.name));
         }
     },
 
     methods: {
         updateValue(key, value) {
             this.$emit('update:setting', { key, value });
-            this.$emit('settings-changed', true); // Optionally emit settings-changed on any update
+            this.$emit('settings-changed', true);
+             // If thinking prompt is manually changed, deselect preset in dropdown
+             if (key === 'thinking_prompt') {
+                 this.selectedPresetName = '';
+             }
         },
 
         updateBoolean(key, value) {
             this.$emit('update:setting', { key: key, value: Boolean(value) });
-             this.$emit('settings-changed', true); // Optionally emit settings-changed on any update
+            this.$emit('settings-changed', true);
         },
 
         async uploadLogo(event) {
@@ -211,7 +456,7 @@ export default {
             this.isUploadingLogo = true;
             const formData = new FormData();
             formData.append('logo', file);
-            formData.append('client_id', this.client_id); // Include client_id if required by backend
+            formData.append('client_id', this.client_id);
 
             try {
                 const response = await axios.post('/upload_logo', formData, {
@@ -220,7 +465,6 @@ export default {
 
                 if (response.data && response.data.status) {
                      this.show_toast("Logo uploaded successfully!", 4, true);
-                     // Emit update for the parent to handle config change
                      this.$emit('update:setting', { key: 'app_custom_logo', value: response.data.filename });
                      this.$emit('settings-changed', true);
                 } else {
@@ -231,7 +475,6 @@ export default {
                 this.show_toast(`Error uploading logo: ${error.response?.data?.error || error.message || 'Unknown error'}`, 4, false);
             } finally {
                 this.isUploadingLogo = false;
-                // Reset file input for potential re-upload of the same file
                 if (event.target) {
                     event.target.value = null;
                 }
@@ -239,15 +482,13 @@ export default {
         },
 
         async removeLogo() {
-            this.isUploadingLogo = true; // Prevent actions during removal
+            this.isUploadingLogo = true;
              try {
-                // Use the provided api_post_req function prop for consistency
-                const response = await this.api_post_req('/remove_logo',{client_id: this.client_id}); // Send client_id if needed
+                const response = await this.api_post_req('/remove_logo',{client_id: this.client_id});
                 if (response.status) {
                     this.show_toast("Logo removed successfully!", 4, true);
-                    // Emit update for the parent to handle config change
-                     this.$emit('update:setting', { key: 'app_custom_logo', value: null });
-                     this.$emit('settings-changed', true);
+                    this.$emit('update:setting', { key: 'app_custom_logo', value: null });
+                    this.$emit('settings-changed', true);
                 } else {
                     this.show_toast(`Failed to remove logo: ${response.error || 'Unknown error'}`, 4, false);
                 }
@@ -258,7 +499,160 @@ export default {
                 this.isUploadingLogo = false;
             }
         },
-        // Helper to ensure Feather icons are rendered after DOM updates
+
+        handleTemplateSelection(event) {
+            const selectedOption = event.target.value;
+            let updates = {};
+
+             if (selectedOption === 'lollms') {
+                updates = {
+                    start_header_id_template: "!@>", system_message_template: "system", end_header_id_template: ": ", separator_template: "\n",
+                    start_user_header_id_template: "!@>", end_user_header_id_template: ": ", end_user_message_id_template: "",
+                    start_ai_header_id_template: "!@>", end_ai_header_id_template: ": ", end_ai_message_id_template: ""
+                };
+            } else if (selectedOption === 'lollms_simplified') {
+                 updates = {
+                    start_header_id_template: "@>", system_message_template: "system", end_header_id_template: ": ", separator_template: "\n",
+                    start_user_header_id_template: "@>", end_user_header_id_template: ": ", end_user_message_id_template: "",
+                    start_ai_header_id_template: "@>", end_ai_header_id_template: ": ", end_ai_message_id_template: ""
+                 };
+            } else if (selectedOption === 'bare') {
+                 updates = {
+                    start_header_id_template: "", system_message_template: "system", end_header_id_template: ": ", separator_template: "\n",
+                    start_user_header_id_template: "", end_user_header_id_template: ": ", end_user_message_id_template: "",
+                    start_ai_header_id_template: "", end_ai_header_id_template: ": ", end_ai_message_id_template: ""
+                 };
+            } else if (selectedOption === 'llama3') {
+                 updates = {
+                    start_header_id_template: "<|start_header_id|>", system_message_template: "system", end_header_id_template: "<|end_header_id|>", separator_template: "<|eot_id|>",
+                    start_user_header_id_template: "<|start_header_id|>", end_user_header_id_template: "<|end_header_id|>", end_user_message_id_template: "",
+                    start_ai_header_id_template: "<|start_header_id|>", end_ai_header_id_template: "<|end_header_id|>", end_ai_message_id_template: ""
+                 };
+            } else if (selectedOption === 'lucie') {
+                 updates = {
+                    start_header_id_template: "<s><|start_header_id|>", system_message_template: "system", end_header_id_template: "<|end_header_id|>\n\n", separator_template: "<|eot_id|>",
+                    start_user_header_id_template: "<|start_header_id|>", end_user_header_id_template: "<|end_header_id|>\n\n", end_user_message_id_template: "",
+                    start_ai_header_id_template: "<|start_header_id|>", end_ai_header_id_template: "<|end_header_id|>\n\n", end_ai_message_id_template: ""
+                 };
+            } else if (selectedOption === 'mistral') {
+                 updates = {
+                    start_header_id_template: "[INST]", system_message_template: " Using this information", end_header_id_template: ": ", separator_template: "\n",
+                    start_user_header_id_template: "[INST]", end_user_header_id_template: ": ", end_user_message_id_template: "[/INST]",
+                    start_ai_header_id_template: "", end_ai_header_id_template: "", end_ai_message_id_template: "</s>" // Common Mistral end token
+                 };
+            } else if (selectedOption === 'deepseek') {
+                 updates = {
+                    start_header_id_template: "", system_message_template: "", end_header_id_template: "\n", separator_template: "\n", // Separator might need adjustment
+                    start_user_header_id_template: "User: ", end_user_header_id_template: "\n", end_user_message_id_template: "",
+                    start_ai_header_id_template: "Assistant: ", end_ai_header_id_template: "\n", end_ai_message_id_template: "<|end_of_sentence|>"
+                 };
+            }
+
+            Object.entries(updates).forEach(([key, value]) => {
+                 this.$emit('update:setting', { key, value });
+            });
+            this.$emit('settings-changed', true);
+        },
+
+        async loadThinkingPresets() {
+            this.loadLocalPresets();
+            try {
+                const response = await axios.post('/get_thinking_methods', {
+                    client_id: this.client_id
+                });
+                if (response.data.status === 'success') {
+                    this.thinkingPresets = response.data.thinking_methods;
+                     // Set the selectedPresetName based on the current config value
+                     const currentPrompt = this.$store.state.config.thinking_prompt;
+                     const matchingPreset = this.allThinkingPresets.find(p => p.prompt === currentPrompt);
+                     this.selectedPresetName = matchingPreset ? matchingPreset.name : '';
+                } else {
+                     console.error('Failed to load thinking methods from backend:', response.data.error);
+                }
+            } catch (error) {
+                console.error('Error loading thinking methods:', error);
+                 this.show_toast('Failed to load thinking methods from server.', 4, false);
+            }
+        },
+
+        loadLocalPresets() {
+            const savedPresets = localStorage.getItem('localThinkingPresets');
+            if (savedPresets) {
+                try {
+                    this.localThinkingPresets = JSON.parse(savedPresets);
+                } catch (e) {
+                    console.error("Failed to parse local thinking presets:", e);
+                    localStorage.removeItem('localThinkingPresets');
+                    this.localThinkingPresets = [];
+                }
+            } else {
+                this.localThinkingPresets = [];
+            }
+        },
+
+        saveLocalPresets() {
+            try {
+                localStorage.setItem('localThinkingPresets', JSON.stringify(this.localThinkingPresets));
+            } catch (e) {
+                console.error("Failed to save local thinking presets:", e);
+                this.show_toast('Could not save the new preset locally.', 4, false);
+            }
+        },
+
+        selectPreset(presetName) {
+             if (!presetName) return; // Handle the "-- Select Preset --" case
+
+             const preset = this.allThinkingPresets.find(p => p.name === presetName);
+             if (preset) {
+                this.$emit('update:setting', { key: 'thinking_prompt', value: preset.prompt });
+                this.selectedPresetName = preset.name; // Update dropdown selection state
+                this.$emit('settings-changed', true);
+            }
+        },
+
+        saveNewPreset() {
+            if (!this.newPreset.name || !this.newPreset.description || !this.newPreset.author || !this.newPreset.prompt) {
+                 this.show_toast('Please fill in all fields for the new preset.', 4, false);
+                 return;
+             }
+
+            let promptToSave = this.newPreset.prompt.trim();
+            if (!promptToSave.startsWith('<thinking>')) {
+                promptToSave = `<thinking>\n${promptToSave}`;
+            }
+            if (!promptToSave.endsWith('</thinking>')) {
+                promptToSave = `${promptToSave}\n</thinking>`;
+            }
+
+            const newPresetEntry = {
+                name: this.newPreset.name.trim(),
+                description: this.newPreset.description.trim(),
+                author: this.newPreset.author.trim(),
+                prompt: promptToSave,
+                isLocal: true
+            };
+
+            const existingPreset = this.allThinkingPresets.find(p => p.name.toLowerCase() === newPresetEntry.name.toLowerCase());
+            if (existingPreset) {
+                this.show_toast('A preset with this name already exists. Please choose a different name.', 4, false);
+                return;
+            }
+
+            this.localThinkingPresets.push(newPresetEntry);
+            this.saveLocalPresets();
+
+            this.show_toast('New thinking preset added successfully.', 4, true);
+             // Automatically select the newly added preset
+             this.$nextTick(() => {
+                 this.selectPreset(newPresetEntry.name);
+             });
+
+             // Reset form and hide it
+            this.newPreset = { name: '', description: '', author: '', prompt: '' };
+            this.showAddThinkingPresetForm = false;
+            this.$emit('settings-changed', true);
+        },
+
         replaceFeatherIcons() {
              nextTick(() => {
                  try {
@@ -272,17 +666,16 @@ export default {
 
     mounted() {
         this.replaceFeatherIcons();
+        this.loadThinkingPresets();
     },
 
     updated() {
-        // Re-run feather replace if the component updates (e.g., v-if changes)
         this.replaceFeatherIcons();
     }
 };
 </script>
 
 <style scoped>
-/* Styles remain the same */
 .setting-item {
     @apply flex flex-col md:flex-row md:items-center gap-2 md:gap-4 py-2;
 }
@@ -291,12 +684,15 @@ export default {
     @apply block text-sm font-medium text-gray-700 dark:text-gray-300 w-full md:w-1/3 lg:w-1/4 flex-shrink-0;
 }
 
-.input-field {
-     @apply block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-offset-gray-800 sm:text-sm disabled:opacity-50;
+.input {
+     @apply block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-offset-gray-900 sm:text-sm disabled:opacity-50 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500;
+}
+.panels-color {
+     @apply bg-white dark:bg-gray-800;
 }
 
 .toggle-item {
-    @apply flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors;
+    @apply flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors;
 }
 
 .toggle-label {
@@ -306,12 +702,30 @@ export default {
      @apply block text-xs text-gray-500 dark:text-gray-400 mt-1 font-normal;
 }
 
-/* Updated Button Styles */
-.button-primary {
-    /* Assuming 'primary' is defined as blue-600 in config or default */
-    @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+/* Simplified Button Styles based on btn classes */
+.btn {
+  @apply inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 disabled:opacity-50 transition-colors duration-150 whitespace-nowrap;
 }
-.button-danger {
-    @apply px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
+.btn-sm {
+  @apply px-3 py-1.5 text-xs;
+}
+.btn-primary {
+  @apply text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500 ;
+}
+.btn-secondary {
+  @apply text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:ring-blue-500 border-gray-300 dark:border-gray-500;
+}
+.btn-positive {
+  @apply text-white bg-green-600 hover:bg-green-700 focus:ring-green-500 ;
+}
+
+/* Form select styling */
+.form-select {
+    @apply block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300;
+}
+
+/* Ensure consistent padding and borders for nested sections */
+.panels-color > .grid {
+    @apply border-none shadow-none p-0; /* Remove duplicate styling if Card component is not used */
 }
 </style>
