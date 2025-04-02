@@ -641,7 +641,7 @@
                   :class="isDragOverChat ? 'pointer-events-none opacity-50' : ''"> <!-- Added opacity -->
   
                   <!-- CHAT AREA -->
-                  <div class="container pt-4 pb-50 mb-50 w-full max-w-4xl mx-auto px-4"> <!-- Added max-width, centering and padding -->
+                  <div class="container pt-4 pb-50 mb-50 w-full mx-auto px-4"> <!-- Added max-width, centering and padding -->
                       <TransitionGroup v-if="discussionArr.length > 0" name="list">
                            <!-- Message component styling happens internally based on props/state -->
                           <Message v-for="(msg, index) in discussionArr" 
