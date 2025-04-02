@@ -1,33 +1,67 @@
 <template>
-  <div class="help-view bg-gradient-to-br from-gray-50 to-blue-100 dark:from-gray-900 dark:to-blue-950 min-h-screen flex overflow-hidden">
+  <!-- Use theme's base background gradient -->
+  <div class="help-view background-color min-h-screen  min-w-screen flex overflow-hidden">
+
     <!-- Left Sidebar -->
-    <div class="left-bar w-72 bg-white dark:bg-gray-800 shadow-2xl p-6 fixed h-screen overflow-y-auto transition-all duration-500 ease-in-out md:w-80 lg:w-96 z-10">
-      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 flex items-center">
-        <span class="mr-2">🗂️</span> Help Topics
-      </h2>
-      <ul class="space-y-4">
-        <li v-for="(section, index) in helpSections" :key="index">
-          <a @click.prevent="selectSection(index)" class="block p-4 rounded-xl text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-gray-700/50 hover:bg-blue-500 dark:hover:bg-blue-600 hover:text-white dark:hover:text-white transition-all duration-300 cursor-pointer shadow-sm" :class="{ 'bg-blue-500 text-white dark:bg-blue-600': selectedSection === index }">
-            {{ section.title }}
-          </a>
-        </li>
-      </ul>
+    <!-- Apply panel colors, shadow, and theme scrollbar -->
+    <div class="help-left-bar w-72 panels-color shadow-lg fixed h-screen overflow-y-auto scrollbar transition-all duration-300 ease-in-out md:w-80 z-10">
+      <div class="p-4 sm:p-6">
+        <!-- Use theme's h2 styling -->
+        <h2 class="text-2xl font-semibold text-blue-700 dark:text-blue-200 mb-6 border-b border-blue-300 dark:border-blue-600 pb-2 flex items-center">
+          <i data-feather="folder" class="w-5 h-5 mr-3 flex-shrink-0"></i>
+          <span>Help Topics</span>
+        </h2>
+        <ul class="space-y-2">
+          <li v-for="(section, index) in helpSections" :key="index">
+            <!-- Use button/link styling from theme, including active state -->
+            <a
+              @click.prevent="selectSection(index)"
+              :class="[
+                'nav-button', // Base button style from theme
+                'block w-full text-left', // Ensure block layout
+                'transition-all duration-200 ease-in-out',
+                { 'nav-button-active': selectedSection === index } // Active state from theme
+              ]"
+              href="#"
+              role="button"
+            >
+              {{ section.title }}
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content ml-72 md:ml-80 lg:ml-96 flex-1 p-10 overflow-y-auto h-screen flex items-center justify-center">
-      <div class="big-card bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-10 w-full h-full max-w-6xl mx-auto flex flex-col">
-        <h1 class="text-5xl font-extrabold text-gray-900 dark:text-white mb-10 flex items-center">
-          <span class="mr-3">📖</span> LoLLMs Help Center
-        </h1>
-        <div class="help-content flex-1 overflow-y-auto text-gray-700 dark:text-gray-300 prose dark:prose-invert max-w-none transition-opacity duration-500" v-html="selectedContent"></div>
-      </div>
+    <!-- Apply theme scrollbar -->
+    <div class="main-content ml-72 md:ml-80 flex-1 overflow-y-auto h-screen scrollbar">
+        <div class="p-6 sm:p-10 flex justify-center items-start">
+             <!-- Use card styling from theme for the main container -->
+            <div class="card w-full max-w-5xl mx-auto flex flex-col min-h-[calc(100vh-5rem)]"> <!-- Adjust min-height as needed -->
+                <!-- Use theme's h1 styling -->
+                <h1 class="text-3xl md:text-4xl font-bold text-blue-800 dark:text-blue-100 mb-6 border-b border-blue-300 dark:border-blue-600 pb-3 flex items-center">
+                <i data-feather="help-circle" class="w-7 h-7 mr-3 flex-shrink-0"></i>
+                <span>LoLLMs Help Center</span>
+                </h1>
+                <!-- Apply theme's prose styling for markdown content -->
+                <div
+                class="help-content flex-1 prose-blue max-w-none transition-opacity duration-300"
+                v-html="selectedContent"
+                ></div>
+            </div>
+        </div>
     </div>
   </div>
 </template>
 
 <script>
 import { marked } from 'marked';
+import feather from 'feather-icons';
+import { nextTick } from 'vue';
+// Assuming highlight.js is imported globally or properly configured
+// import hljs from 'highlight.js';
+// import 'highlight.js/styles/stackoverflow-light.css'; // Import light theme
+// import 'highlight.js/styles/stackoverflow-dark.css'; // Import dark theme - ideally load dynamically
 
 export default {
   name: 'HelpView',
@@ -39,21 +73,57 @@ export default {
   },
   computed: {
     selectedContent() {
-      return this.helpSections[this.selectedSection]?.content || 'Select a topic from the sidebar to view help content.';
+      // Basic sanitization placeholder - consider a more robust library like DOMPurify
+      const rawHtml = this.helpSections[this.selectedSection]?.content || '<p class="text-blue-600 dark:text-blue-400">Select a topic from the sidebar to view help content.</p>';
+      return rawHtml;
     }
   },
   methods: {
     selectSection(index) {
       this.selectedSection = index;
+      nextTick(() => {
+          feather.replace(); // Replace icons if content changes might add them
+          // Optional: Add code block highlighting if needed
+          this.$el.querySelectorAll('.help-content pre code.hljs').forEach((block) => {
+             // If using marked's highlight function with hljs, it might already be done.
+             // If not, uncomment the line below. Ensure hljs is available.
+             // hljs.highlightElement(block);
+          });
+      });
     },
     async loadMarkdownFile(filename) {
       try {
         const response = await fetch(`/help/${filename}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const markdown = await response.text();
+        // Configure marked (optional, e.g., for syntax highlighting class)
+        marked.setOptions({
+            highlight: function(code, lang) {
+                 // Check if hljs is loaded and language is valid
+                if (typeof hljs !== 'undefined' && hljs.getLanguage(lang)) {
+                    try {
+                        // Add 'hljs' class for base styling + language class
+                        return `<pre class="hljs"><code>${hljs.highlight(code, { language: lang, ignoreIllegals: true }).value}</code></pre>`;
+                    } catch (__) {}
+                }
+                 // Fallback for no language or hljs not found
+                return `<pre class="hljs"><code>${code}</code></pre>`; // Basic escaping
+            },
+             langPrefix: 'hljs language-', // CSS class prefix for fenced code blocks
+             pedantic: false,
+             gfm: true,
+             breaks: false,
+             sanitize: false, // IMPORTANT: Consider using DOMPurify after marked if markdown is user-generated
+             smartLists: true,
+             smartypants: false,
+             xhtml: false
+        });
         return marked(markdown);
       } catch (error) {
-        console.error('Error loading markdown file:', error);
-        return 'Error loading help content.';
+        console.error('Error loading markdown file:', filename, error);
+        return `<p class="text-red-500 dark:text-red-400">Error loading help content for ${filename}. Please check the file exists in the public/help folder.</p>`;
       }
     },
     async loadHelpSections() {
@@ -69,107 +139,51 @@ export default {
         { title: 'Music Generation', file: 'music-generation.md' },
         { title: 'Managing Personalities', file: 'managing-personalities.md' },
         { title: 'Troubleshooting', file: 'troubleshooting.md' }
+        // Add more sections here
       ];
 
+      const loadedSections = [];
       for (const section of sectionFiles) {
         const content = await this.loadMarkdownFile(section.file);
-        this.helpSections.push({
+        loadedSections.push({
           title: section.title,
           content: content
         });
       }
+      this.helpSections = loadedSections;
+      // Select first section content after loading
+      if (this.helpSections.length > 0) {
+        this.selectSection(0);
+      }
     }
   },
   mounted() {
-    this.loadHelpSections();
+    this.loadHelpSections().then(() => {
+        nextTick(() => {
+            feather.replace();
+        });
+    });
+  },
+   updated() {
+    // Ensure icons are replaced if the component updates for other reasons
+    nextTick(() => {
+      feather.replace();
+    });
   }
 };
 </script>
 
-<style scoped>
-/* General Layout */
-.help-view {
-  @apply flex flex-col md:flex-row;
-}
+<style>
+/* Keep custom scrollbar styles if they differ significantly from the theme's default .scrollbar */
+/* Otherwise, remove this style block and rely on the .scrollbar class from theme.css */
 
-/* Sidebar Styling */
-.left-bar {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f1f1f1;
-}
+/* Styling for generated HTML from markdown if prose-blue needs overrides */
+/* These styles refine or override prose-blue if necessary */
 
-.left-bar::-webkit-scrollbar {
-  width: 10px;
-}
 
-.left-bar::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
+/* Add highlight.js theme styles here or import them */
+/* Example for stackoverflow-light / dark */
+/* @import 'highlight.js/styles/stackoverflow-light.css'; */
+/* .dark @import 'highlight.js/styles/stackoverflow-dark.css'; */
 
-.left-bar::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-  border: 2px solid #f1f1f1;
-}
-
-.left-bar::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Main Content Styling */
-.main-content {
-  @apply transition-all duration-500;
-}
-
-.big-card {
-  @apply transform transition-all duration-300 hover:shadow-2xl;
-}
-
-.help-content {
-  @apply p-4;
-}
-
-/* Scrollbar Styling for Main Content */
-.main-content::-webkit-scrollbar,
-.help-content::-webkit-scrollbar {
-  width: 12px;
-}
-
-.main-content::-webkit-scrollbar-track,
-.help-content::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 12px;
-}
-
-.main-content::-webkit-scrollbar-thumb,
-.help-content::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 12px;
-  border: 3px solid #f1f1f1;
-}
-
-.main-content::-webkit-scrollbar-thumb:hover,
-.help-content::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .left-bar {
-    @apply w-64 fixed top-0 left-0 h-screen z-20 transform -translate-x-full md:translate-x-0 md:w-72;
-  }
-  .main-content {
-    @apply ml-0 p-6;
-  }
-  .left-bar.open {
-    @apply translate-x-0;
-  }
-  .big-card {
-    @apply p-6;
-  }
-  h1 {
-    @apply text-4xl;
-  }
-}
 </style>

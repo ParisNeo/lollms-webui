@@ -974,6 +974,68 @@ scroll-behavior: smooth; /* Use with caution if content updates very rapidly */
 animation: bounce 1s infinite;
 }
 
+.help-content h2 {
+  @apply text-2xl font-semibold text-blue-700 dark:text-blue-200 mb-4 mt-6 border-b border-blue-200 dark:border-blue-600 pb-2;
+}
+.help-content h3 {
+  @apply text-xl font-semibold text-blue-600 dark:text-blue-300 mb-3 mt-5;
+}
+.help-content ul {
+   @apply list-disc pl-6 space-y-1.5 mb-4 text-blue-800 dark:text-blue-200;
+}
+.help-content ol {
+   @apply list-decimal pl-6 space-y-1.5 mb-4 text-blue-800 dark:text-blue-200;
+}
+.help-content li::marker {
+   color: theme('colors.blue.500'); /* Adjust marker color if needed */
+}
+/* Inline code styling from prose-blue */
+.help-content code:not(pre code) {
+   @apply bg-blue-100 dark:bg-blue-700 px-1.5 py-0.5 rounded text-sm font-mono text-blue-700 dark:text-blue-200;
+}
+/* Code block container */
+.help-content pre.hljs { /* Target pre with hljs class */
+   @apply bg-blue-50 dark:bg-blue-900/50 p-4 rounded-lg overflow-x-auto my-4 shadow-inner text-sm;
+}
+/* Code inside block */
+.help-content pre.hljs code {
+   @apply bg-transparent p-0; /* Code inside pre should be transparent */
+}
+.help-content blockquote {
+   @apply border-l-4 border-blue-400 dark:border-blue-500 pl-4 italic text-blue-600 dark:text-blue-400 my-4 py-1;
+}
+/* Link styling is handled by prose-blue internally applying .link */
+/* .help-content a { ... } */ /* REMOVED as it's redundant */
+
+.help-content p {
+   @apply mb-4 leading-relaxed text-blue-800 dark:text-blue-200 text-base md:text-lg; /* Match theme's p styling */
+}
+.help-content img {
+   @apply rounded-lg shadow-md my-4 max-w-full h-auto mx-auto; /* Style images */
+}
+.help-content table {
+   @apply w-full my-4 border-collapse border border-blue-200 dark:border-blue-700;
+}
+.help-content th {
+   @apply bg-blue-100 dark:bg-blue-800 p-2 border border-blue-200 dark:border-blue-700 text-left font-semibold text-blue-800 dark:text-blue-100;
+}
+.help-content td {
+   @apply p-2 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200;
+}
+/* Ensure responsiveness for the sidebar toggle if implemented */
+@media (max-width: 768px) {
+ .help-left-bar {
+   @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full;
+   /* Add a class like 'open' to translate-x-0 when toggled */
+ }
+ .help-main-content {
+   @apply ml-0; /* Remove margin when sidebar is hidden/overlayed */
+ }
+  .help-left-bar.open {
+     @apply translate-x-0;
+   }
+}
+
 @keyframes matrix-rain {
   0% {
     background-position: 0 0;
