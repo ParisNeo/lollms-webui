@@ -6,7 +6,7 @@
 @tailwind utilities;
 
 :root {
-  --lollms-title: L🐠llMS;
+  --lollms-title: LollMS;
   --falling-object: "";
   --activate-dropping-animation: 0;
   --lollms-welcome-short-message: Welcome to LoLLMS;
