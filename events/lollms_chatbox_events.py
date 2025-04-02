@@ -45,6 +45,7 @@ def add_events(sio: socketio):
 
     @sio.on("create_empty_message")
     def create_empty_message(sid, data):
+        ASCIIColors.yellow("Creating empty user message")
         client_id = sid
         type = int(data.get("type", 0))
         message = data.get("message", "")

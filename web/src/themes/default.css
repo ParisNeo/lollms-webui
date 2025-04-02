@@ -1035,6 +1035,59 @@ animation: bounce 1s infinite;
      @apply translate-x-0;
    }
 }
+/* Add Keyframes for the bubble animation (Adjusted for downward pop) */
+@keyframes bubble-in-down {
+  0% {
+    opacity: 0;
+    /* Start slightly above final position, smaller, invisible */
+    transform: translate(-50%, -10px) scale(0.8);
+  }
+  60% {
+    opacity: 1;
+    /* Overshoot slightly downwards */
+    transform: translate(-50%, 2px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    /* Settle in final position */
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Define the base animation utility */
+@layer utilities {
+  .animate-bubble-in-down {
+    animation-name: bubble-in-down;
+    animation-duration: 0.3s; /* Control animation speed */
+    animation-fill-mode: forwards; /* Keep final state */
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy easing */
+  }
+}
+
+@layer components {
+  /* Enhanced Thought Bubble Style (Appears Below) */
+  .animated-thought-bubble {
+    @apply absolute top-full left-1/2 mt-2 /* Position BELOW icon with space */
+           w-max max-w-[160px] /* Allow width to fit content, max width */
+           opacity-0 invisible /* Initially hidden */
+           bg-blue-200 dark:bg-blue-700 rounded-lg shadow-xl p-2 text-center z-20 /* Styling */
+           pointer-events-none /* Disable clicks initially */
+           origin-top /* Set transform origin for scaling from the TOP */
+           transition-opacity duration-150 /* Add transition for smoother opacity fallback */
+           /* Apply opacity/visibility/pointer events and the ANIMATION utility on hover */
+           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down; /* Use the downward animation */
+  }
+
+  /* Arrow for the bubble (Pointing UP) */
+  .animated-thought-bubble::after {
+    content: '';
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2 /* Position arrow ABOVE the bubble */
+           border-[7px] border-solid border-transparent /* Arrow shape */
+           /* Make the BOTTOM border colored to point arrow UP */
+           border-b-blue-200 dark:border-b-blue-700;
+  }
+}
+
 
 @keyframes matrix-rain {
   0% {

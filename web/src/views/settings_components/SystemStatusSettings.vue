@@ -185,174 +185,177 @@
     </div>
 </template>
 
-
-<script setup>
-import { ref, computed, onMounted, onUnmounted, onUpdated, nextTick } from 'vue';
+<script>
 import feather from 'feather-icons';
 import filesize from '@/plugins/filesize'; // Make sure this path is correct
-import SVGGPU from '@/assets/gpu.svg';
+import SVGGPU from '@/assets/gpu.svg'; // Import SVG for template use
 import axios from 'axios';
 
-// --- Configuration ---
+// --- Configuration (defined outside component export) ---
 const REFRESH_INTERVAL_MS = 15000; // Refresh stats every 15 seconds
 const VITE_LOLLMS_API_BASEURL = import.meta.env.VITE_LOLLMS_API_BASEURL || 'http://localhost:9600'; // Default API URL
 
-// --- State ---
-const diskUsage = ref(null);
-const ramUsage = ref(null);
-const vramUsage = ref(null);
-const clientId = ref(''); // Will be fetched or set
-const refreshTimer = ref(null);
-
-// --- API Setup ---
+// --- API Setup (defined outside component export) ---
 axios.defaults.baseURL = VITE_LOLLMS_API_BASEURL;
 const posts_headers = {
     'accept': 'application/json',
     'Content-Type': 'application/json'
 };
 
-// --- Computed Properties ---
-const totalVram = computed(() => {
-    if (!vramUsage.value || !vramUsage.value.gpus) return 0;
-    return vramUsage.value.gpus.reduce((sum, gpu) => sum + gpu.total_vram, 0);
-});
+export default {
+    name: 'SystemStatusPanel',
+    // No components: {} needed as it has no child components
 
-const totalVramUsed = computed(() => {
-    if (!vramUsage.value || !vramUsage.value.gpus) return 0;
-    return vramUsage.value.gpus.reduce((sum, gpu) => sum + gpu.used_vram, 0);
-});
+    data() {
+        return {
+            diskUsage: null,
+            ramUsage: null,
+            vramUsage: null,
+            refreshTimer: null,
+            SVGGPU: SVGGPU // Expose imported SVG to the template
+        };
+    },
 
-const avgVramPercentage = computed(() => {
-    if (!vramUsage.value || !vramUsage.value.gpus || vramUsage.value.gpus.length === 0) return '0.00';
-    const totalPercentage = vramUsage.value.gpus.reduce((sum, gpu) => sum + gpu.percentage, 0);
-    return (totalPercentage / vramUsage.value.gpus.length).toFixed(2);
-});
+    computed: {
+        totalVram() {
+            if (!this.vramUsage || !this.vramUsage.gpus) return 0;
+            return this.vramUsage.gpus.reduce((sum, gpu) => sum + gpu.total_vram, 0);
+        },
 
+        totalVramUsed() {
+            if (!this.vramUsage || !this.vramUsage.gpus) return 0;
+            return this.vramUsage.gpus.reduce((sum, gpu) => sum + gpu.used_vram, 0);
+        },
 
-// --- Methods ---
-const api_get_req = async (endpoint) => {
-    try {
-        const res = await axios.get(`/${endpoint}`);
-        return res.data;
-    } catch (error) {
-        console.error(`API GET Error (${endpoint}):`, error.message);
-        // Optionally show a user-facing error, but avoid flooding
-        return null; // Return null to indicate failure
-    }
-};
-
-const api_post_req = async (endpoint, data = {}) => {
-    try {
-        const payload = { ...data, client_id: clientId.value }; // Always include client_id
-        const res = await axios.post(`/${endpoint}`, payload, { headers: posts_headers });
-        return res.data;
-    } catch (error) {
-        console.error(`API POST Error (${endpoint}):`, error.message);
-        // Optionally show a user-facing error
-        return { status: false, error: error.message }; // Return error status
-    }
-};
-
-const computedFileSize = (size) => {
-    if (size === null || size === undefined || isNaN(size)) return 'N/A';
-    try {
-        return filesize(size);
-    } catch (e) {
-        console.warn("Filesize calculation error:", e);
-        return 'Error';
-    }
-};
-
-const refreshHardwareUsage = async () => {
-    console.log("Refreshing hardware usage...");
-    // Fetch data concurrently
-    const [diskData, ramData, vramData] = await Promise.all([
-        api_get_req("disk_usage"),
-        api_get_req("ram_usage"),
-        api_get_req("vram_usage")
-    ]);
-
-    diskUsage.value = diskData;
-    ramUsage.value = ramData;
-    vramUsage.value = vramData;
-
-    // Ensure Feather icons are re-rendered after data update
-    nextTick(() => {
-        feather.replace();
-    });
-};
-
-const handleFolderClick = async (folderType) => {
-    if (!clientId.value) {
-        console.error("Client ID not available for handleFolderClick");
-        // Maybe show a toast here
-        return;
-    }
-    const payload = {
-        folder: folderType,
-        // client_id is added automatically by api_post_req
-    };
-    try {
-        const response = await api_post_req('open_personal_folder', payload);
-        if (response.status) {
-            console.log(`Successfully opened folder: ${folderType}`);
-            // Replace show_toast with console log or implement a local toast system
-            console.info(`Opened ${folderType.replace('-', ' ')} folder`);
-        } else {
-            console.error(`Failed to open folder: ${folderType}`, response.error);
-             console.error(`Failed to open folder: ${response.error || 'Unknown error'}`);
+        avgVramPercentage() {
+            if (!this.vramUsage || !this.vramUsage.gpus || this.vramUsage.gpus.length === 0) return '0.00';
+            const totalPercentage = this.vramUsage.gpus.reduce((sum, gpu) => sum + gpu.percentage, 0);
+            return (totalPercentage / this.vramUsage.gpus.length).toFixed(2);
         }
-    } catch (error) {
-        console.error('Error calling open_personal_folder endpoint:', error);
-         console.error(`Error opening folder: ${error.message}`);
+    },
+
+    methods: {
+        async api_get_req(endpoint) {
+            try {
+                const res = await axios.get(`/${endpoint}`);
+                return res.data;
+            } catch (error) {
+                console.error(`API GET Error (${endpoint}):`, error.message);
+                return null; // Return null to indicate failure
+            }
+        },
+
+        async api_post_req(endpoint, data = {}) {
+            try {
+                const payload = { ...data, client_id: this.$store.state.client_id }; // Use this.clientId
+                const res = await axios.post(`/${endpoint}`, payload, { headers: posts_headers });
+                return res.data;
+            } catch (error) {
+                console.error(`API POST Error (${endpoint}):`, error.message);
+                return { status: false, error: error.message }; // Return error status
+            }
+        },
+
+        computedFileSize(size) {
+            if (size === null || size === undefined || isNaN(size)) return 'N/A';
+            try {
+                // filesize is imported globally, no 'this' needed
+                return filesize(size);
+            } catch (e) {
+                console.warn("Filesize calculation error:", e);
+                return 'Error';
+            }
+        },
+
+        async refreshHardwareUsage() {
+            console.log("Refreshing hardware usage...");
+            // Fetch data concurrently
+            const [diskData, ramData, vramData] = await Promise.all([
+                this.api_get_req("disk_usage"),
+                this.api_get_req("ram_usage"),
+                this.api_get_req("vram_usage")
+            ]);
+
+            // Update data properties using 'this'
+            this.diskUsage = diskData;
+            this.ramUsage = ramData;
+            this.vramUsage = vramData;
+
+            // Ensure Feather icons are re-rendered after data update
+            this.$nextTick(() => { // Use this.$nextTick
+                feather.replace();
+            });
+        },
+
+        async handleFolderClick(folderType) {
+            if (!this.clientId) {
+                console.error("Client ID not available for handleFolderClick");
+                // Maybe show a toast here
+                return;
+            }
+            const payload = {
+                folder: folderType,
+                // client_id is added automatically by api_post_req using this.clientId
+            };
+            try {
+                // Call method using 'this'
+                const response = await this.api_post_req('open_personal_folder', payload);
+                if (response.status) {
+                    console.log(`Successfully opened folder: ${folderType}`);
+                    console.info(`Opened ${folderType.replace('-', ' ')} folder`);
+                } else {
+                    console.error(`Failed to open folder: ${folderType}`, response.error);
+                    console.error(`Failed to open folder: ${response.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error calling open_personal_folder endpoint:', error);
+                console.error(`Error opening folder: ${error.message}`);
+            }
+        },
+
+        initializeClientId() {
+            const storedClientId = localStorage.getItem('lollms_client_id');
+            if (storedClientId) {
+                this.clientId = storedClientId; // Use this.clientId
+            } else {
+                this.clientId = `client_${Date.now()}_${Math.random().toString(16).substring(2, 8)}`;
+                localStorage.setItem('lollms_client_id', this.clientId);
+                console.warn("Generated temporary client ID:", this.clientId);
+            }
+        }
+    },
+
+    mounted() {
+        this.initializeClientId(); // Call method using 'this'
+        this.refreshHardwareUsage(); // Initial fetch
+
+        // Set up auto-refresh timer, store timer ID in data property
+        this.refreshTimer = setInterval(this.refreshHardwareUsage, REFRESH_INTERVAL_MS);
+
+        // Initial Feather icon rendering
+        this.$nextTick(() => { // Use this.$nextTick
+            feather.replace();
+        });
+    },
+
+    updated() {
+        // This ensures icons are updated if the template changes after initial mount
+        this.$nextTick(() => { // Use this.$nextTick
+            feather.replace();
+        });
+    },
+
+    unmounted() {
+        // Clear the timer when the component is destroyed
+        if (this.refreshTimer) {
+            clearInterval(this.refreshTimer); // Use data property
+        }
     }
 };
-
-// Function to get client ID (example - replace with your actual logic)
-const initializeClientId = () => {
-    // Try getting from localStorage, global variable, or an initial API call
-    const storedClientId = localStorage.getItem('lollms_client_id');
-    if (storedClientId) {
-        clientId.value = storedClientId;
-    } else {
-        // Fallback or generate/fetch a new one if necessary
-        // For demonstration, let's generate a simple one (NOT recommended for production)
-        clientId.value = `client_${Date.now()}_${Math.random().toString(16).substring(2, 8)}`;
-        localStorage.setItem('lollms_client_id', clientId.value);
-        console.warn("Generated temporary client ID:", clientId.value);
-    }
-};
-
-// --- Lifecycle Hooks ---
-onMounted(() => {
-    initializeClientId(); // Get the client ID first
-    refreshHardwareUsage(); // Initial fetch
-
-    // Set up auto-refresh timer
-    refreshTimer.value = setInterval(refreshHardwareUsage, REFRESH_INTERVAL_MS);
-
-    nextTick(() => {
-        feather.replace();
-    });
-});
-
-onUpdated(() => {
-    // This ensures icons are updated if the template changes after initial mount
-    nextTick(() => {
-        feather.replace();
-    });
-});
-
-onUnmounted(() => {
-    // Clear the timer when the component is destroyed
-    if (refreshTimer.value) {
-        clearInterval(refreshTimer.value);
-    }
-});
-
 </script>
 
 <style scoped>
+/* Styles remain exactly the same */
 .folder-button {
     @apply flex flex-col items-center justify-center p-4 cursor-pointer border-2 border-dashed rounded-lg transition-all duration-200;
     min-height: 100px; /* Ensure buttons have a minimum height */
@@ -379,4 +382,5 @@ onUnmounted(() => {
 .duration-300 {
     transition-duration: 300ms;
 }
+
 </style>

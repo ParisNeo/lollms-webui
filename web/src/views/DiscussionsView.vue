@@ -1,907 +1,875 @@
 <template>
-  <!-- Transition for the entire welcome screen -->
-  <transition name="fade-smooth">
-    <div
-      v-if="!isReady"
-      class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden theme-bg-primary theme-text-primary"
-      
-    >
-      <!--
-        The `theme-bg-primary` and `theme-text-primary` classes should be defined
-        by your theme system to set the appropriate background and default text color
-        for both light and dark modes.
-      -->
-
-      <!-- Optional: Falling Stars Background Effect -->
+    <!-- Transition for the entire welcome screen -->
+    <transition name="fade-smooth">
       <div
-        v-if="$store.state.theme_vars.activate_dropping_animation"
-        class="absolute inset-0 pointer-events-none overflow-hidden opacity-70"
+        v-if="!isReady"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-gradient-welcome text-blue-800 dark:text-blue-100" 
+        
       >
+        <!-- Optional: Falling Stars Background Effect -->
         <div
-          v-for="n in 60"
-          :key="n"
-          class="absolute animate-fall text-xs theme-falling-object-color"
-          :style="{
-            left: `${Math.random() * 100}%`,
-            top: `-30px`,
-            animationDuration: `${4 + Math.random() * 8}s`,
-            animationDelay: `${Math.random() * 6}s`,
-            opacity: `${0.3 + Math.random() * 0.5}`
-          }"
+          v-if="$store.state.theme_vars.activate_dropping_animation"
+          class="absolute inset-0 pointer-events-none overflow-hidden opacity-70"
         >
-           {{ $store.state.theme_vars.falling_object || '·' }}
-        </div>
-      </div>
-
-      <!-- Main Content Area -->
-      <div class="relative z-10 flex w-full max-w-4xl flex-col items-center px-6 text-center">
-
-        <!-- Logo/Title Section -->
-        <div class="mb-10 w-full">
-          <!-- Optional Logo -->
-          <!-- <img src="/path/to/logo.svg" alt="LoLLMs Logo" class="h-16 mx-auto mb-6 theme-logo-filter"> -->
-          <!-- theme-logo-filter could apply invert(1) or brightness(0) depending on theme -->
-
-          <h1 class="lollms-title-style mb-3 text-5xl font-extrabold tracking-tight drop-shadow-md md:text-7xl transition-transform duration-300 hover:scale-[1.03] theme-text-title">
-            <!-- Use a specific class for title if needed, otherwise inherits theme-text-primary -->
-            {{ $store.state.config?.app_custom_name || $store.state.theme_vars.lollms_title || 'LoLLMs' }}
-          </h1>
-          <p class="text-xl italic md:text-2xl theme-text-secondary">
-            <!-- Secondary text color class -->
-            {{ $store.state.config?.app_custom_slogan || 'One tool to rule them all' }}
-          </p>
-          <p v-if="shouldShowLollmsParagraphs" class="mt-4 text-base theme-text-muted">
-            <!-- Muted text color class -->
-            by ParisNeo
-          </p>
-           <p class="mt-1 text-sm theme-text-muted">
-             <!-- Muted text color class -->
-             {{ version_info }}
-           </p>
-        </div>
-
-        <!-- Fun Fact Card -->
-         <div v-if="shouldShowLollmsFunFacts && randomFact"
-              class="mb-8 w-full max-w-xl cursor-pointer rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300 theme-card-bg theme-card-border hover:theme-card-bg-hover hover:theme-card-border-hover"
-              @click="updateRandomFact">
-              <!--
-                Theme classes for card background, border, and their hover states.
-                The theme CSS should handle background opacity/blur if desired.
-              -->
-             <p class="text-base theme-text-card-body">
-                <!-- Specific text color for card body, might differ from theme-text-muted -->
-                 <span class="font-semibold theme-text-highlight">🤔 Fun Fact: </span>
-                 <!-- Highlight color class -->
-                 <span v-html="randomFact" class="italic"></span>
-             </p>
-         </div>
-
-
-        <!-- Progress Section -->
-        <div class="w-full max-w-lg">
-          <!-- Enhanced Progress Bar -->
-          <div class="mb-3 h-3 w-full overflow-hidden rounded-full shadow-inner animated-progressbar-bg">
-            <!-- Progress bar background track class -->
-            <div
-              class="h-full rounded-full shadow-md transition-all duration-500 ease-out animated-progressbar-fg"
-              :style="{ width: `${loading_progress}%` }"
-            ></div>
+          <div
+            v-for="n in 60"
+            :key="n"
+            class="absolute animate-fall text-xs text-blue-300 dark:text-blue-500"
+            :style="{
+              left: `${Math.random() * 100}%`,
+              top: `-30px`,
+              animationDuration: `${4 + Math.random() * 8}s`,
+              animationDelay: `${Math.random() * 6}s`,
+              opacity: `${0.3 + Math.random() * 0.5}`
+            }"
+          >
+             {{ $store.state.theme_vars.falling_object || '·' }}
           </div>
-
-          <!-- Loading Status Text -->
-          <div role="status" class="w-full">
-            <p class="mb-1 text-lg transition-opacity duration-300 theme-text-secondary" :key="loading_infos">
+        </div>
+  
+        <!-- Main Content Area -->
+        <div class="relative z-10 flex w-full max-w-4xl flex-col items-center px-6 text-center">
+  
+          <!-- Logo/Title Section -->
+          <div class="mb-10 w-full">
+            <!-- Optional Logo -->
+            <!-- <img src="/path/to/logo.svg" alt="LoLLMs Logo" class="h-16 mx-auto mb-6 theme-logo-filter"> -->
+            <!-- theme-logo-filter could apply invert(1) or brightness(0) depending on theme -->
+  
+            <h1 class="lollms-title-style mb-3 text-5xl font-extrabold tracking-tight drop-shadow-md md:text-7xl transition-transform duration-300 hover:scale-[1.03]">
+              <!-- Use a specific class for title if needed, otherwise inherits theme-text-primary -> Using lollms-title-style -->
+              {{ $store.state.config?.app_custom_name || $store.state.theme_vars.lollms_title || 'LoLLMs' }}
+            </h1>
+            <p class="text-xl italic md:text-2xl text-subtitle">
               <!-- Secondary text color class -->
-              {{ loading_infos }}...
+              {{ $store.state.config?.app_custom_slogan || 'One tool to rule them all' }}
             </p>
-            <p class="text-2xl font-semibold theme-text-primary">
-              <!-- Primary text color class -->
-              {{ Math.round(loading_progress) }}%
+            <p v-if="shouldShowLollmsParagraphs" class="mt-4 text-base text-author">
+              <!-- Muted text color class -->
+              by ParisNeo
             </p>
+             <p class="mt-1 text-sm text-author">
+               <!-- Muted text color class -->
+               {{ version_info }}
+             </p>
           </div>
+  
+          <!-- Fun Fact Card -->
+           <div v-if="shouldShowLollmsFunFacts && randomFact"
+                class="mb-8 w-full max-w-xl cursor-pointer rounded-lg border p-4 shadow-lg backdrop-blur-sm transition-all duration-300 card border-blue-300 dark:border-blue-600 hover:bg-blue-200 dark:hover:bg-blue-700 hover:border-blue-400 dark:hover:border-blue-500"
+                @click="updateRandomFact">
+                <!--
+                  Theme classes for card background, border, and their hover states.
+                  The theme CSS should handle background opacity/blur if desired. -> Using card and hover states
+                -->
+               <p class="text-base text-blue-800 dark:text-blue-200">
+                  <!-- Specific text color for card body, might differ from theme-text-muted -->
+                   <span class="font-semibold text-blue-600 dark:text-blue-400">🤔 Fun Fact: </span>
+                   <!-- Highlight color class -->
+                   <span v-html="randomFact" class="italic"></span>
+               </p>
+           </div>
+  
+  
+          <!-- Progress Section -->
+          <div class="w-full max-w-lg">
+            <!-- Enhanced Progress Bar -->
+            <div class="mb-3 h-3 w-full overflow-hidden rounded-full shadow-inner animated-progressbar-bg">
+              <!-- Progress bar background track class -->
+              <div
+                class="h-full rounded-full shadow-md transition-all duration-500 ease-out animated-progressbar-fg"
+                :style="{ width: `${loading_progress}%` }"
+              ></div>
+            </div>
+  
+            <!-- Loading Status Text -->
+            <div role="status" class="w-full">
+              <p class="mb-1 text-lg transition-opacity duration-300 text-loading" :key="loading_infos">
+                <!-- Secondary text color class -->
+                {{ loading_infos }}...
+              </p>
+              <p class="text-2xl font-semibold text-progress">
+                <!-- Primary text color class -->
+                {{ Math.round(loading_progress) }}%
+              </p>
+            </div>
+          </div>
+  
         </div>
-
       </div>
-    </div>
-  </transition>
-    <transition name="slide-right">
-    <div  v-if="showLeftPanel"
-        class="relative flex flex-col no-scrollbar shadow-lg w-[16rem] "
-        >
-            <RouterLink :to="{ name: 'discussions' }" class="flex items-center space-x-2"> <!-- Added space-x-2 -->
-                <div class="logo-container"> <!-- Removed mr-1 -->
-                <img class="w-12 h-12 rounded-full object-cover logo-image" 
-                    :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo !=null && $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
-                    alt="Logo" :title="$store.state.config&&$store.state.config.app_custom_name&&$store.state.config.app_custom_name!=''?$store.state.config.app_custom_logo:'LoLLMS WebUI'">
-                </div>
-                <div class="flex flex-col justify-center">
-                    <div class="text-center p-2">
-                        <div class="text-md relative inline-block">
-                            <span class="relative inline-block font-bold tracking-wide text-black dark:text-white">
-                                {{$store.state.config&&$store.state.config.app_custom_name&&$store.state.config.app_custom_name!=''?$store.state.config.app_custom_name:'LoLLMS WebUI'}}
-                            </span>
-                            <div class="absolute -bottom-0.5 left-0 w-full h-0.5 
-                                        bg-black dark:bg-white
-                                        transform origin-left transition-transform duration-300
-                                        hover:scale-x-100 scale-x-0"></div>
-                        </div>
-                    </div>
-
-
-                <p class="text-gray-400 text-sm">{{$store.state.config&&$store.state.config.app_custom_slogan&&$store.state.config.app_custom_slogan!=''?$store.state.config.app_custom_slogan:'One tool to rule them all'}}</p>
-                </div>
-            </RouterLink>
-
-            <div class="toolbar discussion">
+    </transition>
+      <transition name="slide-right">
+      <div  v-if="showLeftPanel"
+          class="relative flex flex-col no-scrollbar shadow-lg w-[16rem] panels-color scrollbar" 
+          >
+              <RouterLink :to="{ name: 'discussions' }" class="flex items-center space-x-2 p-2 border-b border-blue-200 dark:border-blue-700"> <!-- Added padding and border -->
+                  <div class="logo-container"> 
+                  <img class="w-12 h-12 rounded-full object-cover logo-image border-2 border-blue-300 dark:border-blue-600 shadow-sm"
+                      :src="$store.state.config == null ? storeLogo : $store.state.config.app_custom_logo !=null && $store.state.config.app_custom_logo != '' ? '/user_infos/' + $store.state.config.app_custom_logo : storeLogo" 
+                      alt="Logo" :title="$store.state.config&&$store.state.config.app_custom_name&&$store.state.config.app_custom_name!=''?$store.state.config.app_custom_logo:'LoLLMs WebUI'">
+                  </div>
+                  <div class="flex flex-col justify-center">
+                      <div class="text-center p-2">
+                          <div class="text-md relative inline-block">
+                              <span class="relative inline-block font-bold tracking-wide text-blue-800 dark:text-blue-100 text-gradient-title"> <!-- Used text-gradient-title -->
+                                  {{$store.state.config&&$store.state.config.app_custom_name&&$store.state.config.app_custom_name!=''?$store.state.config.app_custom_name:'LoLLMS WebUI'}}
+                              </span>
+                              <div class="absolute -bottom-0.5 left-0 w-full h-0.5 
+                                          bg-blue-500 dark:bg-blue-400 <!-- Changed underline color -->
+                                          transform origin-left transition-transform duration-300
+                                          hover:scale-x-100 scale-x-0"></div>
+                          </div>
+                      </div>
+  
+  
+                  <p class="text-blue-600 dark:text-blue-400 text-sm text-subtitle"> <!-- Used text-subtitle -->
+                      {{$store.state.config&&$store.state.config.app_custom_slogan&&$store.state.config.app_custom_slogan!=''?$store.state.config.app_custom_slogan:'One tool to rule them all'}}
+                  </p>
+                  </div>
+              </RouterLink>
+              <div class="toolbar-color flex items-center p-1 justify-around"> 
                 <!-- Toolbar container -->
-                <div class="toolbar-container">                    
+                <div class="toolbar-container flex items-center gap-1 relative"> <!-- Added relative positioning for absolute children -->                    
                     <!-- "+" button -->
                     <button 
-                        class="toolbar-button" 
+                        class="toolbar-button svg-button" 
                         title="Create new discussion" 
                         @click="createNewDiscussion"
                     >
-                        <i data-feather="plus"></i>
+                        <i data-feather="plus" class="w-5 h-5"></i> <!-- Ensured icon size -->
                     </button>
-                    <div class="toolbar-button" @mouseleave="hideSkillsLibraryMenu" v-if="!loading">
-                        <!-- Expandable menu positioned above the button -->
-                        <div v-show="isSkillsLibraryMenuVisible" @mouseenter="showSkillsLibraryMenu" class="absolute m-0 p-0 z-50 top-full left-0 transform bg-white dark:bg-bg-dark rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                            <div class="p-4 flex flex-wrap gap-2 items-center">
-                                <!-- Add to skills database -->
-                                <button 
-                                    v-if="!loading" 
-                                    type="button" 
-                                    @click.stop="addDiscussion2SkillsLibrary" 
-                                    title="Add this discussion content to skills database" 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                >
-                                    <i data-feather="plus"></i>
-                                </button>
-
-                                <!-- Toggle skills database -->
-                                <button 
-                                    v-if="!loading && $store.state.config.activate_skills_lib" 
-                                    type="button" 
-                                    @click.stop="toggleSkillsLib" 
-                                    title="Skills database is activated" 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                >
-                                    <i data-feather="check-circle"></i>
-                                </button>
-                                <button 
-                                    v-if="!loading && !$store.state.config.activate_skills_lib" 
-                                    type="button" 
-                                    @click.stop="toggleSkillsLib" 
-                                    title="Skills database is deactivated" 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                >
-                                    <i data-feather="x-octagon"></i>
-                                </button>
-                                
-                                <!-- Show skills database -->
-                                <button 
-                                    v-if="!loading" 
-                                    type="button" 
-                                    @click.stop="showSkillsLib" 
-                                    title="Show Skills database" 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                >
-                                    <i data-feather="book"></i>
-                                </button>
-                            </div>
-                        </div>
+                    
+                    <!-- Skills Library Menu Button & Popup -->
+                    <div class="relative" @mouseleave="hideSkillsLibraryMenu" v-if="!loading">
                         <!-- Menu toggle button -->
                         <div @mouseenter="showSkillsLibraryMenu" class="menu-hover-area">
-                            <button class="w-8 h-8" title="Toggle Skills library menu">
-                                <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <button class="toolbar-button svg-button" title="Toggle Skills library menu">
+                                <svg class="w-5 h-5" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M4 4v16h16V4H4zm2 2h12v12H6V6zm2 2h2v8H8V8zm3 0h2v8h-2V8zm3 0h2v8h-2V8z" fill="currentColor"/>
                                 </svg>
-
                             </button>
-                        </div>                        
+                        </div>   
+                        <!-- Expandable menu positioned below the button -->
+                        <div v-show="isSkillsLibraryMenuVisible" 
+                            @mouseenter="showSkillsLibraryMenu" 
+                            class="absolute top-full left-0 mt-2 z-50 transform card p-2 flex flex-wrap gap-2 items-center shadow-lg"> <!-- Changed bottom-full to top-full, mb-2 to mt-2, added shadow -->
+                            <!-- Add to skills database -->
+                            <button 
+                                v-if="!loading" 
+                                type="button" 
+                                @click.stop="addDiscussion2SkillsLibrary" 
+                                title="Add this discussion content to skills database" 
+                                class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                            >
+                                <i data-feather="plus" class="w-5 h-5"></i>
+                            </button>
+
+                            <!-- Toggle skills database -->
+                            <button 
+                                v-if="!loading && $store.state.config.activate_skills_lib" 
+                                type="button" 
+                                @click.stop="toggleSkillsLib" 
+                                title="Skills database is activated" 
+                                class="svg-button text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-200"
+                            >
+                                <i data-feather="check-circle" class="w-5 h-5"></i>
+                            </button>
+                            <button 
+                                v-if="!loading && !$store.state.config.activate_skills_lib" 
+                                type="button" 
+                                @click.stop="toggleSkillsLib" 
+                                title="Skills database is deactivated" 
+                                class="svg-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200"
+                            >
+                                <i data-feather="x-octagon" class="w-5 h-5"></i>
+                            </button>
+                            
+                            <!-- Show skills database -->
+                            <button 
+                                v-if="!loading" 
+                                type="button" 
+                                @click.stop="showSkillsLib" 
+                                title="Show Skills database" 
+                                class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                            >
+                                <i data-feather="book" class="w-5 h-5"></i>
+                            </button>
+                        </div>                     
                     </div>
-                    <div class="toolbar-button" @mouseleave="hideMenu" v-if="!loading">
-                        <!-- Expandable menu positioned above the button -->
-                        <div v-show="isMenuVisible" @mouseenter="showMenu" class="absolute m-0 p-0 z-50 top-full left-0 transform bg-white dark:bg-bg-dark rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                            <div class="p-4 flex flex-wrap gap-2 items-center">
-                                <!-- Edit discussion list -->
-                                <button 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" 
-                                    title="Edit discussion list" 
-                                    type="button" 
-                                    @click="isCheckbox = !isCheckbox" 
-                                    :class="isCheckbox ? 'text-secondary dark:text-secondary-light' : 'text-gray-700 dark:text-gray-300'"
-                                >
-                                    <i data-feather="check-square"></i>
-                                </button>
 
-                                <!-- Reset database -->
-                                <button 
-                                    class="text-3xl hover:text-red-500 dark:hover:text-red-400 duration-150 active:scale-95" 
-                                    title="Reset database, remove all discussions" 
-                                    @click.stop=""
-                                >
-                                    <i data-feather="trash-2"></i>
-                                </button>
-
-                                <!-- Export database -->
-                                <button 
-                                    class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95" 
-                                    title="Export database" 
-                                    type="button" 
-                                    @click.stop="database_selectorDialogVisible=true"
-                                >
-                                    <i data-feather="database"></i>
-                                </button>
-
-                                <!-- Import discussions -->
-                                <div class="relative">
-                                    <input type="file" ref="fileDialog" class="hidden" @change="importDiscussions" />
-                                    <button 
-                                        class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95 rotate-90" 
-                                        title="Import discussions" 
-                                        type="button" 
-                                        @click.stop="$refs.fileDialog.click()"
-                                    >
-                                        <i data-feather="log-in"></i>
-                                    </button>
-                                </div>
-
-                                <!-- Import discussion bundle -->
-                                <div class="relative">
-                                    <input type="file" ref="bundleLoadingDialog" class="hidden" @change="importDiscussionsBundle" />
-                                    <button 
-                                        v-if="!showSaveConfirmation" 
-                                        title="Import discussion bundle" 
-                                        @click.stop="$refs.bundleLoadingDialog.click()" 
-                                        class="text-3xl hover:text-secondary dark:hover:text-secondary-light duration-150 active:scale-95"
-                                    >
-                                        <i data-feather="folder"></i>
-                                    </button>
-                                </div>
-
-
-                                <!-- Loading spinner -->
-                                <div v-if="loading" title="Loading.." class="flex justify-center">
-                                    <div role="status">
-                                        <svg aria-hidden="true" class="w-8 h-8 animate-spin fill-secondary dark:fill-secondary-light" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
-                                            <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
-                                        </svg>
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-
-                                <!-- Save confirmation -->
-                                <div v-if="showSaveConfirmation" class="flex justify-center space-x-4">
-                                    <button class="text-3xl hover:text-red-500 dark:hover:text-red-400 duration-150 active:scale-95" title="Cancel" type="button" @click.stop="showSaveConfirmation = false">
-                                        <i data-feather="x"></i>
-                                    </button>
-                                    <button class="text-3xl hover:text-green-500 dark:hover:text-green-400 duration-150 active:scale-95" title="Confirm save changes" type="button" @click.stop="save_configuration()">
-                                        <i data-feather="check"></i>
-                                    </button>
-                                </div>
-
-                                <!-- Import options -->
-                                <div v-if="isOpen" class="flex flex-col space-y-2">
-                                    <button @click="importDiscussions" class="text-sm hover:text-secondary dark:hover:text-secondary-light">LOLLMS</button> 
-                                    <button @click="importChatGPT" class="text-sm hover:text-secondary dark:hover:text-secondary-light">ChatGPT</button>
-                                </div>
-                            </div>
-                        </div>
-
+                    <!-- Main Menu Button & Popup -->
+                    <div class="relative" @mouseleave="hideMenu" v-if="!loading">
                         <!-- Menu toggle button -->
                         <div @mouseenter="showMenu" class="menu-hover-area">
-                            <button class="w-8 h-8" title="Toggle menu">
-                                <i data-feather="menu"></i>
+                            <button class="toolbar-button svg-button" title="Toggle menu">
+                                <i data-feather="menu" class="w-5 h-5"></i>
                             </button>
                         </div>
-                    </div>
+                        <!-- Expandable menu positioned below the button -->
+                        <div v-show="isMenuVisible" 
+                            @mouseenter="showMenu" 
+                            class="absolute top-full left-0 mt-2 z-50 transform card p-2 flex flex-wrap gap-2 items-center shadow-lg"> <!-- Changed bottom-full to top-full, mb-2 to mt-2, added shadow -->
+                            <!-- Edit discussion list -->
+                            <button 
+                                class="svg-button" 
+                                title="Edit discussion list" 
+                                type="button" 
+                                @click="isCheckbox = !isCheckbox" 
+                                :class="isCheckbox ? 'text-blue-600 dark:text-blue-400 bg-blue-200 dark:bg-blue-700' : 'text-gray-600 dark:text-gray-300'"
+                            >
+                                <i data-feather="check-square" class="w-5 h-5"></i>
+                            </button>
+
+                            <!-- Reset database -->
+                            <button 
+                                class="svg-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200" 
+                                title="Reset database, remove all discussions" 
+                                @click.stop=""
+                            >
+                                <i data-feather="trash-2" class="w-5 h-5"></i>
+                            </button>
+
+                            <!-- Export database -->
+                            <button 
+                                class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200" 
+                                title="Export database" 
+                                type="button" 
+                                @click.stop="database_selectorDialogVisible=true"
+                            >
+                                <i data-feather="database" class="w-5 h-5"></i>
+                            </button>
+
+                            <!-- Import discussions -->
+                            <div class="relative">
+                                <input type="file" ref="fileDialog" class="hidden" @change="importDiscussions" />
+                                <button 
+                                    class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 rotate-90" 
+                                    title="Import discussions" 
+                                    type="button" 
+                                    @click.stop="$refs.fileDialog.click()"
+                                >
+                                    <i data-feather="log-in" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <!-- Import discussion bundle -->
+                            <div class="relative">
+                                <input type="file" ref="bundleLoadingDialog" class="hidden" @change="importDiscussionsBundle" />
+                                <button 
+                                    v-if="!showSaveConfirmation" 
+                                    title="Import discussion bundle" 
+                                    @click.stop="$refs.bundleLoadingDialog.click()" 
+                                    class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                                >
+                                    <i data-feather="folder" class="w-5 h-5"></i>
+                                </button>
+                            </div>
 
 
-
-
-                    <div class="toolbar-button" @mouseleave="hideBindingsMenu" v-if="!loading">
-                        <div class="relative inline-block">
-                            <!-- Bindings menu positioned above the button -->
-                            <div v-show="isBindingsMenuVisible" @mouseenter="showBindingsMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-80 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                <!-- Search Bar -->
-                                <div class="p-2 border-b border-gray-200 dark:border-gray-700">
-                                    <input 
-                                        type="text" 
-                                        v-model="bindingSearchQuery" 
-                                        placeholder="Search bindings..." 
-                                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                </div>
-                                
-                                <div class="p-4 grid grid-cols-3 gap-4 max-h-80 overflow-y-auto custom-scrollbar">
-                                    <div 
-                                        v-for="(item, index) in filteredBindings" 
-                                        :key="index" 
-                                        class="relative group/item flex flex-col items-center"
-                                    >                             
-                                        <!-- Icon and Name Container -->
-                                        <div class="flex flex-col items-center hover:bg-blue-100 dark:hover:bg-blue-900 p-2 rounded-md w-full cursor-pointer">
-                                            <button 
-                                                @click.prevent="setBinding(item)" 
-                                                :title="item.name" 
-                                                class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-105 focus:outline-none"
-                                            >
-                                                <img 
-                                                    :src="item.icon ? item.icon : modelImgPlaceholder" 
-                                                    :alt="item.name" 
-                                                    class="w-full h-full object-cover" 
-                                                    :class="{'border-2 border-secondary': item.name == binding_name}"
-                                                >
-                                            </button>
-                                            
-                                            <!-- Truncated Name -->
-                                            <span class="mt-1 text-xs text-center w-full truncate" :title="item.name">
-                                                {{ item.name }}
-                                            </span>
-                                        </div>
-
-                                        <!-- Hover Options -->
-                                        <div 
-                                            class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
-                                        >
-                                            <!-- Full Name -->
-                                            <span class="text-xs font-medium mb-2 text-center"
-                                            @click.prevent="setBinding(item)"                                             
-                                            >{{ item.name }}</span>
-                                            
-                                            <!-- Action Buttons -->
-                                            <div class="flex space-x-1">
-                                                <button 
-                                                    @click.prevent="showModelConfig(item)" 
-                                                    class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" 
-                                                    title="Configure Binding"
-                                                >
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <!-- Loading spinner -->
+                            <div v-if="loading" title="Loading.." class="flex justify-center">
+                                <div role="status">
+                                    <svg aria-hidden="true" class="w-6 h-6 animate-spin text-blue-500 dark:text-blue-400" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" />
+                                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" />
+                                    </svg>
+                                    <span class="sr-only">Loading...</span>
                                 </div>
                             </div>
 
-                            <div @mouseenter="showBindingsMenu" class="bindings-hover-area">
-                                <button @click.prevent="showModelConfig()" class="w-6 h-6">
-                                    <img :src="currentBindingIcon"
-                                        class="w-6 h-6 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-200"
-                                        :title="currentBinding ? currentBinding.name : 'unknown'">
+                            <!-- Save confirmation -->
+                            <div v-if="showSaveConfirmation" class="flex justify-center space-x-2"> <!-- Reduced spacing -->
+                                <button class="svg-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200" title="Cancel" type="button" @click.stop="showSaveConfirmation = false">
+                                    <i data-feather="x" class="w-5 h-5"></i>
                                 </button>
+                                <button class="svg-button text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-200" title="Confirm save changes" type="button" @click.stop="save_configuration()">
+                                    <i data-feather="check" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+
+                            <!-- Import options -->
+                            <div v-if="isOpen" class="flex flex-col space-y-1"> <!-- Reduced spacing -->
+                                <button @click="importDiscussions" class="link text-sm">LOLLMS</button> 
+                                <button @click="importChatGPT" class="link text-sm">ChatGPT</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Bindings Menu Button & Popup -->
+                    <div class="relative" @mouseleave="hideBindingsMenu" v-if="!loading">
+                        <div @mouseenter="showBindingsMenu" class="bindings-hover-area">
+                            <button @click.prevent="showModelConfig()" class="w-6 h-6 block" :title="currentBinding ? currentBinding.name : 'unknown'">
+                                <img :src="currentBindingIcon"
+                                    class="w-full h-full rounded-full object-cover border-2 border-blue-300 dark:border-blue-600 active:scale-90 hover:border-blue-500 dark:hover:border-blue-400 hover:scale-110 hover:-translate-y-1 duration-200 transition-transform"
+                                    :alt="currentBinding ? currentBinding.name : 'Binding icon'">
+                            </button>
+                        </div>
+                        <!-- Bindings menu positioned below the button -->
+                        <div v-show="isBindingsMenuVisible"
+                            @mouseenter="showBindingsMenu"
+                            class="absolute top-full left-0 mt-2 z-10 transform w-80 panels-color rounded-md shadow-lg ring-1 ring-blue-400 dark:ring-blue-600 ring-opacity-50 focus:outline-none transition-all duration-300 ease-out">
+                            <!-- Search Bar -->
+                            <div class="p-2 border-b border-blue-300 dark:border-blue-600">
+                                <input
+                                    type="text"
+                                    v-model="bindingSearchQuery"
+                                    placeholder="Search bindings..."
+                                    class="w-full input input-sm"
+                                >
+                            </div>
+
+                            <div class="p-4 grid grid-cols-3 gap-x-4 gap-y-6 max-h-80 overflow-y-auto scrollbar"> <!-- Adjusted gap-y -->
+                                <div
+                                    v-for="(item, index) in filteredBindings"
+                                    :key="index"
+                                    class="relative group/item flex flex-col items-center"
+                                >
+                                    <!-- Icon Button -->
+                                    <button
+                                        @click.prevent="setBinding(item)"
+                                        :title="item.name"
+                                        :class="item.name == binding_name ? 'border-blue-500 dark:border-blue-400' : 'border-transparent hover:border-blue-300 dark:hover:border-blue-500'"
+                                    >
+                                        <img
+                                            :src="item.icon ? item.icon : modelImgPlaceholder"
+                                            :alt="item.name"
+                                            class="w-full h-full object-cover"
+                                        >
+                                    </button>
+
+                                    <!-- REMOVED always visible truncated name -->
+                                    <!-- <span class="mt-1 text-xs text-center w-full truncate text-blue-700 dark:text-blue-200" :title="item.name"> -->
+                                    <!--    {{ item.name }} -->
+                                    <!-- </span> -->
+
+                                    <!-- Hover "Thought Bubble" - Enhanced Animation -->
+                                    <div class="animated-thought-bubble">
+                                        <!-- Full Name -->
+                                        <span class="text-xs font-medium mb-1 block text-blue-800 dark:text-blue-100 cursor-pointer"
+                                            @click.prevent="setBinding(item)"
+                                        >{{ item.name }}</span>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex space-x-1 justify-center">
+                                            <button
+                                                @click.prevent="showModelConfig(item)"
+                                                class="p-1 btn-secondary btn-sm rounded-full hover:scale-110 transition-transform duration-150"
+                                                title="Configure Binding"
+                                            >
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="toolbar-button" @mouseleave="hideModelsMenu" v-if="!loading">
-                        <div class="relative inline-block">
-                            <!-- Models menu positioned above the button -->
-                            <div v-show="isModelsMenuVisible" @mouseenter="showModelsMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-80 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                <!-- Search Bar -->
-                                <div class="p-2 border-b border-gray-200 dark:border-gray-700">
-                                    <input 
-                                        type="text" 
-                                        v-model="modelSearchQuery" 
-                                        placeholder="Search models..." 
-                                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                </div>
-                                
-                                <div class="p-4 grid grid-cols-3 gap-4 max-h-80 overflow-y-auto custom-scrollbar">
-                                    <div 
-                                        v-for="(item, index) in filteredModels" 
-                                        :key="index" 
-                                        class="relative group/item flex flex-col items-center"
-                                    >                             
-                                        <!-- Icon and Name Container -->
-                                        <div class="flex flex-col items-center hover:bg-blue-100 dark:hover:bg-blue-900 p-2 rounded-md w-full cursor-pointer">
-                                            <button 
-                                                @click.prevent="setModel(item)" 
-                                                :title="item.name" 
-                                                class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-105 focus:outline-none"
-                                            >
-                                                <img 
-                                                    :src="item.icon ? item.icon : modelImgPlaceholder" 
-                                                    :alt="item.name" 
-                                                    class="w-full h-full object-cover" 
-                                                    :class="{'border-2 border-secondary': item.name == model_name}"
-                                                >
-                                            </button>
-                                            
-                                            <!-- Truncated Name -->
-                                            <span class="mt-1 text-xs text-center w-full truncate" :title="item.name">
-                                                {{ item.name }}
-                                            </span>
-                                        </div>
+                    <!-- Models Menu Button & Popup -->
+                    <div class="relative" @mouseleave="hideModelsMenu" v-if="!loading">
+                        <div @mouseenter="showModelsMenu" class="models-hover-area">
+                            <button @click.prevent="copyModelName()" class="w-6 h-6 block" :title="currentModel ? currentModel.name : 'unknown'">
+                                <img :src="currentModelIcon"
+                                    class="w-full h-full rounded-full object-cover border-2 border-blue-300 dark:border-blue-600 active:scale-90 hover:border-blue-500 dark:hover:border-blue-400 hover:scale-110 hover:-translate-y-1 duration-200 transition-transform"
+                                    :alt="currentModel ? currentModel.name : 'Model icon'">
+                            </button>
+                        </div>
+                        <!-- Models menu positioned below the button -->
+                        <div v-show="isModelsMenuVisible"
+                            @mouseenter="showModelsMenu"
+                            class="absolute top-full left-0 mt-2 z-10 transform w-80 panels-color rounded-md shadow-lg ring-1 ring-blue-400 dark:ring-blue-600 ring-opacity-50 focus:outline-none transition-all duration-300 ease-out">
+                            <!-- Search Bar -->
+                            <div class="p-2 border-b border-blue-300 dark:border-blue-600">
+                                <input
+                                    type="text"
+                                    v-model="modelSearchQuery"
+                                    placeholder="Search models..."
+                                    class="w-full input input-sm"
+                                >
+                            </div>
 
-                                        <!-- Hover Options -->
-                                        <div 
-                                            class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
+                            <div class="p-4 grid grid-cols-3 gap-x-4 gap-y-6 max-h-80 overflow-y-auto scrollbar"> <!-- Adjusted gap-y -->
+                                <div
+                                    v-for="(item, index) in filteredModels"
+                                    :key="index"
+                                    class="relative group/item flex flex-col items-center"
+                                >
+                                    <!-- Icon Button -->
+                                    <button
+                                        @click.prevent="setModel(item)"
+                                        :title="item.name"
+                                        class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none border-2 mb-1"
+                                        :class="item.name == model_name ? 'border-blue-500 dark:border-blue-400' : 'border-transparent hover:border-blue-300 dark:hover:border-blue-500'"
+                                    >
+                                        <img
+                                            :src="item.icon ? item.icon : modelImgPlaceholder"
+                                            :alt="item.name"
+                                            class="w-full h-full object-cover"
                                         >
-                                            <!-- Full Name -->
-                                            <span class="text-xs font-medium mb-2 text-center"
-                                            @click.prevent="setModel(item)"                                             
-                                            >{{ item.name }}</span>
-                                            
-                                            <!-- Action Buttons -->
-                                            <div class="flex space-x-1">
-                                                <button 
-                                                    @click.prevent="copyModelNameFrom(item.name)" 
-                                                    class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" 
-                                                    title="Copy Model Name"
-                                                >
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                                </button>
-                                            </div>
+                                    </button>
+
+                                    <!-- Hover "Thought Bubble" - Enhanced Animation -->
+                                    <div class="animated-thought-bubble">
+                                        <!-- Full Name -->
+                                        <span class="text-xs font-medium mb-1 block text-blue-800 dark:text-blue-100 cursor-pointer"
+                                            @click.prevent="setModel(item)"
+                                        >{{ item.name }}</span>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex space-x-1 justify-center">
+                                            <button
+                                                @click.prevent="copyModelNameFrom(item.name)"
+                                                class="p-1 btn-secondary btn-sm rounded-full hover:scale-110 transition-transform duration-150"
+                                                title="Copy Model Name"
+                                            >
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div @mouseenter="showModelsMenu" class="models-hover-area">
-                                <button @click.prevent="copyModelName()" class="w-6 h-6">
-                                    <img :src="currentModelIcon"
-                                        class="w-6 h-6 rounded-full object-fill text-red-700 border-2 active:scale-90 hover:border-secondary hover:scale-110 hover:-translate-y-1 duration-400"
-                                        :title="currentModel ? currentModel.name : 'unknown'">
-                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Personalities menu positioned below the dock -->
-                    <div class="toolbar-button" @mouseleave="hidePersonalitiesMenu" v-if="!loading">
-                        <div class="relative inline-block">
-                            <!-- Personalities menu positioned above the button -->
-                            <div v-show="isPersonalitiesMenuVisible" @mouseenter="showPersonalitiesMenu" class="absolute m-0 p-0 z-10 top-full left-0 transform w-80 bg-white dark:bg-gray-900 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none transition-all duration-300 ease-out mb-2">
-                                <!-- Search Bar -->
-                                <div class="p-2 border-b border-gray-200 dark:border-gray-700">
-                                    <input 
-                                        type="text" 
-                                        v-model="personalitySearchQuery" 
-                                        placeholder="Search personalities..." 
-                                        class="w-full px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    >
-                                </div>
-                                
-                                <div class="p-4 grid grid-cols-3 gap-4 max-h-80 overflow-y-auto custom-scrollbar">
-                                    <div 
-                                        v-for="(item, index) in filteredPersonalities" 
-                                        :key="index" 
-                                        class="relative group/item flex flex-col items-center"
-                                    >                             
-                                        <!-- Icon and Name Container -->
-                                        <div class="flex flex-col items-center hover:bg-blue-100 dark:hover:bg-blue-900 p-2 rounded-md w-full cursor-pointer">
-                                            <button 
-                                                @click.prevent="onPersonalitySelected(item)" 
-                                                :title="item.name" 
-                                                class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-105 focus:outline-none"
-                                            >
-                                                <img 
-                                                    :src="item.avatar"
-                                                    :alt="item.name" 
-                                                    class="w-full h-full object-cover" 
-                                                    :class="{'border-2 border-secondary': $store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path)}"
-                                                >
-                                            </button>
-                                            
-                                            <!-- Truncated Name -->
-                                            <span class="mt-1 text-xs text-center w-full truncate" :title="item.name">
-                                                {{ item.name }}
-                                            </span>
-                                        </div>
-
-                                        <!-- Hover Options -->
-                                        <div 
-                                            class="absolute top-0 left-0 w-full h-full opacity-0 group-hover/item:opacity-100 transition-opacity duration-200 bg-white dark:bg-gray-900 rounded-md shadow-md p-2 flex flex-col items-center justify-center"
-                                        >
-                                            <!-- Full Name -->
-                                            <span class="text-xs font-medium mb-2 text-center" 
-                                            @click.prevent="onPersonalitySelected(item)"                                             
-                                            >{{ item.name }}</span>
-                                            
-                                            <!-- Action Buttons -->
-                                            <div class="flex space-x-1">
-                                                <button 
-                                                    @click.prevent="unmountPersonality(item)" 
-                                                    class="p-1 bg-red-500 rounded-full text-white hover:bg-red-600 focus:outline-none" 
-                                                    title="Unmount"
-                                                >
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                                                </button>
-                                                <button 
-                                                    @click.prevent="remount_personality(item)" 
-                                                    class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none" 
-                                                    title="Remount"
-                                                >
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                                </button>
-                                                <button 
-                                                    @click.prevent="handleOnTalk(item)" 
-                                                    class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none" 
-                                                    title="Talk"
-                                                >
-                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="personalities-container">
-                                <div @mouseenter="showPersonalitiesMenu" class="personalities-hover-area">
+                    <!-- Personalities Menu Button & Popup -->
+                    <div class="relative" @mouseleave="hidePersonalitiesMenu" v-if="!loading">
+                        <div class="personalities-container">
+                            <div @mouseenter="showPersonalitiesMenu" class="personalities-hover-area">
                                 <MountedPersonalities ref="mountedPers" :onShowPersList="onShowPersListFun" :onReady="onPersonalitiesReadyFun"/>
-                                </div>
                             </div>
                         </div>
-                    </div>
- 
-                    
-            </div>
-        </div>
-        <!-- Search bar -->
-        <div class="w-auto max-w-md mx-auto p-2">
-            <form @submit.prevent="handleSearch" class="relative">
-                <!-- Search input container -->
-                <div class="flex items-center">
-                    <div class="relative flex-grow">
-                        <!-- Search input -->
-                        <input 
-                            type="search" 
-                            id="default-search" 
-                            class="block w-full h-8 px-8 text-sm border border-gray-300 rounded-md
-                                bg-bg-light focus:ring-1 focus:ring-secondary focus:border-secondary 
-                                dark:bg-bg-dark dark:border-gray-600 dark:placeholder-gray-400 
-                                dark:focus:ring-secondary dark:focus:border-secondary
-                                transition-all duration-200"
-                            placeholder="Search discussions..." 
-                            title="Filter discussions by title" 
-                            v-model="filterTitle"
-                            @keyup.enter="handleSearch"
-                        />
+                        <!-- Personalities menu positioned below the button -->
+                        <div v-show="isPersonalitiesMenuVisible"
+                            @mouseenter="showPersonalitiesMenu"
+                            class="absolute top-full left-0 mt-2 z-10 transform w-80 panels-color rounded-md shadow-lg ring-1 ring-blue-400 dark:ring-blue-600 ring-opacity-50 focus:outline-none transition-all duration-300 ease-out">
+                            <!-- Search Bar -->
+                            <div class="p-2 border-b border-blue-300 dark:border-blue-600">
+                                <input
+                                    type="text"
+                                    v-model="personalitySearchQuery"
+                                    placeholder="Search personalities..."
+                                    class="w-full input input-sm"
+                                >
+                            </div>
 
-                        <!-- Search icon -->
-                        <div class="absolute left-2 top-1/2 -translate-y-1/2">
-                            <i data-feather="search" class="w-4 h-4 text-gray-400"></i>
-                        </div>
-
-                        <!-- Submit button -->
-                        <button 
-                            type="submit"
-                            class="absolute right-2 top-1/2 -translate-y-1/2
-                                text-gray-600 hover:text-secondary 
-                                rounded-full hover:bg-gray-100 dark:hover:bg-gray-700
-                                focus:ring-1 focus:ring-secondary
-                                transition-all duration-150 active:scale-98"
-                            title="Search"
-                        >
-                            <i data-feather="arrow-right" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-
-
-
-        <!-- Checkbox operations -->
-        <div v-if="isCheckbox" class="w-full p-4 bg-bg-light dark:bg-bg-dark">
-            <div class="flex flex-col space-y-2">
-                <p v-if="selectedDiscussions.length > 0">Selected: {{ selectedDiscussions.length }}</p>
-                <div v-if="selectedDiscussions.length > 0" class="flex space-x-2">
-                    <button v-if="!showConfirmation" class="text-2xl hover:text-red-600 duration-75 active:scale-90" title="Remove selected" type="button" @click.stop="showConfirmation = true">
-                    <i data-feather="trash"></i>
-                    </button>
-                    <div v-if="showConfirmation" class="flex space-x-2">
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
-                        <i data-feather="check"></i>
-                    </button>
-                    <button class="text-2xl hover:text-red-600 duration-75 active:scale-90" title="Cancel removal" type="button" @click.stop="showConfirmation = false">
-                        <i data-feather="x"></i>
-                    </button>
-                    </div>
-                </div>
-                <div class="flex space-x-2">
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90" title="Export selected to a json file" type="button" @click.stop="exportDiscussionsAsJson">
-                    <i data-feather="codepen"></i>
-                    </button>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90" title="Export selected to a markdown file" type="button" @click.stop="exportDiscussions">
-                    <i data-feather="folder"></i>
-                    </button>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90 rotate-90" title="Export selected to a markdown file" type="button" @click.stop="exportDiscussionsAsMarkdown">
-                    <i data-feather="bookmark"></i>
-                    </button>
-                    <button class="text-2xl hover:text-secondary duration-75 active:scale-90" title="Select All" type="button" @click.stop="selectAllDiscussions">
-                    <i data-feather="list"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- LEFT SIDE PANEL -->
-        <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll overflow-x-hidden custom-scrollbar "
-            @dragover.stop.prevent="setDropZoneDiscussion()">
-
-            <div class="relative flex flex-row flex-grow mb-10 z-0  w-full">
-                <!-- DISCUSSION LIST -->
-                <div class="mx-0 flex flex-col flex-grow  w-full " :class="isDragOverDiscussion ? 'pointer-events-none' : ''">
-                    <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
-                        class="flex flex-col flex-grow w-full pb-80">
-                        <TransitionGroup v-if="discussionsList.length > 0" name="discussionsList">
-                            <Discussion v-for="(item, index) in discussionsList" :key="item.id" :id="item.id" :title="item.title"
-                                :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
-                                :checkBoxValue="item.checkBoxValue"
-                                :openfolder_enabled="true"
-                                @select="selectDiscussion(item)"
-                                @delete="deleteDiscussion(item.id)" 
-                                @openFolder="openFolder"
-                                @editTitle="editTitle" 
-                                @makeTitle="makeTitle"
-                                @checked="checkUncheckDiscussion" />
-                        </TransitionGroup>
-                        <div v-if="discussionsList.length < 1"
-                            class="gap-2 py-2 my-2 hover:shadow-md hover:bg-primary-light dark:hover:bg-primary rounded-md p-2 duration-75 group cursor-pointer">
-                            <p class="px-3">No discussions are found</p>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="flex flex-row items-center justify-center panels-color">
-            <div class="chat-bar text-center flex items-center" @click="showDatabaseSelector">
-                <ChatBarButton>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
-                    <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                </svg>
-                </ChatBarButton>
-                <p class="text-center font-large font-bold text-l drop-shadow-md align-middle">{{ formatted_database_name.replace("_"," ") }}</p>
-            </div>
-        </div>
-
-    </div>
-    </transition>
-        <div v-if="isReady" class="relative flex flex-col flex-grow" >
-            <div id="messages-list"
-                class="w-full z-0 flex flex-col  flex-grow  overflow-y-auto scrollbar"
-                :class="isDragOverChat ? 'pointer-events-none' : ''">
-
-                <!-- CHAT AREA -->
-                <div class="container pt-4 pb-50 mb-50 w-full">
-                    <TransitionGroup v-if="discussionArr.length > 0" name="list">
-                        <Message v-for="(msg, index) in discussionArr" 
-                            :key="msg.id" :message="msg"  :id="'msg-' + msg.id" :ref="'msg-' + msg.id"
-                            :host="host"
-                            
-                            @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
-                            @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage" @continueMessage="continueMessage"
-                            :avatar="getAvatar(msg.sender)" />
-                        
-                        <!-- REMOVED FOR NOW, NEED MORE TESTING -->
-                        <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
-                        <div v-if="discussionArr.length < 2 && personality.prompts_list.length > 0" class="w-full rounded-lg m-2 shadow-lg hover:border-primary dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent even:bg-bg-light-discussion-odd dark:even:bg-bg-dark-discussion-odd flex flex-col overflow-hidden p-4 pb-2">
-                            <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">Prompt Examples</h2>
-                            <div class="overflow-x-auto flex-grow scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-200 dark:scrollbar-track-gray-800 scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
-                                <div class="flex flex-nowrap gap-6 p-4 min-w-full">
-                                    <div 
-                                        v-for="(prompt, index) in personality.prompts_list" 
-                                        :title="extractTitle(prompt)"
-                                        :key="index" 
-                                        @click="handlePromptSelection(prompt)"
-                                        class="flex-shrink-0 w-[300px] bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between min-h-[220px] group"
+                            <div class="p-4 grid grid-cols-3 gap-x-4 gap-y-6 max-h-80 overflow-y-auto scrollbar"> <!-- Adjusted gap-y -->
+                                <div
+                                    v-for="(item, index) in filteredPersonalities"
+                                    :key="index"
+                                    class="relative group/item flex flex-col items-center"
+                                >
+                                    <!-- Icon Button -->
+                                    <button
+                                        @click.prevent="onPersonalitySelected(item)"
+                                        :title="item.name"
+                                        class="w-12 h-12 rounded-md overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none border-2 mb-1"
+                                        :class="$store.state.active_personality_id == $store.state.personalities.indexOf(item.full_path) ? 'border-blue-500 dark:border-blue-400' : 'border-transparent hover:border-blue-300 dark:hover:border-blue-500'"
                                     >
-                                        <div class="space-y-3">
-                                            <h3 
-                                                class="font-bold text-lg text-gray-900 dark:text-gray-100 mb-2 truncate"
-                                                :title="extractTitle(prompt)"
+                                        <img
+                                            :src="item.avatar"
+                                            :alt="item.name"
+                                            class="w-full h-full object-cover"
+                                        >
+                                    </button>
+
+                                    <!-- Hover "Thought Bubble" - Enhanced Animation -->
+                                    <div class="animated-thought-bubble">
+                                        <!-- Full Name -->
+                                        <span class="text-xs font-medium mb-1 block text-blue-800 dark:text-blue-100 cursor-pointer"
+                                            @click.prevent="onPersonalitySelected(item)"
+                                        >{{ item.name }}</span>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex space-x-1 justify-center">
+                                            <button
+                                                @click.prevent="unmountPersonality(item)"
+                                                class="p-1 bg-red-500 rounded-full text-white hover:bg-red-600 focus:outline-none btn-sm hover:scale-110 transition-transform duration-150"
+                                                title="Unmount"
                                             >
-                                                {{ extractTitle(prompt) }}
-                                            </h3>
-                                            <div 
-                                                :title="prompt" 
-                                                class="text-base text-gray-700 dark:text-gray-300 overflow-hidden line-clamp-4"
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                            </button>
+                                            <button
+                                                @click.prevent="remount_personality(item)"
+                                                class="p-1 btn-secondary btn-sm rounded-full hover:scale-110 transition-transform duration-150"
+                                                title="Remount"
                                             >
-                                                {{ getPromptContent(prompt) }}
-                                            </div>
-                                        </div>
-                                        <div class="mt-4 text-sm font-medium text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            Click to select
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                            </button>
+                                            <button
+                                                @click.prevent="handleOnTalk(item)"
+                                                class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none btn-sm hover:scale-110 transition-transform duration-150"
+                                                title="Talk"
+                                            >
+                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-
-                            <!-- Enhanced Modal for placeholder inputs with live preview -->
-                            <div v-if="showPlaceholderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
-                                    <h3 class="text-lg font-semibold mb-4">Fill in the placeholders</h3>
-                                    
-                                    <!-- Container with flex layout -->
-                                    <div class="flex-1 flex flex-col min-h-0">
-                                        <!-- Live Preview Section -->
-                                        <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                                            <h4 class="text-sm font-medium mb-2 text-gray-600 dark:text-gray-400">Live Preview:</h4>
-                                            <div class="flex-1 h-[200px] overflow-y-auto scrollbar scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-500 scrollbar-track-gray-200 dark:scrollbar-track-gray-700 scrollbar-thin rounded-md">
-                                                <span class="text-base whitespace-pre-wrap">{{ getPromptContent(previewPrompt) }}</span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Scrollable Container for Placeholders -->
-                                        <div class="flex-1 overflow-y-auto">
-                                            <div class="space-y-4">
-                                                <div v-for="(placeholder, index) in parsedPlaceholders" :key="placeholder.fullText" class="flex flex-col">
-                                                    <label :for="'placeholder-'+index" class="text-sm font-medium mb-1">
-                                                        {{ placeholder.label }}
-                                                    </label>
-
-                                                    <!-- Single line text input -->
-                                                    <input 
-                                                        v-if="placeholder.type === 'text'"
-                                                        :id="'placeholder-'+index"
-                                                        v-model="placeholderValues[index]"
-                                                        type="text"
-                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        :placeholder="placeholder.label"
-                                                        @input="updatePreview"
-                                                    >
-
-                                                    <!-- Number input (int) -->
-                                                    <input 
-                                                        v-if="placeholder.type === 'int'"
-                                                        :id="'placeholder-'+index"
-                                                        v-model.number="placeholderValues[index]"
-                                                        type="number"
-                                                        step="1"
-                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        @input="updatePreview"
-                                                    >
-
-                                                    <!-- Number input (float) -->
-                                                    <input 
-                                                        v-if="placeholder.type === 'float'"
-                                                        :id="'placeholder-'+index"
-                                                        v-model.number="placeholderValues[index]"
-                                                        type="number"
-                                                        step="0.01"
-                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        @input="updatePreview"
-                                                    >
-
-                                                    <!-- Multiline text input -->
-                                                    <textarea 
-                                                        v-if="placeholder.type === 'multiline'"
-                                                        :id="'placeholder-'+index"
-                                                        v-model="placeholderValues[index]"
-                                                        rows="4"
-                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        @input="updatePreview"
-                                                    ></textarea>
-
-                                                    <!-- Code editor -->
-                                                    <div v-if="placeholder.type === 'code'" class="border rounded-md overflow-hidden">
-                                                        <div class="bg-gray-200 dark:bg-gray-900 p-2 text-sm">
-                                                            {{ placeholder.language || 'Plain text' }}
-                                                        </div>
-                                                        <textarea 
-                                                            :id="'placeholder-'+index"
-                                                            v-model="placeholderValues[index]"
-                                                            rows="8"
-                                                            class="w-full p-2 font-mono bg-gray-100 dark:bg-gray-900 border-t"
-                                                            @input="updatePreview"
-                                                        ></textarea>
-                                                    </div>
-
-                                                    <!-- Options (dropdown) -->
-                                                    <select 
-                                                        v-if="placeholder.type === 'options'"
-                                                        :id="'placeholder-'+index"
-                                                        v-model="placeholderValues[index]"
-                                                        class="border rounded-md p-2 dark:bg-gray-700 dark:border-gray-600"
-                                                        @change="updatePreview"
-                                                    >
-                                                        <option value="" disabled>Select an option</option>
-                                                        <option 
-                                                            v-for="option in placeholder.options" 
-                                                            :key="option" 
-                                                            :value="option"
-                                                        >
-                                                            {{ option }}
-                                                        </option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Footer with buttons -->
-                                    <div class="mt-6 flex justify-end space-x-4">
-                                        <button 
-                                            @click="cancelPlaceholders"
-                                            class="px-4 py-2 text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button 
-                                            @click="applyPlaceholders"
-                                            class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                                        >
-                                            Apply
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
                         </div>
-
-
-                    </TransitionGroup>
-                    <WelcomeComponent v-if="!currentDiscussion.id" />
-                    <div><br><br><br><br><br><br><br></div>
+                    </div>
                 </div>
+            </div>              
+  
 
-                <div
-                    class="absolute w-full bottom-0 bg-transparent p-10 pt-16 bg-gradient-to-t from-bg-light dark:from-bg-dark from-5% via-bg-light dark:via-bg-dark via-10% to-transparent to-100%">
-                </div>
-            </div>
-            <div class="w-full flex flex-row items-center justify-center h-10 mx-auto" v-if="currentDiscussion.id">
-
-                <ChatBox ref="chatBox" 
-                    :loading="isGenerating" 
-                    :discussionList="discussionArr" 
-                    :on-show-toast-message="showToastMessage"
-                    :on-talk="talk"
-
-                    @personalitySelected="recoverFiles"
-                    @messageSentEvent="sendMsg" 
-                    @sendCMDEvent="sendCmd"
-                    @addWebLink="add_webpage"
-                    @createEmptyUserMessage="createEmptyUserMessage"
-                    @createEmptyAIMessage="createEmptyAIMessage"
-                    @stopGenerating="stopGenerating" 
-                    @loaded="recoverFiles"
-                    >
-                </ChatBox>
-            </div>        
-        </div>
-    <transition name="slide-left">
-    <div  v-if="showRightPanel"
-        class="relative flex flex-col no-scrollbar shadow-lg w-1/2 bg-bg-light-tone dark:bg-bg-dark-tone h-full"
-        >
-        <!-- RIGHT SIDE PANEL -->
-         <!--  <div v-html="lastMessageHtml"></div> --> 
-        <div ref="isolatedContent" class="h-full"></div>
-    </div>
-    </transition>
-    <ChoiceDialog reference="database_selector" class="z-20"
-      :show="database_selectorDialogVisible"
-      :choices="databases"
-      :can-remove=true      
-      @choice-removed="ondatabase_selectorDialogRemoved"
-      @choice-selected="ondatabase_selectorDialogSelected"
-      @close-dialog="onclosedatabase_selectorDialog"
-      @choice-validated="onvalidatedatabase_selectorChoice"
-    />      
-    <div v-show="progress_visibility" role="status" class="fixed m-0 p-2 left-2 bottom-2 min-w-[24rem] max-w-[24rem] h-20 flex flex-col justify-center items-center pb-4 bg-blue-500 rounded-lg shadow-lg z-50 background-a">
-    <ProgressBar ref="progress" :progress="progress_value" class="w-full h-4"></ProgressBar>
-    <p class="text-2xl animate-pulse mt-2 text-white">{{ loading_infos }} ...</p>
-    </div>     
-    <PersonalityEditor ref="personality_editor" :config="currentPersonConfig" :personality="selectedPersonality"></PersonalityEditor>
-    <div id="app">
-    <PopupViewer ref="news"/>    
-    </div>    
-    
-    <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>
-    <ChangelogPopup/>
-</template>
+          <!-- Search bar -->
+          <div class="w-full max-w-md mx-auto p-2"> <!-- Changed w-auto to w-full -->
+              <form @submit.prevent="handleSearch" class="relative">
+                  <!-- Search input container -->
+                  <div class="flex items-center">
+                      <div class="relative flex-grow">
+                          <!-- Search input -->
+                          <input 
+                              type="search" 
+                              id="default-search" 
+                              class="block w-full h-8 pl-8 pr-10 text-sm input"
+                              placeholder="Search discussions..." 
+                              title="Filter discussions by title" 
+                              v-model="filterTitle"
+                              @keyup.enter="handleSearch"
+                          />
+  
+                          <!-- Search icon -->
+                          <div class="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none"> <!-- Made icon non-interactive -->
+                              <i data-feather="search" class="w-4 h-4 text-gray-400 dark:text-gray-500"></i> 
+                          </div>
+  
+                          <!-- Submit button -->
+                          <button 
+                              type="submit"
+                              class="absolute right-2 top-1/2 -translate-y-1/2 svg-button p-1" 
+                              title="Search"
+                          >
+                              <i data-feather="arrow-right" class="w-4 h-4"></i>
+                          </button>
+                      </div>
+                  </div>
+              </form>
+          </div>
+  
+  
+  
+  
+          <!-- Checkbox operations -->
+          <div v-if="isCheckbox" class="w-full p-2 bg-blue-200 dark:bg-blue-700"> <!-- Changed background, reduced padding -->
+              <div class="flex flex-col space-y-1"> <!-- Reduced spacing -->
+                  <p v-if="selectedDiscussions.length > 0" class="text-sm text-blue-700 dark:text-blue-200">Selected: {{ selectedDiscussions.length }}</p> <!-- Text style -->
+                  <div v-if="selectedDiscussions.length > 0" class="flex space-x-1 items-center"> <!-- Reduced spacing, align items -->
+                      <button v-if="!showConfirmation" class="svg-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200" title="Remove selected" type="button" @click.stop="showConfirmation = true">
+                      <i data-feather="trash" class="w-5 h-5"></i>
+                      </button>
+                      <div v-if="showConfirmation" class="flex space-x-1 items-center"> <!-- Reduced spacing -->
+                      <button class="svg-button text-green-500 hover:text-green-700 dark:text-green-400 dark:hover:text-green-200" title="Confirm removal" type="button" @click.stop="deleteDiscussionMulti">
+                          <i data-feather="check" class="w-5 h-5"></i>
+                      </button>
+                      <button class="svg-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200" title="Cancel removal" type="button" @click.stop="showConfirmation = false">
+                          <i data-feather="x" class="w-5 h-5"></i>
+                      </button>
+                      </div>
+                  </div>
+                  <div class="flex space-x-1 items-center"> <!-- Reduced spacing -->
+                      <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 rotate-90" title="Export selected to a json file" type="button" @click.stop="exportDiscussionsAsJson">
+                      <i data-feather="codepen" class="w-5 h-5"></i>
+                      </button>
+                      <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 rotate-90" title="Export selected to a folder" type="button" @click.stop="exportDiscussions"> <!-- Corrected title -->
+                      <i data-feather="folder" class="w-5 h-5"></i>
+                      </button>
+                      <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200" title="Export selected to a markdown file" type="button" @click.stop="exportDiscussionsAsMarkdown"> <!-- Removed rotate -->
+                      <i data-feather="bookmark" class="w-5 h-5"></i>
+                      </button>
+                      <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200" title="Select All" type="button" @click.stop="selectAllDiscussions">
+                      <i data-feather="list" class="w-5 h-5"></i>
+                      </button>
+                  </div>
+              </div>
+          </div>
+          <!-- LEFT SIDE PANEL -->
+          <div id="leftPanel" class="flex flex-col flex-grow overflow-y-scroll overflow-x-hidden scrollbar"
+              @dragover.stop.prevent="setDropZoneDiscussion()">
+  
+              <div class="relative flex flex-row flex-grow mb-10 z-0 w-full">
+                  <!-- DISCUSSION LIST -->
+                  <div class="mx-0 flex flex-col flex-grow w-full" :class="isDragOverDiscussion ? 'pointer-events-none opacity-50' : ''"> <!-- Added opacity -->
+                      <div id="dis-list" :class="filterInProgress ? 'opacity-20 pointer-events-none' : ''"
+                          class="flex flex-col flex-grow w-full pb-80"> <!-- Removed redundant class -->
+                          <TransitionGroup v-if="discussionsList.length > 0" name="discussionsList">
+                              <!-- Discussion component styling happens internally based on props/state -->
+                              <Discussion v-for="(item, index) in discussionsList" :key="item.id" :id="item.id" :title="item.title"
+                                  :selected="currentDiscussion.id == item.id" :loading="item.loading" :isCheckbox="isCheckbox"
+                                  :checkBoxValue="item.checkBoxValue"
+                                  :openfolder_enabled="true"
+                                  @select="selectDiscussion(item)"
+                                  @delete="deleteDiscussion(item.id)" 
+                                  @openFolder="openFolder"
+                                  @editTitle="editTitle" 
+                                  @makeTitle="makeTitle"
+                                  @checked="checkUncheckDiscussion" />
+                          </TransitionGroup>
+                          <div v-if="discussionsList.length < 1"
+                              class="p-4 text-center text-blue-600 dark:text-blue-400"> <!-- Centered and styled text -->
+                              <p>No discussions found.</p> <!-- Simplified message -->
+                          </div>
+  
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="flex flex-row items-center justify-center border-t border-blue-200 dark:border-blue-700"> <!-- Added border -->
+              <div class="chat-bar text-center flex items-center justify-center w-full" @click="showDatabaseSelector"> <!-- Ensure it fills width and centers -->
+                  <button class="svg-button"> <!-- Changed div to button -->
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 mr-2">
+                      <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                      <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                  </svg>
+                  </button>
+                  <p class="text-center font-semibold text-sm drop-shadow-md align-middle text-blue-700 dark:text-blue-300">
+                      {{ formatted_database_name.replace("_"," ") }}
+                  </p>
+              </div>
+          </div>
+  
+      </div>
+      </transition>
+          <div v-if="isReady" class="relative flex flex-col flex-grow background-color" > <!-- Applied background -->
+              <div id="messages-list"
+                  class="w-full z-0 flex flex-col flex-grow overflow-y-auto scrollbar"
+                  :class="isDragOverChat ? 'pointer-events-none opacity-50' : ''"> <!-- Added opacity -->
+  
+                  <!-- CHAT AREA -->
+                  <div class="container pt-4 pb-50 mb-50 w-full max-w-4xl mx-auto px-4"> <!-- Added max-width, centering and padding -->
+                      <TransitionGroup v-if="discussionArr.length > 0" name="list">
+                           <!-- Message component styling happens internally based on props/state -->
+                          <Message v-for="(msg, index) in discussionArr" 
+                              :key="msg.id" :message="msg"  :id="'msg-' + msg.id" :ref="'msg-' + msg.id"
+                              :host="host"
+                              
+                              @copy="copyToClipBoard" @delete="deleteMessage" @rankUp="rankUpMessage"
+                              @rankDown="rankDownMessage" @updateMessage="updateMessage" @resendMessage="resendMessage" @continueMessage="continueMessage"
+                              :avatar="getAvatar(msg.sender)" />
+                          
+                          <!-- REMOVED FOR NOW, NEED MORE TESTING -->
+                          <!-- @click="scrollToElementInContainer($event.target, 'messages-list')"  -->
+                           <!-- Prompt Examples Section -->
+                          <div v-if="discussionArr.length < 2 && personality.prompts_list.length > 0" class="w-full rounded-lg m-2 shadow-lg border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900 p-4 pb-2">
+                              <h2 class="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-200 border-b border-blue-300 dark:border-blue-600 pb-2">Prompt Examples</h2> <!-- Used h2 style -->
+                              <div class="overflow-x-auto flex-grow scrollbar"> <!-- Applied scrollbar -->
+                                  <div class="flex flex-nowrap gap-4 p-2"> <!-- Adjusted gap and padding -->
+                                      <div 
+                                          v-for="(prompt, index) in personality.prompts_list" 
+                                          :title="extractTitle(prompt)"
+                                          :key="index" 
+                                          @click="handlePromptSelection(prompt)"
+                                          class="flex-shrink-0 w-[300px] card hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between min-h-[200px] group p-4"
+                                      >
+                                          <div class="space-y-2"> <!-- Adjusted spacing -->
+                                              <h3 
+                                                  class="font-semibold text-lg text-blue-800 dark:text-blue-100 mb-1 truncate"
+                                                  :title="extractTitle(prompt)"
+                                              >
+                                                  {{ extractTitle(prompt) }}
+                                              </h3>
+                                              <div 
+                                                  :title="prompt" 
+                                                  class="text-sm text-blue-700 dark:text-blue-300 overflow-hidden line-clamp-4 leading-relaxed" 
+                                              >
+                                                  {{ getPromptContent(prompt) }}
+                                              </div>
+                                          </div>
+                                          <div class="mt-3 text-xs font-medium link opacity-0 group-hover:opacity-100 transition-opacity duration-300"> <!-- Used link style -->
+                                              Click to select
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+  
+  
+                               <!-- Enhanced Modal for placeholder inputs with live preview -->
+                              <div v-if="showPlaceholderModal" class="fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-70 flex items-center justify-center z-50 p-4"> <!-- Added padding -->
+                                  <div class="card max-w-4xl w-full max-h-[90vh] flex flex-col p-0"> <!-- Use card, remove padding -->
+                                      <h3 class="text-lg font-semibold p-4 border-b border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-100">Fill in the placeholders</h3> <!-- Header styling -->
+                                      
+                                      <!-- Container with flex layout -->
+                                      <div class="flex-1 flex flex-col min-h-0 overflow-hidden p-4 space-y-4"> <!-- Added padding and spacing -->
+                                          <!-- Live Preview Section -->
+                                          <div class="p-3 bg-blue-100 dark:bg-blue-800 rounded-lg border border-blue-200 dark:border-blue-700">
+                                              <h4 class="label !mb-1">Live Preview:</h4> <!-- Use label -->
+                                              <div class="flex-1 h-[150px] overflow-y-auto scrollbar bg-white dark:bg-blue-900 p-2 rounded text-sm"> <!-- Adjusted styling -->
+                                                  <span class="whitespace-pre-wrap text-blue-900 dark:text-blue-100">{{ getPromptContent(previewPrompt) }}</span>
+                                              </div>
+                                          </div>
+  
+                                          <!-- Scrollable Container for Placeholders -->
+                                          <div class="flex-1 overflow-y-auto scrollbar space-y-3 pr-2"> <!-- Added scrollbar, spacing, padding -->
+                                              <div v-for="(placeholder, index) in parsedPlaceholders" :key="placeholder.fullText" class="flex flex-col">
+                                                  <label :for="'placeholder-'+index" class="label"> <!-- Use label -->
+                                                      {{ placeholder.label }}
+                                                  </label>
+  
+                                                  <!-- Single line text input -->
+                                                  <input 
+                                                      v-if="placeholder.type === 'text'"
+                                                      :id="'placeholder-'+index"
+                                                      v-model="placeholderValues[index]"
+                                                      type="text"
+                                                      class="input" 
+                                                      :placeholder="placeholder.label"
+                                                      @input="updatePreview"
+                                                  >
+  
+                                                  <!-- Number input (int) -->
+                                                  <input 
+                                                      v-if="placeholder.type === 'int'"
+                                                      :id="'placeholder-'+index"
+                                                      v-model.number="placeholderValues[index]"
+                                                      type="number"
+                                                      step="1"
+                                                      class="input" 
+                                                      @input="updatePreview"
+                                                  >
+  
+                                                  <!-- Number input (float) -->
+                                                  <input 
+                                                      v-if="placeholder.type === 'float'"
+                                                      :id="'placeholder-'+index"
+                                                      v-model.number="placeholderValues[index]"
+                                                      type="number"
+                                                      step="0.01"
+                                                      class="input" 
+                                                      @input="updatePreview"
+                                                  >
+  
+                                                  <!-- Multiline text input -->
+                                                  <textarea 
+                                                      v-if="placeholder.type === 'multiline'"
+                                                      :id="'placeholder-'+index"
+                                                      v-model="placeholderValues[index]"
+                                                      rows="4"
+                                                      class="input" 
+                                                      @input="updatePreview"
+                                                  ></textarea>
+  
+                                                  <!-- Code editor -->
+                                                  <div v-if="placeholder.type === 'code'" class="border border-blue-300 dark:border-blue-600 rounded-md overflow-hidden">
+                                                      <div class="bg-blue-200 dark:bg-blue-700 p-1 px-2 text-xs text-blue-700 dark:text-blue-200"> <!-- Header -->
+                                                          {{ placeholder.language || 'Plain text' }}
+                                                      </div>
+                                                      <textarea 
+                                                          :id="'placeholder-'+index"
+                                                          v-model="placeholderValues[index]"
+                                                          rows="6"
+                                                          class="w-full p-2 font-mono bg-blue-50 dark:bg-blue-900 border-t border-blue-300 dark:border-blue-600 text-sm"
+                                                          @input="updatePreview"
+                                                      ></textarea>
+                                                  </div>
+  
+                                                  <!-- Options (dropdown) -->
+                                                  <select 
+                                                      v-if="placeholder.type === 'options'"
+                                                      :id="'placeholder-'+index"
+                                                      v-model="placeholderValues[index]"
+                                                      class="input" 
+                                                      @change="updatePreview"
+                                                  >
+                                                      <option value="" disabled>Select an option</option>
+                                                      <option 
+                                                          v-for="option in placeholder.options" 
+                                                          :key="option" 
+                                                          :value="option"
+                                                          class="text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-800" 
+                                                      >
+                                                          {{ option }}
+                                                      </option>
+                                                  </select>
+                                              </div>
+                                          </div>
+                                      </div>
+  
+                                      <!-- Footer with buttons -->
+                                      <div class="p-4 flex justify-end space-x-2 border-t border-blue-200 dark:border-blue-700"> <!-- Footer styling -->
+                                          <button 
+                                              @click="cancelPlaceholders"
+                                              class="btn btn-secondary"
+                                          >
+                                              Cancel
+                                          </button>
+                                          <button 
+                                              @click="applyPlaceholders"
+                                              class="btn btn-primary"
+                                          >
+                                              Apply
+                                          </button>
+                                      </div>
+                                  </div>
+                              </div>
+  
+                          </div>
+  
+  
+                      </TransitionGroup>
+                      <WelcomeComponent v-if="!currentDiscussion.id" />
+                      <!-- Spacer -->
+                      <div class="h-40"></div> <!-- Increased spacer height -->
+                  </div>
+  
+                  <!-- Gradient Overlay at the bottom -->
+                   <div class="sticky bottom-0 left-0 right-0 h-48 pointer-events-none bg-gradient-to-t from-blue-100 to-transparent dark:from-blue-900 z-10"></div> <!-- Adjusted gradient -->
+              </div>
+              <div class="sticky bottom-0 left-0 right-0 p-4 z-20 w-full max-w-4xl mx-auto" v-if="currentDiscussion.id"> <!-- Made chatbox sticky -->
+  
+                  <ChatBox ref="chatBox" 
+                      :loading="isGenerating" 
+                      :discussionList="discussionArr" 
+                      :on-show-toast-message="showToastMessage"
+                      :on-talk="talk"
+                      class="toolbar-color p-2"
+  
+                      @personalitySelected="recoverFiles"
+                      @messageSentEvent="sendMsg" 
+                      @sendCMDEvent="sendCmd"
+                      @addWebLink="add_webpage"
+                      @createEmptyUserMessage="createEmptyUserMessage"
+                      @createEmptyAIMessage="createEmptyAIMessage"
+                      @stopGenerating="stopGenerating" 
+                      @loaded="recoverFiles"
+                      >
+                  </ChatBox>
+              </div>        
+          </div>
+      <transition name="slide-left">
+      <div  v-if="showRightPanel"
+          class="relative flex flex-col no-scrollbar shadow-lg w-1/2 panels-color h-full scrollbar"
+          >
+          <!-- RIGHT SIDE PANEL -->
+           <!--  <div v-html="lastMessageHtml"></div> --> 
+          <div ref="isolatedContent" class="h-full p-4 prose-blue dark:prose-invert"></div> <!-- Added padding and prose styles -->
+      </div>
+      </transition>
+      <ChoiceDialog reference="database_selector" class="z-20"
+        :show="database_selectorDialogVisible"
+        :choices="databases"
+        :can-remove=true      
+        @choice-removed="ondatabase_selectorDialogRemoved"
+        @choice-selected="ondatabase_selectorDialogSelected"
+        @close-dialog="onclosedatabase_selectorDialog"
+        @choice-validated="onvalidatedatabase_selectorChoice"
+      />      
+      <div v-show="progress_visibility" role="status" class="fixed m-0 p-4 left-4 bottom-4 min-w-[24rem] max-w-[24rem] h-auto flex flex-col justify-center items-center bg-blue-500 dark:bg-blue-700 rounded-lg shadow-lg z-50 text-white"> 
+      <ProgressBar ref="progress" :progress="progress_value" class="w-full h-3 mb-2"></ProgressBar> 
+      <p class="text-lg font-semibold animate-pulse">{{ loading_infos }} ...</p> 
+      </div>     
+      <PersonalityEditor ref="personality_editor" :config="currentPersonConfig" :personality="selectedPersonality"></PersonalityEditor>
+      <div id="app"> <!-- This seems out of place, typically root is outside component -->
+      <PopupViewer ref="news"/>    
+      </div>    
+      
+      <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>
+      <ChangelogPopup/>
+  </template>
 
 
 <style scoped>
