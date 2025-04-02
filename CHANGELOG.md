@@ -1,5 +1,12 @@
-# LoLLMs v19.10 (Omni) Changelog
-Removed the fish prank!
+# LoLLMs v19.10 (Ghibli) Changelog
+Date: April 02, 2025  
+
+Removed the fish prank! Moving to a new style and a new era of ultra high performance AI. Inspired by the whimsical, hand-crafted charm of Studio Ghibli—because who doesn’t want their AI to feel like a Miyazaki masterpiece? We’re teasing the zeitgeist here, blending cutting-edge tech with that cozy, animated magic.  
+
+Try installing and using the Gemini binding. It is free, all you need is a google API key that you can get from [ai](https://aistudio.google.com/)
+
+The model gemini 2.5 pro is a beast. With lollms, you get the best combination. Try it out.
+
 # LoLLMs v19.1 (Fish 🐠 - April Fool's Edition) Changelog
 Date: April 01, 2025
 
