@@ -1,3 +1,5 @@
+# LoLLMs v19.10 (Omni) Changelog
+Removed the fish prank!
 # LoLLMs v19.1 (Fish 🐠 - April Fool's Edition) Changelog
 Date: April 01, 2025
 

@@ -901,7 +901,6 @@
     
     <SkillsLibraryViewer ref="skills_lib" ></SkillsLibraryViewer>
     <ChangelogPopup/>
-    <Animation />
 </template>
 
 

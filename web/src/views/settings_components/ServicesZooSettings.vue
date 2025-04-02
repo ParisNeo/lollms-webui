@@ -187,7 +187,7 @@ const props = defineProps({
 });
 
 // Emits
-const emit = defineEmits(['update:setting']);
+const emit = defineEmits(['settings-changed']);
 
 // Reactive State
 const ttsServices = ref([]);
@@ -203,16 +203,12 @@ const audioOutputDeviceIndexes = ref([]);
 // --- Methods ---
 const updateValue = (key, value) => {
     // Handle potential parsing for numbers if needed from text inputs
-    const numericKeys = [
-        'stt_listening_threshold', 'stt_silence_duration', 'stt_sound_threshold_percentage',
-        'stt_gain', 'stt_rate', 'stt_channels', 'stt_buffer_size'
-    ];
-    const finalValue = numericKeys.includes(key) ? parseInt(value) || 0 : value;
-    emit('update:setting', { key, value: finalValue });
+
+    emit('settings-changed');
 };
 
 const updateBoolean = (key, value) => {
-    emit('update:setting', { key: key, value: Boolean(value) });
+    emit('settings-changed');
 };
 
 const fetchServiceLists = async () => {

@@ -103,7 +103,7 @@
                 @mount="handleMount(func)"
                 @unmount="handleUnmount(func)"
                 @remount="handleRemount(func)"
-                @settings="handleSettings(func)"
+                @show-settings="handleSettings(func)"
                 @edit="handleEdit(func)"
                  @copy-to-custom="handleCopyToCustom(func)"
                  @copy-name="handleCopyName(func)"
