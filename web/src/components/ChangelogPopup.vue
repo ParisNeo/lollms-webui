@@ -78,7 +78,7 @@ export default {
           if (version_codename) {
             versionString += ` (${version_codename})`;
           }
-          this.$store.commit('setVersion', versionString); // Assuming a mutation exists
+          this.$store.state.version = versionString
           this.currentVersion = versionString;
           return versionString;
         }
