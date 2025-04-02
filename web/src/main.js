@@ -26,6 +26,7 @@ export const store = createStore({
         theme_vars: {lollms_title:"LoLLMS", falling_object:"L", activate_dropping_animation:false, lollms_welcome_short_message:"Welcome to LoLLMS WebUI", lollms_welcome_message:"Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence."},
         personalities_ready: false,
         is_rt_on:false,
+        topBarPinned:false,
         language: "english",
         languages: [],
         currentTheme: '',
@@ -123,6 +124,9 @@ export const store = createStore({
       setpersonalitiesReady(state, personalities_ready) {
         state.personalities_ready = personalities_ready;
       },
+      setTopBarPinned(state, topBarPinned) {
+        state.topBarPinned = topBarPinned;
+      },
       setisRTOn(state, is_rt_on) {
         state.is_rt_on = is_rt_on;
       },
@@ -215,6 +219,10 @@ export const store = createStore({
       
       getpersonalitiesReady(state){
         return state.personalities_ready;
+      },
+      
+      getTopBarPinned(state) {
+        return state.topBarPinned;
       },
       getisRTOn(state) {
         return state.is_rt_on;

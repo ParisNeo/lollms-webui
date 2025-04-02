@@ -223,11 +223,15 @@ export default {
         },
 
         totalVramUsed() {
+            console.log("this.vramUsage")
+            console.log(this.vramUsage)
             if (!this.vramUsage || !this.vramUsage.gpus) return 0;
             return this.vramUsage.gpus.reduce((sum, gpu) => sum + gpu.used_vram, 0);
         },
 
         avgVramPercentage() {
+            console.log("this.vramUsage")
+            console.log(this.vramUsage)
             if (!this.vramUsage || !this.vramUsage.gpus || this.vramUsage.gpus.length === 0) return '0.00';
             const totalPercentage = this.vramUsage.gpus.reduce((sum, gpu) => sum + gpu.percentage, 0);
             return (totalPercentage / this.vramUsage.gpus.length).toFixed(2);
@@ -275,6 +279,8 @@ export default {
                 this.api_get_req("ram_usage"),
                 this.api_get_req("vram_usage")
             ]);
+            console.log("vramData")
+            console.log(this.vramUsage)
 
             // Update data properties using 'this'
             this.diskUsage = diskData;

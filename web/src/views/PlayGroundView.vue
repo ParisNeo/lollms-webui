@@ -1,123 +1,125 @@
 <template>
   <div class="container w-full background-color shadow-lg overflow-y-auto scrollbar">
-    <div class="flex flex-col md:flex-row m-2 w-full gap-4">
+    <div class="flex flex-col m-2 w-full gap-4">
       <!-- Main Content Area -->
       <div class="flex-grow w-full flex flex-col gap-4">
         <!-- Toolbar -->
         <div class="flex panels-color gap-2 items-center flex-wrap rounded-lg border border-blue-300 dark:border-blue-600 p-3 shadow-md">
           <!-- Generation Buttons -->
-          <ChatBarButton v-show="!generating" @click="generate" title="Generate from the current cursor position" class="svg-button">
+          <ChatBarButton v-show="!generating" @click="generate" title="Generate from cursor" class="svg-button group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-              </svg>
+              <i data-feather="edit-2" class="h-5 w-5"></i>
             </template>
+            <div class="animated-thought-bubble">Generate from cursor</div>
           </ChatBarButton>
 
-          <ChatBarButton v-show="!generating" @click="generate_in_placeholder" title="Generate from the next placeholder (@<generation_placeholder>@)" class="svg-button">
+          <ChatBarButton v-show="!generating" @click="generate_in_placeholder" title="Generate from placeholder" class="svg-button group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-              </svg>
+              <!-- Using cpu as a metaphor for processing the placeholder instruction -->
+              <i data-feather="cpu" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Generate from @placeholder@</div>
           </ChatBarButton>
 
-          <ChatBarButton v-show="!generating" @click="tokenize_text" title="Tokenize the text" class="svg-button">
+          <ChatBarButton v-show="!generating" @click="tokenize_text" title="Tokenize text" class="svg-button group/item relative">
             <template #icon>
-              <img :src="tokenize_icon" alt="Tokenize" class="h-5 w-5" />
+              <i data-feather="hash" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Show token count</div>
           </ChatBarButton>
 
           <!-- Stop Button -->
-          <ChatBarButton v-show="generating" @click="stopGeneration" title="Stop generation" class="svg-button text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900">
+          <ChatBarButton v-show="generating" @click="stopGeneration" title="Stop generation" class="svg-button text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900 group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <i data-feather="square" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Stop generation</div>
           </ChatBarButton>
 
           <!-- Spacer -->
           <div class="flex-grow"></div>
 
           <!-- Voice/Audio Buttons -->
-          <ChatBarButton @click="startSpeechRecognition" :class="{ 'btn-on': isListeningToVoice, 'svg-button': true }" title="Dictate (using browser recognition)">
+          <ChatBarButton @click="startSpeechRecognition" :class="{ 'btn-on': isListeningToVoice, 'svg-button': true }" title="Dictate text (Browser STT)" class="svg-button group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
+              <i data-feather="mic" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Browser Speech-to-Text</div>
           </ChatBarButton>
 
-          <ChatBarButton @click="speak" :class="{ 'btn-on': isTalking, 'svg-button': true }" title="Read text aloud (using browser TTS)">
+          <ChatBarButton @click="speak" :class="{ 'btn-on': isSpeaking, 'svg-button': true }" title="Read text aloud (Browser TTS)" class="svg-button group/item relative">
             <template #icon>
-              <span class="text-xl">🔊</span> <!-- Using emoji for browser TTS -->
+              <i data-feather="volume-2" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Browser Text-to-Speech</div>
           </ChatBarButton>
 
-          <ChatBarButton @click="triggerFileUpload" title="Upload a voice (.wav)" class="svg-button">
+          <ChatBarButton @click="triggerFileUpload" title="Upload voice file (.wav)" class="svg-button group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-              </svg>
+              <!-- Upload icon for file upload action -->
+               <i data-feather="upload-cloud" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Upload .wav voice</div>
           </ChatBarButton>
           <input type="file" ref="fileInput" @change="handleFileUpload" class="hidden" accept=".wav" />
 
-          <ChatBarButton @click="startRecordingAndTranscribing" :class="{ 'btn-on': is_deaf_transcribing, 'svg-button': true }" title="Start/Stop audio-to-audio (Record -> Transcribe -> TTS)">
+          <ChatBarButton @click="startRecordingAndTranscribing" :class="{ 'btn-on': is_deaf_transcribing, 'svg-button': true }" title="Audio-to-Audio (Record -> Transcribe -> TTS)" class="svg-button group/item relative">
             <template #icon>
-              <img v-if="!pending" :src="is_deaf_transcribing ? deaf_on : deaf_off" alt="Deaf" class="h-5 w-5" />
-              <img v-else :src="loading_icon" alt="Loading" class="h-5 w-5 animate-spin" />
+               <div v-if="!pending" class="relative">
+                 <i data-feather="headphones" class="h-5 w-5"></i>
+                 <span v-if="is_deaf_transcribing" class="absolute bottom-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500 dark:ring-gray-800 dark:bg-red-400"></span>
+               </div>
+               <i v-else data-feather="loader" class="h-5 w-5 animate-spin"></i>
             </template>
+             <div class="animated-thought-bubble">Record > Transcribe > Speak</div>
           </ChatBarButton>
 
-          <ChatBarButton @click="startRecording" :class="{ 'btn-on': is_recording, 'svg-button': true }" title="Start/Stop audio recording and transcription">
+          <ChatBarButton @click="startRecording" :class="{ 'btn-on': is_recording, 'svg-button': true }" title="Record Audio & Transcribe" class="svg-button group/item relative">
             <template #icon>
-              <img v-if="!pending" :src="is_recording ? rec_on : rec_off" alt="Record" class="h-5 w-5" />
-              <img v-else :src="loading_icon" alt="Loading" class="h-5 w-5 animate-spin" />
+               <div v-if="!pending" class="relative">
+                 <!-- Using radio for recording state -->
+                 <i data-feather="radio" class="h-5 w-5"></i>
+                 <span v-if="is_recording" class="absolute bottom-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500 dark:ring-gray-800 dark:bg-red-400"></span>
+               </div>
+               <i v-else data-feather="loader" class="h-5 w-5 animate-spin"></i>
             </template>
+             <div class="animated-thought-bubble">Record > Transcribe</div>
           </ChatBarButton>
 
-          <ChatBarButton v-if="!isSynthesizingVoice" @click="read" title="Generate audio from text (using backend TTS)" class="svg-button">
+          <ChatBarButton v-if="!isSynthesizingVoice" @click="read" title="Generate Audio (Backend TTS)" class="svg-button group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
-              </svg>
+              <i data-feather="speaker" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Backend Text-to-Speech</div>
           </ChatBarButton>
           <div v-else class="w-6 h-6 flex items-center justify-center">
-             <svg class="animate-spin h-5 w-5 text-blue-500 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-             </svg>
+             <i data-feather="loader" class="h-5 w-5 animate-spin text-blue-500 dark:text-blue-400"></i>
           </div>
 
           <!-- Import/Export/Settings Buttons -->
-          <ChatBarButton v-show="!generating" @click="exportText" title="Export text to file" class="svg-button">
+          <ChatBarButton v-show="!generating" @click="exportText" title="Export text" class="svg-button group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-              </svg>
+              <i data-feather="download" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Download text</div>
           </ChatBarButton>
 
-          <ChatBarButton v-show="!generating" @click="importText" title="Import text from file" class="svg-button">
+          <ChatBarButton v-show="!generating" @click="importText" title="Import text" class="svg-button group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
+               <!-- Using upload for importing text file -->
+               <i data-feather="upload" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Upload text file</div>
           </ChatBarButton>
           <input type="file" id="import-input" class="hidden" accept=".txt,.md">
 
-          <ChatBarButton @click="showSettings = !showSettings" title="Toggle Settings Panel" class="svg-button">
+          <ChatBarButton @click="showSettingsModal = true" title="Settings" class="svg-button group/item relative">
             <template #icon>
-              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
+              <i data-feather="settings" class="h-5 w-5"></i>
             </template>
+             <div class="animated-thought-bubble">Open settings</div>
           </ChatBarButton>
+
           <div class="flex gap-2 justify-end">
             <button @click="tab_id='source'"
                     :class="tab_id === 'source' ? 'active-tab-button' : 'inactive-tab-button'">
@@ -134,8 +136,9 @@
         <div class="flex-grow p-4 border panels-color border-blue-300 dark:border-blue-600 rounded-lg shadow-inner" :class="{ 'border-red-500 dark:border-red-400': generating }">
           <div v-if="tab_id === 'source'" class="flex flex-col h-full">
               <div class="flex items-center gap-1 mb-2">
-                <DropdownMenu title="Add Block" icon="plus-circle" buttonClass="svg-button">
-                    <!-- Programming Languages -->
+                 <DropdownMenu title="Add Block" icon="plus-circle" buttonClass="svg-button">
+                     <!-- Submenus remain the same -->
+                     <!-- Programming Languages -->
                     <DropdownSubmenu title="Programming Languages" icon="code">
                         <ToolbarButton @click.stop="addBlock('python')" title="Python" icon="python" />
                         <ToolbarButton @click.stop="addBlock('javascript')" title="JavaScript" icon="js" />
@@ -190,8 +193,8 @@
 
                     <!-- Other -->
                     <ToolbarButton @click.stop="addBlock('')" title="Generic Block" icon="code" />
-                </DropdownMenu>
-                <ToolbarButton @click.stop="copyContentToClipboard()" title="Copy content to clipboard" icon="copy" buttonClass="svg-button" />
+                 </DropdownMenu>
+                 <ToolbarButton @click.stop="copyContentToClipboard()" title="Copy content to clipboard" icon="copy" buttonClass="svg-button" />
               </div>
             <textarea ref="mdTextarea" @keydown.tab.prevent="insertTab"
               class="block w-full flex-grow min-h-[400px] p-3 input rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 scrollbar text-blue-900 dark:text-blue-100 placeholder-blue-400 dark:placeholder-blue-500 resize-none"
@@ -221,100 +224,108 @@
         </div>
       </div>
 
-      <!-- Settings Panel -->
-      <div v-if="showSettings" class="w-full md:w-[500px] flex-shrink-0 panels-color rounded-lg shadow-lg p-4 overflow-y-auto scrollbar space-y-4">
-        <h2 class="mb-4">Settings</h2>
+      <!-- Settings Modal -->
+      <div v-if="showSettingsModal" @click.self="showSettingsModal = false"
+           class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 p-4 backdrop-blur-sm">
+          <div class="card w-full max-w-2xl max-h-[80vh] flex flex-col">
+             <div class="flex justify-between items-center border-b border-blue-200 dark:border-blue-700 pb-2 mb-4">
+                 <h2 class="text-2xl font-semibold">Settings</h2>
+                 <button @click="showSettingsModal = false" class="svg-button">
+                     <i data-feather="x" class="w-6 h-6"></i>
+                 </button>
+             </div>
+             <div class="flex-grow overflow-y-auto scrollbar pr-2 space-y-4">
+                 <!-- Model Selection Card -->
+                 <Card title="Model" class="p-4" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+                 <select v-model="$store.state.selectedModel" @change="setModel" class="input w-full" :disabled="selecting_model">
+                     <option v-for="model in models" :key="model" :value="model">
+                     {{ model }}
+                     </option>
+                 </select>
+                 <div v-if="selecting_model" title="Selecting model" class="flex items-center justify-center my-2">
+                     <div role="status" class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                     <i data-feather="loader" class="w-5 h-5 animate-spin"></i>
+                     <span>Selecting...</span>
+                     </div>
+                 </div>
+                 </Card>
 
-        <Card title="Model" class="p-4" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-          <select v-model="$store.state.selectedModel" @change="setModel" class="input w-full" :disabled="selecting_model">
-            <option v-for="model in models" :key="model" :value="model">
-              {{ model }}
-            </option>
-          </select>
-          <div v-if="selecting_model" title="Selecting model" class="flex items-center justify-center my-2">
-            <div role="status" class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-              <svg aria-hidden="true" class="w-5 h-5 animate-spin fill-current" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" fill-opacity="0.2"/>
-                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
-              </svg>
-              <span>Selecting...</span>
-            </div>
-          </div>
-        </Card>
+                 <!-- Presets Card -->
+                 <Card title="Presets" class="p-4" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+                 <select v-model="selectedPreset" class="input w-full mb-2">
+                     <option :value="null" disabled>-- Select a Preset --</option>
+                     <option v-for="preset in presets" :key="preset.name" :value="preset">
+                     {{ preset.name }}
+                     </option>
+                 </select>
+                 <div class="flex gap-2">
+                     <button class="svg-button" @click="setPreset" title="Use preset" :disabled="!selectedPreset">
+                     <i data-feather="check" class="w-4 h-4"></i>
+                     </button>
+                     <button class="svg-button" @click="addPreset" title="Add current text as a preset">
+                     <i data-feather="plus" class="w-4 h-4"></i>
+                     </button>
+                     <button class="svg-button" @click="removePreset" title="Remove selected preset" :disabled="!selectedPreset">
+                     <i data-feather="x" class="w-4 h-4"></i>
+                     </button>
+                     <button class="svg-button" @click="reloadPresets" title="Reload presets list">
+                     <i data-feather="refresh-ccw" class="w-4 h-4"></i>
+                     </button>
+                 </div>
+                 </Card>
 
-        <Card title="Presets" class="p-4" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-          <select v-model="selectedPreset" class="input w-full mb-2">
-            <option v-for="preset in presets" :key="preset.name" :value="preset">
-              {{ preset.name }}
-            </option>
-          </select>
-          <div class="flex gap-2">
-            <button class="svg-button" @click="setPreset" title="Use preset">
-              <i data-feather="check" class="w-4 h-4"></i>
-            </button>
-            <button class="svg-button" @click="addPreset" title="Add current text as a preset">
-              <i data-feather="plus" class="w-4 h-4"></i>
-            </button>
-            <button class="svg-button" @click="removePreset" title="Remove selected preset">
-              <i data-feather="x" class="w-4 h-4"></i>
-            </button>
-            <button class="svg-button" @click="reloadPresets" title="Reload presets list">
-              <i data-feather="refresh-ccw" class="w-4 h-4"></i>
-            </button>
+                 <!-- Generation Parameters Card -->
+                 <Card title="Generation Parameters" class="p-4 space-y-4" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
+                 <div class="setting-item">
+                     <label class="setting-label" for="temp-slider">Temperature</label>
+                     <input id="temp-slider" type="range" v-model="temperature" min="0" max="5" step="0.01" class="range-input flex-grow">
+                     <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ Number(temperature).toFixed(2) }}</span>
+                 </div>
+                 <div class="setting-item">
+                     <label class="setting-label" for="topk-slider">Top K</label>
+                     <input id="topk-slider" type="range" v-model="top_k" min="1" max="200" step="1" class="range-input flex-grow">
+                     <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ top_k }}</span>
+                 </div>
+                 <div class="setting-item">
+                     <label class="setting-label" for="topp-slider">Top P</label>
+                     <input id="topp-slider" type="range" v-model="top_p" min="0" max="1" step="0.01" class="range-input flex-grow">
+                     <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ Number(top_p).toFixed(2) }}</span>
+                 </div>
+                 <div class="setting-item">
+                     <label class="setting-label" for="repeat-penalty-slider">Repeat Penalty</label>
+                     <input id="repeat-penalty-slider" type="range" v-model="repeat_penalty" min="1.0" max="3.0" step="0.01" class="range-input flex-grow">
+                     <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ Number(repeat_penalty).toFixed(2) }}</span>
+                 </div>
+                 <div class="setting-item">
+                     <label class="setting-label" for="repeat-last-n-slider">Repeat Last N</label>
+                     <input id="repeat-last-n-slider" type="range" v-model="repeat_last_n" min="0" max="256" step="1" class="range-input flex-grow">
+                     <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ repeat_last_n }}</span>
+                 </div>
+                 <div class="setting-item">
+                     <label class="setting-label" for="n-crop-input">Crop context (tokens)</label>
+                     <input id="n-crop-input" type="number" v-model.number="n_crop" class="input input-sm flex-grow">
+                 </div>
+                 <div class="setting-item">
+                     <label class="setting-label" for="n-predicts-input">Max generation (tokens)</label>
+                     <input id="n-predicts-input" type="number" v-model.number="n_predicts" class="input input-sm flex-grow">
+                 </div>
+                 <div class="setting-item">
+                     <label class="setting-label" for="seed-input">Seed</label>
+                     <input id="seed-input" type="number" v-model.number="seed" class="input input-sm flex-grow">
+                 </div>
+                 </Card>
+             </div>
           </div>
-        </Card>
-
-        <Card title="Generation Parameters" class="p-4 space-y-4" :isHorizontal="false" :disableHoverAnimation="true" :disableFocus="true">
-          <div class="setting-item">
-            <label class="setting-label" for="temp-slider">Temperature</label>
-            <input id="temp-slider" type="range" v-model="temperature" min="0" max="5" step="0.1" class="range-input flex-grow">
-            <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ temperature }}</span>
-          </div>
-          <div class="setting-item">
-            <label class="setting-label" for="topk-slider">Top K</label>
-            <input id="topk-slider" type="range" v-model="top_k" min="1" max="100" step="1" class="range-input flex-grow">
-            <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ top_k }}</span>
-          </div>
-          <div class="setting-item">
-            <label class="setting-label" for="topp-slider">Top P</label>
-            <input id="topp-slider" type="range" v-model="top_p" min="0" max="1" step="0.1" class="range-input flex-grow">
-            <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ top_p }}</span>
-          </div>
-          <div class="setting-item">
-            <label class="setting-label" for="repeat-penalty-slider">Repeat Penalty</label>
-            <input id="repeat-penalty-slider" type="range" v-model="repeat_penalty" min="0" max="5" step="0.1" class="range-input flex-grow">
-            <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ repeat_penalty }}</span>
-          </div>
-          <div class="setting-item">
-            <label class="setting-label" for="repeat-last-n-slider">Repeat Last N</label>
-            <input id="repeat-last-n-slider" type="range" v-model="repeat_last_n" min="0" max="100" step="1" class="range-input flex-grow">
-            <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ repeat_last_n }}</span>
-          </div>
-          <div class="setting-item">
-            <label class="setting-label" for="n-crop-input">Crop context (tokens)</label>
-            <input id="n-crop-input" type="number" v-model="n_crop" class="input input-sm flex-grow">
-            <!-- <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ n_crop }}</span> -->
-          </div>
-          <div class="setting-item">
-            <label class="setting-label" for="n-predicts-input">Max generation (tokens)</label>
-            <input id="n-predicts-input" type="number" v-model="n_predicts" class="input input-sm flex-grow">
-            <!-- <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ n_predicts }}</span> -->
-          </div>
-          <div class="setting-item">
-            <label class="setting-label" for="seed-input">Seed</label>
-            <input id="seed-input" type="number" v-model="seed" class="input input-sm flex-grow">
-            <!-- <span class="text-sm text-blue-600 dark:text-blue-400 w-16 text-right">{{ seed }}</span> -->
-          </div>
-        </Card>
       </div>
+
     </div>
   </div>
   <Toast ref="toast"/>
 </template>
 
 <script>
-// Script content remains the same as provided
-// ... (Keep the existing script content)
+// Script content remains the same as provided in the previous step
+// ... (Keep the existing script content including imports and methods)
 import feather from 'feather-icons'
 import axios from "axios";
 import socket from '@/services/websocket.js'
@@ -357,7 +368,7 @@ async function showInputPanel(name, default_value="", options=[]) {
     return new Promise((resolve, reject) => {
         const panel = document.createElement("div");
         // Added dark mode support and theme classes
-        panel.className = "fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/70 z-50 p-4";
+        panel.className = "fixed inset-0 flex items-center justify-center bg-black/50 dark:bg-black/70 z-[1001] p-4 backdrop-blur-sm"; // Increased z-index for modal
         let contentHtml = '';
 
         if (options.length === 0) {
@@ -529,7 +540,7 @@ export default {
                 'accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-      showSettings: false,
+      showSettingsModal: false, // Changed from showSettings
       pending:false,
       is_recording:false,
       is_deaf_transcribing:false,
@@ -554,7 +565,7 @@ export default {
 
       isSynthesizingVoice:false,
       audio_url:null,
-      mdRenderHeight:300,
+      mdRenderHeight:400, // Initial height
       selecting_model:false,
       tab_id:"source", // Default to source tab
       generating:false,
@@ -632,6 +643,7 @@ export default {
 
     this.$nextTick(() => {
         feather.replace();
+        this.adjustTextareaHeight(); // Adjust height after initial render
     });
 
     // Initialize Speech Synthesis
@@ -643,21 +655,38 @@ export default {
         console.warn('Speech synthesis is not supported in this browser.');
     }
 
-    // Adjust textarea height initially
-    this.adjustTextareaHeight();
+    // Add listener to adjust textarea height on window resize (optional)
+     window.addEventListener('resize', this.adjustTextareaHeight);
+
   },
+   beforeUnmount() {
+     // Clean up resize listener
+     window.removeEventListener('resize', this.adjustTextareaHeight);
+     // Clean up speech recognition if active
+     if (this.recognition) {
+         this.recognition.stop();
+         this.recognition = null;
+     }
+     // Clean up TTS if active
+      if (this.isSpeaking) {
+            this.speechSynthesis.cancel();
+      }
+   },
   methods:{
     adjustTextareaHeight() {
-        // Optional: Adjust height based on window or content later if needed
-        // For now, min-h-[400px] sets a good default starting height
-        // You could calculate based on window.innerHeight if you want it to fill more space
-        // const calculatedHeight = window.innerHeight * 0.5; // Example: 50% of viewport height
-        // this.mdRenderHeight = Math.max(400, calculatedHeight); // Ensure minimum height
+      // Example: Set height relative to window, but ensure a minimum
+      const topOffset = this.$refs.mdTextarea?.getBoundingClientRect().top || 200; // Estimate top offset
+      const bottomPadding = 60; // Space for status bar, audio player etc.
+      const calculatedHeight = window.innerHeight - topOffset - bottomPadding;
+      this.mdRenderHeight = Math.max(300, calculatedHeight); // Ensure min height of 300px
+      //console.log("Adjusted textarea min-height to:", this.mdRenderHeight);
     },
     loadVoices() {
         this.voices = this.speechSynthesis.getVoices();
         if (this.voices.length > 0) {
             console.log("TTS voices loaded.");
+            // Filter voices if needed, e.g., by language
+            // this.voices = this.voices.filter(v => v.lang.startsWith('en'));
         }
     },
     loadPresets() {
@@ -665,10 +694,12 @@ export default {
           console.log("Presets loaded:", response.data)
           this.presets = response.data;
           if (this.presets.length > 0) {
-            // Check if selectedPreset is still valid, otherwise select the first one
+            // Check if selectedPreset is still valid, otherwise select the first one (or null)
             const currentPresetExists = this.presets.some(p => p.name === this.selectedPreset?.name);
             if (!currentPresetExists) {
-               this.selectedPreset = this.presets[0];
+               // Keep selectedPreset null unless you want to auto-select the first one
+               // this.selectedPreset = this.presets[0];
+               this.selectedPreset = null; // Default to null/prompt
             }
           } else {
               this.selectedPreset = null;
@@ -734,10 +765,12 @@ export default {
 
             if (selectedText) {
                 textToInsert = `${prefix}\`\`\`${bloc_name}\n${selectedText}\n\`\`\`${suffix}`;
-                cursorPosAfterInsert = ss + prefix.length + 3 + bloc_name.length + 1; // Position cursor after ```lang\n
+                // Place cursor after the opening fence and language identifier
+                cursorPosAfterInsert = ss + prefix.length + 3 + bloc_name.length + 1;
             } else {
                 textToInsert = `${prefix}\`\`\`${bloc_name}\n\n\`\`\`${suffix}`;
-                cursorPosAfterInsert = ss + prefix.length + 3 + bloc_name.length + 1; // Position cursor inside the block
+                 // Place cursor inside the block for immediate typing
+                cursorPosAfterInsert = ss + prefix.length + 3 + bloc_name.length + 1;
             }
 
             // Update text using Vue's reactivity
@@ -841,18 +874,22 @@ export default {
               nextTick(() => {
                  if (this.$refs.audio_player) {
                     this.$refs.audio_player.load(); // Load the new source
-                    // Optional: Auto-play?
-                    // this.$refs.audio_player.play();
+                    // Optional: Auto-play? Consider user experience.
+                    // this.$refs.audio_player.play().catch(e => console.error("Audio autoplay failed:", e));
                  }
               });
           } else {
                this.$refs.toast.showToast(response.data.error || "Failed to generate audio.", 4, false);
           }
           this.isSynthesizingVoice = false;
+          // Refresh icons after state change
+          this.$nextTick(() => feather.replace());
         }).catch(ex => {
           console.error("TTS synthesis error:", ex);
           this.$refs.toast.showToast(`TTS Error: ${ex.response?.data?.error || ex.message}`, 4, false);
           this.isSynthesizingVoice = false;
+           // Refresh icons after state change
+           this.$nextTick(() => feather.replace());
         });
       },
       speak() { // Browser TTS
@@ -865,6 +902,7 @@ export default {
             this.speechSynthesis.cancel(); // Stop ongoing speech
             this.isSpeaking = false;
             console.log("Browser TTS stopped.");
+             this.$nextTick(() => feather.replace()); // Update icon state
             return;
         }
 
@@ -882,6 +920,7 @@ export default {
 
         console.log("Starting browser TTS...");
         this.isSpeaking = true;
+         this.$nextTick(() => feather.replace()); // Update icon state
         this.speechSynthesis.cancel(); // Clear any previous utterances
 
         const utterance = new SpeechSynthesisUtterance(textToSpeak);
@@ -904,12 +943,14 @@ export default {
         utterance.onend = () => {
             console.log("Browser TTS finished.");
             this.isSpeaking = false;
+             this.$nextTick(() => feather.replace()); // Update icon state
         };
 
         utterance.onerror = (event) => {
             console.error("Browser TTS error:", event.error);
             this.$refs.toast.showToast(`Browser TTS Error: ${event.error}`, 4, false);
             this.isSpeaking = false;
+             this.$nextTick(() => feather.replace()); // Update icon state
         };
 
         this.speechSynthesis.speak(utterance);
@@ -924,26 +965,45 @@ export default {
       // Auto-scroll textarea if needed (implement separately if desired)
       // Also update cursor position tracker if generating at cursor
       if (this.post_text === "") { // Only update if generating at the end
-          this.cursorPosition = this.text.length;
+          const currentPos = this.text.length;
+           this.$nextTick(() => {
+             // Optional: Keep cursor at the end while generating
+             // if (this.$refs.mdTextarea) {
+             //    this.$refs.mdTextarea.scrollTop = this.$refs.mdTextarea.scrollHeight; // Scroll to bottom
+             //    this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = currentPos;
+             // }
+             this.cursorPosition = currentPos; // Update logical position
+           });
       }
     },
     prepareGeneration(promptText) {
         // Shared logic before emitting generate_text
+        // Trim prompt slightly? Optional.
+        const finalPrompt = promptText; //.trimEnd();
+
+        // Validate parameters before sending
+        const parameters = {
+            temperature: Math.max(0.01, parseFloat(this.temperature) || 0.8), // Ensure temp is not 0
+            top_k: Math.max(1, parseInt(this.top_k) || 50), // Ensure top_k >= 1
+            top_p: Math.max(0.01, Math.min(1.0, parseFloat(this.top_p) || 0.95)), // Ensure 0 < top_p <= 1
+            repeat_penalty: parseFloat(this.repeat_penalty) || 1.1,
+            repeat_last_n: Math.max(0, parseInt(this.repeat_last_n) || 64), // Ensure >= 0
+            seed: parseInt(this.seed) || -1
+        };
+        const nPredicts = Math.max(1, parseInt(this.n_predicts) || 1024); // Ensure n_predicts >= 1
+        const nCrop = parseInt(this.n_crop) || -1; // Allow -1
+
+        console.log("Starting generation with params:", { nPredicts, nCrop, parameters });
+
         socket.emit('generate_text', {
-            prompt: promptText,
+            prompt: finalPrompt,
             personality: -1, // Use -1 for playground/no specific personality
-            n_predicts: parseInt(this.n_predicts) || 1024,
-            n_crop: parseInt(this.n_crop) || -1,
-            parameters: {
-                temperature: parseFloat(this.temperature) || 0.8,
-                top_k: parseInt(this.top_k) || 50,
-                top_p: parseFloat(this.top_p) || 0.95,
-                repeat_penalty: parseFloat(this.repeat_penalty) || 1.1,
-                repeat_last_n: parseInt(this.repeat_last_n) || 64,
-                seed: parseInt(this.seed) || -1
-            }
+            n_predicts: nPredicts,
+            n_crop: nCrop,
+            parameters: parameters
         });
         this.generating = true;
+         this.$nextTick(() => feather.replace());
         this.$refs.toast.showToast("Generating...", 2, true);
     },
     generate_in_placeholder(){
@@ -961,15 +1021,20 @@ export default {
         // Text after the placeholder is kept to append later
         this.post_text = this.text.substring(index + placeholder.length);
 
-        // Remove the placeholder itself for generation
+        // Remove the placeholder itself for generation display
         this.text = this.pre_text + this.post_text;
-        this.cursorPosition = this.pre_text.length; // Set cursor where generation will start
+        this.cursorPosition = this.pre_text.length; // Set logical cursor where generation will start
 
-        console.log(`Generating from prompt (length ${this.pre_text.length})`);
+        console.log(`Generating from placeholder (prompt length ${this.pre_text.length})`);
         this.prepareGeneration(this.pre_text);
     },
     async tokenize_text(){
       console.log("Tokenizing text...");
+      if (!this.text.trim()) {
+          this.namedTokens = [];
+          this.$refs.toast.showToast("Cannot tokenize empty text.", 3, false);
+          return;
+      }
       try {
           const response = await axios.post("/lollms_tokenize", {
               prompt: this.text,
@@ -991,13 +1056,14 @@ export default {
       this.pre_text = this.text.substring(0, this.cursorPosition);
       this.post_text = this.text.substring(this.cursorPosition);
 
-      console.log(`Generating from prompt (length ${this.pre_text.length}), Cursor: ${this.cursorPosition}`);
+      console.log(`Generating from cursor (prompt length ${this.pre_text.length}), Cursor: ${this.cursorPosition}`);
       this.prepareGeneration(this.pre_text);
     },
     stopGeneration(){
       console.log("Requesting generation cancellation...");
       socket.emit('cancel_text_generation',{ client_id: this.$store.state.client_id }); // Include client_id if needed by backend
       this.generating = false; // Assume cancellation happens quickly UI-wise
+       this.$nextTick(() => feather.replace());
       this.$refs.toast.showToast("Generation cancelled.", 3, true);
     },
     exportText(){
@@ -1032,9 +1098,12 @@ export default {
               reader.onload = (e) => {
                   this.text = e.target.result;
                   this.$refs.toast.showToast("Text imported.", 3, true);
-                  this.cursorPosition = this.text.length; // Reset cursor
-                  this.pre_text = this.text;             // Reset generation parts
+                  // Reset state after import
+                  this.cursorPosition = this.text.length;
+                  this.pre_text = this.text;
                   this.post_text = "";
+                  this.namedTokens = []; // Clear tokens
+                   this.$nextTick(() => this.adjustTextareaHeight()); // Adjust height
                   // Clean up listener after use
                   // inputFile.removeEventListener("change", fileHandler); // This might cause issues if clicked again quickly
                   inputFile.value = null; // Reset input value
@@ -1071,12 +1140,15 @@ export default {
       replaceInText(this.selectedPreset.content, (processedText) => {
         console.log("Preset content after replacements:", processedText);
         this.text = processedText;
+         // Reset state after applying preset
         this.cursorPosition = this.text.length; // Move cursor to end
-        this.pre_text = this.text; // Reset generation parts
+        this.pre_text = this.text;
         this.post_text = "";
+        this.namedTokens = []; // Clear tokens
         this.$refs.toast.showToast(`Preset '${this.selectedPreset.name}' applied.`, 3, true);
         this.$nextTick(() => {
             this.$refs.mdTextarea?.focus(); // Focus textarea after applying
+            this.adjustTextareaHeight(); // Adjust height
         });
       });
     },
@@ -1096,17 +1168,23 @@ export default {
 
         const newPreset = {
             client_id: this.$store.state.client_id,
-            name: title,
+            name: title.trim(), // Trim the title
             content: this.text
         };
 
+        // Check if preset name already exists (case-insensitive check)
+        if (this.presets.some(p => p.name.toLowerCase() === newPreset.name.toLowerCase())) {
+             this.$refs.toast.showToast(`Preset name "${newPreset.name}" already exists.`, 3, false);
+             return;
+        }
+
         console.log("Adding new preset:", newPreset);
-        this.$refs.toast.showToast(`Adding preset '${title}'...`, 2, true);
+        this.$refs.toast.showToast(`Adding preset '${newPreset.name}'...`, 2, true);
 
         axios.post("./add_preset", newPreset).then(response => {
             console.log("Add preset response:", response.data);
             if (response.data.status) {
-                this.$refs.toast.showToast(`Preset '${title}' added.`, 4, true);
+                this.$refs.toast.showToast(`Preset '${newPreset.name}' added.`, 4, true);
                 this.loadPresets(); // Reload presets to include the new one
             } else {
                 this.$refs.toast.showToast(`Failed to add preset: ${response.data.error || 'Unknown error'}`, 4, false);
@@ -1123,6 +1201,7 @@ export default {
         }
 
         const presetName = this.selectedPreset.name;
+        // Use a confirmation dialog component if available, otherwise use browser confirm
         if (!confirm(`Are you sure you want to remove the preset "${presetName}"?`)) {
             return;
         }
@@ -1155,6 +1234,7 @@ export default {
     // Combined Recording and Transcribing (Deaf mode)
     startRecordingAndTranscribing(){
         this.pending = true;
+        this.$nextTick(() => feather.replace());
         if(!this.is_deaf_transcribing){
             console.log("Starting deaf transcription mode...");
             axios.get('/start_recording_audio_transcription', { params: { client_id: this.$store.state.client_id } })
@@ -1162,11 +1242,13 @@ export default {
                 console.log("Deaf transcription started:", response.data);
                 this.is_deaf_transcribing = true;
                 this.pending = false;
+                 this.$nextTick(() => feather.replace());
                 this.$refs.toast.showToast("Listening for audio-to-audio...", 3, true);
             }).catch(ex=>{
                 console.error("Error starting deaf transcription:", ex);
                 this.$refs.toast.showToast(`Error starting: ${ex.response?.data?.error || ex.message}`, 4, false);
                 this.pending = false;
+                 this.$nextTick(() => feather.replace());
             });
         }
         else{
@@ -1176,8 +1258,13 @@ export default {
                 console.log("Deaf transcription stopped:", response.data);
                 this.is_deaf_transcribing = false;
                 this.pending = false;
+                this.$nextTick(() => feather.replace());
                 if (response.data && response.data.text) {
                     this.text = response.data.text; // Set transcribed text
+                     this.cursorPosition = this.text.length; // Reset cursor etc.
+                     this.pre_text = this.text;
+                     this.post_text = "";
+                     this.namedTokens = [];
                     this.$refs.toast.showToast("Transcription complete. Synthesizing...", 3, true);
                     this.read(); // Trigger backend TTS with the transcribed text
                 } else {
@@ -1188,12 +1275,14 @@ export default {
                 this.$refs.toast.showToast(`Error stopping: ${ex.response?.data?.error || ex.message}`, 4, false);
                 this.is_deaf_transcribing = false; // Ensure state reset on error
                 this.pending = false;
+                 this.$nextTick(() => feather.replace());
             });
         }
     },
     // Separate Recording and Transcription
     startRecording(){
         this.pending = true;
+        this.$nextTick(() => feather.replace());
         if(!this.is_recording){
             console.log("Starting audio recording...");
             axios.post('/start_recording', { client_id: this.$store.state.client_id })
@@ -1201,11 +1290,13 @@ export default {
                 console.log("Recording started:", response.data);
                 this.is_recording = true;
                 this.pending = false;
+                this.$nextTick(() => feather.replace());
                 this.$refs.toast.showToast("Recording audio...", 3, true);
             }).catch(ex => {
                 console.error("Error starting recording:", ex);
                 this.$refs.toast.showToast(`Error starting recording: ${ex.response?.data?.error || ex.message}`, 4, false);
                 this.pending = false;
+                this.$nextTick(() => feather.replace());
             });
         }
         else{
@@ -1215,14 +1306,17 @@ export default {
                 console.log("Recording stopped, transcription result:", response.data);
                 this.is_recording = false;
                 this.pending = false;
+                this.$nextTick(() => feather.replace());
                 if (response.data && response.data.text) {
                     // Append transcribed text at cursor position
                     const currentPos = this.getCursorPosition();
-                    this.text = this.text.slice(0, currentPos) + response.data.text + this.text.slice(currentPos);
+                    const textToInsert = response.data.text + " "; // Add space after insertion
+                    this.text = this.text.slice(0, currentPos) + textToInsert + this.text.slice(currentPos);
                     this.$refs.toast.showToast("Transcription added.", 3, true);
                     // Update cursor position after insertion
                     this.$nextTick(() => {
-                       const newCursorPos = currentPos + response.data.text.length;
+                       const newCursorPos = currentPos + textToInsert.length;
+                       this.$refs.mdTextarea.focus();
                        this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = newCursorPos;
                        this.cursorPosition = newCursorPos;
                     });
@@ -1234,6 +1328,7 @@ export default {
                 this.$refs.toast.showToast(`Error stopping recording: ${ex.response?.data?.error || ex.message}`, 4, false);
                 this.is_recording = false; // Ensure state reset on error
                 this.pending = false;
+                this.$nextTick(() => feather.replace());
             });
         }
     },
@@ -1249,8 +1344,7 @@ export default {
             if (this.recognition) {
                 this.recognition.stop(); // This will trigger onend
             }
-            this.isListeningToVoice = false;
-            clearTimeout(this.silenceTimer);
+            // State (isListeningToVoice) is reset in onend
             return;
         }
 
@@ -1262,6 +1356,7 @@ export default {
 
             console.log(`Starting browser speech recognition (lang: ${this.recognition.lang})...`);
             this.isListeningToVoice = true;
+             this.$nextTick(() => feather.replace());
             this.$refs.toast.showToast("Listening...", 2, true);
 
             // Store text before and after cursor for insertion
@@ -1275,7 +1370,7 @@ export default {
                 // Reset silence timer on start
                 clearTimeout(this.silenceTimer);
                 this.silenceTimer = setTimeout(() => {
-                    if (this.isListeningToVoice) {
+                    if (this.isListeningToVoice && this.recognition) {
                         console.log("Stopping recognition due to silence.");
                         this.recognition.stop();
                     }
@@ -1288,7 +1383,8 @@ export default {
 
                 for (let i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
+                         // Add a space after final results for better separation
+                        finalTranscript += event.results[i][0].transcript + ' ';
                     } else {
                         interimTranscript += event.results[i][0].transcript;
                     }
@@ -1297,13 +1393,25 @@ export default {
                 this.generatedSpeechText = finalTranscript; // Store the final part recognized so far
 
                 // Update the textarea with final + interim text
-                this.text = this.pre_text + finalTranscript + interimTranscript + this.post_text;
-                 this.cursorPosition = this.pre_text.length + finalTranscript.length + interimTranscript.length; // Update cursor during interim
+                const newText = this.pre_text + finalTranscript + interimTranscript + this.post_text;
+                const newCursorPos = this.pre_text.length + finalTranscript.length + interimTranscript.length;
+
+                 // Update text reactively
+                 this.text = newText;
+
+                 // Update cursor position after DOM update
+                 this.$nextTick(()=>{
+                    if(this.$refs.mdTextarea){
+                        this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = newCursorPos;
+                    }
+                     this.cursorPosition = newCursorPos; // Update logical position
+                 });
+
 
                 // Reset silence timer on activity
                 clearTimeout(this.silenceTimer);
                 this.silenceTimer = setTimeout(() => {
-                    if (this.isListeningToVoice) {
+                    if (this.isListeningToVoice && this.recognition) {
                         console.log("Stopping recognition due to silence after result.");
                         this.recognition.stop();
                     }
@@ -1321,8 +1429,10 @@ export default {
                     errorMsg = "Microphone access denied.";
                 }
                  this.$refs.toast.showToast(`Speech Recognition Error: ${errorMsg}`, 4, false);
-                this.isListeningToVoice = false;
+                this.isListeningToVoice = false; // Reset state on error
                 clearTimeout(this.silenceTimer);
+                this.$nextTick(() => feather.replace());
+                 this.recognition = null; // Clean up
             };
 
             this.recognition.onend = () => {
@@ -1330,10 +1440,19 @@ export default {
                  if (this.isListeningToVoice) { // Only show toast if it wasn't stopped manually by clicking again
                     this.$refs.toast.showToast("Speech recognition finished.", 3, true);
                  }
-                this.isListeningToVoice = false;
-                // Final update with only the finalized text
-                this.text = this.pre_text + this.generatedSpeechText + this.post_text;
-                this.cursorPosition = this.pre_text.length + this.generatedSpeechText.length; // Final cursor position
+                this.isListeningToVoice = false; // Reset state
+                // Final update with only the finalized text (with trailing space removed if needed)
+                this.text = this.pre_text + this.generatedSpeechText.trimEnd() + this.post_text;
+                const finalCursorPos = this.pre_text.length + this.generatedSpeechText.trimEnd().length;
+                 // Update cursor position after DOM update
+                 this.$nextTick(()=>{
+                    if(this.$refs.mdTextarea){
+                       this.$refs.mdTextarea.selectionStart = this.$refs.mdTextarea.selectionEnd = finalCursorPos;
+                    }
+                     this.cursorPosition = finalCursorPos; // Update logical position
+                     feather.replace(); // Update icon state
+                 });
+
                 clearTimeout(this.silenceTimer);
                 this.recognition = null; // Clean up instance
             };
@@ -1344,6 +1463,7 @@ export default {
             console.error("Failed to initialize speech recognition:", error);
             this.$refs.toast.showToast("Failed to start speech recognition.", 4, false);
             this.isListeningToVoice = false;
+             this.$nextTick(() => feather.replace());
         }
     },
   },
@@ -1359,11 +1479,14 @@ export default {
          // especially if content within tabs uses them dynamically.
          this.$nextTick(() => {
              feather.replace();
+             if (newVal === 'source') {
+                this.adjustTextareaHeight(); // Re-adjust height when switching to source
+             }
          });
      },
-     'showSettings'(newVal) {
+     'showSettingsModal'(newVal) {
         this.$nextTick(() => {
-             feather.replace(); // Re-render icons when settings panel opens/closes
+             feather.replace(); // Re-render icons when settings modal opens/closes
         });
      }
   }

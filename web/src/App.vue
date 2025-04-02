@@ -56,10 +56,6 @@ onMounted(() => {
    // Initialize based on the initial pinned state from the store
    shouldOccupySpace.value = store.state.isTopBarPinned ?? false;
 
-   // Initialize languages if not done elsewhere
-   if (!store.state.languages || store.state.languages.length <= 1) {
-        store.dispatch('initializeLanguages');
-   }
 });
 
 </script>

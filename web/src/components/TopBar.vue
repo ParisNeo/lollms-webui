@@ -155,11 +155,10 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
-import { useStore } from 'vuex';
+import { useStore } from 'vuex'; // Keep useStore for mapping purposes if preferred, or use this.$store directly
 import feather from 'feather-icons';
 import axios from 'axios';
-import hljs from 'highlight.js';
+import hljs from 'highlight.js'; // Keep hljs import
 
 import Navigation from '@/components/Navigation.vue';
 import ActionButton from '@/components/ActionButton.vue';
@@ -177,137 +176,166 @@ export default {
     Navigation, ActionButton, SocialIcon, Toast, MessageBox,
     ProgressBar, InputBox, UniversalForm, YesNoDialog
   },
-  setup(_, { emit }) {
-    const store = useStore();
+  emits: ['update:pinned', 'update:occupyingSpace'],
+  data() {
+    return {
+      isVisible: false,
+      isPinned: JSON.parse(localStorage.getItem('isPinned') || 'false'),
+      hideTimeout: null,
+      themeDropdownOpen: false,
+      isLanguageMenuVisible: false,
+      isInfosMenuVisible: false,
+      infoMenuHover: false,
+      starCount: null,
+      currentTheme: localStorage.getItem('preferred-theme') || 'default',
+      availableThemes: [],
+      customLanguage: '',
+      githubRepoUrl: "https://github.com/ParisNeo/lollms-webui",
+      // No need for template refs in data
+      // Variables for system theme listener management
+      darkModeMediaQuery: null,
+      handleSystemThemeChangeFunc: null,
+    };
+  },
+  computed: {
+    // Map state from Vuex store
+    progress_visibility() { return this.$store.state.progress_visibility; },
+    progress_value() { return this.$store.state.progress_value; },
+    loading_infos() { return this.$store.state.loading_infos; },
+    isModelOK() { return this.$store.state.isModelOk; },
+    isGenerating() { return this.$store.state.isGenerating; },
+    isConnected() { return this.$store.state.isConnected; },
+    languages() { return this.$store.state.languages || ['English']; },
+    language() { return this.$store.state.language || 'English'; },
 
-    const toast = ref(null);
-    const messageBox = ref(null);
-    const universalForm = ref(null);
-    const yesNoDialog = ref(null);
-    const web_url_input_box = ref(null);
-    const topbarContainer = ref(null);
-    const themeMenu = ref(null);
-    const languageMenu = ref(null);
-
-    const isVisible = ref(false);
-    const isPinned = ref(JSON.parse(localStorage.getItem('isPinned') || 'false'));
-    const hideTimeout = ref(null);
-    const themeDropdownOpen = ref(false);
-    const isLanguageMenuVisible = ref(false);
-    const isInfosMenuVisible = ref(false);
-    const infoMenuHover = ref(false);
-    const starCount = ref(null);
-    const currentTheme = ref(localStorage.getItem('preferred-theme') || 'default');
-    const availableThemes = ref([]);
-    const customLanguage = ref('');
-    const githubRepoUrl = "https://github.com/ParisNeo/lollms-webui";
-
-    const progress_visibility = computed(() => store.state.progress_visibility);
-    const progress_value = computed(() => store.state.progress_value);
-    const loading_infos = computed(() => store.state.loading_infos);
-    const isModelOK = computed(() => store.state.isModelOk);
-    const isGenerating = computed(() => store.state.isGenerating);
-    const isConnected = computed(() => store.state.isConnected);
-    const languages = computed(() => store.state.languages || ['English']);
-    const language = computed(() => store.state.language || 'English');
-
-    const isDarkMode = computed(() => document.documentElement.classList.contains('dark'));
-    const isEffectivelyVisible = computed(() => isPinned.value || isVisible.value);
-    const formattedStarCount = computed(() => {
-      if (starCount.value === null || starCount.value === 'N/A') return '?';
-      const num = Number(starCount.value);
+    // Local computed properties
+    isDarkMode() {
+      return document.documentElement.classList.contains('dark');
+    },
+    isEffectivelyVisible() {
+      return this.isPinned || this.isVisible;
+    },
+    formattedStarCount() {
+      if (this.starCount === null || this.starCount === 'N/A') return '?';
+      const num = Number(this.starCount);
       return num >= 1000 ? `${(num / 1000).toFixed(1)}k` : num.toString();
-    });
-     const currentLanguageDisplay = computed(() => {
-        const lang = language.value;
+    },
+    currentLanguageDisplay() {
+        const lang = this.language;
         if (lang?.length === 2) return lang.toUpperCase();
         if (lang?.toLowerCase().startsWith('en')) return 'EN';
         if (lang?.toLowerCase().startsWith('fr')) return 'FR';
         if (lang?.toLowerCase().startsWith('de')) return 'DE';
         if (lang?.toLowerCase().startsWith('es')) return 'ES';
         return lang ? lang.slice(0, 2).toUpperCase() : '??';
-     });
-
-    const show = () => {
-      clearTimeout(hideTimeout.value);
-      isVisible.value = true;
-    };
-
-    const hide = () => {
-      if (!isPinned.value) {
-        hideTimeout.value = setTimeout(() => {
-           if (!topbarContainer.value?.matches(':hover')) {
-               isVisible.value = false;
-           }
+    }
+  },
+  watch: {
+    isEffectivelyVisible(newValue) {
+      this.$emit('update:occupyingSpace', newValue);
+      this.$nextTick(() => feather.replace());
+    },
+    // Watch store state directly (ensure $store is reactive)
+    '$store.state.isTopBarPinned'(newVal) {
+      if (this.isPinned !== newVal) {
+        this.isPinned = newVal;
+        localStorage.setItem('isPinned', JSON.stringify(newVal));
+        this.isVisible = true; // Show when pinning state changes via store
+      }
+    },
+    '$store.state.config': {
+      handler() {
+        this.$nextTick(() => feather.replace());
+      },
+      deep: true
+    }
+  },
+  methods: {
+    // Methods corresponding to functions in setup
+    show() {
+      clearTimeout(this.hideTimeout);
+      this.isVisible = true;
+    },
+    hide() {
+      if (!this.isPinned) {
+        this.hideTimeout = setTimeout(() => {
+            // Check if the mouse is actually outside the container
+            if (!this.$refs.topbarContainer?.matches(':hover')) {
+                 this.isVisible = false;
+            }
         }, 150);
       }
-    };
-
-    const hideUnlessEnteringTopbar = () => {
-        hideTimeout.value = setTimeout(() => {
-            isVisible.value = false;
-        }, 300);
-    };
-
-    const clearHideTimeout = () => {
-        clearTimeout(hideTimeout.value);
-        if (!isVisible.value && !isPinned.value) {
-             isVisible.value = true;
+    },
+    hideUnlessEnteringTopbar() {
+      this.hideTimeout = setTimeout(() => {
+        this.isVisible = false;
+      }, 300);
+    },
+    clearHideTimeout() {
+        clearTimeout(this.hideTimeout);
+        // If mouse enters topbar container directly, ensure it's visible
+        if (!this.isVisible && !this.isPinned) {
+             this.isVisible = true;
         }
-    };
-
-    const togglePin = () => {
-      const newState = !isPinned.value;
-      isPinned.value = newState;
+    },
+    togglePin() {
+      const newState = !this.isPinned;
+      this.isPinned = newState;
       localStorage.setItem('isPinned', JSON.stringify(newState));
-      isVisible.value = true;
-      store.commit('setTopBarPinned', newState);
-      emit('update:pinned', newState);
-      nextTick(feather.replace);
-    };
-
-     const fetchThemes = async () => {
+      this.isVisible = true; // Ensure visible when pinning/unpinning
+      this.$store.commit('setTopBarPinned', newState);
+      this.$emit('update:pinned', newState); // Keep emitting prop update if parent uses it
+      this.$nextTick(() => feather.replace());
+    },
+    async fetchThemes() {
         try {
             const response = await axios.get('/get_themes');
-            availableThemes.value = response.data.sort();
-            if (currentTheme.value === 'default' && !availableThemes.value.includes('default')) {
-                 availableThemes.value.unshift('default');
+            this.availableThemes = response.data.sort();
+            // Ensure 'default' exists if it's the current or needed fallback
+            if (this.currentTheme === 'default' && !this.availableThemes.includes('default')) {
+                 this.availableThemes.unshift('default');
             }
-            if (!availableThemes.value.includes(currentTheme.value)) {
-                selectTheme('default');
+            // If current theme isn't available, reset to default
+            if (!this.availableThemes.includes(this.currentTheme)) {
+                await this.selectTheme('default'); // Use await if selectTheme becomes async
             }
          } catch (error) {
             console.error('Error fetching themes:', error);
-            availableThemes.value = ['default'];
-            if (currentTheme.value !== 'default') {
-                selectTheme('default');
+            this.availableThemes = ['default']; // Fallback
+            if (this.currentTheme !== 'default') {
+                 await this.selectTheme('default');
             }
         }
-    };
-    const selectTheme = (themeName) => {
-        loadTheme(themeName);
-        themeDropdownOpen.value = false;
-    };
-    const loadTheme = async (themeName) => {
+    },
+    async selectTheme(themeName) { // Make async if loadTheme is async
+        await this.loadTheme(themeName);
+        this.themeDropdownOpen = false;
+    },
+    async loadTheme(themeName) {
          console.log(`Attempting to load theme: ${themeName}`);
          try {
              const timestamp = new Date().getTime();
              const response = await axios.get(`/themes/${themeName}.css?v=${timestamp}`);
 
+             // Remove existing theme style if present
              const existingStyle = document.getElementById('theme-styles');
              if (existingStyle) existingStyle.remove();
 
+             // Add new theme style
              const styleElement = document.createElement('style');
              styleElement.id = 'theme-styles';
              styleElement.textContent = response.data;
              document.head.appendChild(styleElement);
 
+             // Update local storage and state
              localStorage.setItem('preferred-theme', themeName);
-             currentTheme.value = themeName;
+             this.currentTheme = themeName;
 
-             await nextTick();
-             checkAndUpdateDarkMode();
+             // Wait for DOM update and check dark mode
+             await this.$nextTick();
+             this.checkAndUpdateDarkMode(); // This now checks and potentially loads hljs style
 
+             // Update theme variables in store
              const styles = getComputedStyle(document.documentElement);
              const theme_vars = {
                  lollms_title: styles.getPropertyValue('--lollms-title').trim() || 'LoLLMS',
@@ -316,30 +344,30 @@ export default {
                  lollms_welcome_short_message: styles.getPropertyValue('--lollms-welcome-short-message').trim() || 'Welcome',
                  lollms_welcome_message: styles.getPropertyValue('--lollms-welcome-message').trim() || 'Welcome to LoLLMS',
              };
-             store.commit('setThemeVars', theme_vars);
+             this.$store.commit('setThemeVars', theme_vars);
 
-             nextTick(feather.replace);
+             this.$nextTick(() => feather.replace()); // Replace icons after theme change
 
          } catch (error) {
              console.error(`Failed to load theme: ${themeName}`, error);
-             toast.value?.showToast(`Error loading theme: ${themeName}`, 5, false);
-              if (currentTheme.value !== 'default') {
-                 await loadTheme('default');
-              }
+             this.$refs.toast?.showToast(`Error loading theme: ${themeName}`, 5, false);
+             // Attempt to load default theme if the selected one failed and isn't already default
+             if (this.currentTheme !== 'default') {
+                 await this.loadTheme('default');
+             }
          }
-     };
-     const checkAndUpdateDarkMode = () => {
-        const wasDarkMode = isDarkMode.value;
+     },
+     checkAndUpdateDarkMode() {
+        const wasDarkMode = this.isDarkMode; // Check based on class before potential changes
         const currentIsDark = document.documentElement.classList.contains('dark');
 
-        if (wasDarkMode !== currentIsDark) {
-             console.log("Dark mode status changed, isDark:", currentIsDark);
-             loadHighlightJsStyle(currentIsDark);
+        if (wasDarkMode !== currentIsDark || !document.getElementById('highlight-js-style')) {
+             console.log("Dark mode status potentially changed, isDark:", currentIsDark);
+             this.loadHighlightJsStyle(currentIsDark);
         }
-         nextTick(feather.replace);
-    };
-
-     const loadHighlightJsStyle = (isDark) => {
+         this.$nextTick(() => feather.replace()); // Ensure icons are updated after mode change
+    },
+     loadHighlightJsStyle(isDark) {
         const styleId = 'highlight-js-style';
         const existingStyle = document.getElementById(styleId);
         if (existingStyle) existingStyle.remove();
@@ -354,8 +382,8 @@ export default {
         }
         document.head.appendChild(link);
         console.log(`Loaded highlight.js style: ${isDark ? 'Dark' : 'Light'}`);
-     };
-    const themeSwitch = () => {
+     },
+     themeSwitch() {
          if (document.documentElement.classList.contains("dark")) {
              document.documentElement.classList.remove("dark");
              localStorage.setItem("theme-mode", "light");
@@ -363,79 +391,84 @@ export default {
              document.documentElement.classList.add("dark");
              localStorage.setItem("theme-mode", "dark");
          }
-         checkAndUpdateDarkMode();
-     };
-
-     const selectLanguage = async (selectedLang) => {
-        await store.dispatch('changeLanguage', selectedLang);
-        isLanguageMenuVisible.value = false;
-        nextTick(feather.replace);
-     };
-     const deleteLanguage = async (langToDelete) => {
-         yesNoDialog.value?.show(`Are you sure you want to delete the language "${langToDelete}"?`, async () => {
+         this.checkAndUpdateDarkMode(); // Update hljs style and icons
+     },
+     async selectLanguage(selectedLang) {
+        await this.$store.dispatch('changeLanguage', selectedLang);
+        this.isLanguageMenuVisible = false;
+        this.$nextTick(() => feather.replace());
+     },
+     async deleteLanguage(langToDelete) {
+         this.$refs.yesNoDialog?.show(`Are you sure you want to delete the language "${langToDelete}"?`, async () => {
              try {
-                 await store.dispatch('deleteLanguage', langToDelete);
+                 await this.$store.dispatch('deleteLanguage', langToDelete);
              } catch (error) {
                  console.error("Error deleting language:", error);
-                 toast.value?.showToast(`Failed to delete language: ${error.message || error}`, 4, false);
+                 this.$refs.toast?.showToast(`Failed to delete language: ${error.message || error}`, 4, false);
              }
          });
-     };
-     const addCustomLanguage = () => {
-        const newLang = customLanguage.value.trim();
+     },
+     addCustomLanguage() {
+        const newLang = this.customLanguage.trim();
          if (newLang) {
-            if (languages.value.map(l => l.toLowerCase()).includes(newLang.toLowerCase())) {
-                 toast.value?.showToast(`Language "${newLang}" already exists.`, 4, false);
+            if (this.languages.map(l => l.toLowerCase()).includes(newLang.toLowerCase())) {
+                 this.$refs.toast?.showToast(`Language "${newLang}" already exists.`, 4, false);
             } else {
-                 selectLanguage(newLang);
-                 customLanguage.value = '';
+                 this.selectLanguage(newLang); // selectLanguage is now async
+                 this.customLanguage = '';
             }
          }
-     };
-     const toggleThemeDropDown = () => {
-        themeDropdownOpen.value = !themeDropdownOpen.value;
-        isLanguageMenuVisible.value = false;
-        isInfosMenuVisible.value = false;
-     };
-     const toggleLanguageMenu = () => {
-        isLanguageMenuVisible.value = !isLanguageMenuVisible.value;
-        themeDropdownOpen.value = false;
-        isInfosMenuVisible.value = false;
-     };
-
-    const showInfosMenu = () => {
-      infoMenuHover.value = true;
-      if (!isInfosMenuVisible.value) {
-        isInfosMenuVisible.value = true;
-        themeDropdownOpen.value = false;
-        isLanguageMenuVisible.value = false;
-        nextTick(feather.replace);
+     },
+     toggleThemeDropDown() {
+        this.themeDropdownOpen = !this.themeDropdownOpen;
+        // Close other menus
+        this.isLanguageMenuVisible = false;
+        this.isInfosMenuVisible = false;
+     },
+     toggleLanguageMenu() {
+        this.isLanguageMenuVisible = !this.isLanguageMenuVisible;
+        // Close other menus
+        this.themeDropdownOpen = false;
+        this.isInfosMenuVisible = false;
+     },
+    showInfosMenu() {
+      this.infoMenuHover = true;
+      if (!this.isInfosMenuVisible) {
+        this.isInfosMenuVisible = true;
+        // Close other menus
+        this.themeDropdownOpen = false;
+        this.isLanguageMenuVisible = false;
+        this.$nextTick(() => feather.replace()); // Replace icons if menu content changes
       }
-    };
-    const hideInfosMenu = () => {
-      infoMenuHover.value = false;
+    },
+    hideInfosMenu() {
+      this.infoMenuHover = false;
       setTimeout(() => {
-        if (!infoMenuHover.value) {
-          isInfosMenuVisible.value = false;
+        if (!this.infoMenuHover) {
+          this.isInfosMenuVisible = false;
         }
-      }, 150);
-    };
-
-    const showNews = () => { store.state.news?.show(); };
-    const refreshPage = () => { window.location.reload(); };
-    const restartProgram = () => {
-        store.state.yesNoDialog?.show("Are you sure you want to restart LoLLMs?", ()=>{
+      }, 150); // Small delay to allow moving mouse into the menu
+    },
+    showNews() {
+        this.$store.state.news?.show();
+    },
+    refreshPage() {
+        window.location.reload();
+    },
+    restartProgram() {
+        this.$store.state.yesNoDialog?.show("Are you sure you want to restart LoLLMs?", ()=>{
              axios.get('/restart_program').then(()=>{
-                 store.state.toast?.showToast("Restarting server...", 4, true);
+                 this.$store.state.toast?.showToast("Restarting server...", 4, true);
              }).catch(error => {
                  console.error("Error restarting server:", error);
-                 store.state.toast?.showToast(`Failed to send restart command: ${error.response?.data?.error || error.message}`, 5, false);
+                 this.$store.state.toast?.showToast(`Failed to send restart command: ${error.response?.data?.error || error.message}`, 5, false);
              });
          });
-     };
-    const fetchGitHubStars = async () => {
+     },
+    async fetchGitHubStars() {
          try {
-            const response = await fetch(githubRepoUrl.replace('github.com', 'api.github.com/repos'), {
+            // Use axios or fetch, fetch shown here for variety
+            const response = await fetch(this.githubRepoUrl.replace('github.com', 'api.github.com/repos'), {
                  headers: { 'Accept': 'application/vnd.github.v3+json' }
             });
             if (!response.ok) {
@@ -449,29 +482,30 @@ export default {
                  throw new Error(errorMsg);
             }
             const data = await response.json();
-            starCount.value = data.stargazers_count;
+            this.starCount = data.stargazers_count;
          } catch (error) {
             console.error('Error fetching GitHub stars:', error);
-            starCount.value = 'N/A';
+            this.starCount = 'N/A'; // Indicate error fetching stars
          }
-    };
-    const handleWebUrlOk = (url) => {
+    },
+    handleWebUrlOk(url) {
         console.log("Web URL submitted:", url);
-        store.dispatch('processWebUrl', url);
-    };
-
-    const handleClickOutside = (event) => {
+        this.$store.dispatch('processWebUrl', url);
+    },
+    // Click outside handler for dropdowns
+    handleClickOutside(event) {
       const themeButton = event.target.closest('button[title="Select Theme"]');
-      if (themeMenu.value && !themeMenu.value.contains(event.target) && !themeButton) {
-        themeDropdownOpen.value = false;
+      if (this.$refs.themeMenu && !this.$refs.themeMenu.contains(event.target) && !themeButton) {
+        this.themeDropdownOpen = false;
       }
       const langButton = event.target.closest('button[title="Select Language"]');
-      if (languageMenu.value && !languageMenu.value.contains(event.target) && !langButton) {
-        isLanguageMenuVisible.value = false;
+      if (this.$refs.languageMenu && !this.$refs.languageMenu.contains(event.target) && !langButton) {
+        this.isLanguageMenuVisible = false;
       }
-    };
-
-    const themeCheckInitial = () => {
+      // Info menu hides on mouseleave primarily, but can add outside click too if needed
+    },
+    // Initial theme check based on storage and system preference
+    themeCheckInitial() {
         const storedMode = localStorage.getItem("theme-mode");
         const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -484,95 +518,78 @@ export default {
                 document.documentElement.classList.remove("dark");
             }
         }
-         checkAndUpdateDarkMode();
-    };
-
-    onMounted(async () => {
-       store.commit('setToastRef', toast.value);
-       store.commit('setMessageBoxRef', messageBox.value);
-       store.commit('setUniversalFormRef', universalForm.value);
-       store.commit('setYesNoDialogRef', yesNoDialog.value);
-       store.commit('setWebUrlInputBoxRef', web_url_input_box.value);
-
-      document.addEventListener('click', handleClickOutside, true);
-
-      await fetchThemes();
-      await loadTheme(currentTheme.value);
-      themeCheckInitial();
-      fetchGitHubStars();
-
-      const initialPinState = JSON.parse(localStorage.getItem('isPinned') || 'false');
-      if (store.state.isTopBarPinned === null) {
-           store.commit('setTopBarPinned', initialPinState);
-      }
-      isPinned.value = store.state.isTopBarPinned;
-      isVisible.value = isPinned.value;
-
-      nextTick(feather.replace);
-
-      const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleSystemThemeChange = (e) => {
+         // Call this AFTER setting the class initially
+         this.checkAndUpdateDarkMode();
+    },
+    // Listener for system theme changes
+    handleSystemThemeChange(e) {
+        // Only apply system theme if no explicit theme-mode is stored
         if (!localStorage.getItem("theme-mode")) {
-          if (e.matches) {
+          if (e.matches) { // System prefers dark
             if (!document.documentElement.classList.contains('dark')) {
               document.documentElement.classList.add('dark');
-               checkAndUpdateDarkMode();
+              this.checkAndUpdateDarkMode(); // Update styles and icons
             }
-          } else {
+          } else { // System prefers light
              if (document.documentElement.classList.contains('dark')) {
                document.documentElement.classList.remove('dark');
-               checkAndUpdateDarkMode();
+               this.checkAndUpdateDarkMode(); // Update styles and icons
             }
           }
         }
-      };
-      darkModeMediaQuery.addEventListener('change', handleSystemThemeChange);
+    }
+  },
+  async mounted() {
+    // Assign refs to store AFTER component is mounted
+    this.$store.state.toast = this.$refs.toast;
+    this.$store.state.messageBox = this.$refs.messageBox;
+    this.$store.state.universalForm = this.$refs.universalForm;
+    this.$store.state.yesNoDialog = this.$refs.yesNoDialog;
+    // No need to assign web_url_input_box to store unless globally needed
 
-      onBeforeUnmount(() => {
-        document.removeEventListener('click', handleClickOutside, true);
-        darkModeMediaQuery.removeEventListener('change', handleSystemThemeChange);
-        clearTimeout(hideTimeout.value);
-      });
+    // Add global click listener
+    document.addEventListener('click', this.handleClickOutside, true);
 
-        emit('update:occupyingSpace', isEffectivelyVisible.value);
-    });
+    // Fetch initial data and setup
+    await this.fetchThemes();
+    await this.loadTheme(this.currentTheme); // Load theme after fetching list
+    this.themeCheckInitial(); // Set initial dark/light mode
+    this.fetchGitHubStars();
 
-     watch(isEffectivelyVisible, (newValue) => {
-         emit('update:occupyingSpace', newValue);
-         nextTick(feather.replace);
-     });
+    // Sync isPinned with store if necessary (initial value already set in data)
+    const initialPinState = JSON.parse(localStorage.getItem('isPinned') || 'false');
+    if (this.$store.state.isTopBarPinned === null) { // Initialize store if not set
+         this.$store.commit('setTopBarPinned', initialPinState);
+    }
+    // Make sure local state matches store state if store was already set
+    this.isPinned = this.$store.state.isTopBarPinned;
+    this.isVisible = this.isPinned; // Initial visibility based on pinned state
 
-     watch(() => store.state.isTopBarPinned, (newVal) => {
-         if (isPinned.value !== newVal) {
-             isPinned.value = newVal;
-             localStorage.setItem('isPinned', JSON.stringify(newVal));
-             isVisible.value = true;
-         }
-     });
+    // Initial feather icon replacement
+    this.$nextTick(() => feather.replace());
 
-      watch(() => store.state.config, () => {
-          nextTick(() => feather.replace());
-      }, { deep: true });
+    // Setup system theme listener
+    this.darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    // Store the bound function to remove it later
+    this.handleSystemThemeChangeFunc = this.handleSystemThemeChange.bind(this);
+    this.darkModeMediaQuery.addEventListener('change', this.handleSystemThemeChangeFunc);
 
-
-    return {
-      toast, messageBox, universalForm, yesNoDialog, web_url_input_box,
-      topbarContainer, themeMenu, languageMenu,
-      isVisible, isPinned, themeDropdownOpen, isLanguageMenuVisible, isInfosMenuVisible,
-      starCount, currentTheme, availableThemes, customLanguage, githubRepoUrl,
-      progress_visibility, progress_value, loading_infos, isModelOK, isGenerating, isConnected,
-      languages, language, isDarkMode, isEffectivelyVisible, formattedStarCount, currentLanguageDisplay,
-      show, hide, hideUnlessEnteringTopbar, clearHideTimeout, togglePin,
-      fetchThemes, selectTheme, loadTheme, themeSwitch, checkAndUpdateDarkMode,
-      selectLanguage, deleteLanguage, addCustomLanguage, toggleThemeDropDown, toggleLanguageMenu,
-      showInfosMenu, hideInfosMenu,
-      showNews, refreshPage, restartProgram, fetchGitHubStars, handleWebUrlOk,
-    };
+    // Emit initial space occupation state
+    this.$emit('update:occupyingSpace', this.isEffectivelyVisible);
+  },
+  beforeUnmount() {
+    // Clean up listeners and timeouts
+    document.removeEventListener('click', this.handleClickOutside, true);
+    if (this.darkModeMediaQuery && this.handleSystemThemeChangeFunc) {
+        this.darkModeMediaQuery.removeEventListener('change', this.handleSystemThemeChangeFunc);
+    }
+    clearTimeout(this.hideTimeout);
   }
 }
 </script>
 
 <style scoped>
+/* Styles remain the same */
 .theme-dropdown {
     @apply absolute right-0 mt-1 w-48 z-[52] overflow-hidden;
 }
