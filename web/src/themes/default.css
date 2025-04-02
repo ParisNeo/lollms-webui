@@ -1088,6 +1088,21 @@ animation: bounce 1s infinite;
   }
 }
 
+/* Additions for Playground Component */
+@layer components {
+  .active-tab-button {
+    /* Apply primary button styles but keep size small */
+    @apply btn btn-primary btn-sm;
+    /* Add extra visual cue for active state */
+    @apply ring-2 ring-offset-1 ring-offset-blue-100 dark:ring-offset-blue-900 ring-blue-500 dark:ring-blue-400;
+  }
+  .inactive-tab-button {
+    /* Apply secondary button styles, small size */
+    @apply btn btn-secondary btn-sm;
+     /* Optional: slightly reduce opacity for inactive */
+    @apply opacity-80 hover:opacity-100;
+  }
+}
 
 @keyframes matrix-rain {
   0% {
