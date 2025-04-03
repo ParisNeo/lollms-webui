@@ -6,10 +6,10 @@
 
 :root {
   --lollms-title: DragonForge AI;
-  --falling-object: "🐉";
+  --falling-object: 🐉;
   --activate-dropping-animation: 1;
-  --lollms-welcome-short-message: Welcome to the Dragon's Lair;
-  --lollms-welcome-message: Ignite your imagination in the fiery realm of DragonForge AI, where ancient wisdom meets cutting-edge technology. Harness the power of the crimson dragon to breathe life into your ideas and scorch through the boundaries of what's possible in artificial intelligence.;
+  --lollms-welcome-short-message: Welcome to the Dragon\'s Lair;
+  --lollms-welcome-message: Ignite your imagination in the fiery realm of DragonForge AI, where ancient wisdom meets cutting-edge technology. Harness the power of the crimson dragon to breathe life into your ideas and scorch through the boundaries of what\'s possible in artificial intelligence.;
 }
 
 @layer base {

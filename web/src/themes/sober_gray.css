@@ -1,16 +1,48 @@
-/* Sober Professional Theme */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'); /* Using Inter for a clean look */
+/* Sober Modern Stylish Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Root variables define core colors for light and dark modes */
 :root {
-  --lollms-title: "LoLLMS"; /* Keeping the name, styled soberly below */
-  --falling-object: "";
-  --activate-dropping-animation: 0; /* Disable animation */
-  --lollms-welcome-short-message: "Welcome";
-  --lollms-welcome-message: "Welcome to your professional AI assistant. Streamline your workflow and enhance productivity with intelligent language processing capabilities.";
+  --lollms-title: "LoLLMS";
+  --falling-object: •; /* Simple dot */
+  --activate-dropping-animation: 0; /* Keep animation off for sober theme */
+  --lollms-welcome-short-message: Welcome;
+  --lollms-welcome-message: Engage with LoLLMS, a platform designed for clarity and efficiency in AI interaction. Explore the capabilities of large language models in a focused environment.;
+
+  /* Core Palette - Grays */
+  --color-bg-light: #ffffff; /* White */
+  --color-bg-light-tone: #f8f9fa; /* Very light gray */
+  --color-bg-light-panel: #ffffff; /* White */
+  --color-bg-light-tone-panel: #f1f3f5; /* Light gray */
+  --color-bg-light-code-block: #f1f3f5; /* Light gray */
+  --color-bg-light-discussion: #ffffff; /* White */
+  --color-bg-light-discussion-odd: #f8f9fa; /* Very light gray */
+
+  --color-bg-dark: #121212; /* Very dark gray / near black */
+  --color-bg-dark-tone: #1e1e1e; /* Dark gray */
+  --color-bg-dark-panel: #1e1e1e; /* Dark gray */
+  --color-bg-dark-tone-panel: #2a2a2a; /* Slightly lighter dark gray */
+  --color-bg-dark-code-block: #2a2a2a; /* Slightly lighter dark gray */
+  --color-bg-dark-discussion: #1e1e1e; /* Dark gray */
+  --color-bg-dark-discussion-odd: #121212; /* Very dark gray / near black */
+
+  /* Text Palette */
+  --color-text-light: #212529; /* Almost black */
+  --color-text-light-muted: #6c757d; /* Gray */
+  --color-text-dark: #e9ecef; /* Light gray / Off-white */
+  --color-text-dark-muted: #adb5bd; /* Lighter gray */
+
+  /* Accent Palette (Optional - using a neutral dark/light gray here) */
+  --color-accent-light: #343a40; /* Dark Gray */
+  --color-accent-dark: #ced4da; /* Light Gray */
+
+  /* Border Palette */
+  --color-border-light: #dee2e6; /* Light gray */
+  --color-border-dark: #495057; /* Dark gray */
 }
 
 @layer base {
@@ -18,7 +50,9 @@
     @apply scroll-smooth;
   }
   body {
-    font-family: 'Inter', sans-serif; /* Changed to Inter */
+    font-family: 'Inter', sans-serif; /* Modern sans-serif */
+    /* Uses Tailwind dark: prefix for background and text colors */
+    @apply bg-white dark:bg-[#121212] text-[#212529] dark:text-[#e9ecef];
   }
 }
 
@@ -37,63 +71,58 @@
   @apply hidden;
 }
 
-/* === Base Typography === */
-h1 { @apply text-4xl md:text-5xl font-semibold text-gray-900 dark:text-gray-100 mb-6; }
-h2 { @apply text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-4; }
-h3 { @apply text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-3; }
-h4 { @apply text-xl font-medium text-gray-600 dark:text-gray-400 mb-2; }
+/* --- Typography --- */
+/* Uses dark: prefixes for text colors */
+h1 { @apply text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white mb-5; }
+h2 { @apply text-2xl md:text-3xl font-semibold text-gray-800 dark:text-gray-100 mb-4; }
+h3 { @apply text-xl md:text-2xl font-semibold text-gray-700 dark:text-gray-200 mb-3; }
+h4 { @apply text-lg md:text-xl font-medium text-gray-600 dark:text-gray-300 mb-2; }
 
+/* Subtle borders with dark mode variant */
 h1, h2 { @apply border-b border-gray-200 dark:border-gray-700 pb-2; }
 
+/* Paragraphs with dark mode text color */
 p {
   @apply
     text-base
-    text-gray-700 /* Sober text color */
-    dark:text-gray-300
+    text-gray-700 dark:text-gray-300
     break-words
-    font-sans /* Inter is sans-serif */
+    font-sans
     antialiased
-    tracking-tight
-    leading-relaxed;
+    tracking-normal /* Adjusted tracking */
+    leading-relaxed
+    md:text-base /* Keep base text size consistent */
+    md:leading-7; /* Adjusted leading */
 }
 
-@screen md {
-  p {
-    @apply
-      text-lg
-      leading-loose;
-  }
-}
-
-/* Base list styling */
+/* Lists base styles */
 ul, ol {
   @apply
       my-4
-      px-4
+      pl-5 /* Use padding for indentation */
       leading-7
-      text-base
-      text-gray-700 /* Sober text color */
-      dark:text-gray-300;
+      text-base;
 }
 
+/* Unordered lists */
 ul {
   @apply
       list-disc
-      ml-2
-      space-y-2;
+      space-y-1.5; /* Slightly tighter spacing */
 }
 
+/* List items */
 li {
   @apply
-      pl-2
+      pl-1 /* Minimal padding left */
       relative;
 }
 
+/* Ordered lists */
 ol {
   @apply
       list-decimal
-      ml-2
-      space-y-2;
+      space-y-1.5; /* Slightly tighter spacing */
 }
 
 /* Nested lists */
@@ -101,242 +130,245 @@ ul ul, ol ol, ul ol, ol ul {
   @apply
       mt-2
       mb-0
-      ml-6;
+      ml-5; /* Consistent indentation */
 }
 
+/* List markers with dark mode variant */
 li::marker {
-  color: #6B7280; /* gray-500 equivalent */
-  @apply dark:text-gray-400;
+  color: var(--color-text-light-muted); /* Use CSS var */
+}
+.dark li::marker {
+  color: var(--color-text-dark-muted); /* Use CSS var for dark mode */
 }
 
-/* === Color Variables (Simplified for Sober Theme) === */
-/* Most colors will be applied directly with Tailwind classes */
-:root {
-  --color-primary-accent: #2563EB; /* blue-600 */
-  --color-primary-accent-hover: #1D4ED8; /* blue-700 */
-  --color-secondary-bg-light: #F3F4F6; /* gray-100 */
-  --color-secondary-bg-dark: #374151; /* gray-700 */
-  --color-border-light: #E5E7EB; /* gray-200 */
-  --color-border-dark: #4B5563; /* gray-600 */
-}
-
-/* === Inputs & Forms === */
+/* --- Core Component Styling --- */
+/* Form elements with dark mode variants */
 textarea, input, select {
-  @apply bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-1 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-gray-500 dark:focus:border-gray-400 text-gray-900 dark:text-gray-100;
 }
 
-/* === Layout & Panels === */
+/* Background color with dark mode variant */
 .background-color {
-  @apply bg-gray-100 dark:bg-gray-900 min-h-screen; /* Solid neutral background */
+  @apply bg-gray-50 dark:bg-gray-900 min-h-screen; /* Solid colors */
 }
 
+/* Toolbar color with dark mode variants */
 .toolbar-color {
-  @apply text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm; /* Clean toolbar */
+  @apply text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700;
 }
 
+/* Panels color with dark mode variants */
 .panels-color {
-  @apply text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-lg shadow; /* Standard panel */
+  @apply text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800;
 }
 
+/* Uni-color panels with dark mode variants */
 .unicolor-panels-color {
-  @apply bg-gray-50 dark:bg-gray-700; /* Slightly different background */
+  @apply bg-gray-100 dark:bg-gray-700;
 }
 
+/* Chatbox color with dark mode variant */
 .chatbox-color {
   @apply bg-white dark:bg-gray-800;
 }
 
-/* === Messages === */
+/* Message styling with dark mode variants */
 .message {
-  @apply relative w-full m-2 shadow rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-base; /* Slightly smaller text */
+  @apply relative w-full m-2 shadow-sm rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col flex-grow flex-wrap overflow-visible p-4 pb-3 text-base; /* Adjusted padding & text size */
   @apply text-gray-800 dark:text-gray-200;
 }
 
 .message:hover {
-  @apply border-gray-300 dark:border-gray-600; /* Subtle hover */
+  @apply border-gray-300 dark:border-gray-600; /* Subtle hover border */
 }
 
+/* Alternating message background colors with dark mode variants */
 .message:nth-child(even) {
-  @apply bg-gray-50 dark:bg-gray-800; /* Subtle striping */
+  @apply bg-gray-50 dark:bg-gray-800;
 }
 
 .message:nth-child(odd) {
-  @apply bg-white dark:bg-gray-700; /* Subtle striping */
+  @apply bg-white dark:bg-[#1e1e1e];
 }
 
+/* Message header with dark mode variant */
 .message-header {
-  @apply text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100;
+  @apply text-lg font-medium mb-2 text-gray-700 dark:text-gray-300; /* Slightly smaller/lighter header */
 }
 
+/* Message content (inherits dark mode text color from .message) */
 .message-content {
-  @apply text-base leading-relaxed text-gray-700 dark:text-gray-300;
+  @apply text-base leading-relaxed;
 }
 
-body { /* Consistent body background and text */
-  @apply bg-gray-100 dark:bg-gray-900 min-h-screen text-base text-gray-800 dark:text-gray-200;
+/* Body already defined with dark mode in @layer base */
+body {
+  /* @apply bg-white dark:bg-[#121212] text-[#212529] dark:text-[#e9ecef]; */
 }
 
-/* === Discussions List === */
+/* Discussion text with dark mode variant */
 .discussion {
-  @apply mr-2 text-xs text-gray-600 dark:text-gray-400;
+  @apply mr-2 text-xs text-gray-500 dark:text-gray-400;
 }
 
+/* Highlighted discussion text with dark mode variant */
 .discussion-hilighted {
-  @apply bg-gray-200 dark:bg-gray-700 text-xs text-gray-800 dark:text-gray-100 rounded;
+  @apply bg-gray-200 dark:bg-gray-700 text-xs rounded px-1;
 }
 
-/* === Welcome & Progress === */
+/* Welcome area background with dark mode variant */
 .bg-gradient-welcome {
-  @apply bg-white dark:bg-gray-800; /* No gradient */
+  @apply bg-white dark:bg-gray-800; /* Solid background */
 }
 
+/* Progress bar background with dark mode variant */
 .bg-gradient-progress {
-  @apply bg-blue-600; /* Solid accent color for progress */
+  @apply bg-gray-200 dark:bg-gray-700; /* Solid background */
 }
 
+/* Title text with dark mode variant */
 .text-gradient-title {
-   /* No gradient, use standard h1/h2 styling */
-  @apply text-gray-900 dark:text-white font-bold;
+  @apply text-gray-900 dark:text-white font-bold; /* Solid color, remove gradient */
 }
 
+/* Subtitle text with dark mode variant */
 .text-subtitle {
   @apply text-gray-600 dark:text-gray-400;
 }
 
+/* Author text with dark mode variant */
 .text-author {
-  @apply text-gray-500 dark:text-gray-500 text-sm; /* Subtler author text */
+  @apply text-gray-500 dark:text-gray-400 text-sm;
 }
 
+/* Loading text with dark mode variant */
 .text-loading {
   @apply text-gray-700 dark:text-gray-300;
 }
 
+/* Progress text with dark mode variant */
 .text-progress {
-  @apply text-gray-600 dark:text-gray-400 text-sm;
+  @apply text-gray-600 dark:text-gray-400;
 }
 
-/* === Buttons === */
-.btn { /* Base button style */
-  @apply font-medium py-2 px-4 rounded-md transition-all duration-200 ease-in-out shadow-sm flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2;
-  @apply disabled:opacity-50 disabled:cursor-not-allowed;
+/* Base button styles */
+.btn {
+  @apply font-medium py-2 px-4 rounded-md transition-all duration-200 ease-in-out shadow-sm flex items-center focus:outline-none focus:ring-2 focus:ring-offset-1;
 }
 
+/* Primary button with dark mode variants */
 .btn-primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+  @apply bg-gray-800 hover:bg-gray-700 text-white dark:bg-gray-300 dark:text-gray-900 dark:hover:bg-gray-400 focus:ring-gray-500 dark:focus:ring-gray-400;
 }
 
+/* Secondary button with dark mode variants */
 .btn-secondary {
-  @apply bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-400 dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:focus:ring-gray-500;
+  @apply bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 focus:ring-gray-400 dark:focus:ring-gray-500 border border-gray-300 dark:border-gray-600;
 }
 
-.btn-success { /* For success actions */
-    @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500;
-}
-
-.btn-sm { /* Small button modifier */
-    @apply py-1 px-2 text-sm rounded;
-}
-
-
-/* === Cards === */
+/* Card styling with dark mode variants */
 .card {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow p-6; /* Softer shadow */
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6;
 }
 
-/* === Inputs (Refined) === */
+/* Input styling (already defined with dark mode variants) */
 .input {
-  @apply bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 w-full; /* Ensure width */
-}
-.input-sm { /* Small input modifier */
-    @apply input px-3 py-1 text-sm rounded;
+  @apply bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:focus:ring-gray-400 focus:border-gray-500 dark:focus:border-gray-400 text-gray-900 dark:text-gray-100;
 }
 
-
-/* === Labels === */
+/* Label with dark mode variant */
 .label {
   @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
 }
 
-/* === Links === */
+/* Link with dark mode variants */
 .link {
-  @apply text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300;
+  @apply text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white underline decoration-gray-400 dark:decoration-gray-500 hover:decoration-gray-600 dark:hover:decoration-gray-400;
 }
 
-/* === Navbar / Menu === */
+/* Navbar container with dark mode variants */
 .navbar-container {
-  @apply text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700; /* Clean navbar */
+  @apply text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-md shadow-sm border-b border-gray-200 dark:border-gray-700;
 }
 
-.game-menu { /* Renamed concept to 'main-menu' if applicable */
+/* Menu container with dark mode border */
+.game-menu { /* Renamed conceptually, still affects nav */
   @apply flex justify-center items-center relative border-b border-gray-200 dark:border-gray-700;
 }
 
-.text-shadow-custom { /* Removed text shadow for sober look */
-  text-shadow: none;
+/* Removed custom text shadow */
+.text-shadow-custom {
+  /* text-shadow: none; */
 }
 
+/* Menu item with dark mode text and hover */
 .menu-item {
-  @apply mb-0 px-4 py-3 text-gray-600 dark:text-gray-400 font-medium text-sm transition-colors duration-200 ease-in-out border-b-2 border-transparent; /* Use bottom border for active state */
-  @apply hover:text-gray-900 hover:dark:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600;
+  @apply relative mb-0 px-4 py-3 text-gray-600 dark:text-gray-400 font-medium text-sm transition-colors duration-200 ease-in-out;
+  @apply hover:text-gray-900 hover:dark:text-white;
 }
 
+/* Active menu item with dark mode text and border */
 .menu-item.active-link {
-  @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 font-semibold;
-   /* Removed transform/scale/shadow effects */
+  @apply text-gray-900 dark:text-white font-semibold;
+}
+.menu-item.active-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    @apply bg-gray-800 dark:bg-gray-200; /* Dark mode border color */
 }
 
-.menu-item.active-link::before { /* Removed shimmer effect */
-  content: none;
-}
-
-.dark .menu-item.active-link::before {
-  content: none;
-}
-
-@keyframes shimmer { /* Keep keyframe definition but it's unused */
-  0% { background-position: -100% 0; }
-  100% { background-position: 100% 0; }
-}
-
-@keyframes bounce { /* Keep keyframe definition but it's unused */
+/* Optional subtle bounce animation */
+@keyframes bounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-2px); } /* Subtler bounce if needed */
+  50% { transform: translateY(-3px); }
 }
-
-.feather-emoji { /* Removed bounce animation */
+.feather-emoji {
   display: inline-block;
-  margin-left: 5px;
+  margin-left: 4px;
+  /* animation: bounce 1.5s infinite; Optional: remove if too playful */
 }
 
-/* === App Cards === */
+/* App card with dark mode variants */
 .app-card {
-  @apply transition-all duration-200 ease-in-out bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-6 hover:shadow-md ;
+  @apply transition-all duration-200 ease-in-out bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm p-6 hover:shadow-md;
 }
 
 .app-card:hover {
-  @apply transform -translate-y-0.5 border-gray-300 dark:border-gray-600; /* Very subtle lift */
+  @apply transform -translate-y-0.5; /* Subtle lift */
 }
 
-button:hover { /* Keep subtle button lift */
-  @apply transform -translate-y-0.5;
+/* Base button transition */
+button {
+  @apply transition-all duration-200 ease-in-out;
 }
 
-/* === Scrollbars === */
+/* Button hover handled by btn-* classes which have dark variants */
+button:hover {
+  /* Hover handled by btn-* classes */
+}
+
+/* Scrollbar base styles */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: theme('colors.gray.400') theme('colors.gray.200');
 }
 
+/* Scrollbar dark mode colors */
 .dark .scrollbar-thin {
   scrollbar-color: theme('colors.gray.600') theme('colors.gray.800');
 }
 
+/* Webkit scrollbar styles with dark mode variants */
 .scrollbar-thin::-webkit-scrollbar {
-  @apply w-2 h-2; /* Added height for horizontal scrollbars */
+  @apply w-1.5 h-1.5; /* Make scrollbar thinner */
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  @apply bg-gray-200 dark:bg-gray-800 rounded-full;
+  @apply bg-gray-100 dark:bg-gray-800 rounded-full;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
@@ -346,67 +378,69 @@ button:hover { /* Keep subtle button lift */
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-500 dark:bg-gray-500;
 }
-.scrollbar { /* General scrollbar utility */
-  @apply scrollbar-thin; /* Apply the thin scrollbar style */
-}
 
-/* === Search Input === */
+/* Search input with dark mode variants */
 .search-input {
-  @apply w-full border-b-2 border-gray-300 dark:border-gray-600 py-2 px-4 pl-10 transition-colors duration-200 ease-in-out focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 bg-transparent text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500;
+  @apply w-full border-b border-gray-300 dark:border-gray-600 py-2 px-4 pl-10 transition-colors duration-200 ease-in-out focus:outline-none focus:border-gray-500 dark:focus:border-gray-400 bg-transparent text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500;
 }
 
-/* === Progress Bar === */
+/* General scrollbar utility with dark mode variants */
+.scrollbar {
+  @apply scrollbar-thin scrollbar-track-gray-200 scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500 dark:scrollbar-track-gray-700 dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-gray-500;
+}
+
+/* Animated progress bar background with dark mode variant */
 .animated-progressbar-bg{
-  @apply w-full h-2 relative overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner; /* Height reduced, subtle shadow */
+  @apply w-full h-2 relative overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner; /* Thinner bar, subtle shadow */
 }
+/* Animated progress bar foreground with dark mode variant */
 .animated-progressbar-fg{
-  @apply absolute top-0 left-0 h-full bg-blue-600 transition-all duration-300 rounded-full; /* Solid accent color */
+  @apply absolute top-0 left-0 h-full bg-gray-600 dark:bg-gray-400 transition-all duration-300 rounded-full; /* Solid color */
 }
 
-/* === Discussion Toolbox === */
+/* Discussion toolbox with dark mode variants */
 .discussion-toolbox{
-  @apply flex gap-2 items-center bg-white dark:bg-gray-700 p-1.5 rounded-l-md shadow border border-gray-200 dark:border-gray-600 transform translate-x-full group-hover:translate-x-0 transition-transform duration-300; /* Adjusted background/border */
+  @apply flex gap-1 items-center bg-white dark:bg-gray-700 p-1 rounded-l-md shadow-sm border border-r-0 border-gray-200 dark:border-gray-600 transform translate-x-full group-hover:translate-x-0 transition-transform duration-200;
 }
-
-/* === Title Style === */
+/* LoLLMS title style with dark mode variant */
 .lollms-title-style{
-  /* Removed complex text-shadow and gradient */
-  @apply font-semibold text-gray-900 dark:text-gray-100; /* Use standard heading styles */
+  @apply font-semibold text-gray-900 dark:text-white;
 }
 
-/* === Chat Bar === */
+/* Chat bar with dark mode variants */
 .chat-bar {
-  @apply relative text-gray-700 dark:text-gray-300 grow flex cursor-pointer select-none items-center gap-2 bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700; /* Clean chat bar style */
-  height: 50px;
+  @apply relative text-gray-700 dark:text-gray-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-100 dark:bg-gray-800 p-2 shadow-sm hover:bg-gray-200 dark:hover:bg-gray-700 border-t border-gray-200 dark:border-gray-700;
+  height: 48px; /* Slightly reduced height */
   transition: background-color 0.2s ease;
 }
 
+/* Chat bar hover handled by base class dark variant */
 .chat-bar:hover {
-   box-shadow: none; /* Remove hover shadow */
+  /* Hover handled by base class */
 }
 
-/* === SVG/Icon Buttons === */
+/* SVG button with dark mode variants */
 .svg-button{
-  @apply text-gray-500 dark:text-gray-400 p-1.5 rounded-md transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500; /* Smaller padding, standard ring */
+  @apply text-gray-500 dark:text-gray-400 p-1.5 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-gray-500 dark:focus:ring-gray-400;
 }
 
 .svg-button:hover{
-  @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200; /* Subtle background, slightly darker text */
+  @apply bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200;
 }
 .svg-button:active{
-  @apply bg-gray-200 dark:bg-gray-600;
+  @apply bg-gray-300 dark:bg-gray-600;
 }
-
-/* === Nav Buttons === */
+/* Nav button with dark mode variants */
 .nav-button{
-  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100;
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300;
 }
 
+/* Active nav button with dark mode variants */
 .nav-button-active{
-  @apply bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold; /* Subtle active state */
+  @apply bg-gray-200 text-gray-900 hover:bg-gray-200 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-700 font-semibold;
 }
 
-/* === On/Off Status Indicators === */
+/* On/Off button states with dark mode variants */
 .btn-on{
   @apply text-green-600 dark:text-green-400;
 }
@@ -415,68 +449,57 @@ button:hover { /* Keep subtle button lift */
   @apply text-red-600 dark:text-red-400;
 }
 
-/* === Interesting Facts Box === */
+/* Interesting facts section with dark mode variants */
 .interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm; /* Cleaner style, no transform */
+  @apply mt-6 mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 transform transition-transform duration-200 hover:scale-[1.02];
 }
 
-/* === Toolbar Buttons === */
+/* Toolbar button with dark mode variants */
 .toolbar-button {
-  @apply bg-transparent border-none cursor-pointer p-2 text-gray-600 dark:text-gray-400 transition-colors duration-200;
+  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-200 text-gray-600 dark:text-gray-400;
 }
 
 .toolbar-button:hover {
-  @apply text-blue-600 dark:text-blue-400; /* Use accent color on hover */
+  @apply text-gray-900 dark:text-gray-100;
 }
 
-/* === Context Menu (Sober Version) === */
-@keyframes context-fade-in { /* Simple fade-in */
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
 
+/* Context Menu - Sober Styling with Dark Mode */
 @layer components {
   .context-menu {
-    @apply absolute bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md py-1 min-w-[150px] z-[1000] font-sans; /* Standard panel look */
-    animation: context-fade-in 0.1s ease-out; /* Simple fade */
+    @apply absolute bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg rounded-md py-1 min-w-[160px] z-[1000];
   }
-
-  /* Removed ::before pseudo-element */
 
   .context-menu-item {
     @apply px-4 py-1.5 text-sm text-gray-700 dark:text-gray-200 cursor-pointer transition-colors duration-150 ease-in-out;
-    @apply hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100;
-    /* Removed scale */
+    @apply hover:bg-gray-100 hover:dark:bg-gray-700; /* Dark mode hover */
   }
 
   .context-menu-separator {
-    @apply h-px bg-gray-200 dark:bg-gray-600 my-1; /* Simple separator */
+    @apply h-px bg-gray-200 dark:bg-gray-700 my-1; /* Dark mode separator */
   }
 
   .context-menu-item-disabled {
-    @apply text-gray-400 dark:text-gray-500 cursor-not-allowed;
-     @apply hover:bg-transparent dark:hover:bg-transparent; /* No hover effect */
+    @apply text-gray-400 dark:text-gray-500 cursor-not-allowed; /* Dark mode disabled */
   }
 
   .context-menu-item-icon {
-    @apply mr-2 inline-block w-4 h-4 text-gray-500 dark:text-gray-400; /* Adjusted size/color */
+    @apply mr-2 text-gray-500 dark:text-gray-400; /* Dark mode icon */
   }
-
-  /* Removed ::after pseudo-element */
 }
 
 
-/* === Steps Theming === */
+/* Steps theming - Sober with Dark Mode */
 .steps-container {
   @apply border border-gray-200 dark:border-gray-700 rounded-md mb-4 bg-white dark:bg-gray-800;
 }
 
 .steps-header {
-  @apply flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 cursor-pointer border-b border-gray-200 dark:border-gray-700;
+  @apply flex items-center p-3 bg-gray-50 dark:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700; /* Dark mode bg/border */
 }
 
 .steps-icon {
-  @apply mr-3 text-gray-500 dark:text-gray-400; /* Adjusted icon color */
+  @apply mr-3;
 }
 
 .steps-summary {
@@ -484,15 +507,15 @@ button:hover { /* Keep subtle button lift */
 }
 
 .steps-title {
-  @apply m-0 text-base font-medium text-gray-800 dark:text-gray-200;
+  @apply m-0 text-sm font-medium text-gray-700 dark:text-gray-300; /* Dark mode text */
 }
 
 .steps-status {
-  @apply m-0 text-sm text-gray-600 dark:text-gray-400;
+  @apply m-0 text-xs text-gray-500 dark:text-gray-400; /* Dark mode text */
 }
 
 .toggle-icon {
-  @apply text-sm text-gray-500 dark:text-gray-400;
+  @apply text-sm text-gray-400 dark:text-gray-500; /* Dark mode text */
 }
 
 .steps-content {
@@ -504,25 +527,32 @@ button:hover { /* Keep subtle button lift */
 }
 
 .step-item {
-  @apply mb-2 pl-4 border-l-2 border-gray-300 dark:border-gray-600 last:mb-0;
+  @apply mb-1 pl-4 border-l-2 border-gray-200 dark:border-gray-600 last:mb-0; /* Dark mode border */
 }
 
-/* Step Component Styles */
+/* Step Component Styles with Dark Mode */
 .step-container {
-  @apply mb-3 transition-all duration-300 ease-in-out; /* Reduced margin */
+  @apply mb-3 transition-all duration-200 ease-in-out;
 }
 
 .step-wrapper {
-  @apply flex items-start p-2.5 rounded-md bg-transparent; /* Simpler wrapper */
+  @apply flex items-start p-2 rounded-md bg-transparent;
 }
 
 .step-icon {
-  @apply flex-shrink-0 w-5 h-5 mr-3 mt-0.5; /* Adjusted size/margin */
+  @apply flex-shrink-0 w-5 h-5 mr-2 mt-0.5;
 }
 
-/* Icon status colors already defined (.icon-success, .icon-fail) are fine */
+.icon-success {
+  @apply w-5 h-5 text-green-500 dark:text-green-400; /* Dark mode color */
+}
+
+.icon-fail {
+  @apply w-5 h-5 text-red-500 dark:text-red-400; /* Dark mode color */
+}
+
 .icon-spinner {
-  @apply w-5 h-5 border-2 border-blue-500 dark:border-blue-400 border-t-transparent rounded-full animate-spin; /* Adjusted size */
+  @apply w-5 h-5 border-2 border-gray-500 dark:border-gray-400 border-t-transparent rounded-full animate-spin; /* Dark mode color */
 }
 
 .step-content {
@@ -530,258 +560,252 @@ button:hover { /* Keep subtle button lift */
 }
 
 .step-text {
-  @apply text-base font-normal text-gray-700 dark:text-gray-300; /* Regular weight */
+  @apply text-sm font-medium text-gray-700 dark:text-gray-300; /* Dark mode text */
 }
 
 .step-description {
-  @apply mt-0.5 text-sm text-gray-600 dark:text-gray-400;
+  @apply mt-0.5 text-xs text-gray-500 dark:text-gray-400; /* Dark mode text */
 }
 
-/* Transition Styles */
+/* Transition Styles (Keep as is) */
 .fade-enter-active, .fade-leave-active {
-  @apply transition-opacity duration-200; /* Faster fade */
+  @apply transition-opacity duration-300;
 }
-
 .fade-enter, .fade-leave-to {
   @apply opacity-0;
 }
 
-/* Status Icon Styles */
+/* Status Icon Styles with Dark Mode */
 .status-icon {
   @apply cursor-pointer transition-colors duration-200;
 }
-
 .icon {
-  @apply w-5 h-5; /* Consistent icon size */
+  @apply w-5 h-5;
 }
-
-/* .icon-success, .icon-fail colors are okay */
 .icon-text {
-  @apply text-lg font-semibold text-gray-700 dark:text-gray-300; /* Adjusted size/weight */
+  @apply text-lg font-semibold text-gray-700 dark:text-gray-300; /* Dark mode text */
 }
 
-/* === User Settings Panel === */
+/* User Settings Panel - Sober with Dark Mode */
 .user-settings-panel {
-  @apply bg-white dark:bg-gray-800 space-y-6 p-4 md:p-6 rounded-lg shadow text-gray-800 dark:text-gray-200; /* Use panel style */
+  @apply bg-white dark:bg-gray-800 space-y-4 p-4 md:p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200; /* Dark mode bg/border/text */
 }
 
-/* === Folder Items (System Status) === */
+/* Folder Items - Sober with Dark Mode */
 .folder-item-base {
-  @apply flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-colors duration-200 hover:shadow-sm;
-  @apply bg-gray-50 dark:bg-gray-700; /* Slightly offset background */
-  @apply hover:bg-gray-100 dark:hover:bg-gray-600;
-  @apply border border-gray-200 dark:border-gray-600; /* Subtle border */
+  @apply flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-150 hover:shadow-sm;
+  @apply bg-gray-50 dark:bg-gray-700; /* Dark mode bg */
+  @apply hover:bg-gray-100 dark:hover:bg-gray-700; /* Dark mode hover */
+  @apply border border-gray-200 dark:border-gray-600; /* Dark mode border */
 }
-
 .folder-item-icon {
-  @apply w-8 h-8 group-hover:scale-105 transition-transform duration-200 mb-1 text-gray-500 dark:text-gray-400; /* Neutral icon color */
+  @apply w-8 h-8 group-hover:scale-105 transition-transform duration-150 mb-1;
 }
-
 .folder-item-label {
-  @apply mt-1 text-xs text-center text-gray-600 dark:text-gray-300;
+  @apply mt-1 text-[11px] text-center text-gray-600 dark:text-gray-300; /* Dark mode text */
 }
 
-/* Remove specific color borders/icons for neutrality */
-.folder-item-personalities { @apply border-gray-300 dark:border-gray-500; }
-.folder-item-icon-personalities { @apply text-gray-500 dark:text-gray-400; }
+/* Folder Item Colors with Dark Mode Borders/Text */
+.folder-item-personalities { @apply border-blue-400 dark:border-blue-600; }
+.folder-item-icon-personalities { @apply text-blue-500 dark:text-blue-400; }
 
-.folder-item-functions { @apply border-gray-300 dark:border-gray-500; }
-.folder-item-icon-functions { @apply text-gray-500 dark:text-gray-400; }
+.folder-item-functions { @apply border-green-500 dark:border-green-500; }
+.folder-item-icon-functions { @apply text-green-500 dark:text-green-400; }
 
-.folder-item-configs { @apply border-gray-300 dark:border-gray-500; }
-.folder-item-icon-configs { @apply text-gray-500 dark:text-gray-400; }
+.folder-item-configs { @apply border-yellow-500 dark:border-yellow-500; }
+.folder-item-icon-configs { @apply text-yellow-500 dark:text-yellow-400; }
 
-.folder-item-outputs { @apply border-gray-300 dark:border-gray-500; }
-.folder-item-icon-outputs { @apply text-gray-500 dark:text-gray-400; }
+.folder-item-outputs { @apply border-purple-500 dark:border-purple-500; }
+.folder-item-icon-outputs { @apply text-purple-500 dark:text-purple-400; }
 
-.folder-item-discussions { @apply border-gray-300 dark:border-gray-500; }
-.folder-item-icon-discussions { @apply text-gray-500 dark:text-gray-400; }
+.folder-item-discussions { @apply border-red-500 dark:border-red-500; }
+.folder-item-icon-discussions { @apply text-red-500 dark:text-red-400; }
 
-/* === Settings Items Components === */
+
 @layer components {
+  /* Settings Layout with Dark Mode Borders/Text */
   .setting-item {
-      @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-3 border-t border-gray-200 dark:border-gray-700 first:border-t-0; /* Added border */
+      @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-2 border-t border-gray-100 dark:border-gray-700 first:border-t-0;
   }
-
   .setting-label {
-      @apply label md:w-52 flex-shrink-0; /* Adjusted width slightly */
+      @apply label md:w-40 flex-shrink-0 text-sm; /* Inherits dark mode from .label */
   }
-
   .toggle-item {
-      @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-3 border-t border-gray-200 dark:border-gray-700 pt-3 mt-2 first:mt-0 first:pt-0 first:border-t-0;
+      @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-2 border-t border-gray-100 dark:border-gray-700 pt-3 mt-2;
   }
-
   .toggle-label {
-      @apply label !mb-0 flex-grow cursor-pointer mr-4;
+      @apply label !mb-0 flex-grow cursor-pointer mr-4 text-sm; /* Inherits dark mode from .label */
   }
-
   .toggle-description {
-      @apply block text-xs text-gray-500 dark:text-gray-400 font-normal mt-1;
+      @apply block text-xs text-gray-500 dark:text-gray-400 font-normal mt-0.5; /* Dark mode text */
   }
 
-  /* Range Input Styles */
-  .range-input {
-      @apply h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer w-full; /* Neutral track */
+  /* Range Inputs - Sober with Dark Mode */
+  input[type='range'] {
+      @apply h-1.5 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer w-full; /* Dark mode track */
   }
-
   input[type='range']::-webkit-slider-thumb {
-      @apply w-4 h-4 bg-blue-600 dark:bg-blue-500 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out shadow; /* Accent thumb, slightly smaller */
-      margin-top: -4px; /* Adjust thumb position */
+      @apply w-4 h-4 bg-gray-600 dark:bg-gray-300 rounded-full appearance-none cursor-pointer transition-colors duration-150 ease-in-out; /* Dark mode thumb */
+      margin-top: -5px;
   }
   input[type='range']::-moz-range-thumb {
-      @apply w-4 h-4 bg-blue-600 dark:bg-blue-500 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out shadow;
+      @apply w-4 h-4 bg-gray-600 dark:bg-gray-300 rounded-full border-none cursor-pointer transition-colors duration-150 ease-in-out; /* Dark mode thumb */
   }
-  input[type='range']::-webkit-slider-runnable-track {
-      @apply h-2 bg-gray-200 dark:bg-gray-600 rounded-full w-full;
-  }
-  input[type='range']::-moz-range-track {
-      @apply h-2 bg-gray-200 dark:bg-gray-600 rounded-full w-full;
-  }
+  /* Track styles already applied above with dark mode */
 
-  /* Status Dot Colors (Keep existing definitions) */
+  /* Buttons & Inputs with Dark Mode Variants */
+  .btn-success {
+    @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-400 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-500;
+  }
+  .btn-sm {
+    @apply py-1 px-2.5 text-xs rounded;
+  }
+  .input-sm {
+      @apply input px-3 py-1 text-sm rounded; /* Inherits dark mode from .input */
+  }
+  .range-input { /* Already defined above with input[type=range] */ }
+
+  /* Status Dots with Dark Mode Variants */
   .bg-status-healthy { @apply bg-green-500 dark:bg-green-400; }
   .bg-status-unhealthy { @apply bg-red-500 dark:bg-red-400; }
   .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-400; }
   .bg-status-unknown { @apply bg-gray-400 dark:bg-gray-500; }
 }
 
-/* === Prose Styling (Sober Version) === */
+/* Prose Styling - Sober with Dark Mode */
 @layer components {
-  .prose-sober { /* Renamed from prose-blue */
-    h3 { @apply text-xl font-semibold text-gray-700 dark:text-gray-300 mb-3 mt-5 border-b border-gray-200 dark:border-gray-700 pb-1; }
-    ul { @apply list-disc pl-6 space-y-1 mb-4 text-gray-700 dark:text-gray-300; }
-    ol { @apply list-decimal pl-6 space-y-1 mb-4 text-gray-700 dark:text-gray-300; } /* Added OL styling */
-    li::marker { color: theme('colors.gray.500'); @apply dark:text-gray-400; }
-    code:not(pre code) { @apply bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm font-mono text-gray-700 dark:text-gray-200 break-words; } /* Added break-words */
-    blockquote { @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-600 dark:text-gray-400 my-4 py-1; }
-    a { @apply link font-medium; } /* Uses .link style defined earlier */
-    p { @apply mb-3 leading-relaxed text-gray-700 dark:text-gray-300; }
-    pre { @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto my-4 shadow-inner text-sm; } /* Style pre blocks */
-    pre code { @apply bg-transparent p-0 font-mono text-gray-800 dark:text-gray-200; } /* Code within pre */
-    table { @apply w-full my-4 border-collapse border border-gray-200 dark:border-gray-700; }
-    th { @apply bg-gray-100 dark:bg-gray-800 p-2 border border-gray-200 dark:border-gray-700 text-left font-semibold text-gray-800 dark:text-gray-100; }
-    td { @apply p-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200; }
-    img { @apply rounded-md shadow-sm my-4 max-w-full h-auto; }
+  .prose-sober { /* Using a custom class name */
+    h3 { @apply text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2 mt-4 border-b border-gray-200 dark:border-gray-700 pb-1; }
+    ul { @apply list-disc pl-5 space-y-1 mb-3 text-gray-600 dark:text-gray-400 text-sm; }
+    li::marker { color: theme('colors.gray.500'); } /* Dark mode marker handled by .dark li::marker */
+    code { @apply bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-[0.8em] font-mono text-gray-700 dark:text-gray-300; }
+    blockquote { @apply border-l-4 border-gray-300 dark:border-gray-600 pl-3 italic text-gray-500 dark:text-gray-400 my-3 py-1 text-sm; }
+    a { @apply text-gray-700 hover:text-black dark:text-gray-300 dark:hover:text-white underline font-medium; }
+    p { @apply mb-3 leading-relaxed text-gray-700 dark:text-gray-300 text-sm; }
   }
 }
 
-/* === Thinking Prose (Sober Version) === */
-/* Apply .prose-sober styles */
-.thinking-prose {
-    @apply prose-sober;
-}
-/* Overrides specific to thinking state if needed */
-.thinking-prose {
-    @apply text-sm; /* Smaller text for thinking */
+/* Thinking Prose - Sober with Dark Mode */
+.thinking-prose { /* Base styles */ }
+.dark .thinking-prose { /* Dark mode CSS variables */
+  --tw-prose-headings: theme('colors.gray.100');
+  --tw-prose-links: theme('colors.gray.300');
+  --tw-prose-code: theme('colors.gray.300');
+  --tw-prose-pre-code: theme('colors.gray.300');
+  --tw-prose-pre-bg: theme('colors.gray.800');
+  --tw-prose-quotes: theme('colors.gray.400');
+  --tw-prose-quote-borders: theme('colors.gray.600');
 }
 .thinking-prose h1, .thinking-prose h2, .thinking-prose h3, .thinking-prose h4, .thinking-prose h5, .thinking-prose h6 {
-    @apply mt-4 mb-1 text-base font-medium; /* Less prominent headings */
+  @apply mt-4 mb-1.5 font-semibold text-gray-800 dark:text-gray-100; /* Uses dark: prefix */
 }
-.thinking-prose p {
-    @apply my-2 leading-snug; /* Tighter paragraph spacing */
-}
-.thinking-prose ul, .thinking-prose ol {
-    @apply my-2 pl-5; /* Tighter list spacing */
-}
-/* Remove bounce animation utility class if defined/used */
-.animate-bounce {
-    animation: none; /* Disable bounce if previously applied by class */
-}
-/* Remove the custom scrollbar specific to thinking-prose if not desired */
-.thinking-prose::-webkit-scrollbar { display: none; } /* Example: hide scrollbar */
-.thinking-prose { scrollbar-width: none; }
+.thinking-prose h1 { @apply text-lg; }
+.thinking-prose h2 { @apply text-base; }
+.thinking-prose h3 { @apply text-sm; }
 
+.thinking-prose p { @apply my-2 leading-normal text-sm text-gray-700 dark:text-gray-300; } /* Uses dark: prefix */
+.thinking-prose ul, .thinking-prose ol { @apply my-2 pl-5 text-sm text-gray-600 dark:text-gray-400; } /* Uses dark: prefix */
+.thinking-prose li > p { @apply my-0.5; }
 
-/* === Help Content === */
-/* Apply .prose-sober styles directly or wrap content in a div with the class */
-.help-content {
-    @apply prose-sober p-4 md:p-6; /* Apply base prose style and padding */
+.thinking-prose code:not(pre code) {
+  @apply px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded text-[0.85em] font-mono before:content-none after:content-none text-gray-700 dark:text-gray-300; /* Uses dark: prefix */
 }
-/* Override specific help styles if needed, but prose-sober should cover most */
-.help-content h2 {
-    @apply text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 mt-6 border-b border-gray-200 dark:border-gray-700 pb-2;
+.thinking-prose pre {
+  @apply p-3 rounded-md overflow-x-auto my-3 shadow-sm text-xs;
+  background-color: var(--tw-prose-pre-bg, theme('colors.gray.50')); /* Uses variable */
 }
-.help-content h3 {
-    @apply text-xl font-semibold text-gray-700 dark:text-gray-300 mb-3 mt-5;
+.dark .thinking-prose pre { background-color: var(--tw-prose-pre-bg); } /* Applies dark variable */
+.thinking-prose pre code {
+ @apply p-0 bg-transparent font-mono;
+ color: var(--tw-prose-pre-code, inherit); /* Uses variable */
 }
-/* Ensure responsiveness for sidebar (keep original media query) */
+.dark .thinking-prose pre code { color: var(--tw-prose-pre-code); } /* Applies dark variable */
+.thinking-prose blockquote {
+  @apply pl-3 py-0.5 border-l-4 italic my-2 text-sm;
+  color: var(--tw-prose-quotes, theme('colors.gray.600')); /* Uses variable */
+  border-color: var(--tw-prose-quote-borders, theme('colors.gray.300')); /* Uses variable */
+}
+.dark .thinking-prose blockquote {
+  color: var(--tw-prose-quotes); border-color: var(--tw-prose-quote-borders); /* Applies dark variable */
+}
+.thinking-prose a {
+  @apply hover:underline break-words text-sm;
+  color: var(--tw-prose-links, theme('colors.gray.700')); /* Uses variable */
+}
+.dark .thinking-prose a { color: var(--tw-prose-links); } /* Applies dark variable */
+
+/* Custom Scrollbar - Sober with Dark Mode */
+.thinking-prose::-webkit-scrollbar { @apply w-1.5 h-1.5; }
+.thinking-prose::-webkit-scrollbar-track { @apply bg-gray-100 dark:bg-gray-700/50 rounded-lg; } /* Uses dark: prefix */
+.thinking-prose::-webkit-scrollbar-thumb { @apply bg-gray-400 dark:bg-gray-500 rounded-full hover:bg-gray-500 dark:hover:bg-gray-400 transition-colors duration-150; } /* Uses dark: prefix */
+.thinking-prose { scroll-behavior: smooth; }
+
+/* Bounce animation definition */
+@keyframes bounce {
+  0%, 100% { transform: translateY(-15%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+.animate-bounce { animation: bounce 1s infinite; }
+
+/* Help Content Styling - Sober with Dark Mode */
+.help-content h2 { @apply text-xl font-semibold text-gray-800 dark:text-gray-100 mb-3 mt-5 border-b border-gray-200 dark:border-gray-700 pb-1.5; }
+.help-content h3 { @apply text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2 mt-4; }
+.help-content ul { @apply list-disc pl-5 space-y-1 mb-3 text-gray-700 dark:text-gray-300 text-base; }
+.help-content ol { @apply list-decimal pl-5 space-y-1 mb-3 text-gray-700 dark:text-gray-300 text-base; }
+.help-content li::marker { color: theme('colors.gray.500'); } /* Dark mode handled by .dark li::marker */
+.help-content code:not(pre code) { @apply bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm font-mono text-gray-700 dark:text-gray-300; }
+.help-content pre.hljs { @apply bg-gray-50 dark:bg-gray-800/80 p-3 rounded-md overflow-x-auto my-3 shadow-sm text-sm; }
+.help-content pre.hljs code { @apply bg-transparent p-0; }
+.help-content blockquote { @apply border-l-4 border-gray-300 dark:border-gray-600 pl-3 italic text-gray-600 dark:text-gray-400 my-3 py-1; }
+.help-content p { @apply mb-3 leading-relaxed text-gray-700 dark:text-gray-300 text-base; }
+.help-content img { @apply rounded-md shadow-sm my-4 max-w-full h-auto mx-auto border border-gray-200 dark:border-gray-700; }
+.help-content table { @apply w-full my-4 border-collapse border border-gray-200 dark:border-gray-700 text-sm; }
+.help-content th { @apply bg-gray-100 dark:bg-gray-700 p-2 border border-gray-200 dark:border-gray-600 text-left font-medium text-gray-700 dark:text-gray-200; }
+.help-content td { @apply p-2 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300; }
+
+/* Responsive Help Sidebar with Dark Mode */
 @media (max-width: 768px) {
- .help-left-bar {
-   @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full bg-white dark:bg-gray-800 shadow-lg w-64 overflow-y-auto; /* Added background/size */
- }
- .help-main-content {
-   @apply ml-0;
- }
-  .help-left-bar.open {
-     @apply translate-x-0;
-   }
+ .help-left-bar { @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700; } /* Dark mode bg/border */
+ .help-main-content { @apply ml-0; }
+ .help-left-bar.open { @apply translate-x-0; }
 }
 
-/* === Animated Tooltip (Sober Fade-in) === */
-@keyframes simple-fade-in-up { /* Simple fade and slight upward move */
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 5px) scale(0.95); /* Start slightly below, smaller */
-  }
-  100% {
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1); /* Settle in final position */
-  }
+/* Animated Thought Bubble - Sober with Dark Mode */
+@keyframes bubble-in-down { /* Animation definition */
+  0% { opacity: 0; transform: translate(-50%, -8px) scale(0.85); }
+  60% { opacity: 1; transform: translate(-50%, 1px) scale(1.02); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
 }
-
 @layer utilities {
-  .animate-simple-fade-in-up {
-    animation-name: simple-fade-in-up;
-    animation-duration: 0.15s; /* Faster animation */
-    animation-fill-mode: forwards;
-    animation-timing-function: ease-out;
-  }
-
-  .animate-bubble-in-down {
-    animation-name: bubble-in-down;
-    animation-duration: 0.3s; /* Control animation speed */
-    animation-fill-mode: forwards; /* Keep final state */
-    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy easing */
-  }
+  .animate-bubble-in-down { animation: bubble-in-down 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 }
-
 @layer components {
-  /* Enhanced Thought Bubble Style (Appears Below) */
   .animated-thought-bubble {
-    @apply absolute top-full left-1/2 mt-2 /* Position BELOW icon with space */
-           w-max max-w-[160px] /* Allow width to fit content, max width */
-           opacity-0 invisible /* Initially hidden */
-           bg-blue-200 dark:bg-blue-700 rounded-lg shadow-xl p-2 text-center z-20 /* Styling */
-           pointer-events-none /* Disable clicks initially */
-           origin-top /* Set transform origin for scaling from the TOP */
-           transition-opacity duration-150 /* Add transition for smoother opacity fallback */
-           /* Apply opacity/visibility/pointer events and the ANIMATION utility on hover */
-           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down; /* Use the downward animation */
+    @apply absolute top-full left-1/2 mt-1.5 /* Position */
+           w-max max-w-[150px] /* Size */
+           opacity-0 invisible /* Initial state */
+           bg-gray-700 dark:bg-gray-600 rounded-md shadow-lg p-1.5 text-center z-20 /* Styling with dark mode bg */
+           text-white dark:text-gray-100 text-xs /* Text with dark mode */
+           pointer-events-none origin-top transition-opacity duration-100 /* Base transitions */
+           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down; /* Hover animation */
   }
-
-  /* Arrow for the bubble (Pointing UP) */
-  .animated-thought-bubble::after {
+  .animated-thought-bubble::after { /* Arrow */
     content: '';
-    @apply absolute bottom-full left-1/2 transform -translate-x-1/2 /* Position arrow ABOVE the bubble */
-           border-[7px] border-solid border-transparent /* Arrow shape */
-           /* Make the BOTTOM border colored to point arrow UP */
-           border-b-blue-200 dark:border-b-blue-700;
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2 border-[6px] border-solid border-transparent
+           border-b-gray-700 dark:border-b-gray-600; /* Dark mode arrow color */
   }
 }
 
-/* === Playground Component Tabs === */
+/* Playground Component - Sober with Dark Mode */
 @layer components {
   .active-tab-button {
-    /* Use primary button style but small */
-    @apply btn btn-primary btn-sm;
-    @apply ring-2 ring-offset-1 ring-offset-white dark:ring-offset-gray-800 ring-blue-500 dark:ring-blue-400; /* Add clear focus/active ring */
+    @apply btn btn-primary btn-sm; /* Uses primary button styles (which have dark variants) */
+    @apply ring-1 ring-offset-1 ring-offset-white dark:ring-offset-gray-800 ring-gray-400 dark:ring-gray-500; /* Dark mode ring */
   }
   .inactive-tab-button {
-    /* Use secondary button style but small */
-    @apply btn btn-secondary btn-sm;
-    @apply opacity-70 hover:opacity-100; /* Slightly faded when inactive */
+    @apply btn btn-secondary btn-sm; /* Uses secondary button styles (which have dark variants) */
+    @apply opacity-70 hover:opacity-100;
   }
 }
 
-/* Remove unused matrix animation */
-@keyframes matrix-rain { }
+/* Matrix Rain Animation Removed */

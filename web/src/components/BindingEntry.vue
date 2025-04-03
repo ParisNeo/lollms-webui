@@ -2,10 +2,14 @@
   <div
     class="items-start p-4 rounded-lg mb-2 shadow-lg border-2 cursor-pointer select-none transition-all duration-150 ease-in-out group"
     :class="{
-      'border-primary bg-primary-light dark:bg-primary-dark': selected, // Selected state
-      'hover:bg-gray-100 dark:hover:bg-gray-700': !selected && !isProcessing, // Hover state when not selected and not processing
-      'border-transparent bg-white dark:bg-gray-800': !selected,      // Default state when not selected (handles installed/not installed)
-      'opacity-70 cursor-wait': isProcessing                        // Visual cue when processing
+      // Selected: Use a noticeable border and slightly different bg from theme
+      'border-blue-400 dark:border-sky-500 bg-blue-100 dark:bg-slate-700': selected,
+      // Hover: Use theme hover colors
+      'hover:bg-blue-50 dark:hover:bg-slate-700': !selected && !isProcessing,
+      // Default: Use theme panel/card base colors (adjusting light bg slightly)
+      'border-transparent bg-blue-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200': !selected,
+      // Processing: Keep opacity/cursor
+      'opacity-70 cursor-wait': isProcessing
     }"
     :title="binding.description || binding.name"
     @click.stop="!isProcessing ? emitSelect() : null"
@@ -17,14 +21,17 @@
           ref="imgElement"
           :src="getImgUrl()"
           @error="defaultImg($event)"
-          class="w-10 h-10 rounded-full object-fill flex-shrink-0 border border-gray-200 dark:border-gray-600"
+          class="w-10 h-10 rounded-full object-fill flex-shrink-0 border border-blue-200 dark:border-slate-700"
           :class="{
-              'ring-2 ring-offset-2 ring-green-500 dark:ring-offset-gray-800': binding.installed && !isProcessing,
-              'ring-2 ring-offset-2 ring-yellow-500 dark:ring-offset-gray-800 animate-pulse': isProcessing
+              // Use theme status colors and offset relative to parent bg
+              'ring-2 ring-offset-2 ring-green-500 dark:ring-green-400 ring-offset-blue-50 dark:ring-offset-slate-800': binding.installed && !isProcessing && !selected,
+              'ring-2 ring-offset-2 ring-green-500 dark:ring-green-400 ring-offset-blue-100 dark:ring-offset-slate-700': binding.installed && !isProcessing && selected, // Adjust offset if selected bg is different
+              'ring-2 ring-offset-2 ring-yellow-500 dark:ring-yellow-400 ring-offset-blue-50 dark:ring-offset-slate-800 animate-pulse': isProcessing // Assuming processing bg is default
               }"
         >
-        <h3 class="font-bold text-lg truncate text-gray-800 dark:text-white flex-grow">
+        <h3 class="font-bold text-lg truncate text-slate-800 dark:text-slate-100 flex-grow"> <!-- Theme text -->
           {{ binding.name }}
+          <!-- Status colors are fine -->
           <span v-if="binding.installed && !isProcessing" class="ml-2 text-xs font-medium text-green-600 dark:text-green-400">(Installed)</span>
           <span v-if="isProcessing" class="ml-2 text-xs font-medium text-yellow-600 dark:text-yellow-400">(Processing...)</span>
         </h3>
@@ -36,8 +43,8 @@
              type="button"
              title="Reload binding"
              @click.stop="emitReloadBinding"
-             class="text-gray-500 hover:text-secondary dark:text-gray-400 dark:hover:text-secondary-light duration-150 active:scale-90 font-medium rounded-lg text-sm p-1.5 text-center inline-flex items-center focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-gray-600"
-           >
+             class="svg-button text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-sky-400 hover:bg-transparent dark:hover:bg-transparent active:scale-90 focus:ring-blue-300 dark:focus:ring-slate-600"
+             >
              <i data-feather="refresh-cw" class="w-5 h-5"></i>
              <span class="sr-only">Reload Binding</span>
            </button>
@@ -45,24 +52,28 @@
       </div>
 
       <!-- Conditional UI Renderer -->
-      <DynamicUIRenderer v-if="binding.ui" class="w-full h-full mb-3 border-t pt-3 border-gray-200 dark:border-gray-700" :code="binding.ui"></DynamicUIRenderer>
+      <!-- Use theme border -->
+      <DynamicUIRenderer v-if="binding.ui" class="w-full h-full mb-3 border-t pt-3 border-blue-200 dark:border-slate-700" :code="binding.ui"></DynamicUIRenderer>
 
       <!-- Details Section -->
-      <div class="text-sm text-gray-600 dark:text-gray-400 space-y-1 mb-3">
+      <!-- Use theme text color for details section -->
+      <div class="text-sm text-slate-600 dark:text-slate-400 space-y-1 mb-3">
         <!-- Author -->
         <div class="flex items-center">
           <i data-feather="user" class="w-4 h-4 mr-2 flex-shrink-0"></i>
-          <b class="mr-1 font-medium text-gray-700 dark:text-gray-300">Author:</b>
+          <!-- Use theme label-like text color -->
+          <b class="mr-1 font-medium text-slate-700 dark:text-slate-300">Author:</b>
           <span class="truncate">{{ binding.author }}</span>
         </div>
         <!-- Folder -->
         <div class="flex items-center">
           <i data-feather="folder" class="w-4 h-4 mr-2 flex-shrink-0"></i>
-          <b class="mr-1 font-medium text-gray-700 dark:text-gray-300">Folder:</b>
-          <span class="truncate font-mono text-xs bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded">{{ binding.folder }}</span>
+          <b class="mr-1 font-medium text-slate-700 dark:text-slate-300">Folder:</b>
+          <!-- Use theme code/input background -->
+          <span class="truncate font-mono text-xs bg-blue-100 dark:bg-slate-700 px-1 py-0.5 rounded">{{ binding.folder }}</span>
           <div class="flex-grow"></div>
           <button
-            class="ml-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 duration-150 active:scale-90 p-1 rounded disabled:opacity-50"
+            class="ml-2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 duration-150 active:scale-90 p-1 rounded disabled:opacity-50"
             title="Copy folder path to clipboard"
             @click.stop="copyToClipBoard(binding.folder)"
             :disabled="isProcessing"
@@ -74,18 +85,18 @@
         <!-- Version -->
         <div class="flex items-center">
           <i data-feather="git-merge" class="w-4 h-4 mr-2 flex-shrink-0"></i>
-          <b class="mr-1 font-medium text-gray-700 dark:text-gray-300">Version:</b>
+          <b class="mr-1 font-medium text-slate-700 dark:text-slate-300">Version:</b>
           <span>{{ binding.version }}</span>
         </div>
         <!-- Link -->
         <div class="flex items-center">
           <i data-feather="github" class="w-4 h-4 mr-2 flex-shrink-0"></i>
-          <b class="mr-1 font-medium text-gray-700 dark:text-gray-300">Link:</b>
+          <b class="mr-1 font-medium text-slate-700 dark:text-slate-300">Link:</b>
           <a
             :href="binding.link"
             target="_blank"
             rel="noopener noreferrer"
-            class="text-blue-600 dark:text-blue-400 hover:underline truncate"
+            class="link truncate"
             :class="{'pointer-events-none opacity-70': isProcessing}"
             @click.stop
           >
@@ -96,71 +107,80 @@
         <div class="flex items-start pt-1">
           <i data-feather="info" class="w-4 h-4 mr-2 mt-0.5 flex-shrink-0"></i>
           <div>
-            <b class="font-medium text-gray-700 dark:text-gray-300">Description:</b>
+            <b class="font-medium text-slate-700 dark:text-slate-300">Description:</b>
+            <!-- Inherits detail section text color -->
             <p class="opacity-90 line-clamp-3" :title="binding.description" v-html="binding.description"></p>
           </div>
         </div>
       </div>
 
       <!-- Action Buttons Section -->
-      <div class="flex items-center justify-end gap-2 border-t border-gray-200 dark:border-gray-700 pt-3 min-h-[44px]"> <!-- Added min-height to prevent layout jump -->
+      <!-- Use theme border -->
+      <div class="flex items-center justify-end gap-2 border-t border-blue-200 dark:border-slate-700 pt-3 min-h-[44px]">
         <!-- Processing Indicator -->
-         <div v-if="isProcessing" class="flex items-center justify-center text-gray-500 dark:text-gray-400 w-full">
+         <div v-if="isProcessing" class="flex items-center justify-center text-slate-500 dark:text-slate-400 w-full"> <!-- Theme text -->
              <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-current mr-2"></div>
              Processing...
          </div>
 
         <!-- Actual Buttons (show only when not processing) -->
         <template v-if="!isProcessing">
-            <!-- Install Button -->
+            <!-- Install Button: Use btn-primary -->
             <button
               v-if="!binding.installed"
               title="Click to install"
               type="button"
               @click.stop="emitInstall"
-              class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-center text-white bg-blue-600 rounded-lg shadow-sm hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800 transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              class="btn btn-primary btn-sm"
+              :disabled="isProcessing"
             >
-              <i data-feather="download-cloud" class="w-4 h-4"></i>
+              <i data-feather="download-cloud" class="w-4 h-4 mr-1"></i> <!-- Added margin -->
+              <span>Install</span> <!-- Added text for clarity on small buttons -->
             </button>
 
-            <!-- Reinstall Button -->
+            <!-- Reinstall Button: Use btn-success -->
             <button
               v-if="binding.installed"
               title="Click to Reinstall binding"
               type="button"
               @click.stop="emitReinstall"
-              class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-center text-white bg-green-600 rounded-lg shadow-sm hover:bg-green-700 focus:ring-4 focus:ring-green-300 focus:outline-none dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800 transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              class="btn btn-success btn-sm"
+              :disabled="isProcessing"
             >
-              <i data-feather="refresh-ccw" class="w-4 h-4"></i>
+              <i data-feather="refresh-ccw" class="w-4 h-4 mr-1"></i> <!-- Added margin -->
+              <span>Reinstall</span> <!-- Added text -->
             </button>
 
-            <!-- Uninstall Button -->
+            <!-- Uninstall Button: Use custom red based on theme patterns -->
             <button
               v-if="binding.installed"
               title="Click to Uninstall binding"
               type="button"
               @click.stop="emitUninstall"
-              class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-center text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 focus:ring-4 focus:ring-red-300 focus:outline-none dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800 transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              class="btn btn-sm bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-800 disabled:opacity-50" 
+              :disabled="isProcessing"
             >
-               <i data-feather="trash-2" class="w-4 h-4"></i>
+               <i data-feather="trash-2" class="w-4 h-4 mr-1"></i> <!-- Added margin -->
+               <span>Uninstall</span> <!-- Added text -->
             </button>
 
-            <!-- Settings Button -->
+            <!-- Settings Button: Use btn-secondary -->
             <button
               v-if="selected && binding.installed"
               title="Click to open Settings"
               type="button"
               @click.stop="emitSettings"
-              class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-center text-white bg-gray-600 rounded-lg shadow-sm hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 focus:outline-none dark:bg-gray-500 dark:hover:bg-gray-600 dark:focus:ring-gray-800 transition-colors duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              class="btn btn-secondary btn-sm"
+              :disabled="isProcessing"
             >
-              <i data-feather="settings" class="w-4 h-4"></i>
+              <i data-feather="settings" class="w-4 h-4 mr-1"></i> <!-- Added margin -->
+              <span>Settings</span> <!-- Added text -->
             </button>
         </template>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import { nextTick } from 'vue';
 import feather from 'feather-icons';

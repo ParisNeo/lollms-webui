@@ -54,52 +54,81 @@
                         Your browser does not support the audio element.
                     </audio>
 
-                    <!-- DETAILS SECTION (STEPS & HTML/JS) -->
-                    <div class="message-details w-full max-w-4xl mx-auto mt-2">
-                        <!-- Processing Steps Section -->
-                         <div v-if="message.steps.length > 0 && !editMsgMode" class="steps-container bg-blue-50/50 dark:bg-blue-800/50 border border-blue-200 dark:border-blue-700 rounded-md mb-2 text-sm">
-                            <div 
-                                class="steps-header flex items-center p-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700/50 transition-colors duration-200"
-                                @click="toggleExpanded"
-                            >
-                                <StatusIcon :status="message.status_message" :icon="true" class="w-4 h-4 mr-2" />
-                                <span class="steps-status text-blue-600 dark:text-blue-300 flex-grow">{{ message.status_message }}</span>
-                                <span 
-                                    class="toggle-icon text-xs text-blue-500 dark:text-blue-400 transform transition-transform duration-200"
-                                    :class="{ 'rotate-180': expanded }"
-                                >
-                                    <i data-feather="chevron-down" class="w-4 h-4"></i>
-                                </span>
+                <!-- DETAILS SECTION (STEPS & HTML/JS) -->
+                <div class="message-details w-full max-w-4xl mx-auto mt-2">
+                    <!-- Processing Steps Section -->
+                     <div v-if="message.steps.length > 0 && !editMsgMode" class="steps-container">
+                        <div
+                            class="steps-header"
+                            @click="toggleExpanded"
+                        >
+                            <!-- DYNAMIC ICON based on processing state -->
+                            <div class="w-5 h-5 mr-2 flex-shrink-0 flex items-center justify-center">
+                                <transition name="fade-icon" mode="out-in">
+                                    <!-- Show spinner if processing -->
+                                    <div v-if="isProcessingSteps" key="header-spinner" class="step-spinner"></div>
+                                    <!-- Show final status icon if done -->
+                                    <svg
+                                        v-else-if="finalStepsStatus"
+                                        key="header-success"
+                                        class="step-icon-success w-4 h-4"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    <svg
+                                        v-else
+                                        key="header-fail"
+                                        class="step-icon-fail w-4 h-4"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                       <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </transition>
                             </div>
 
-                            <transition
-                                enter-active-class="transition-all duration-200 ease-out"
-                                leave-active-class="transition-all duration-150 ease-in"
-                                enter-from-class="opacity-0 max-h-0"
-                                enter-to-class="opacity-100 max-h-[500px]"
-                                leave-from-class="opacity-100 max-h-[500px]"
-                                leave-to-class="opacity-0 max-h-0"
+                            <!-- DYNAMIC STATUS TEXT -->
+                            <span class="steps-status truncate pr-2">{{ headerStepText }}</span>
+
+                            <!-- Chevron remains the same -->
+                            <span
+                                class="toggle-icon text-xs text-blue-500 dark:text-blue-400 transform transition-transform duration-200 ml-auto"
+                                :class="{ 'rotate-180': expanded }"
                             >
-                                <div v-if="expanded" class="steps-content overflow-hidden">
-                                    <div class="px-2 pb-2 space-y-1">
-                                        <div 
-                                            v-for="(step, index) in message.steps" 
-                                            :key="`step-${message.id}-${index}`"
-                                            class="animate-fadeIn step-item"
-                                            :style="{ animationDelay: `${index * 50}ms` }"
-                                        >
-                                            <Step 
-                                                :done="step.done"
-                                                :text="step.text"
-                                                :status="step.status"
-                                                :description="step.description"
-                                                class="text-xs rounded bg-blue-100/50 dark:bg-blue-700/50 p-1.5 hover:bg-blue-200/70 dark:hover:bg-blue-600/50"
-                                            />
-                                        </div>
+                                <i data-feather="chevron-down" class="w-5 h-5"></i>
+                            </span>
+                        </div>
+
+                        <!-- Expansion content remains the same -->
+                        <transition
+                            enter-active-class="transition-all duration-300 ease-out overflow-hidden"
+                            leave-active-class="transition-all duration-200 ease-in overflow-hidden"
+                            enter-from-class="opacity-0 max-h-0"
+                            enter-to-class="opacity-100 max-h-[500px]"
+                            leave-from-class="opacity-100 max-h-[500px]"
+                            leave-to-class="opacity-0 max-h-0"
+                        >
+                            <div v-if="expanded" class="steps-content">
+                                <div class="pb-1">
+                                    <div
+                                        v-for="(step, index) in message.steps"
+                                        :key="`step-${message.id}-${index}`"
+                                        class="step-item animate-step-slide-in"
+                                        :style="{ animationDelay: `${index * 80}ms` }"
+                                    >
+                                        <Step
+                                            :done="step.done"
+                                            :text="step.text"
+                                            :status="step.status"
+                                            :description="step.description"
+                                        />
                                     </div>
                                 </div>
-                            </transition>
-                        </div>
+                            </div>
+                        </transition>
+                    </div>
 
                         <!-- Content Renderer Section (HTML/JS) -->
                         <div 
@@ -856,6 +885,46 @@ export default {
         }
     },
     computed: {
+        activeStepIndex() {
+            if (!this.message || !this.message.steps || this.message.steps.length === 0) {
+                return -1; // No steps
+            }
+            return this.message.steps.findIndex(step => !step.done);
+        },
+        isProcessingSteps() {
+            return this.activeStepIndex !== -1;
+        },
+        headerStepText() {
+            if (this.isProcessingSteps && this.message.steps[this.activeStepIndex]) {
+                 // Show current step text, add ellipsis if needed
+                const currentText = this.message.steps[this.activeStepIndex].text || "Processing...";
+                return `${currentText}`; // You could add "Step X: " prefix if desired
+            } else if (this.message.steps.length > 0) {
+                // All steps done, show final status message
+                return this.message.status_message || "Processing Complete";
+            }
+            return "Processing Steps"; // Default fallback
+        },
+        finalStepsStatus() {
+            // Determine the overall status *after* all steps are done.
+            // This logic assumes the *last* step's status determines the overall outcome,
+            // or relies on message.status_message potentially being set externally
+            // based on the overall success/failure. Adjust if your logic differs.
+            if (this.isProcessingSteps || this.message.steps.length === 0) {
+                return null; // Not finished or no steps
+            }
+            // Option 1: Use the status of the very last step
+             // return this.message.steps[this.message.steps.length - 1].status;
+
+            // Option 2: Infer from status_message (crude example, adjust keywords)
+            const lowerCaseStatus = (this.message.status_message || "").toLowerCase();
+            if (lowerCaseStatus.includes("error") || lowerCaseStatus.includes("fail")) {
+                return false;
+            }
+             return true; // Assume success if no explicit failure keywords
+
+             // Option 3: Rely on an explicit final status property if you add one to the message object
+        },        
         editMsgMode:{
             get(){
                 // Ensure message.open reflects the internal edit state if property exists
@@ -961,55 +1030,39 @@ export default {
 </script>
 
 <style scoped>
-/* Keep custom animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Add specific scoped styles if absolutely necessary, but prefer theme.css */
+.message-details .steps-container .step-item:last-child {
+     margin-bottom: 0; /* Ensure no extra margin on last item */
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease-out forwards;
+/* Keyframe for the slide-in animation (can also be global in theme.css) */
+@keyframes step-slide-in {
+    from {
+        opacity: 0;
+        transform: translateX(-15px); /* Start slightly further left */
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+.animate-step-slide-in {
+    animation: step-slide-in 0.35s ease-out forwards;
 }
 
-/* Keep specific height adjustments or other non-theme styles if necessary */
-.htmljs{
-    background: none; /* Assuming this is intentional */
+/* Ensure fade icon transition is defined if not global */
+.fade-icon-enter-active,
+.fade-icon-leave-active {
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
-
-/* Ensure Feather icons in toolbar buttons are sized correctly */
-.svg-button i[data-feather] {
-    @apply w-4 h-4; 
+.fade-icon-enter-from,
+.fade-icon-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
 }
-
-/* Optional: Style for the loading spinner */
-.animate-spin {
-    animation: spin 1s linear infinite;
-}
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-.animate-pulse {
-  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .5; }
-}
-
-
-/* Refined footer item styling (moved from inline for clarity) */
-.footer-item {
-    @apply text-blue-500 dark:text-blue-400;
-}
-.footer-value {
-    @apply font-normal text-blue-600 dark:text-blue-300 ml-1;
-}
-
-/* Target the textarea specifically for height adjustment based on content */
-textarea {
-    overflow-y: hidden; /* Prevent scrollbar unless needed */
-    resize: none; /* Disable manual resize */
-    min-height: 5em; /* Ensure a minimum height */
+.fade-icon-enter-to,
+.fade-icon-leave-from {
+  opacity: 1;
+  transform: scale(1);
 }
 </style>

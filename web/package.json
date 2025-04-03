@@ -42,6 +42,7 @@
     "vue-json-pretty": "^2.4.0",
     "vue-markdown": "^2.1.3",
     "vue-router": "^4.1.6",
+    "vue3-emoji-picker": "^1.1.8",
     "vuex": "^4.0.2"
   },
   "devDependencies": {

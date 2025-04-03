@@ -5,21 +5,52 @@ import App from './App.vue'
 import router from './router'
 
 import './assets/tailwind.css'
-//import './assets/tailwind_april_fool.css'
 
 const app = createApp(App)
+const STARRED_LOCAL_STORAGE_KEY = 'lollms_starred_personalities';
 
 function copyObject(obj) {
-  const copy = {};
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  if (obj instanceof Date) {
+    return new Date(obj.getTime());
+  }
+  if (Array.isArray(obj)) {
+    const arrCopy = [];
+    for (let i = 0; i < obj.length; i++) {
+      arrCopy[i] = copyObject(obj[i]);
+    }
+    return arrCopy;
+  }
+  const objCopy = {};
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      copy[key] = obj[key];
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      objCopy[key] = copyObject(obj[key]);
     }
   }
-  return copy;
+  return objCopy;
 }
 
-// Create a new store instance.
+function loadStarredFromLocalStorage() {
+    try {
+        const stored = localStorage.getItem(STARRED_LOCAL_STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        console.error("Failed to load starred personalities from localStorage:", e);
+        return [];
+    }
+}
+
+function saveStarredToLocalStorage(starredPaths) {
+    try {
+        localStorage.setItem(STARRED_LOCAL_STORAGE_KEY, JSON.stringify(starredPaths));
+    } catch (e) {
+        console.error("Failed to save starred personalities to localStorage:", e);
+    }
+}
+
+
 export const store = createStore({
     state () {
       return {
@@ -47,12 +78,10 @@ export const store = createStore({
           'accept': 'application/json',
           'Content-Type': 'application/json'
         },
-          
-        client_id:"",    
-        // count: 0,
-        leftPanelCollapsed:  false, // Default value
-        rightPanelCollapsed:  true, // Default value
-        view_mode: localStorage.getItem('lollms_webui_view_mode') || 'compact', // Default value
+        client_id:"",
+        leftPanelCollapsed:  false,
+        rightPanelCollapsed:  true,
+        view_mode: localStorage.getItem('lollms_webui_view_mode') || 'compact',
         yesNoDialog:null,
         universalForm:null,
         saveConfiguration:null,
@@ -67,7 +96,7 @@ export const store = createStore({
         loading_progress: 0,
         version : "unknown",
         settingsChanged:false,
-        isConnected: false, // Add the isConnected property
+        isConnected: false,
         isModelOk: false,
         isGenerating: false,
         config:null,
@@ -77,6 +106,7 @@ export const store = createStore({
         modelsArr:[],
         selectedModel:null,
         personalities:[],
+        starredPersonalities: loadStarredFromLocalStorage(), // Initialize from localStorage
         diskUsage:null,
         ramUsage:null,
         vramUsage:null,
@@ -88,591 +118,646 @@ export const store = createStore({
         databases:[],
       }
     },
-    mutations: {    
-      updatePersonality(state, newPersonality){
-        const index = state.personalities.findIndex(p => p.full_path === newPersonality.full_path);
-        if (index !== -1) {
-            state.personalities[index]=newPersonality;
-        }
-        else{
-          console.log("Can't uipdate personality beceause it was Not found:",newPersonality.full_path)
-        }
-      },
-      
-      setInstalledModels(state, installedModels){
-        state.installedModels = installedModels;
-      },
-      setThemeVars(state, themeVars){
-        state.theme_vars = themeVars;
-      },
+    mutations: {
+      setThemeVars(state, themeVars){ state.theme_vars = themeVars; },
+      setPersonalitiesReady(state, personalities_ready) { state.personalities_ready = personalities_ready; },
+      setIsRtOn(state, is_rt_on) { state.is_rt_on = is_rt_on; },
+      setTopBarPinned(state, topBarPinned) { state.topBarPinned = topBarPinned; },
+      setLanguage(state, language) { state.language = language; },
+      setLanguages(state, languages) { state.languages = languages; },
+      setCurrentTheme(state, theme) { state.currentTheme = theme; },
+      setPersonalityEditor(state, editor) { state.personality_editor = editor; },
+      setShowPersonalityEditor(state, show) { state.showPersonalityEditor = show; },
+      setSelectedPersonality(state, personality) { state.selectedPersonality = personality; },
+      setCurrentPersonConfig(state, config) { state.currentPersonConfig = config; },
+      setPostsHeaders(state, headers) { state.posts_headers = headers; },
+      setClientId(state, id) { state.client_id = id; },
       setLeftPanelCollapsed(state, status) {
         state.leftPanelCollapsed = status;
-        console.log(`Saving the status of left panel to ${status}`)
-        localStorage.setItem('lollms_webui_left_panel_collapsed', status); // Sync with localStorage
+        localStorage.setItem('lollms_webui_left_panel_collapsed', status);
       },
       setRightPanelCollapsed(state, status) {
         state.rightPanelCollapsed = status;
-        console.log(`Saving the status of right panel to ${status}`)
-        localStorage.setItem('lollms_webui_right_panel_collapsed', status); // Sync with localStorage
+        localStorage.setItem('lollms_webui_right_panel_collapsed', status);
       },
-
       setViewMode(state, mode) {
         state.view_mode = mode;
-        localStorage.setItem('lollms_webui_view_mode', mode); // Sync with localStorage
+        localStorage.setItem('lollms_webui_view_mode', mode);
       },
-      
-      setpersonalitiesReady(state, personalities_ready) {
-        state.personalities_ready = personalities_ready;
-      },
-      setTopBarPinned(state, topBarPinned) {
-        state.topBarPinned = topBarPinned;
-      },
-      setisRTOn(state, is_rt_on) {
-        state.is_rt_on = is_rt_on;
-      },
+      setYesNoDialog(state, dialog) { state.yesNoDialog = dialog; },
+      setUniversalForm(state, form) { state.universalForm = form; },
+      setSaveConfiguration(state, saveFn) { state.saveConfiguration = saveFn; },
+      setToast(state, toast) { state.toast = toast; },
+      setNews(state, news) { state.news = news; },
+      setMessageBox(state, box) { state.messageBox = box; },
+      setApiGetReq(state, fn) { state.api_get_req = fn; },
+      setApiPostReq(state, fn) { state.api_post_req = fn; },
+      setStartSpeechRecognition(state, fn) { state.startSpeechRecognition = fn; },
+      setIsReady(state, ready) { state.ready = ready; },
+      setLoadingInfos(state, infos) { state.loading_infos = infos; },
+      setLoadingProgress(state, progress) { state.loading_progress = progress; },
+      setVersion(state, version) { state.version = version; },
+      setSettingsChanged(state, changed) { state.settingsChanged = changed; },
+      setIsConnected(state, isConnected) { state.isConnected = isConnected; },
+      setIsModelOk(state, isModelOk) { state.isModelOk = isModelOk; },
+      setIsGenerating(state, isGenerating) { state.isGenerating = isGenerating; },
+      setConfig(state, config) { state.config = config; },
+      setMountedPers(state, mountedPers) { state.mountedPers = mountedPers; },
+      setMountedPersArr(state, mountedPersArr) { state.mountedPersArr = mountedPersArr; },
+      setBindingsZoo(state, bindingsZoo) { state.bindingsZoo = bindingsZoo; },
+      setModelsArr(state, modelsArr) { state.modelsArr = modelsArr; },
+      setSelectedModel(state, selectedModel) { state.selectedModel = selectedModel; },
+      setPersonalities(state, personalities) { state.personalities = personalities; },
+      setStarredPersonalities(state, starredPaths) { state.starredPersonalities = starredPaths; saveStarredToLocalStorage(starredPaths); },
+      addStarredPersonality(state, personalityPath) {
+        try{
+          if (!state.starredPersonalities.includes(personalityPath)) {
+              state.starredPersonalities.push(personalityPath);
+              saveStarredToLocalStorage(state.starredPersonalities);
+          }
 
-      setLanguages(state, languages) {
-        state.languages = languages;
+        }catch{console.log("error")}
       },
-      setLanguage(state, language) {
-        state.language = language;
+      removeStarredPersonality(state, personalityPath) {
+          const index = state.starredPersonalities.indexOf(personalityPath);
+          if (index > -1) {
+              state.starredPersonalities.splice(index, 1);
+              saveStarredToLocalStorage(state.starredPersonalities);
+          }
       },
-      
-        
-      setIsReady(state, ready) {
-        state.ready = ready;
+      setDiskUsage(state, diskUsage) { state.diskUsage = diskUsage; },
+      setRamUsage(state, ramUsage) { state.ramUsage = ramUsage; },
+      setVramUsage(state, vramUsage) { state.vramUsage = vramUsage; },
+      setModelsZoo(state, modelsZoo) { state.modelsZoo = modelsZoo; },
+      setInstalledModels(state, installedModels){ state.installedModels = installedModels; },
+      setInstalledBindings(state, installedBindings){ state.installedBindings = installedBindings; },
+      setCurrentModel(state, currentModel) { state.currentModel = currentModel; },
+      setCurrentBinding(state, currentBinding){ state.currentBinding = currentBinding; },
+      setDatabases(state, databases) { state.databases = databases; },
+
+      updatePersonality(state, newPersonality){
+        const index = state.personalities.findIndex(p => (p.id || p.full_path) === (newPersonality.id || newPersonality.full_path));
+        if (index !== -1) {
+            const updatedPers = { ...state.personalities[index], ...newPersonality };
+            state.personalities.splice(index, 1, updatedPers);
+        } else {
+          console.warn("Couldn't update personality (not found):", newPersonality.full_path);
+        }
+
+        const mountedIndex = state.mountedPersArr.findIndex(p => (p.id || p.full_path) === (newPersonality.id || newPersonality.full_path));
+        if (mountedIndex !== -1) {
+            const updatedMountedPers = { ...state.mountedPersArr[mountedIndex], ...newPersonality };
+            state.mountedPersArr.splice(mountedIndex, 1, updatedMountedPers);
+        }
+
+        if (state.selectedPersonality && (state.selectedPersonality.id || state.selectedPersonality.full_path) === (newPersonality.id || newPersonality.full_path)) {
+            state.selectedPersonality = { ...state.selectedPersonality, ...newPersonality };
+        }
+
+        if (state.mountedPers && (state.mountedPers.id || state.mountedPers.full_path) === (newPersonality.id || newPersonality.full_path)) {
+            state.mountedPers = { ...state.mountedPers, ...newPersonality };
+        }
       },
-      setIsConnected(state, isConnected) {
-        state.isConnected = isConnected;
-      },
-      setIsModelOk(state, isModelOk) {
-        state.isModelOk = isModelOk;
-      },
-      setIsGenerating(state, isGenerating) {
-        state.isGenerating = isGenerating;
-      },
-      
-      setConfig(state, config) {
-        state.config = config;
-      },
-      setPersonalities(state, personalities) {
-        state.personalities = personalities;
-      },
-      setMountedPers(state, mountedPers) {
-        state.mountedPers = mountedPers;
-      },
-      setMountedPersArr(state, mountedPersArr) {
-        state.mountedPersArr = mountedPersArr;
-      },
-      setbindingsZoo(state, bindingsZoo) {
-        state.bindingsZoo = bindingsZoo;
-      },
-      setModelsArr(state, modelsArr) {
-        state.modelsArr = modelsArr;
-      },
-      setselectedModel(state, selectedModel) {
-        state.selectedModel = selectedModel;
-      },
-      setDiskUsage(state, diskUsage) {
-        state.diskUsage = diskUsage;
-      },
-      setRamUsage(state, ramUsage) {
-        state.ramUsage = ramUsage;
-      },
-      setVramUsage(state, vramUsage) {
-        state.vramUsage = vramUsage;
-      },
-      setModelsZoo(state, modelsZoo) {
-        state.modelsZoo = modelsZoo;
-      },   
-      setCurrentBinding(state, currentBinding){
-        state.currentBinding = currentBinding
-      },
-      setCurrentModel(state, currentModel) {
-        state.currentModel = currentModel;
-      },   
-         
-      setDatabases(state, databases) {
-        state.databases = databases;
-      },
-      
-      // increment (state) {
-      //   state.count++
-      // }
-      setTheme(theme) {
-        this.currentTheme = theme;
-      }      
     },
     getters: {
-      getThemeVars(state){
-        return state.theme_vars;
-      },
-      getLeftPanelCollapsed(state) {
-        return state.leftPanelCollapsed;
-      },
-      getRightPanelCollapsed(state) {
-        return state.rightPanelCollapsed;
-      },
-      getViewMode(state){
-        return state.view_mode;
-      },
-      
-      getpersonalitiesReady(state){
-        return state.personalities_ready;
-      },
-      
-      getTopBarPinned(state) {
-        return state.topBarPinned;
-      },
-      getisRTOn(state) {
-        return state.is_rt_on;
-      },      
-      getLanguages(state) {
-        return state.languages;
-      },      
-      getLanguage(state) {
-        return state.language;
-      },      
-      getIsConnected(state) {
-        return state.isConnected
-      },
-      getIsModelOk(state) {
-        return state.isModelOk;
-      },
-      getIsGenerating(state) {
-        return state.isGenerating
-      },
-
-      
-      getConfig(state) {
-        return state.config
-      },
-      getPersonalities(state) {
-        return state.personalities;
-      },
-      getMountedPersArr(state) {
-        return state.mountedPersArr;
-      },
-      getMountedPers(state) {
-        return state.mountedPers;
-      },
-      getbindingsZoo(state) {
-        return state.bindingsZoo;
-      },
-      getModelsArr(state) {
-        return state.modelsArr;
-      },
-      getDiskUsage(state) {
-        return state.diskUsage;
-      },
-      getRamUsage(state) {
-        return state.ramUsage;
-      },
-      getVramUsage(state) {
-        return state.vramUsage;
-      },
-      
-      getDatabasesList(state){
-        return state.databases;
-      },
-      getModelsZoo(state) {
-        return state.modelsZoo;
-      },
-      getCyrrentBinding(state){
-        return state.currentBinding
-      },
-      getCurrentModel(state) {
-        return state.currentModel;
-      },
+      getThemeVars: state => state.theme_vars,
+      getPersonalitiesReady: state => state.personalities_ready,
+      getIsRtOn: state => state.is_rt_on,
+      getTopBarPinned: state => state.topBarPinned,
+      getLanguage: state => state.language,
+      getLanguages: state => state.languages,
+      getCurrentTheme: state => state.currentTheme,
+      getPersonalityEditor: state => state.personality_editor,
+      getShowPersonalityEditor: state => state.showPersonalityEditor,
+      getSelectedPersonality: state => state.selectedPersonality,
+      getCurrentPersonConfig: state => state.currentPersonConfig,
+      getPostsHeaders: state => state.posts_headers,
+      getClientId: state => state.client_id,
+      getLeftPanelCollapsed: state => state.leftPanelCollapsed,
+      getRightPanelCollapsed: state => state.rightPanelCollapsed,
+      getViewMode: state => state.view_mode,
+      getYesNoDialog: state => state.yesNoDialog,
+      getUniversalForm: state => state.universalForm,
+      getSaveConfiguration: state => state.saveConfiguration,
+      getToast: state => state.toast,
+      getNews: state => state.news,
+      getMessageBox: state => state.messageBox,
+      getApiGetReq: state => state.api_get_req,
+      getApiPostReq: state => state.api_post_req,
+      getStartSpeechRecognition: state => state.startSpeechRecognition,
+      getIsReady: state => state.ready,
+      getLoadingInfos: state => state.loading_infos,
+      getLoadingProgress: state => state.loading_progress,
+      getVersion: state => state.version,
+      getSettingsChanged: state => state.settingsChanged,
+      getIsConnected: state => state.isConnected,
+      getIsModelOk: state => state.isModelOk,
+      getIsGenerating: state => state.isGenerating,
+      getConfig: state => state.config,
+      getMountedPers: state => state.mountedPers,
+      getMountedPersArr: state => state.mountedPersArr,
+      getBindingsZoo: state => state.bindingsZoo,
+      getModelsArr: state => state.modelsArr,
+      getSelectedModel: state => state.selectedModel,
+      getPersonalities: state => state.personalities,
+      getStarredPersonalities: state => state.starredPersonalities,
+      getDiskUsage: state => state.diskUsage,
+      getRamUsage: state => state.ramUsage,
+      getVramUsage: state => state.vramUsage,
+      getModelsZoo: state => state.modelsZoo,
+      getInstalledModels: state => state.installedModels,
+      getInstalledBindings: state => state.installedBindings,
+      getCurrentModel: state => state.currentModel,
+      getCurrentBinding: state => state.currentBinding,
+      getDatabases: state => state.databases,
     },
     actions: {
-      async getVersion(){
+      async fetchIsRtOn({ commit }) {
+        try {
+          const response = await axios.get('/is_rt_on');
+          commit('setIsRtOn', response?.data?.status || false);
+        } catch(error) {
+            console.error("Error fetching RT status:", error);
+            commit('setIsRtOn', false);
+        }
+      },
+      async getVersion({ commit }){
         try{
           let res = await axios.get('/get_lollms_webui_version', {});
-          if (res) {
-            res = res.data
-            if(res.version_type!=""){
-              this.state.version = `${res.version_main}.${res.version_secondary} ${res.version_type} (${res.version_codename})`
+          if (res && res.data) {
+            const data = res.data;
+            let versionString = "";
+            if(data.version_type && data.version_type !== ""){
+              versionString = `${data.version_main}.${data.version_secondary} ${data.version_type} (${data.version_codename})`;
+            } else {
+              versionString = `${data.version_main}.${data.version_secondary} (${data.version_codename})`;
             }
-            else{
-              this.state.version = `${res.version_main}.${res.version_secondary} (${res.version_codename})`
-            }
+            commit('setVersion', versionString);
           }
-  
         }
-        catch{
-          console.error("Coudln't get version")
+        catch(error) {
+          console.error("Couldn't get version:", error);
+          commit('setVersion', 'unknown (error)');
         }
       },
-      async refreshConfig({ commit }) {
+
+      async refreshConfig({ commit, state }) {
         console.log("Fetching configuration");
         try {
-          console.log("Fetching configuration with client id: ", this.state.client_id);
-          const configFile = await api_post_req('get_config', this.state.client_id)
-          if(configFile.active_personality_id<0){
-            configFile.active_personality_id=0;
+          const configData = await api_post_req('get_config');
+
+          if (!configData) {
+             throw new Error("Received null or undefined config file");
           }
-          let personality_path_infos = configFile.personalities[configFile.active_personality_id].split("/")
-          //let personality_path_infos = await this.api_get_req("get_current_personality_path_infos")
-          configFile.personality_category = personality_path_infos[0]
-          configFile.personality_folder = personality_path_infos[1]
+          // Make a deep copy to avoid modifying the original response object if needed elsewhere
+          let configFile = copyObject(configData);
 
-          console.log("Recovered config")
-          console.log(configFile)
-          console.log("Committing config");
-          console.log(configFile)
-          console.log(this.state.config)
-          commit('setConfig', configFile);
-        } catch (error) {
-          console.log(error.message, 'refreshConfig');
-          // Handle error
-        }
-      },
-      async refreshDatabase({ commit }) {
-        let databases = await api_get_req("list_databases")
-        console.log("databases:",databases)
-        commit('setDatabases', databases);
-      },
-      async fetchisRTOn({ commit }) {
-        const response = await axios.get(
-                    '/is_rt_on'
-                  );
-            
-        const is_rt_on = response.data.status;
-        commit('setisRTOn', is_rt_on);
-      },
-      async fetchLanguages({ commit }) {
-        console.log("get_personality_languages_list", this.state.client_id)
-        const response = await axios.post(
-                    '/get_personality_languages_list',
-                    {client_id: this.state.client_id}
-                  );
-            
-        console.log("response", response)
-        const languages = response.data;
-        console.log("languages", languages)
-        commit('setLanguages', languages);
-      },
-      async fetchLanguage({ commit }) {
-        console.log("get_personality_language", this.state.client_id)
-        const response = await axios.post(
-                    '/get_personality_language',
-                    {client_id: this.state.client_id}
-                  );
-            
-        console.log("response", response)
-        const language = response.data;
-        console.log("language", language)
-        commit('setLanguage', language);
-      },
-      
-      async changeLanguage({ commit }, new_language) {
-        console.log("Changing language to ", new_language)
-          let response = await axios.post('/set_personality_language', {
-            client_id: this.state.client_id,
-              language: new_language,
-          })
-          console.log("get_personality_languages_list", this.state.client_id)
-          response = await axios.post(
-                      '/get_personality_languages_list',
-                      {client_id: this.state.client_id}
-                    );
-              
-          console.log("response", response)
-          const languages = response.data;
-          console.log("languages", languages)
-          commit('setLanguages', languages);          
-          response = await axios.post(
-                      '/get_personality_language',
-                      {client_id: this.state.client_id}
-                    );
-              
-          console.log("response", response)
-          const language = response.data;
-          console.log("language", language)
-          commit('setLanguage', language);
-          await this.dispatch('refreshMountedPersonalities');
+          if (!configFile.personalities || configFile.personalities.length === 0) {
+              configFile.personalities = ["generic/lollms"];
+              configFile.active_personality_id = 0;
+          } else if(configFile.active_personality_id < 0 || configFile.active_personality_id >= configFile.personalities.length) {
+              configFile.active_personality_id = 0;
+          }
 
-          console.log('Language changed successfully:', language);
-      },
-      
-      async deleteLanguage({ commit }, new_language) {
-        console.log("Deleting ", new_language)
-          let response = await axios.post('/del_personality_language', {
-            client_id: this.state.client_id,
-              language: new_language,
-          })
-          console.log("get_personality_languages_list", this.state.client_id)
-          response = await axios.post(
-                      '/get_personality_languages_list',
-                      {client_id: this.state.client_id}
-                    );
-              
-          const languages = response.data;
-          commit('setLanguages', languages);          
-          response = await axios.post(
-                      '/get_personality_language',
-                      {client_id: this.state.client_id}
-                    );
-              
-          const language = response.data;
-          commit('setLanguage', language);
-      },
-      async refreshPersonalitiesZoo({ commit }) {
-          let personalities = []
-          const catdictionary = await api_get_req("get_all_personalities")
-          const catkeys = Object.keys(catdictionary); // returns categories
-
-          for (let j = 0; j < catkeys.length; j++) {
-              const catkey = catkeys[j];
-              const personalitiesArray = catdictionary[catkey];
-              const modPersArr = personalitiesArray.map((item) => {
-                  let isMounted = false;
-                  for(const personality of this.state.config.personalities){
-                    if(personality.includes(catkey + '/' + item.folder)){
-                      isMounted = true;
-                    }
-                  }
-                  // if (isMounted) {
-                  //     console.log(item)
-                  // }
-                  let newItem = {}
-                  newItem = item
-                  newItem.category = catkey // add new props to items
-                  newItem.full_path = catkey + '/' + item.folder // add new props to items
-                  newItem.isMounted = isMounted // add new props to items
-                  return newItem
-              })
-
-
-              if (personalities.length == 0) {
-                  personalities = modPersArr
+          const activePersonalityPath = configFile.personalities[configFile.active_personality_id];
+          if (activePersonalityPath && typeof activePersonalityPath === 'string') {
+              const personality_path_infos = activePersonalityPath.split('/');
+              if (personality_path_infos.length >= 2) {
+                   configFile.personality_category = personality_path_infos[0];
+                   configFile.personality_folder = personality_path_infos[1].split(':')[0];
               } else {
-                  personalities = personalities.concat(modPersArr)
+                   configFile.personality_category = "unknown";
+                   configFile.personality_folder = "unknown";
               }
+          } else {
+               configFile.personality_category = "unknown";
+               configFile.personality_folder = "unknown";
           }
 
-          personalities.sort((a, b) => a.name.localeCompare(b.name))
-
-          commit('setPersonalities', personalities);
-
-          console.log("Done loading personalities")
+          commit('setConfig', configFile);
+          commit('setSettingsChanged', false);
+        } catch (error) {
+          console.error('Error during refreshConfig:', error);
+          commit('setSettingsChanged', false); // Assume config is stale, revert changes
+        }
       },
-      refreshMountedPersonalities({ commit }) {
-        if(this.state.config.active_personality_id<0){
-          this.state.config.active_personality_id=0;
+
+      async refreshDatabase({ commit }) {
+        try {
+          let databases = await api_get_req("list_databases");
+          commit('setDatabases', databases || []);
+        } catch(error) {
+            console.error("Error refreshing databases:", error);
+            commit('setDatabases', []);
         }
-        let mountedPersArr = []
-        const indicesToRemove = [];
-        for (let i = 0; i < this.state.config.personalities.length; i++) {
-            const full_path_item = this.state.config.personalities[i]
-            const index = this.state.personalities.findIndex(item => item.full_path == full_path_item)
-            if(index>=0){
-              let pers = copyObject(this.state.personalities[index])
-              // console.log(`Personality : ${JSON.stringify(pers)}`)
-              if (pers) {
-                  mountedPersArr.push(pers)
-              }
-              else {
-                  mountedPersArr.push(this.state.personalities[this.state.personalities.findIndex(item => item.full_path == "generic/lollms")])
-              }
-            }
-            else{
-              indicesToRemove.push(i)
-              console.log("Couldn't load personality : ",full_path_item)
-            }
+      },
+
+      async fetchIsRtOn({ commit }) {
+        try {
+          const response = await axios.get('/is_rt_on');
+          commit('setIsRtOn', response?.data?.status || false);
+        } catch(error) {
+            console.error("Error fetching RT status:", error);
+            commit('setIsRtOn', false);
         }
-        // Remove the broken personalities using the collected indices
-        for (let i = indicesToRemove.length - 1; i >= 0; i--) {
-          this.state.config.personalities.splice(indicesToRemove[i], 1);
-          
-          if(this.state.config.active_personality_id>indicesToRemove[i]){
-            this.state.config.active_personality_id -= 1;
+      },
+
+      async fetchLanguages({ commit, state }) {
+        try {
+          const response = await axios.post('/get_personality_languages_list', { client_id: state.client_id });
+          commit('setLanguages', response?.data || []);
+        } catch(error) {
+            console.error("Error fetching languages list:", error);
+            commit('setLanguages', []);
+        }
+      },
+
+      async fetchLanguage({ commit, state }) {
+        try {
+          const response = await axios.post('/get_personality_language', { client_id: state.client_id });
+          commit('setLanguage', response?.data || 'english');
+        } catch (error) {
+            console.error("Error fetching current language:", error);
+            commit('setLanguage', 'english');
+        }
+      },
+
+      async changeLanguage({ dispatch, state }, new_language) {
+        try {
+          let response = await api_post_req('/set_personality_language', { language: new_language });
+
+          if(response?.status){
+              await dispatch('fetchLanguage');
+              await dispatch('fetchLanguages');
+              await dispatch('refreshMountedPersonalities');
+          } else {
+              console.error("Failed to set language:", response?.error);
+              state.toast?.showToast(`Failed to set language: ${response?.error || 'Unknown error'}`, 4, false);
           }
+        } catch (error) {
+            console.error("Error changing language:", error);
         }
+      },
+
+      async deleteLanguage({ dispatch, state }, language_to_delete) {
+        try {
+          let response = await api_post_req('/del_personality_language', { language: language_to_delete });
+          if(response?.status){
+              await dispatch('fetchLanguage');
+              await dispatch('fetchLanguages');
+              await dispatch('refreshMountedPersonalities');
+          } else {
+              console.error("Failed to delete language:", response?.error);
+              state.toast?.showToast(`Failed to delete language: ${response?.error || 'Unknown error'}`, 4, false);
+          }
+        } catch (error) {
+            console.error("Error deleting language:", error);
+        }
+      },
+
+      async refreshPersonalitiesZoo({ commit, state }) {
+          try {
+              let personalities = [];
+              const catdictionary = await api_get_req("get_all_personalities");
+              const mountedSet = new Set(state.config?.personalities || []);
+              const starredSet = new Set(state.starredPersonalities || []); // Use starred from state
+
+              if (!catdictionary) {
+                   commit('setPersonalities', []);
+                   commit('setPersonalitiesReady', false);
+                   return;
+              }
+              const catkeys = Object.keys(catdictionary);
+
+              for (let j = 0; j < catkeys.length; j++) {
+                  const catkey = catkeys[j];
+                  const personalitiesArray = catdictionary[catkey];
+                  if (!Array.isArray(personalitiesArray)) continue;
+
+                  const modPersArr = personalitiesArray.map((item) => {
+                      if (!item || typeof item !== 'object' || !item.folder) return null;
+                      const full_path = `${catkey}/${item.folder}`;
+                      const langPaths = Array.isArray(item.languages) ? item.languages.map(lang => `${full_path}:${lang}`) : [];
+                      const isMounted = mountedSet.has(full_path) || langPaths.some(lp => mountedSet.has(lp));
+                      const isStarred = starredSet.has(full_path); // Check against store state
+
+                      return {
+                          ...item,
+                          category: catkey,
+                          full_path: full_path,
+                          id: item.id || full_path,
+                          isMounted: isMounted,
+                          isStarred: isStarred, // Set initial starred status
+                          isProcessing: false,
+                      };
+                  }).filter(item => item !== null);
+                  personalities = personalities.concat(modPersArr);
+              }
+
+              personalities.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+              commit('setPersonalities', personalities);
+              commit('setPersonalitiesReady', true);
+
+          } catch (error) {
+              console.error("Error refreshing personalities zoo:", error);
+              commit('setPersonalities', []);
+              commit('setPersonalitiesReady', false);
+          }
+      },
+
+      refreshMountedPersonalities({ commit, state }) {
+        if (!state.config || !state.config.personalities || !state.personalities) {
+            commit('setMountedPersArr', []);
+            commit('setMountedPers', null);
+            return;
+        }
+
+        let currentConfig = copyObject(state.config);
+        let mountedPersArr = [];
+        const indicesToRemove = [];
+        const personalitiesMap = new Map(state.personalities.map(p => [p.full_path, p]));
+        const starredSet = new Set(state.starredPersonalities || []);
+
+        for (let i = 0; i < currentConfig.personalities.length; i++) {
+            const full_path_item = currentConfig.personalities[i];
+            const basePath = typeof full_path_item === 'string' ? full_path_item.split(':')[0] : null;
+
+            if (basePath && personalitiesMap.has(basePath)) {
+                let pers = copyObject(personalitiesMap.get(basePath));
+                pers.language = typeof full_path_item === 'string' && full_path_item.includes(':') ? full_path_item.split(':')[1] : '';
+                pers.isMounted = true;
+                pers.isStarred = starredSet.has(basePath); // Ensure mounted also gets starred status
+                mountedPersArr.push(pers);
+            } else {
+                indicesToRemove.push(i);
+            }
+        }
+
+        for (let i = indicesToRemove.length - 1; i >= 0; i--) {
+            const removedIndex = indicesToRemove[i];
+            currentConfig.personalities.splice(removedIndex, 1);
+            if (currentConfig.active_personality_id >= removedIndex) {
+                if (currentConfig.active_personality_id === removedIndex) {
+                     currentConfig.active_personality_id = currentConfig.personalities.length > 0 ? 0 : -1;
+                } else {
+                    currentConfig.active_personality_id -= 1;
+                }
+            }
+        }
+         if (currentConfig.active_personality_id < 0 && currentConfig.personalities.length > 0) {
+            currentConfig.active_personality_id = 0;
+         } else if (currentConfig.personalities.length === 0) {
+             currentConfig.active_personality_id = -1;
+         }
+
 
         commit('setMountedPersArr', mountedPersArr);
-        const current_personality = this.state.personalities[this.state.personalities.findIndex(item => item.full_path == this.state.config.personalities[this.state.config.active_personality_id])]
-        console.log("Setting current mounted personality: ",current_personality)
-        this.state.mountedPers = current_personality
+
+        if (currentConfig.active_personality_id >= 0 && currentConfig.active_personality_id < mountedPersArr.length) {
+            commit('setMountedPers', mountedPersArr[currentConfig.active_personality_id]);
+        } else {
+            commit('setMountedPers', null);
+        }
+
+        if (indicesToRemove.length > 0) {
+            commit('setConfig', currentConfig);
+        }
       },
-      async refreshBindings({ commit }) {
-          let bindingsZoo = await api_get_req("list_bindings")
-          console.log("Loaded bindings zoo :",bindingsZoo)
-          this.state.installedBindings = bindingsZoo.filter(item=> item.installed)
-          console.log("Loaded bindings zoo ", this.state.installedBindings)
-          commit('setbindingsZoo',bindingsZoo)
-          const index = bindingsZoo.findIndex(item=>item.name == this.state.config.binding_name)
-          if (index!=-1){
-            commit('setCurrentBinding',bindingsZoo[index])
-          }
-  
+
+      async refreshBindings({ commit, state }) {
+        try {
+            let bindingsZoo = await api_get_req("list_bindings");
+            if (!Array.isArray(bindingsZoo)) bindingsZoo = [];
+
+            const installedBindings = bindingsZoo.filter(item => item && item.installed);
+            commit('setInstalledBindings', installedBindings);
+            commit('setBindingsZoo', bindingsZoo);
+
+            const currentBindingName = state.config?.binding_name;
+            if (currentBindingName) {
+                const currentBinding = bindingsZoo.find(item => item && item.name === currentBindingName);
+                commit('setCurrentBinding', currentBinding || null);
+            } else {
+                 commit('setCurrentBinding', null);
+            }
+        } catch (error) {
+            console.error("Error refreshing bindings zoo:", error);
+            commit('setBindingsZoo', []);
+            commit('setInstalledBindings', []);
+            commit('setCurrentBinding', null);
+        }
       },
+
       async refreshModelsZoo({ commit }) {
-        const response = await axios.get('/get_available_models');
-        const models_zoo = response.data;//.filter(model => model.variants &&  model.variants.length>0)
-        commit('setModelsZoo', models_zoo)
+        try {
+          const response = await axios.get('/get_available_models');
+           if (!Array.isArray(response?.data)) {
+               commit('setModelsZoo', []);
+           } else {
+               commit('setModelsZoo', response.data);
+           }
+        } catch (error) {
+            console.error("Error refreshing models zoo:", error);
+            commit('setModelsZoo', []);
+        }
       },
+
       async refreshModelStatus({ commit }) {
-        let modelstatus = await api_get_req("get_model_status");
-        commit('setIsModelOk',modelstatus["status"])
+        try {
+          let modelstatus = await api_get_req("get_model_status");
+          commit('setIsModelOk', modelstatus?.status || false);
+        } catch(error) {
+            console.error("Error refreshing model status:", error);
+            commit('setIsModelOk', false);
+        }
       },
-      async refreshModels({ commit }) {
-        let modelsArr = await api_get_req("list_models");
-        let selectedModel = await api_get_req('get_active_model');
-        if(selectedModel!=undefined){
-          commit('setselectedModel',selectedModel["model"])
-        }
-        commit('setModelsArr',modelsArr)
-        this.state.modelsZoo.map((item)=>{
-          item.isInstalled=modelsArr.includes(item.name)
-        })
-        this.state.installedModels = this.state.modelsZoo.filter(item=> item.isInstalled)
-        const modelsNotInZoo = modelsArr.filter(modelName => !this.state.modelsZoo.some(item => item.name === modelName))
-        const installedCustomModels = modelsNotInZoo.map(modelName => ({
-          name: modelName,
-          icon: this.imgBinding,
-          isCustomModel: true,
-          isInstalled: true
-        }))
-        this.state.installedModels = [...this.state.installedModels, ...installedCustomModels]
-        commit('setInstalledModels', this.state.installedModels);
-        const index = this.state.modelsZoo.findIndex(item=>item.name == this.state.config.model_name)
-        if (index!=-1){
-          commit('setCurrentModel',this.state.modelsZoo[index])
-        }
-    },
+
+      async refreshModels({ commit, state }) {
+          try {
+              let modelsArr = await api_get_req("list_models");
+              if (!Array.isArray(modelsArr)) modelsArr = [];
+              commit('setModelsArr', modelsArr);
+
+              let selectedModelInfo = await api_get_req('get_active_model');
+              const selectedModelName = selectedModelInfo?.model || state.config?.model_name;
+              commit('setSelectedModel', selectedModelName || null);
+
+              const modelsZoo = state.modelsZoo || [];
+              const modelsArrSet = new Set(modelsArr);
+              modelsZoo.forEach(item => {
+                   if (item && item.name) item.isInstalled = modelsArrSet.has(item.name);
+              });
+              commit('setModelsZoo', [...modelsZoo]);
+
+              let installedModels = modelsZoo.filter(item => item && item.isInstalled);
+              const zooModelNames = new Set(modelsZoo.map(item => item?.name).filter(Boolean));
+              const customModelNames = modelsArr.filter(modelName => !zooModelNames.has(modelName));
+
+              const imgBinding = state.currentBinding?.icon || '/bindings/default_binding.png';
+              const installedCustomModels = customModelNames.map(modelName => ({
+                  name: modelName, icon: imgBinding, isCustomModel: true, isInstalled: true,
+              }));
+
+              installedModels = [...installedModels, ...installedCustomModels];
+              commit('setInstalledModels', installedModels);
+
+              const currentModel = modelsZoo.find(item => item && item.name === selectedModelName);
+               if (currentModel) {
+                   commit('setCurrentModel', currentModel);
+               } else if (selectedModelName) {
+                    const customModelEntry = installedCustomModels.find(m => m.name === selectedModelName);
+                    commit('setCurrentModel', customModelEntry || null);
+               } else {
+                   commit('setCurrentModel', null);
+               }
+          } catch (error) {
+              console.error("Error refreshing models:", error);
+              commit('setModelsArr', []);
+              commit('setSelectedModel', null);
+              commit('setInstalledModels', []);
+              commit('setCurrentModel', null);
+          }
+      },
+
       async refreshDiskUsage({ commit }) {
-        this.state.diskUsage = await api_get_req("disk_usage")
+        try {
+          let usage = await api_get_req("disk_usage");
+          commit('setDiskUsage', usage);
+        } catch (error) {
+            console.error("Error refreshing disk usage:", error);
+            commit('setDiskUsage', null);
+        }
       },
+
       async refreshRamUsage({ commit }) {
-        this.state.ramUsage = await api_get_req("ram_usage")
-      },      
-      async refreshVramUsage({ commit }) {
-        const resp = await api_get_req("vram_usage")
-        const gpuArr = []
-
-        if (resp.nb_gpus > 0) {
-            // Get keys
-            const keys = Object.keys(resp)
-            // for each gpu
-            for (let i = 0; i < resp.nb_gpus; i++) {
-
-                const total_vram = resp[`gpu_${i}_total_vram`];
-                const used_vram = resp[`gpu_${i}_used_vram`];
-                const model = resp[`gpu_${i}_model`];
-                const percentage = (used_vram / total_vram) * 100
-                const available_space = total_vram - used_vram
-
-
-
-                gpuArr.push({
-                    total_vram: total_vram,
-                    used_vram: used_vram,
-                    gpu_index: i,
-                    gpu_model: model,
-                    percentage: percentage.toFixed(2),
-                    available_space: available_space
-                });
-
-            }
-            const result = {
-
-                "nb_gpus": resp.nb_gpus,
-                "gpus": gpuArr
-            }
-            console.log('gpu usage: ',result)
-            this.state.vramUsage = result
-
+        try {
+          let usage = await api_get_req("ram_usage");
+          commit('setRamUsage', usage);
+        } catch (error) {
+            console.error("Error refreshing RAM usage:", error);
+            commit('setRamUsage', null);
         }
-        else{
-            const result = {
-            "nb_gpus": 0,
-            "gpus": []
-            }
-            console.log('gpu usage: ',result)
-            this.state.vramUsage = result
-
-        }
-
       },
 
-    }    
+      async refreshVramUsage({ commit }) {
+        try {
+            const resp = await api_get_req("vram_usage");
+            const gpuArr = [];
+            let result = { nb_gpus: 0, gpus: [] };
+
+            if (resp && resp.nb_gpus > 0) {
+                result.nb_gpus = resp.nb_gpus;
+                for (let i = 0; i < resp.nb_gpus; i++) {
+                    const total_vram = resp[`gpu_${i}_total_vram`] || 0;
+                    const used_vram = resp[`gpu_${i}_used_vram`] || 0;
+                    const model = resp[`gpu_${i}_model`] || 'N/A';
+                    const percentage = total_vram > 0 ? ((used_vram / total_vram) * 100).toFixed(2) : 0;
+                    const available_space = total_vram - used_vram;
+
+                    gpuArr.push({
+                        total_vram: total_vram, used_vram: used_vram, gpu_index: i, gpu_model: model,
+                        percentage: percentage, available_space: available_space
+                    });
+                }
+                 result.gpus = gpuArr;
+            }
+            commit('setVramUsage', result);
+        } catch (error) {
+             console.error("Error refreshing VRAM usage:", error);
+             commit('setVramUsage', { nb_gpus: 0, gpus: [] });
+        }
+      },
+
+      toggleStarPersonality({ commit, state, dispatch }, personality) {
+          if (!personality || !personality.full_path) {
+              console.warn("Attempted to toggle star on invalid personality:", personality);
+              return;
+          }
+          const personalityPath = personality.full_path;
+          const isCurrentlyStarred = state.starredPersonalities.includes(personalityPath);
+
+          if (isCurrentlyStarred) {
+              commit('removeStarredPersonality', personalityPath);
+          } else {
+              commit('addStarredPersonality', personalityPath);
+          }
+          // Update the isStarred status in the main personalities list for immediate UI feedback
+          dispatch('updatePersonalityStarredStatus', { personalityPath, isStarred: !isCurrentlyStarred });
+      },
+
+      updatePersonalityStarredStatus({ commit, state }, { personalityPath, isStarred }) {
+         const personality = state.personalities.find(p => p.full_path === personalityPath);
+         if (personality) {
+             commit('updatePersonality', { ...personality, isStarred: isStarred });
+         } else {
+            console.warn("Could not find personality in main list to update starred status:", personalityPath);
+         }
+      }
+    }
 })
+
 async function api_get_req(endpoint) {
   try {
-    const res = await axios.get('/' + endpoint);
-
-    if (res) {
-      return res.data;
-    }
+    const res = await axios.get(`/${endpoint}`);
+    return res?.data;
   } catch (error) {
-    console.log(error.message, 'api_get_req');
+    console.error(`API GET request error for /${endpoint}:`, error.message);
+    store.state.toast?.showToast(`API Error (GET ${endpoint}): ${error.message}`, 4, false);
     throw error;
   }
 }
 
-async function api_post_req(endpoint, client_id) {
+async function api_post_req(endpoint, data = {}) {
   try {
-      const res = await axios.post("/" + endpoint, {client_id: client_id});
-
-      if (res) {
-
-          return res.data
-
-      }
+      const payload = { ...data, client_id: store.state.client_id };
+      const res = await axios.post(`/${endpoint}`, payload, { headers: store.state.posts_headers });
+      return res?.data;
   } catch (error) {
-      console.log(error.message, 'api_post_req - settings')
-      return
+      console.error(`API POST request error for /${endpoint}:`, error.message);
+      store.state.toast?.showToast(`API Error (POST ${endpoint}): ${error.message}`, 4, false);
+      throw error;
   }
-
 }
 
-
-let actionsExecuted = false;
-
 app.mixin({
-  async created() {
-    if (!actionsExecuted) {
-      this.$store.state.api_get_req = api_get_req
-      this.$store.state.api_post_req = api_post_req
+  created() {
+    if (!this.$store.state.api_get_req) {
+        this.$store.commit('setApiGetReq', api_get_req);
+    }
+    if (!this.$store.state.api_post_req) {
+        this.$store.commit('setApiPostReq', api_post_req);
     }
   },
 })
 
 function logObjectProperties(obj) {
   if (typeof obj !== 'object' || obj === null) {
-    console.log('Invalid object');
     return;
   }
-
-  let logString = "Object parameters and values:\n";
-  
+  let logString = "Object properties:\n";
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key) && typeof obj[key] !== 'function') {
-      logString += `${key}: ${obj[key]}\n`;
+      logString += `${key}: ${JSON.stringify(obj[key])}\n`;
     }
   }
-
   console.log(logString);
 }
 
-function flattenObject(obj, parentKey = "") {
+
+function flattenObject(obj, parentKey = "", separator = "/") {
   let result = [];
-
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      const newKey = parentKey ? `${parentKey}/${key}` : key;
-
-      if (typeof obj[key] === "object") {
-        const nestedFields = flattenObject(obj[key], newKey);
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const newKey = parentKey ? `${parentKey}${separator}${key}` : key;
+      const value = obj[key];
+      if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+        const nestedFields = flattenObject(value, newKey, separator);
         result = result.concat(nestedFields);
       } else {
         result.push(newKey);
       }
     }
   }
-
   return result;
 }
 
@@ -680,4 +765,4 @@ app.use(router)
 app.use(store)
 app.mount('#app')
 
-export{logObjectProperties, copyObject, flattenObject }
+export { logObjectProperties, copyObject, flattenObject }

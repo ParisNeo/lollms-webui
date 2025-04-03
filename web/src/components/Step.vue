@@ -1,47 +1,52 @@
 <template>
-  <div 
-    class="flex items-center p-2 rounded transition-colors duration-200"
+  <div
+    class="step-component"
     :class="[
-      done ? 'bg-opacity-5' : 'bg-opacity-3',
-      status ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-gray-800/20'
+      done ? (status ? 'step-component-success' : 'step-component-fail') : 'step-component-pending'
     ]"
   >
-    <div class="flex items-start gap-2 w-full">
-      <div class="w-4 h-4 flex-shrink-0">
-        <template v-if="done">
-          <svg 
-            v-if="status" 
-            class="w-4 h-4 text-green-500 dark:text-green-400" 
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-          </svg>
-          <svg 
-            v-else 
-            class="w-4 h-4 text-red-500 dark:text-red-400" 
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z" />
-          </svg>
-        </template>
-        <div 
-          v-else 
-          class="w-4 h-4 border-2 border-t-primary rounded-full animate-spin"
-        ></div>
-      </div>
+    <!-- Icon Wrapper with Transition -->
+    <div class="step-icon-wrapper"> <!-- This is w-5 h-5 from theme -->
+      <transition name="fade-icon" mode="out-in">
+        <!-- Spinner (Pending) -->
+        <div v-if="!done" key="spinner" class="step-spinner"></div> <!-- This is w-4 h-4 from theme -->
 
-      <div class="min-w-0">
-        <div class="text-sm text-gray-700 dark:text-gray-200 truncate">
-          {{ text || 'No text provided' }}
-        </div>
-        <div 
-          v-if="description" 
-          class="text-xs text-gray-500 dark:text-gray-400 truncate"
+        <!-- Success Icon -->
+        <svg
+          v-else-if="status"
+          key="success"
+          class="step-icon-success w-4 h-4"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          {{ description }}
-        </div>
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+        </svg>
+
+        <!-- Failure Icon -->
+        <svg
+          v-else
+          key="fail"
+          class="step-icon-fail w-4 h-4"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+        </svg>
+      </transition>
+    </div>
+
+    <!-- Text Content -->
+    <div class="step-text-content">
+      <div class="step-text">
+        {{ text || 'Processing...' }}
+      </div>
+      <div
+        v-if="description"
+        class="step-description"
+      >
+        {{ description }}
       </div>
     </div>
   </div>
@@ -49,6 +54,7 @@
 
 <script>
 export default {
+  name: 'Step',
   props: {
     done: Boolean,
     text: String,
@@ -59,16 +65,25 @@ export default {
 </script>
 
 <style scoped>
-.border-t-primary {
-  border-color: #e2e8f0;
-  border-top-color: currentColor;
-}
+/* Scoped styles are minimal now, relying on theme.css */
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* Re-define animation locally if not in global scope or if needed */
+/* .fade-icon-enter-active,
+.fade-icon-leave-active {
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
+.fade-icon-enter-from,
+.fade-icon-leave-to {
+  opacity: 0;
+  transform: scale(0.8);
+} */
 
-.animate-spin {
-  animation: spin 0.8s linear infinite;
-}
+/* Spinner animation (if not globally defined via animate-spin) */
+/* @keyframes spin { to { transform: rotate(360deg); } }
+.animate-spin { animation: spin 0.8s linear infinite; } */
+
+/* Pulse animation (if not globally defined) */
+/* @keyframes pulse-border { ... } */
+/* .animate-pulse-border { ... } */
+
 </style>

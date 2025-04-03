@@ -7,11 +7,11 @@
 
 :root {
   /* --- Borg Theme Specific Variables --- */
-  --lollms-title: "LoLLMS Collective"; /* Title reflecting Borg theme */
-  --falling-object: "❒"; /* Borg Cube representation */
+  --lollms-title: LoLLMS Collective; /* Title reflecting Borg theme */
+  --falling-object: ❒; /* Borg Cube representation */
   --activate-dropping-animation: 1; /* Activate the falling object animation */
-  --lollms-welcome-short-message: "Resistance is futile."; /* Classic Borg line */
-  --lollms-welcome-message: "Your technological and biological distinctiveness will be added to our own. Prepare for assimilation into the LoLLMS Collective. Efficiency will be optimized. Individuality is irrelevant."; /* Borg-themed welcome */
+  --lollms-welcome-short-message: Resistance is futile.; /* Classic Borg line */
+  --lollms-welcome-message: Your technological and biological distinctiveness will be added to our own. Prepare for assimilation into the LoLLMS Collective. Efficiency will be optimized. Individuality is irrelevant.; /* Borg-themed welcome */
 
   /* --- Color Palette --- */
   --color-primary: #00ff00; /* Bright, glowing green */

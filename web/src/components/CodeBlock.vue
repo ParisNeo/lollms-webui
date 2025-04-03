@@ -255,7 +255,7 @@ function getTextNodeAndOffset(parentElement, charIndex) {
 export default {
   name: 'CodeBlock',
   props: {
-    host: { type: String, required: false, default: "http://localhost:9600" },
+    host: { type: String, required: false, default: "" },
     language: { type: String, required: true },
     code: { type: String, required: true },
     client_id: { type: String, required: true },
