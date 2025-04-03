@@ -1,97 +1,233 @@
-/* Custom Christmas font */
-@import url('https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&display=swap');
+/* Christmas Cheer Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=Mountains+of+Christmas:wght@400;700&display=swap'); /* Added Mountains of Christmas */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --lollms-title: LoLLMS: Christmas Edition;
-  --falling-object: ❄;
-  --activate-dropping-animation: 1;
-  --lollms-welcome-short-message: "Merry AI-mas!";
-  --lollms-welcome-message: "Welcome to the festive world of LoLLMs - where AI meets holiday cheer! 🎄🤖 We're here to make your digital experience as merry and bright as a perfectly decorated Christmas tree. From natural language processing to multimodal tasks, LoLLMs is your one-stop AI assistant for the holiday season. Let's spread joy and cultivate brilliant ideas together!";
-  
-  /* Light mode colors */
-  --color-primary: #c41e3a;
-  --color-primary-light: #e63946;
-  --color-secondary: #165b33;
-  --color-accent: #f8b229;
-  --color-bg-light: #f1f8e9;
-  --color-bg-light-tone: #e8f5e9;
-  --color-bg-light-tone-panel: #c8e6c9;
-  --color-light-text-panel: #1b5e20;
-  
-  /* Dark mode colors */
-  --color-bg-dark: #1a2c38;
-  --color-bg-dark-tone: #234454;
-  --color-bg-dark-tone-panel: #2c5364;
-  --color-dark-text-panel: #e0f2f1;
+  --lollms-title: LoLLMS Holiday Hub; /* Festive Title */
+  --falling-object: "❄️"; /* Snowflake Emoji */
+  --activate-dropping-animation: 1; /* Activate falling snow */
+  --lollms-welcome-short-message: "Season's Greetings from LoLLMS!";
+  --lollms-welcome-message: "Step into a winter wonderland of AI with LoLLMS! Explore intelligent conversations and multimodal magic, wrapped in festive cheer. May your interactions be merry and bright!";
 }
 
 @layer base {
   html {
     @apply scroll-smooth;
   }
-  
   body {
-    font-family: 'Mountains of Christmas', cursive;
+    font-family: 'Inter', sans-serif; /* Keep readable font for body */
   }
 }
 
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+.display-none {
+  @apply hidden;
+}
+
+/* Festive Headings */
+h1 { @apply text-4xl md:text-5xl font-bold text-red-700 dark:text-red-300 mb-6 font-['Mountains_of_Christmas',_cursive]; } /* Festive Font for H1 */
+h2 { @apply text-3xl font-semibold text-red-600 dark:text-red-400 mb-4; }
+h3 { @apply text-2xl font-medium text-green-700 dark:text-green-300 mb-3; }
+h4 { @apply text-xl font-medium text-green-600 dark:text-green-400 mb-2; }
+
+h1, h2 { @apply border-b border-red-300 dark:border-red-600 pb-2; }
+
+p {
+  @apply
+    text-base
+    text-gray-800 /* Readable text color on light bg */
+    dark:text-gray-200 /* Readable text color on dark bg */
+    break-words
+    font-sans
+    antialiased
+    tracking-tight
+    leading-relaxed;
+}
+
+@screen md {
+  p {
+    @apply
+      text-lg
+      leading-loose;
+  }
+}
+
+
+/* Base list styling */
+ul, ol {
+  @apply
+      my-4          /* Margin top and bottom */
+      px-4          /* Horizontal padding */
+      leading-7     /* Line height */
+      text-base;    /* Text size */
+}
+
+/* Unordered lists */
+ul {
+  @apply
+      list-disc     /* Disc style bullets */
+      ml-2          /* Left margin */
+      space-y-2;    /* Vertical spacing */
+}
+
+/* List items */
+li {
+  @apply
+      pl-2         /* Padding left */
+      relative;    /* Positioning */
+}
+
+/* Ordered lists */
+ol {
+  @apply
+      list-decimal  /* Numbered style */
+      ml-2          /* Left margin */
+      space-y-2;    /* Vertical spacing */
+}
+
+/* Nested lists */
+ul ul, ol ol, ul ol, ol ul {
+  @apply
+      mt-2         /* Top margin */
+      mb-0         /* Bottom margin */
+      ml-6;        /* Indentation */
+}
+
+/* Festive marker color (Gold) */
+li::marker {
+  color: #d69e2e; /* gold-600 approx */
+}
+
+
+/* Christmas Color Palette */
+:root {
+  --color-primary: #c53030; /* Red-700 */
+  --color-primary-light: #f56565; /* Red-500 */
+  --color-secondary: #2f855a; /* Green-700 */
+  --color-accent: #d69e2e; /* Yellow-600 (Gold) */
+  --color-light-text-panel: #1a202c; /* Gray-900 (Dark text for light panels) */
+  --color-dark-text-panel: #e2e8f0; /* Gray-200 (Light text for dark panels) */
+  --color-bg-light-panel: #fff5f5; /* Red-50 */
+  --color-bg-light: #ffffff; /* White */
+  --color-bg-light-tone: #f0fff4; /* Green-50 */
+  --color-bg-light-code-block: #fffbeb; /* Yellow-50 (Light Gold) */
+  --color-bg-light-tone-panel: #e2e8f0; /* Gray-200 (Silver) */
+  --color-bg-light-discussion: #fff5f5; /* Red-50 */
+  --color-bg-light-discussion-odd: #f0fff4; /* Green-50 */
+  --color-bg-dark: #1a3623; /* Dark Green */
+  --color-bg-dark-tone: #2f3731; /* Darker Green/Gray */
+  --color-bg-dark-tone-panel: #4a1d1d; /* Dark Red */
+  --color-bg-dark-code-block: #2d3748; /* Gray-800 */
+  --color-bg-dark-discussion: #4a1d1d; /* Dark Red */
+  --color-bg-dark-discussion-odd: #1a3623; /* Dark Green */
+}
+
+textarea, input, select {
+  @apply bg-red-100 dark:bg-red-900 text-gray-800 dark:text-gray-200 border border-red-300 dark:border-red-700 focus:ring-red-500;
+}
+
 .background-color {
-  @apply bg-gradient-to-br from-green-50 to-red-100 dark:from-gray-900 dark:to-gray-800 min-h-screen;
+  @apply bg-gradient-to-br from-red-100 via-white to-green-100 dark:from-red-900 via-gray-800 to-green-900 min-h-screen;
 }
 
 .toolbar-color {
-  @apply text-white bg-gradient-to-r from-red-600 to-green-600 dark:from-red-800 dark:to-green-800 rounded-full shadow-lg;
+  @apply text-green-800 dark:text-green-100 bg-green-200 dark:bg-green-800 rounded-lg shadow-md;
 }
 
 .panels-color {
-  @apply text-gray-800 dark:text-gray-200 bg-gradient-to-r from-red-100 to-green-100 dark:from-gray-800 dark:to-gray-700 rounded shadow-lg;
+  @apply text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800; /* Keep panels readable */
 }
 
 .unicolor-panels-color {
-  @apply bg-red-100 dark:bg-gray-800;
+  @apply bg-green-200 dark:bg-green-700;
 }
 
 .chatbox-color {
-  @apply bg-gradient-to-br from-red-100 to-green-100 dark:from-gray-800 dark:to-gray-700;
+  @apply bg-gray-50 dark:bg-gray-900; /* Neutral chatbox background */
 }
 
 .message {
-  @apply bg-white dark:bg-gray-800 border-2 border-red-500 dark:border-green-500;
+  @apply relative w-full m-2 shadow-lg rounded-lg border flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
+  @apply border-gray-300 dark:border-gray-600; /* Default border */
+  /* Alternating festive backgrounds */
+}
+
+.message:hover {
+  @apply border-red-400 dark:border-red-500;
 }
 
 .message:nth-child(even) {
-  @apply bg-red-50 dark:bg-gray-700;
+  @apply bg-green-50 text-gray-800 dark:bg-green-900 dark:text-gray-100;
 }
 
 .message:nth-child(odd) {
-  @apply bg-green-50 dark:bg-gray-800;
+  @apply bg-red-50 text-gray-800 dark:bg-red-900 dark:text-gray-100;
+}
+
+.message-header {
+  @apply text-xl font-semibold mb-2 text-red-700 dark:text-red-300; /* Festive header */
+}
+
+.message-content {
+  @apply text-lg leading-relaxed text-gray-700 dark:text-gray-200; /* Readable content */
+}
+
+body {
+  @apply bg-red-50 dark:bg-gray-900 min-h-screen text-base; /* Light red background */
 }
 
 .discussion {
-  @apply mr-2 bg-gradient-to-r from-red-200 to-green-200 dark:from-gray-700 dark:to-gray-600 hover:from-red-100 hover:to-green-100 hover:dark:from-gray-600 hover:dark:to-gray-500;
+  @apply mr-2 text-xs;
 }
 
 .discussion-hilighted {
-  @apply bg-gradient-to-r from-red-100 to-green-100 dark:from-gray-700 dark:to-gray-600 hover:from-red-50 hover:to-green-50 hover:dark:from-gray-600 hover:dark:to-gray-500;
+  @apply bg-yellow-200 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-100 text-xs; /* Gold highlight */
 }
 
 .bg-gradient-welcome {
-  @apply bg-gradient-to-br from-red-50 to-green-100 dark:from-gray-900 dark:to-gray-800;
+  @apply bg-gradient-to-br from-red-200 via-white to-green-200 dark:from-red-800 via-gray-700 to-green-800;
 }
 
 .bg-gradient-progress {
-  @apply bg-gradient-to-r from-red-100 to-green-200 dark:from-gray-800 dark:to-gray-700;
+  @apply bg-gradient-to-r from-red-400 to-yellow-400 dark:from-red-600 dark:to-yellow-600;
 }
 
 .text-gradient-title {
-  @apply text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-green-600 dark:from-red-400 dark:to-green-400;
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-yellow-500 dark:from-red-400 dark:to-yellow-400;
 }
 
+.text-subtitle {
+  @apply text-green-600 dark:text-green-400;
+}
+
+.text-author {
+  @apply text-red-500 dark:text-red-400;
+}
+
+.text-loading {
+  @apply text-green-700 dark:text-green-300;
+}
+
+.text-progress {
+  @apply text-red-600 dark:text-red-400;
+}
+
+/* Festive Buttons */
 .btn-primary {
-  @apply bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded;
+  @apply bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded;
 }
 
 .btn-secondary {
@@ -99,388 +235,479 @@
 }
 
 .card {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border-2 border-red-500 dark:border-green-500;
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-green-200 dark:border-green-700; /* Subtle green border */
 }
 
 .input {
-  @apply bg-red-50 dark:bg-gray-700 border border-red-300 dark:border-green-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-green-400;
+  @apply bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 text-gray-800 dark:text-gray-100; /* More neutral input */
+}
+
+.label {
+  @apply block text-sm font-medium text-green-700 dark:text-green-300 mb-1;
 }
 
 .link {
-  @apply text-red-600 hover:text-red-700 dark:text-green-400 dark:hover:text-green-300;
+  @apply text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200 font-medium; /* Festive links */
 }
 
+.navbar-container {
+  @apply text-green-800 dark:text-green-200 bg-green-100 dark:bg-green-900 rounded shadow-lg;
+}
+
+.game-menu {
+  @apply flex justify-center items-center relative;
+}
+
+.text-shadow-custom {
+  /* Gold shadow effect */
+  text-shadow: 1px 1px 0px #f0fff4, -1px -1px 0px #f0fff4, 1px -1px 0px #f0fff4, -1px 1px 0px #f0fff4;
+}
+
+.menu-item {
+  @apply mb-2 px-4 py-2 text-green-700 dark:text-green-300 font-bold text-lg transition-all duration-300 ease-in-out;
+  @apply hover:text-red-700 hover:dark:text-red-300 hover:transform hover:-translate-y-1;
+}
+
+.menu-item.active-link {
+  @apply rounded-t-md border-red-500 text-red-700 dark:text-red-300 text-shadow-custom font-bold text-lg transition-all duration-300 ease-in-out scale-105;
+  @apply hover:text-red-800 hover:dark:text-red-200 hover:transform hover:-translate-y-1;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6); /* Gold glow */
+}
+
+/* Shimmering Tinsel Effect */
 .menu-item.active-link::before {
-  background: linear-gradient(to right, #c41e3a, #165b33, #c41e3a);
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(to right, #c53030, #d69e2e, #2f855a, #d69e2e, #c53030); /* Red, Gold, Green */
+  background-size: 200% 100%; /* For shimmer */
+  border-radius: 10px;
+  animation: shimmer 3s infinite linear; /* Slower shimmer */
 }
 
 .dark .menu-item.active-link::before {
-  background: linear-gradient(to right, #e63946, #2a9d8f, #e63946);
+  background: linear-gradient(to right, #f56565, #fbd38d, #48bb78, #fbd38d, #f56565); /* Lighter festive colors */
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Gentle Bounce (like ornaments) */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(2deg); }
+  75% { transform: translateY(1px) rotate(-1deg); }
+}
+
+.feather-emoji { /* Applying to the snowflake */
+  display: inline-block;
+  margin-left: 5px;
+  animation: bounce 3s infinite ease-in-out;
 }
 
 .app-card {
-  @apply transition-all duration-300 ease-in-out bg-gradient-to-br from-red-50 to-green-100 dark:from-gray-800 dark:to-gray-700 text-gray-800 dark:text-gray-200 border-2 border-red-500 dark:border-green-500 rounded-xl shadow-lg p-6 hover:shadow-xl;
+  @apply transition-all duration-300 ease-in-out bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-green-300 dark:border-green-600 rounded-xl shadow-lg p-6 hover:shadow-xl hover:border-red-400 dark:hover:border-red-500;
 }
 
+.app-card:hover {
+  @apply transform -translate-y-1;
+}
+
+button {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+button:hover {
+  @apply transform scale-105; /* Slightly different hover */
+}
+
+/* Festive Scrollbar */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: theme('colors.red.300') theme('colors.green.100');
+  scrollbar-color: theme('colors.red.400') theme('colors.green.200');
 }
 
 .dark .scrollbar-thin {
-  scrollbar-color: theme('colors.green.600') theme('colors.gray.800');
+  scrollbar-color: theme('colors.red.600') theme('colors.green.800');
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  @apply w-2;
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  @apply bg-red-100 dark:bg-gray-800 rounded-full;
+  @apply bg-green-200 dark:bg-green-800 rounded-full;
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply bg-green-300 dark:bg-red-600 rounded-full;
+  @apply bg-red-400 dark:bg-red-600 rounded-full border-2 border-solid border-green-200 dark:border-green-800; /* Added border */
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  @apply bg-green-400 dark:bg-red-500;
+  @apply bg-red-500 dark:bg-red-500;
 }
 
-.interesting-facts {
-  @apply mt-6 mb-6 p-4 bg-red-50/80 dark:bg-green-900/80 rounded-lg shadow-lg transform hover:scale-105 border-2 border-green-500 dark:border-red-500;
+.btn {
+  @apply font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md flex items-center;
 }
-@layer components {
-    .snowfall-bg {
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Ccircle cx='5' cy='5' r='1' fill='white' opacity='0.7'/%3E%3C/svg%3E");
-      background-repeat: repeat;
-    }
-  }
-  
-  .animated-progressbar-bg {
-    @apply w-full h-16 relative overflow-hidden bg-gradient-to-r from-green-900 via-red-900 to-green-900 dark:from-green-950 dark:via-red-950 dark:to-green-950 rounded-full shadow-[0_0_20px_rgba(255,0,0,0.4)] border-2 border-yellow-300;
-  }
-  
-  .animated-progressbar-fg {
-    @apply absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 via-red-500 to-green-500 dark:from-green-600 dark:via-red-600 dark:to-green-600 transition-all duration-500 ease-out
-    [background-image:repeating-linear-gradient(-45deg,transparent,transparent_10px,rgba(255,255,255,0.2)_10px,rgba(255,255,255,0.2)_20px)]
-    [animation:candy-cane_3s_linear_infinite];
-  }
-  
-  .animated-progressbar-fg::before {
-    @apply content-[''] absolute inset-0 snowfall-bg [animation:snow-fall_10s_linear_infinite];
-  }
-  
-  .animated-progressbar-fg::after {
-    @apply content-[''] absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-r from-transparent via-yellow-300/30 to-transparent [animation:tinsel-shine_2s_ease-in-out_infinite];
-  }
-  
-  @keyframes candy-cane {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 40px 40px;
-    }
-  }
-  
-  @keyframes snow-fall {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 50px 50px;
-    }
-  }
-  
-  @keyframes tinsel-shine {
-    0%, 100% {
-      transform: translateX(-100%) rotate(45deg);
-    }
-    50% {
-      transform: translateX(100%) rotate(45deg);
-    }
-  }
-  
-  .animated-progressbar-text {
-    @apply absolute inset-0 flex items-center justify-center text-white font-bold text-2xl z-10 [text-shadow:1px_1px_2px_rgba(0,0,0,0.7)] [animation:jingle_0.5s_ease-in-out_infinite_alternate];
-  }
-  
-  @keyframes jingle {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-2px);
-    }
-  }
-  
-  .christmas-icon {
-    @apply absolute top-1/2 -translate-y-1/2 w-12 h-12 text-yellow-300 z-20 [animation:bounce_1s_ease-in-out_infinite];
-  }
-  
-  .christmas-icon-left {
-    @apply left-2;
-  }
-  
-  .christmas-icon-right {
-    @apply right-2;
-  }
-  
-   
-  .animated-progressbar-text {
-    @apply absolute inset-0 flex items-center justify-center text-white font-bold text-2xl z-10 [text-shadow:1px_1px_2px_rgba(0,0,0,0.7)] [animation:jingle_0.5s_ease-in-out_infinite_alternate];
-  }
-  
-  @keyframes jingle {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-2px);
-    }
-  }
-  
-  .christmas-icon {
-    @apply absolute top-1/2 -translate-y-1/2 w-12 h-12 text-yellow-300 z-20 [animation:bounce_1s_ease-in-out_infinite];
-  }
-  
-  .christmas-icon-left {
-    @apply left-2;
-  }
-  
-  .christmas-icon-right {
-    @apply right-2;
-  }
-  
-  @keyframes bounce {
-    0%, 100% {
-      transform: translateY(-50%) scale(1);
-    }
-    50% {
-      transform: translateY(-60%) scale(1.1);
-    }
-  }
-  
-  .lollms-title-style {
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
-               2px 2px 0px #f1f8e9, 
-               -2px -2px 0px #f1f8e9, 
-               2px -2px 0px #f1f8e9, 
-               -2px 2px 0px #f1f8e9;
-  background: linear-gradient(45deg, #c41e3a, #165b33);
+
+.btn-primary { /* Already defined, ensures consistency */
+  @apply bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-600;
+}
+
+.btn-secondary { /* Already defined, ensures consistency */
+  @apply bg-green-500 text-white hover:bg-green-600 focus:ring-4 focus:ring-green-200 dark:bg-green-700 dark:text-green-100 dark:hover:bg-green-600 dark:focus:ring-green-600;
+}
+
+.search-input {
+  @apply w-full border-b-2 border-green-300 dark:border-green-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-red-500 dark:focus:border-red-400 bg-transparent text-gray-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400;
+}
+
+.scrollbar {
+  @apply scrollbar-thin scrollbar-track-green-200 scrollbar-thumb-red-400 hover:scrollbar-thumb-red-500 dark:scrollbar-track-green-700 dark:scrollbar-thumb-red-600 dark:hover:scrollbar-thumb-red-500;
+}
+
+
+.animated-progressbar-bg{
+  @apply w-full h-5 relative overflow-hidden bg-gradient-to-r from-green-200 to-red-200 dark:from-green-800 dark:to-red-800 rounded-full shadow-lg border border-yellow-300 dark:border-yellow-600; /* Added gold border */
+}
+.animated-progressbar-fg{
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-red-500 to-yellow-500 dark:from-red-600 dark:to-yellow-600 transition-all duration-300;
+}
+
+.discussion-toolbox{
+  @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300 border-l-4 border-yellow-500; /* Gold accent */
+}
+
+.lollms-title-style{
+  /* More Christmassy effect */
+  text-shadow: 1px 1px 0px white,
+               2px 2px 0px rgba(47, 133, 90, 0.7); /* Green shadow */
+  background: linear-gradient(45deg, #c53030, #f56565, #d69e2e); /* Red/Gold Gradient */
   -webkit-background-clip: text;
   background-clip: text;
-  color: red;
+  color: transparent; /* Make text transparent for gradient */
+  font-family: 'Mountains of Christmas', cursive; /* Festive font */
 }
 
 .chat-bar {
-  @apply relative text-red-300 dark:text-green-100 grow flex cursor-pointer select-none items-center gap-2 bg-green-100 dark:bg-red-900 p-1 shadow-sm hover:shadow-none dark:border-red-700;
+  @apply relative text-green-700 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-green-100 dark:bg-green-900 p-1 shadow-sm hover:shadow-md dark:border-red-300 border border-transparent; /* Subtle green bar */
   height: 50px;
   transition: all 0.3s ease;
 }
 
 .chat-bar:hover {
-  box-shadow: 0 4px 6px -1px rgba(255, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
+  /* Subtle gold glow on hover */
+  box-shadow: 0 0 8px 0 rgba(214, 158, 46, 0.4); /* gold-600 approx with alpha */
 }
 
-@keyframes snowfall {
-  0% {
-    transform: translateY(-10vh) rotate(0deg);
+/* Keep SVG Buttons Neutral for Clarity */
+.svg-button{
+  @apply text-gray-600 dark:text-gray-300 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500; /* Red focus ring */
+}
+
+.svg-button:hover{
+  @apply bg-gray-200 dark:bg-gray-700;
+}
+.svg-button:active{
+  @apply bg-gray-300 dark:bg-gray-600;
+}
+
+/* Nav Buttons with Festive Active State */
+.nav-button{
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300;
+}
+
+.nav-button-active{
+  @apply bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600 font-semibold shadow-inner; /* Red active state */
+}
+
+/* Keep Semantic Colors for On/Off */
+.btn-on{
+  @apply text-green-500 dark:text-green-400;
+}
+
+.btn-off{
+  @apply text-red-500 dark:text-red-400;
+}
+
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-white/90 dark:bg-gray-800/90 rounded-lg shadow-lg transform hover:scale-105 border-l-4 border-yellow-500; /* Gold accent border */
+}
+
+
+.toolbar-button {
+@apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300 text-gray-600 dark:text-gray-300;
+}
+
+.toolbar-button:hover {
+@apply text-red-500 dark:text-red-400; /* Red hover */
+}
+
+
+/* Festive Context Menu (Based on Matrix style, adapted) */
+@layer components {
+  .context-menu {
+    @apply absolute bg-opacity-95 bg-red-800 border border-green-500 shadow-lg shadow-yellow-500/50 rounded-md py-2 min-w-[150px] z-[1000] font-sans; /* Use sans-serif for readability */
+
+    @apply dark:bg-opacity-95 dark:bg-red-900 dark:border-green-400 dark:shadow-yellow-400/50;
   }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
+
+  /* Remove pseudo-element background animation */
+  .context-menu::before {
+    @apply content-none;
+  }
+
+  .context-menu-item {
+    @apply px-4 py-2 text-sm text-yellow-200 cursor-pointer transition-all duration-200 ease-in-out; /* Gold text */
+
+    @apply hover:bg-green-600/40 hover:scale-105 hover:text-white; /* Green hover, brighten text */
+
+    @apply dark:text-yellow-300 dark:hover:bg-green-500/40 dark:hover:text-white;
+  }
+
+  .context-menu-separator {
+    @apply h-px bg-green-500 my-1 shadow-green-500/50;
+
+    @apply dark:bg-green-400 dark:shadow-green-400/50;
+  }
+
+  .context-menu-item-disabled {
+    @apply text-red-400 cursor-not-allowed shadow-none opacity-60;
+
+    @apply dark:text-red-500;
+  }
+
+  .context-menu-item-icon {
+    @apply mr-2 text-yellow-400; /* Gold icons */
+
+    @apply dark:text-yellow-300;
+  }
+
+  /* Simpler hover indicator */
+  .context-menu-item::after {
+    @apply content-none; /* Remove underline effect */
   }
 }
 
-.snowflake {
-  position: fixed;
-  top: -10vh;
-  animation: snowfall 10s linear infinite;
-  color: white;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
-  z-index: 1000;
-}
-
-@keyframes twinkle {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-}
-
-.twinkle {
-  animation: twinkle 1.5s ease-in-out infinite;
-}
-
-.context-menu {
-    @apply absolute bg-opacity-90 bg-red-900 border border-green-500 shadow-lg shadow-red-500/50 rounded-md py-2 min-w-[150px] z-[1000] font-serif;
-    
-    @apply dark:bg-opacity-90 dark:bg-red-950 dark:border-green-400 dark:shadow-red-400/50;
-}
-
-.context-menu-item {
-    @apply px-4 py-2 text-sm text-white cursor-pointer transition-all duration-300 ease-in-out shadow-red-500/70;
-    
-    @apply hover:bg-green-500/20 hover:scale-105;
-    
-    @apply dark:text-green-100 dark:hover:bg-green-400/20;
-}
-
-.context-menu-separator {
-    @apply h-px bg-gradient-to-r from-red-500 via-green-500 to-red-500 my-1 shadow-white;
-    
-    @apply dark:from-red-400 dark:via-green-400 dark:to-red-400 dark:shadow-green-100;
-}
-
-.context-menu-item-disabled {
-    @apply text-gray-400 cursor-not-allowed shadow-none;
-    
-    @apply dark:text-gray-500;
-}
-
-.context-menu-item-icon {
-    @apply mr-2 text-green-500;
-    
-    @apply dark:text-green-400;
-}
-
-.context-menu-item::after {
-    @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-red-500 via-green-500 to-red-500 scale-x-0 origin-center transition-transform duration-300 ease-in-out;
-    
-    @apply dark:from-red-400 dark:via-green-400 dark:to-red-400;
-}
-
-.context-menu-item:hover::after {
-    @apply scale-x-100;
-}
 
 
-@keyframes snowfall {
-0% {
-    background-position: 0 0;
+/* Steps theming - Keep relatively neutral for clarity */
+.steps-container {
+  @apply border border-gray-300 dark:border-gray-600 rounded-md mb-4 bg-gray-50 dark:bg-gray-800;
 }
-100% {
-    background-position: 100px 1000px;
+
+.steps-header {
+  @apply flex items-center p-4 cursor-pointer border-b border-gray-200 dark:border-gray-700;
 }
-}
-  
+
+.steps-icon { @apply mr-4 text-green-600 dark:text-green-400; } /* Green icon */
+.steps-summary { @apply flex-grow; }
+.steps-title { @apply m-0 text-base font-semibold text-gray-700 dark:text-gray-300; }
+.steps-status { @apply m-0 text-sm text-gray-600 dark:text-gray-400; }
+.toggle-icon { @apply text-sm text-gray-500 dark:text-gray-400; }
+.steps-content { @apply p-4; }
+.steps-list { @apply list-none p-0 m-0; }
+.step-item { @apply mb-2 pl-4 border-l-2 border-gray-300 dark:border-gray-600 last:mb-0; }
+
 /* Step Component Styles */
-.step-container {
-  @apply mb-4 transition-all duration-300 ease-in-out;
-}
-
-.step-wrapper {
-  @apply flex items-start p-4 rounded-md border-2 border-red-500 dark:border-green-500;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(255, 0, 0, 0.1) 0px 10px,
-    rgba(0, 255, 0, 0.1) 10px 20px
-  );
-}
-
-.step-icon {
-  @apply flex-shrink-0 w-8 h-8 mr-3;
-}
-
-.icon-success {
-  @apply w-8 h-8 text-green-600 dark:text-green-400;
-}
-
-.icon-fail {
-  @apply w-8 h-8 text-red-600 dark:text-red-400;
-}
-
-.icon-spinner {
-  @apply w-8 h-8 border-4 border-red-500 dark:border-green-500 border-t-transparent rounded-full animate-spin;
-}
-
-.step-content {
-  @apply flex-grow;
-}
-
-.step-text {
-  @apply text-lg font-bold text-red-700 dark:text-green-300;
-}
-
-.step-description {
-  @apply mt-2 text-base text-green-700 dark:text-red-300;
-}
+.step-container { @apply mb-4 transition-all duration-300 ease-in-out; }
+.step-wrapper { @apply flex items-start p-3 rounded-md bg-white dark:bg-gray-900; } /* Slightly darker background for steps */
+.step-icon { @apply flex-shrink-0 w-6 h-6 mr-3; }
+.icon-success { @apply w-6 h-6 text-green-500 dark:text-green-400; } /* Keep semantic */
+.icon-fail { @apply w-6 h-6 text-red-500 dark:text-red-400; } /* Keep semantic */
+.icon-spinner { @apply w-6 h-6 border-2 border-yellow-500 dark:border-yellow-400 border-t-transparent rounded-full animate-spin; } /* Gold spinner */
+.step-content { @apply flex-grow; }
+.step-text { @apply text-base font-medium text-gray-700 dark:text-gray-300; }
+.step-description { @apply mt-1 text-sm text-gray-600 dark:text-gray-400; }
 
 /* Transition Styles */
-.fade-enter-active, .fade-leave-active {
-  @apply transition-opacity duration-300;
-}
-
-.fade-enter, .fade-leave-to {
-  @apply opacity-0;
-}
+.fade-enter-active, .fade-leave-active { @apply transition-opacity duration-300; }
+.fade-enter, .fade-leave-to { @apply opacity-0; }
 
 /* Status Icon Styles */
-.status-icon {
-  @apply cursor-pointer transition-colors duration-300;
+.status-icon { @apply cursor-pointer transition-colors duration-300; }
+.icon { @apply w-6 h-6; }
+/* Keep semantic colors */
+.icon-success { @apply text-green-500 dark:text-green-400; }
+.icon-fail { @apply text-red-500 dark:text-red-400; }
+.icon-text { @apply text-xl font-bold text-gray-700 dark:text-gray-300; }
+
+
+/* User Settings Panel */
+.user-settings-panel {
+  @apply bg-red-50 dark:bg-red-900/80 space-y-6 p-4 md:p-6 rounded-lg shadow-md text-gray-800 dark:text-gray-200 border border-red-200 dark:border-red-700; /* Festive panel bg */
 }
 
-.icon {
-  @apply w-8 h-8;
+/* Folder Items (System Status) */
+.folder-item-base {
+  @apply flex flex-col items-center justify-center p-4 rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md;
+  @apply bg-green-50 dark:bg-green-800; /* Light green background */
+  @apply hover:bg-green-100 dark:hover:bg-green-700;
+  @apply border; /* Default border */
+}
+.folder-item-icon { @apply w-10 h-10 group-hover:scale-110 transition-transform duration-200 mb-2; }
+.folder-item-label { @apply mt-2 text-xs text-center text-green-700 dark:text-green-200; }
+
+/* Festive Folder Colors */
+.folder-item-personalities { @apply border-red-400 dark:border-red-500; }
+.folder-item-icon-personalities { @apply text-red-500 dark:text-red-400; }
+
+.folder-item-functions { @apply border-green-500 dark:border-green-400; }
+.folder-item-icon-functions { @apply text-green-500 dark:text-green-400; }
+
+.folder-item-configs { @apply border-yellow-500 dark:border-yellow-400; }
+.folder-item-icon-configs { @apply text-yellow-500 dark:text-yellow-400; }
+
+.folder-item-outputs { @apply border-gray-400 dark:border-gray-500; } /* Silver/Gray */
+.folder-item-icon-outputs { @apply text-gray-500 dark:text-gray-400; }
+
+.folder-item-discussions { @apply border-blue-400 dark:border-blue-500; } /* Keep blue for some contrast */
+.folder-item-icon-discussions { @apply text-blue-500 dark:text-blue-400; }
+
+@layer components {
+  /* Setting Items in User Settings Panel */
+  .setting-item { @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-2; }
+  .setting-label { @apply label md:w-48 flex-shrink-0 text-green-700 dark:text-green-300; } /* Match panel label style */
+  .toggle-item { @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-2 border-t border-red-200 dark:border-red-700 pt-3 mt-2; } /* Use red border */
+  .toggle-label { @apply label !mb-0 flex-grow cursor-pointer mr-4 text-green-700 dark:text-green-300; }
+  .toggle-description { @apply block text-xs text-red-500 dark:text-red-400 font-normal mt-1; } /* Red description */
+
+  /* Range Input (Slider) */
+  input[type='range']::-webkit-slider-thumb { @apply w-5 h-5 bg-red-500 dark:bg-red-400 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out; margin-top: -6px; }
+  input[type='range']::-moz-range-thumb { @apply w-5 h-5 bg-red-500 dark:bg-red-400 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out; }
+  input[type='range']::-webkit-slider-runnable-track { @apply h-2 bg-green-200 dark:bg-green-700 rounded-full w-full; } /* Green track */
+  input[type='range']::-moz-range-track { @apply h-2 bg-green-200 dark:bg-green-700 rounded-full w-full; }
+
+  /* Success Button (Keep Green) */
+  .btn-success { @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-4 focus:ring-green-300 dark:bg-green-500 dark:hover:bg-green-600 dark:focus:ring-green-800; }
+  .btn-sm { @apply py-1 px-2 text-sm; }
+  .input-sm { @apply input px-3 py-1 text-sm rounded-md; } /* Use updated .input style */
+
+  .range-input { @apply h-2 bg-green-200 dark:bg-green-700 rounded-lg appearance-none cursor-pointer w-full; } /* Green track base */
+  .range-input::-webkit-slider-thumb { @apply w-5 h-5 bg-red-500 dark:bg-red-400 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out; margin-top: -6px; } /* Red thumb */
+  .range-input::-moz-range-thumb { @apply w-5 h-5 bg-red-500 dark:bg-red-400 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out; } /* Red thumb */
+
+  /* Status Dots (Keep Semantic, adjust loading) */
+  .bg-status-healthy { @apply bg-green-500 dark:bg-green-400; }
+  .bg-status-unhealthy { @apply bg-red-500 dark:bg-red-400; }
+  .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-400; } /* Gold/Yellow loading */
+  .bg-status-unknown { @apply bg-gray-400 dark:bg-gray-500; }
 }
 
-.icon-success {
-  @apply text-green-600 dark:text-green-400;
-}
-
-.icon-fail {
-  @apply text-red-600 dark:text-red-400;
-}
-
-.icon-text {
-  @apply text-2xl font-bold text-red-700 dark:text-green-300;
-}
-
-/* Christmas Decorations */
-.step-container::before {
-  content: '🎄';
-  @apply absolute -left-6 text-2xl;
-}
-
-.step-container::after {
-  content: '🎅';
-  @apply absolute -right-6 text-2xl;
-}
-
-/* Snowfall Animation */
-@keyframes snowfall {
-  0% {
-    transform: translateY(-10px) rotate(0deg);
+/* Prose Styling (Festive Adaptation) */
+@layer components {
+  .prose-christmas { /* New name for clarity */
+    h3 { @apply text-xl font-semibold text-green-700 dark:text-green-300 mb-3 mt-5 border-b border-green-200 dark:border-green-700 pb-1; } /* Green headings */
+    ul { @apply list-disc pl-6 space-y-1.5 mb-4 text-gray-800 dark:text-gray-200; } /* Readable list text */
+    li::marker { color: theme('colors.red.500'); } /* Red markers */
+    code { @apply bg-green-100 dark:bg-green-700 px-1.5 py-0.5 rounded text-sm font-mono text-green-800 dark:text-green-100; } /* Green code background */
+    blockquote { @apply border-l-4 border-red-400 dark:border-red-500 pl-4 italic text-red-600 dark:text-red-400 my-4 py-1; } /* Red blockquote */
+    a { @apply link font-medium; } /* Uses themed .link (red) */
+    p { @apply mb-3 leading-relaxed text-gray-800 dark:text-gray-200; } /* Readable paragraph */
   }
-  100% {
-    transform: translateY(100vh) rotate(360deg);
+
+  .dark .dark\:prose-invert { /* Keep for potential Tailwind prose usage elsewhere */
   }
 }
 
-.snowflake {
-  @apply fixed text-white opacity-70 pointer-events-none;
-  animation: snowfall 5s linear infinite;
+/* Thinking Prose Adaptation */
+.thinking-prose { /* Apply general prose styles */
+  @apply prose-christmas; /* Inherit base festive styles */
 }
 
-/* Add multiple snowflakes with different sizes and speeds */
-.snowflake:nth-child(2n) {
-  font-size: 0.8em;
-  animation-duration: 6s;
+.dark .thinking-prose { /* Dark mode specific overrides if needed */
+  /* Example: Override link color if needed */
+  /* --tw-prose-links: theme('colors.red.400'); */
 }
 
-.snowflake:nth-child(3n) {
-  font-size: 1.2em;
-  animation-duration: 4s;
+/* Adapt thinking-prose elements if prose-christmas isn't specific enough */
+.thinking-prose h1, .thinking-prose h2, .thinking-prose h3, .thinking-prose h4 {
+  /* Example: Maybe slightly different heading colors here */
+  /* @apply text-red-600 dark:text-red-400; */
+}
+.thinking-prose code:not(pre code) {
+  /* Specific inline code style for thinking */
+  @apply bg-yellow-100 dark:bg-yellow-800/50 text-yellow-800 dark:text-yellow-200 px-1 py-0.5 rounded text-xs; /* Gold inline code */
+}
+.thinking-prose pre {
+  @apply p-4 rounded-lg overflow-x-auto my-4 shadow-inner bg-gray-100 dark:bg-gray-800; /* Neutral pre background */
+}
+.thinking-prose pre code {
+  @apply p-0 bg-transparent text-sm text-gray-800 dark:text-gray-200; /* Readable code in pre */
 }
 
-/* Dark mode adjustments */
-.dark .step-wrapper {
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(0, 100, 0, 0.2) 0px 10px,
-    rgba(139, 0, 0, 0.2) 10px 20px
-  );
+/* Use festive scrollbar for thinking prose */
+.thinking-prose::-webkit-scrollbar { @apply w-2 h-2; }
+.thinking-prose::-webkit-scrollbar-track { @apply bg-green-100 dark:bg-green-800/50 rounded-lg; }
+.thinking-prose::-webkit-scrollbar-thumb { @apply bg-red-400 dark:bg-red-500 rounded-full hover:bg-red-500 dark:hover:bg-red-400 transition-colors duration-150; }
+
+
+/* Help Content Styling */
+.help-content {
+  h2 { @apply text-2xl font-semibold text-red-700 dark:text-red-300 mb-4 mt-6 border-b border-red-200 dark:border-red-600 pb-2; } /* Red H2 */
+  h3 { @apply text-xl font-semibold text-green-700 dark:text-green-300 mb-3 mt-5; } /* Green H3 */
+  ul { @apply list-disc pl-6 space-y-1.5 mb-4 text-gray-800 dark:text-gray-200; }
+  ol { @apply list-decimal pl-6 space-y-1.5 mb-4 text-gray-800 dark:text-gray-200; }
+  li::marker { color: theme('colors.red.500'); } /* Red marker */
+  code:not(pre code) { @apply bg-green-100 dark:bg-green-700 px-1.5 py-0.5 rounded text-sm font-mono text-green-800 dark:text-green-100; } /* Green inline code */
+  pre.hljs { @apply bg-green-50 dark:bg-green-900/50 p-4 rounded-lg overflow-x-auto my-4 shadow-inner text-sm; } /* Light green code block bg */
+  pre.hljs code { @apply bg-transparent p-0 text-gray-800 dark:text-gray-200; } /* Readable code in block */
+  blockquote { @apply border-l-4 border-red-400 dark:border-red-500 pl-4 italic text-red-600 dark:text-red-400 my-4 py-1; } /* Red blockquote */
+  p { @apply mb-4 leading-relaxed text-gray-800 dark:text-gray-200 text-base md:text-lg; } /* Readable text */
+  img { @apply rounded-lg shadow-md my-4 max-w-full h-auto mx-auto border-2 border-yellow-300 dark:border-yellow-600; } /* Gold border on images */
+  table { @apply w-full my-4 border-collapse border border-green-200 dark:border-green-700; } /* Green table borders */
+  th { @apply bg-red-100 dark:bg-red-800 p-2 border border-green-200 dark:border-green-700 text-left font-semibold text-red-800 dark:text-red-100; } /* Red header, green border */
+  td { @apply p-2 border border-green-200 dark:border-green-700 text-gray-800 dark:text-gray-200; } /* Green border, readable text */
 }
 
-.dark .snowflake {
-  @apply text-gray-300;
+/* Sidebar toggle responsiveness - remains the same */
+@media (max-width: 768px) {
+ .help-left-bar { @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full; }
+ .help-main-content { @apply ml-0; }
+ .help-left-bar.open { @apply translate-x-0; }
 }
+
+/* Bubble animation keyframes - remains the same */
+@keyframes bubble-in-down { /* ... same keyframes ... */ }
+@layer utilities { .animate-bubble-in-down { /* ... same animation class ... */ } }
+
+/* Thought Bubble (Festive Color) */
+@layer components {
+  .animated-thought-bubble {
+    @apply absolute top-full left-1/2 mt-2 /* Position BELOW icon */
+           w-max max-w-[160px] opacity-0 invisible
+           bg-red-200 dark:bg-red-700 /* Red bubble background */
+           rounded-lg shadow-xl p-2 text-center z-20 text-red-800 dark:text-red-100 /* Red text */
+           pointer-events-none origin-top transition-opacity duration-150
+           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down;
+  }
+  .animated-thought-bubble::after { /* Arrow points up */
+    content: '';
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2
+           border-[7px] border-solid border-transparent
+           border-b-red-200 dark:border-b-red-700; /* Match bubble background */
+  }
+}
+
+/* Playground Component Tabs */
+@layer components {
+  .active-tab-button {
+    /* Use primary button style (red) */
+    @apply btn btn-primary btn-sm;
+    @apply ring-2 ring-offset-1 ring-offset-red-100 dark:ring-offset-red-900 ring-red-500 dark:ring-red-400; /* Red ring */
+  }
+  .inactive-tab-button {
+    /* Use secondary button style (green) */
+    @apply btn btn-secondary btn-sm;
+    @apply opacity-80 hover:opacity-100;
+  }
+}
+
+/* Remove Matrix Rain Keyframes if not used */
+/* @keyframes matrix-rain { ... } */

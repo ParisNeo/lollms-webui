@@ -1,111 +1,148 @@
 <template>
-  <div class="app-zoo background-color w-full p-6 pt-12 min-h-screen overflow-y-auto">
-    <nav class="panels-color shadow-lg rounded-lg p-4 max-w-4xl mx-auto mb-8">
+  <div class="app-zoo background-color w-full p-6 pt-12 min-h-screen overflow-y-auto text-blue-900 dark:text-blue-100">
+    <!-- Navigation and Filters Bar -->
+    <nav class="panels-color shadow-lg rounded-lg p-4 max-w-6xl mx-auto mb-8">
       <div class="flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center space-x-4">
-          <button 
-            @click="fetchGithubApps" 
-            class="btn btn-primary"
+        <!-- Action Buttons -->
+        <div class="flex items-center space-x-2 flex-wrap gap-2">
+          <button
+            @click="fetchGithubApps"
+            class="btn btn-primary btn-sm"
             aria-label="Refresh apps from GitHub"
           >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
+            <i data-feather="refresh-cw" class="w-4 h-4 mr-1"></i>
             Refresh
           </button>
-          
-          <button 
-            @click="openAppsFolder" 
-            class="btn btn-secondary"
+
+          <button
+            @click="openAppsFolder"
+            class="btn btn-secondary btn-sm"
             aria-label="Open apps folder"
           >
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path>
-            </svg>
+            <i data-feather="folder" class="w-4 h-4 mr-1"></i>
             Open Folder
           </button>
-          <input type="file" @change="onFileSelected" accept=".zip" ref="fileInput" style="display: none;">
-          <button @click="triggerFileInput" :disabled="isUploading" class="btn-secondary text-green-500 hover:text-green-600 transition duration-300 ease-in-out" title="Upload App">
+
+          <input type="file" @change="onFileSelected" accept=".zip" ref="fileInput" class="display-none">
+          <button @click="triggerFileInput" :disabled="isUploading" class="btn btn-success btn-sm" title="Upload App"> <!-- Changed to btn-success -->
+            <i v-if="!isUploading" data-feather="upload" class="w-4 h-4 mr-1"></i>
+            <span v-if="isUploading" class="animate-spin inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-1" role="status" aria-hidden="true"></span>
             {{ isUploading ? 'Uploading...' : 'Upload App' }}
           </button>
         </div>
-        <p v-if="message">{{ message }}</p>
-        <p v-if="error" class="error">{{ error }}</p>
-        
-        <div class="relative flex-grow max-w-md">
-          <input 
-            v-model="searchQuery" 
-            placeholder="Search apps..." 
-            class="w-full border-b-2 border-gray-300 px-4 py-2 pl-10 focus:outline-none focus:border-blue-500 transition duration-300 ease-in-out"
+
+        <!-- Search Input -->
+        <div class="relative flex-grow max-w-xs sm:max-w-sm md:max-w-md">
+           <label for="app-search" class="sr-only">Search Apps</label>
+           <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <i data-feather="search" class="w-5 h-5 text-blue-400 dark:text-blue-500"></i>
+           </div>
+           <input
+            id="app-search"
+            v-model="searchQuery"
+            placeholder="Search apps..."
+            class="search-input w-full py-2 px-4 pl-10 text-sm" <!-- Applied search-input -->
             aria-label="Search apps"
-          >
-          <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
+           />
         </div>
-        
-        <div class="flex items-center space-x-4">
-          <label for="category-select" class="font-semibold">Category:</label>
-          <select 
-            id="category-select" 
-            v-model="selectedCategory" 
-            class="border-2 border-gray-300 rounded-md px-2 py-1"
-          >
-            <option value="all">All Categories</option>
-            <option v-for="category in categories" :key="category" :value="category">
-              {{ category }}
-            </option>
-          </select>
-        </div>
-        <div class="flex items-center space-x-4">
-          <label for="installed-only" class="font-semibold">
-            <input 
-              id="installed-only" 
-              type="checkbox" 
-              v-model="showOnlyInstalled"
-              class="mr-2"
-            >
-            Show only installed apps
-          </label>
-          <label for="installed-only" class="font-semibold">
-            <input 
-              id="uninstalled-only" 
-              type="checkbox" 
-              v-model="showOnlyUnInstalled"
-              class="mr-2"
-            >
-            Show only non installed apps
-          </label>
-        </div>        
-        <div class="flex items-center space-x-4">
-          <label for="sort-select" class="font-semibold">Sort by:</label>
-          <select 
-            id="sort-select" 
-            v-model="sortBy" 
-            class="border-2 border-gray-300 rounded-md px-2 py-1"
-          >
-            <option value="name">Name</option>
-            <option value="author">Author</option>
-            <option value="date">Creation Date</option>
-            <option value="update">Last Update</option>
-          </select>
-          <button @click="toggleSortOrder" class="btn btn-secondary">
-            {{ sortOrder === 'asc' ? '↑' : '↓' }}
-          </button>
+
+        <!-- Filters and Sorting -->
+        <div class="flex items-center space-x-4 flex-wrap gap-x-4 gap-y-2">
+           <!-- Category Filter -->
+            <div class="flex items-center space-x-2">
+              <label for="category-select" class="label !mb-0">Category:</label> <!-- Used label class -->
+              <select
+                id="category-select"
+                v-model="selectedCategory"
+                class="input input-sm py-1" <!-- Applied input and input-sm -->
+              >
+                <option value="all">All Categories</option>
+                <option v-for="category in categories" :key="category" :value="category">
+                  {{ category }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Installation Status Filters -->
+            <div class="flex items-center space-x-3">
+               <label for="installed-only" class="label !mb-0 flex items-center cursor-pointer">
+                <input
+                  id="installed-only"
+                  type="checkbox"
+                  v-model="showOnlyInstalled"
+                  class="mr-1.5 h-4 w-4 rounded border-blue-300 dark:border-blue-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-blue-700 dark:text-blue-500"
+                >
+                Installed
+              </label>
+              <label for="uninstalled-only" class="label !mb-0 flex items-center cursor-pointer">
+                <input
+                  id="uninstalled-only"
+                  type="checkbox"
+                  v-model="showOnlyUnInstalled"
+                  class="mr-1.5 h-4 w-4 rounded border-blue-300 dark:border-blue-600 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-blue-700 dark:text-blue-500"
+                >
+                Not Installed
+              </label>
+            </div>
+
+            <!-- Sorting -->
+            <div class="flex items-center space-x-2">
+              <label for="sort-select" class="label !mb-0">Sort by:</label> <!-- Used label class -->
+              <select
+                id="sort-select"
+                v-model="sortBy"
+                class="input input-sm py-1" <!-- Applied input and input-sm -->
+              >
+                <option value="name">Name</option>
+                <option value="author">Author</option>
+                <option value="date">Creation Date</option>
+                <option value="update">Last Update</option>
+              </select>
+              <button @click="toggleSortOrder" class="btn btn-secondary btn-sm" aria-label="Toggle sort order"> <!-- Applied btn, btn-secondary, btn-sm -->
+                <i v-if="sortOrder === 'asc'" data-feather="arrow-up" class="w-4 h-4"></i>
+                <i v-else data-feather="arrow-down" class="w-4 h-4"></i>
+              </button>
+            </div>
         </div>
       </div>
-    </nav>  
-    <div v-if="loading" class="flex justify-center items-center space-x-2 my-8" aria-live="polite">
-      <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
-      <span class="text-xl text-gray-700 font-semibold">Loading...</span>
+    </nav>
+
+    <!-- Loading Indicator -->
+    <div v-if="loading" class="flex justify-center items-center space-x-2 my-12" aria-live="polite">
+      <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
+      <span class="text-xl text-loading font-semibold">Loading...</span> <!-- Applied text-loading -->
     </div>
+
+    <!-- App Grids -->
     <div v-else class="pb-20">
-      <h2 class="text-2xl font-bold mb-4">Favorite Apps</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
-        <app-card 
-          v-for="app in favoriteApps" 
-          :key="app.appName" 
-          :app="app" 
+       <!-- Favorite Apps Section -->
+       <div v-if="favoriteApps.length > 0" class="mb-10">
+        <h2 class="h2 text-2xl font-bold mb-4">Favorite Apps</h2> <!-- Applied h2 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"> <!-- Adjusted gap -->
+          <app-card
+            v-for="app in favoriteApps"
+            :key="app.appName"
+            :app="app"
+            @toggle-favorite="toggleFavorite"
+            @install="installApp"
+            @uninstall="uninstallApp"
+            @delete="deleteApp"
+            @edit="editApp"
+            @download="downloadApp"
+            @help="handleAppClick"
+            @open="openApp"
+            @start-server="startServer"
+          />
+        </div>
+      </div>
+
+      <!-- All Apps Section (Filtered/Sorted) -->
+      <h2 class="h2 text-2xl font-bold mb-4">{{ currentCategoryName }} ({{ sortedAndFilteredApps.length }})</h2> <!-- Applied h2 -->
+       <div v-if="sortedAndFilteredApps.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"> <!-- Adjusted gap -->
+        <app-card
+          v-for="app in sortedAndFilteredApps"
+          :key="app.name"
+          :app="app"
           @toggle-favorite="toggleFavorite"
           @install="installApp"
           @uninstall="uninstallApp"
@@ -117,44 +154,31 @@
           @start-server="startServer"
         />
       </div>
-      
-      <h2 class="text-2xl font-bold mb-4">{{ currentCategoryName }} ({{ sortedAndFilteredApps.length }})</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <app-card 
-          v-for="app in sortedAndFilteredApps" 
-          :key="app.name" 
-          :app="app" 
-          @toggle-favorite="toggleFavorite"
-          @install="installApp"
-          @uninstall="uninstallApp"
-          @delete="deleteApp"
-          @edit="editApp"
-          @download="downloadApp"
-          @help="handleAppClick"
-          @open="openApp"
-          @start-server="startServer"
-        />
-      </div>
+      <p v-else class="text-center text-blue-500 dark:text-blue-400 py-10">
+        No apps found in this category or matching your filters.
+      </p>
     </div>
 
     <!-- App details modal -->
-    <div v-if="selectedApp" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 w-11/12 h-5/6 flex flex-col">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-2xl font-bold">{{ selectedApp.name }}</h2>
-          <button @click="backToZoo" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded-lg transition duration-300 ease-in-out">Close</button>
+    <div v-if="selectedApp" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+       <!-- Applied card class -->
+      <div class="card w-11/12 max-w-4xl h-5/6 flex flex-col text-blue-900 dark:text-blue-100">
+        <div class="flex justify-between items-center mb-4 pb-2 border-b border-blue-300 dark:border-blue-600">
+          <h2 class="h3 !mb-0">{{ selectedApp.name }}</h2> <!-- Applied h3 -->
+          <button @click="backToZoo" class="btn btn-secondary btn-sm">Close</button> <!-- Applied btn, btn-secondary, btn-sm -->
         </div>
-        <iframe v-if="appCode" :srcdoc="appCode" class="flex-grow border-none"></iframe>
-        <p v-else class="text-center text-red-500">Please install this app to view its code.</p>
+        <iframe v-if="appCode" :srcdoc="appCode" class="flex-grow border border-blue-200 dark:border-blue-700 rounded-md bg-white dark:bg-blue-900"></iframe> <!-- Styled iframe -->
+        <p v-else class="text-center text-red-600 dark:text-red-400 py-10">Please install this app to view its code.</p> <!-- Adjusted text color -->
       </div>
     </div>
 
     <!-- Toast message -->
-    <div v-if="message" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-md" :class="{ 'bg-green-100 text-green-800': successMessage, 'bg-red-100 text-red-800': !successMessage }">
+    <div v-if="message" class="fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg z-[100]" :class="{ 'bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-100': successMessage, 'bg-red-200 text-red-800 dark:bg-red-800 dark:text-red-100': !successMessage }"> <!-- Adjusted toast colors and shadow -->
       {{ message }}
     </div>
   </div>
 </template>
+
 
 
 <script>

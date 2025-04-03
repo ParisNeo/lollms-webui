@@ -1,16 +1,16 @@
-/* Flat Gray Theme */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+/* Sober Professional Theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'); /* Using Inter for a clean look */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --lollms-title: "LoLLMS";
+  --lollms-title: "LoLLMS"; /* Keeping the name, styled soberly below */
   --falling-object: "";
-  --activate-dropping-animation: 0;
-  --lollms-welcome-short-message: "Welcome to LoLLMS";
-  --lollms-welcome-message: "Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.";
+  --activate-dropping-animation: 0; /* Disable animation */
+  --lollms-welcome-short-message: "Welcome";
+  --lollms-welcome-message: "Welcome to your professional AI assistant. Streamline your workflow and enhance productivity with intelligent language processing capabilities.";
 }
 
 @layer base {
@@ -18,7 +18,7 @@
     @apply scroll-smooth;
   }
   body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Inter', sans-serif; /* Changed to Inter */
   }
 }
 
@@ -37,156 +37,166 @@
   @apply hidden;
 }
 
-h1 { @apply text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6; }
-h2 { @apply text-3xl font-semibold text-gray-700 dark:text-gray-200 mb-4; }
-h3 { @apply text-2xl font-medium text-gray-600 dark:text-gray-300 mb-3; }
-h4 { @apply text-xl font-medium text-gray-500 dark:text-gray-400 mb-2; }
+/* === Base Typography === */
+h1 { @apply text-4xl md:text-5xl font-semibold text-gray-900 dark:text-gray-100 mb-6; }
+h2 { @apply text-3xl font-semibold text-gray-800 dark:text-gray-200 mb-4; }
+h3 { @apply text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-3; }
+h4 { @apply text-xl font-medium text-gray-600 dark:text-gray-400 mb-2; }
 
-h1, h2 { @apply border-b border-gray-300 dark:border-gray-600 pb-2; }
+h1, h2 { @apply border-b border-gray-200 dark:border-gray-700 pb-2; }
 
-p { @apply text-base text-gray-600 dark:text-gray-300 break-words; }
+p {
+  @apply
+    text-base
+    text-gray-700 /* Sober text color */
+    dark:text-gray-300
+    break-words
+    font-sans /* Inter is sans-serif */
+    antialiased
+    tracking-tight
+    leading-relaxed;
+}
+
+@screen md {
+  p {
+    @apply
+      text-lg
+      leading-loose;
+  }
+}
+
 /* Base list styling */
 ul, ol {
-  @apply 
-      my-4          /* Margin top and bottom */
-      px-4          /* Horizontal padding */
-      leading-7     /* Line height */
-      text-base;    /* Text size */
+  @apply
+      my-4
+      px-4
+      leading-7
+      text-base
+      text-gray-700 /* Sober text color */
+      dark:text-gray-300;
 }
 
-/* Unordered lists */
 ul {
-  @apply 
-      list-disc     /* Disc style bullets */
-      ml-2          /* Left margin */
-      space-y-2;    /* Vertical spacing */
+  @apply
+      list-disc
+      ml-2
+      space-y-2;
 }
 
-/* List items */
 li {
-  @apply 
-      pl-2         /* Padding left */
-      relative;    /* Positioning */
+  @apply
+      pl-2
+      relative;
 }
 
-/* Ordered lists */
 ol {
-  @apply 
-      list-decimal  /* Numbered style */
-      ml-2          /* Left margin */
-      space-y-2;    /* Vertical spacing */
+  @apply
+      list-decimal
+      ml-2
+      space-y-2;
 }
 
 /* Nested lists */
 ul ul, ol ol, ul ol, ol ul {
-  @apply 
-      mt-2         /* Top margin */
-      mb-0         /* Bottom margin */
-      ml-6;        /* Indentation */
+  @apply
+      mt-2
+      mb-0
+      ml-6;
 }
 
-/* For custom properties that aren't available in Tailwind, use regular CSS */
 li::marker {
-  color: #4B5563; /* gray-600 equivalent */
+  color: #6B7280; /* gray-500 equivalent */
+  @apply dark:text-gray-400;
 }
 
-
+/* === Color Variables (Simplified for Sober Theme) === */
+/* Most colors will be applied directly with Tailwind classes */
 :root {
-  --color-primary: #4a4a4a;
-  --color-primary-light: #6a6a6a;
-  --color-secondary: #8a8a8a;
-  --color-accent: #3a3a3a;
-  --color-light-text-panel: #ffffff;
-  --color-dark-text-panel: #e0e0e0;
-  --color-bg-light-panel: #f0f0f0;
-  --color-bg-light: #ffffff;
-  --color-bg-light-tone: #e0e0e0;
-  --color-bg-light-code-block: #f5f5f5;
-  --color-bg-light-tone-panel: #d0d0d0;
-  --color-bg-light-discussion: #f8f8f8;
-  --color-bg-light-discussion-odd: #f0f0f0;
-  --color-bg-dark: #2a2a2a;
-  --color-bg-dark-tone: #3a3a3a;
-  --color-bg-dark-tone-panel: #4a4a4a;
-  --color-bg-dark-code-block: #3a3a3a;
-  --color-bg-dark-discussion: #333333;
-  --color-bg-dark-discussion-odd: #2d2d2d;
+  --color-primary-accent: #2563EB; /* blue-600 */
+  --color-primary-accent-hover: #1D4ED8; /* blue-700 */
+  --color-secondary-bg-light: #F3F4F6; /* gray-100 */
+  --color-secondary-bg-dark: #374151; /* gray-700 */
+  --color-border-light: #E5E7EB; /* gray-200 */
+  --color-border-dark: #4B5563; /* gray-600 */
 }
 
+/* === Inputs & Forms === */
 textarea, input, select {
-  @apply bg-gray-100 dark:bg-gray-800;
+  @apply bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
 }
 
+/* === Layout & Panels === */
 .background-color {
-  @apply bg-gray-100 dark:bg-gray-900 min-h-screen;
+  @apply bg-gray-100 dark:bg-gray-900 min-h-screen; /* Solid neutral background */
 }
 
 .toolbar-color {
-  @apply text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-800 rounded-lg shadow-md;
+  @apply text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm; /* Clean toolbar */
 }
 
 .panels-color {
-  @apply text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-md;
+  @apply text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800 rounded-lg shadow; /* Standard panel */
 }
 
 .unicolor-panels-color {
-  @apply bg-gray-200 dark:bg-gray-700;
+  @apply bg-gray-50 dark:bg-gray-700; /* Slightly different background */
 }
 
 .chatbox-color {
-  @apply bg-gray-50 dark:bg-gray-800;
+  @apply bg-white dark:bg-gray-800;
 }
 
+/* === Messages === */
 .message {
-  @apply relative w-full rounded-lg m-2 shadow-md border border-gray-300 dark:border-gray-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
+  @apply relative w-full m-2 shadow rounded-lg border border-gray-200 dark:border-gray-700 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-base; /* Slightly smaller text */
+  @apply text-gray-800 dark:text-gray-200;
 }
 
 .message:hover {
-  @apply border-gray-400 dark:border-gray-500;
-}
-
-.message {
-  @apply bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200;
+  @apply border-gray-300 dark:border-gray-600; /* Subtle hover */
 }
 
 .message:nth-child(even) {
-  @apply bg-gray-50 dark:bg-gray-800;
+  @apply bg-gray-50 dark:bg-gray-800; /* Subtle striping */
 }
 
 .message:nth-child(odd) {
-  @apply bg-gray-100 dark:bg-gray-700;
+  @apply bg-white dark:bg-gray-700; /* Subtle striping */
 }
 
 .message-header {
-  @apply text-xl font-semibold mb-2;
+  @apply text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100;
 }
 
 .message-content {
-  @apply text-lg leading-relaxed;
+  @apply text-base leading-relaxed text-gray-700 dark:text-gray-300;
 }
 
-body {
-  @apply bg-gray-100 dark:bg-gray-900 min-h-screen text-base;
+body { /* Consistent body background and text */
+  @apply bg-gray-100 dark:bg-gray-900 min-h-screen text-base text-gray-800 dark:text-gray-200;
 }
 
+/* === Discussions List === */
 .discussion {
-  @apply mr-2 bg-gray-200 dark:bg-gray-500 text-xs;
+  @apply mr-2 text-xs text-gray-600 dark:text-gray-400;
 }
 
 .discussion-hilighted {
-  @apply bg-gray-300 dark:bg-gray-600 text-xs;
+  @apply bg-gray-200 dark:bg-gray-700 text-xs text-gray-800 dark:text-gray-100 rounded;
 }
 
+/* === Welcome & Progress === */
 .bg-gradient-welcome {
-  @apply bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900;
+  @apply bg-white dark:bg-gray-800; /* No gradient */
 }
 
 .bg-gradient-progress {
-  @apply bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600;
+  @apply bg-blue-600; /* Solid accent color for progress */
 }
 
 .text-gradient-title {
-  @apply text-transparent bg-clip-text bg-gradient-to-r from-gray-700 to-gray-500 dark:from-gray-300 dark:to-gray-500;
+   /* No gradient, use standard h1/h2 styling */
+  @apply text-gray-900 dark:text-white font-bold;
 }
 
 .text-subtitle {
@@ -194,7 +204,7 @@ body {
 }
 
 .text-author {
-  @apply text-gray-500 dark:text-gray-400;
+  @apply text-gray-500 dark:text-gray-500 text-sm; /* Subtler author text */
 }
 
 .text-loading {
@@ -202,104 +212,116 @@ body {
 }
 
 .text-progress {
-  @apply text-gray-600 dark:text-gray-400;
+  @apply text-gray-600 dark:text-gray-400 text-sm;
+}
+
+/* === Buttons === */
+.btn { /* Base button style */
+  @apply font-medium py-2 px-4 rounded-md transition-all duration-200 ease-in-out shadow-sm flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-offset-2;
+  @apply disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .btn-primary {
-  @apply bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded;
+  @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
 }
 
 .btn-secondary {
-  @apply bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded;
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-gray-400 dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500 dark:focus:ring-gray-500;
 }
 
+.btn-success { /* For success actions */
+    @apply btn bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-offset-2 focus:ring-green-500;
+}
+
+.btn-sm { /* Small button modifier */
+    @apply py-1 px-2 text-sm rounded;
+}
+
+
+/* === Cards === */
 .card {
-  @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6;
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow p-6; /* Softer shadow */
 }
 
+/* === Inputs (Refined) === */
 .input {
-  @apply bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400;
+  @apply bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-900 dark:text-gray-100 w-full; /* Ensure width */
+}
+.input-sm { /* Small input modifier */
+    @apply input px-3 py-1 text-sm rounded;
 }
 
+
+/* === Labels === */
 .label {
   @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
 }
 
+/* === Links === */
 .link {
-  @apply text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200;
+  @apply text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300;
 }
 
+/* === Navbar / Menu === */
 .navbar-container {
-  @apply text-gray-700 dark:text-gray-200 bg-gray-200 dark:bg-gray-800 rounded shadow-lg;
+  @apply text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700; /* Clean navbar */
 }
 
-.game-menu {
-  @apply flex justify-center items-center relative;
+.game-menu { /* Renamed concept to 'main-menu' if applicable */
+  @apply flex justify-center items-center relative border-b border-gray-200 dark:border-gray-700;
 }
 
-.text-shadow-custom {
-  text-shadow: 1px 1px 0px #e0e0e0, -1px -1px 0px #e0e0e0, 1px -1px 0px #e0e0e0, -1px 1px 0px #e0e0e0;
+.text-shadow-custom { /* Removed text shadow for sober look */
+  text-shadow: none;
 }
 
 .menu-item {
-  @apply mb-2 px-4 py-2 text-gray-600 dark:text-gray-300 font-bold text-lg transition-all duration-300 ease-in-out;
-  @apply hover:text-gray-800 hover:dark:text-gray-100 hover:transform hover:-translate-y-1;
+  @apply mb-0 px-4 py-3 text-gray-600 dark:text-gray-400 font-medium text-sm transition-colors duration-200 ease-in-out border-b-2 border-transparent; /* Use bottom border for active state */
+  @apply hover:text-gray-900 hover:dark:text-gray-100 hover:border-gray-300 dark:hover:border-gray-600;
 }
 
 .menu-item.active-link {
-  @apply rounded-t-md border-gray-500 text-shadow-custom text-gray-800 font-bold text-lg transition-all duration-300 ease-in-out scale-105;
-  @apply hover:text-gray-900 hover:dark:text-gray-50 hover:transform hover:-translate-y-1;
-  text-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
+  @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 font-semibold;
+   /* Removed transform/scale/shadow effects */
 }
 
-.menu-item.active-link::before {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  background: linear-gradient(to right, #4a4a4a, #8a8a8a, #4a4a4a);
-  border-radius: 10px;
-  animation: shimmer 2s infinite;
+.menu-item.active-link::before { /* Removed shimmer effect */
+  content: none;
 }
 
 .dark .menu-item.active-link::before {
-  background: linear-gradient(to right, #6a6a6a, #aaaaaa, #6a6a6a);
+  content: none;
 }
 
-@keyframes shimmer {
+@keyframes shimmer { /* Keep keyframe definition but it's unused */
   0% { background-position: -100% 0; }
   100% { background-position: 100% 0; }
 }
 
-@keyframes bounce {
+@keyframes bounce { /* Keep keyframe definition but it's unused */
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  50% { transform: translateY(-2px); } /* Subtler bounce if needed */
 }
 
-.feather-emoji {
+.feather-emoji { /* Removed bounce animation */
   display: inline-block;
   margin-left: 5px;
-  animation: bounce 2s infinite;
 }
 
+/* === App Cards === */
 .app-card {
-  @apply transition-all duration-300 ease-in-out bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border rounded-xl shadow-lg p-6 hover:shadow-xl;
+  @apply transition-all duration-200 ease-in-out bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 rounded-lg shadow p-6 hover:shadow-md ;
 }
 
 .app-card:hover {
-  @apply transform -translate-y-1;
+  @apply transform -translate-y-0.5 border-gray-300 dark:border-gray-600; /* Very subtle lift */
 }
 
-button {
-  @apply transition-all duration-300 ease-in-out;
-}
-
-button:hover {
+button:hover { /* Keep subtle button lift */
   @apply transform -translate-y-0.5;
 }
 
+/* === Scrollbars === */
 .scrollbar-thin {
   scrollbar-width: thin;
   scrollbar-color: theme('colors.gray.400') theme('colors.gray.200');
@@ -310,7 +332,7 @@ button:hover {
 }
 
 .scrollbar-thin::-webkit-scrollbar {
-  @apply w-2;
+  @apply w-2 h-2; /* Added height for horizontal scrollbars */
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
@@ -324,169 +346,442 @@ button:hover {
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-500 dark:bg-gray-500;
 }
-
-.btn {
-  @apply font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md flex items-center;
+.scrollbar { /* General scrollbar utility */
+  @apply scrollbar-thin; /* Apply the thin scrollbar style */
 }
 
-.btn-primary {
-  @apply bg-gray-600 text-white hover:bg-gray-700 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600;
-}
-
-.btn-secondary {
-  @apply bg-gray-200 text-gray-700 hover:bg-gray-300 focus:ring-4 focus:ring-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-gray-600;
-}
-
+/* === Search Input === */
 .search-input {
-  @apply w-full border-b-2 border-gray-300 dark:border-gray-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-gray-500 dark:focus:border-gray-400 bg-transparent text-gray-800 dark:text-gray-100;
+  @apply w-full border-b-2 border-gray-300 dark:border-gray-600 py-2 px-4 pl-10 transition-colors duration-200 ease-in-out focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 bg-transparent text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500;
 }
 
-.scrollbar {
-  @apply scrollbar-thin scrollbar-track-gray-200 scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500 dark:scrollbar-track-gray-700 dark:scrollbar-thumb-gray-600 dark:hover:scrollbar-thumb-gray-500;
+/* === Progress Bar === */
+.animated-progressbar-bg{
+  @apply w-full h-2 relative overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-full shadow-inner; /* Height reduced, subtle shadow */
+}
+.animated-progressbar-fg{
+  @apply absolute top-0 left-0 h-full bg-blue-600 transition-all duration-300 rounded-full; /* Solid accent color */
 }
 
-.card-title {
-  @apply text-xl font-bold text-gray-800 dark:text-gray-100 mb-2;
-}
-
-.card-content {
-  @apply text-gray-600 dark:text-gray-300;
-}
-
-.card-footer {
-  @apply mt-4 flex justify-between items-center;
-}
-
-.card-footer-button {
-  @apply bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded;
-}
-
-.subcard {
-  @apply bg-gray-50 dark:bg-gray-800 rounded-lg shadow-md p-4;
-}
-
-.subcard-title {
-  @apply text-lg font-bold text-gray-800 dark:text-gray-100 mb-2;
-}
-
-.subcard-content {
-  @apply text-gray-600 dark:text-gray-300;
-}
-
-.subcard-footer {
-  @apply mt-4 flex justify-between items-center;
-}
-
-.subcard-footer-button {
-  @apply bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded;
-}
-
-.interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-gray-200 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
-}
-
-.animated-progressbar-bg {
-  @apply w-full h-12 relative overflow-hidden bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-full shadow-lg
-}
-
-.animated-progressbar-fg {
-  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-gray-400 to-gray-500 dark:from-gray-500 dark:to-gray-600 transition-all duration-300
-}
-
-
+/* === Discussion Toolbox === */
 .discussion-toolbox{
-  @apply flex gap-2 items-center bg-white dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
+  @apply flex gap-2 items-center bg-white dark:bg-gray-700 p-1.5 rounded-l-md shadow border border-gray-200 dark:border-gray-600 transform translate-x-full group-hover:translate-x-0 transition-transform duration-300; /* Adjusted background/border */
 }
 
-
-.lollms-title-style {
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
-               2px 2px 0px #f3f4f6, 
-               -2px -2px 0px #f3f4f6, 
-               2px -2px 0px #f3f4f6, 
-               -2px 2px 0px #f3f4f6;
-  background: linear-gradient(45deg, #4b5563, #6b7280);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* === Title Style === */
+.lollms-title-style{
+  /* Removed complex text-shadow and gradient */
+  @apply font-semibold text-gray-900 dark:text-gray-100; /* Use standard heading styles */
 }
+
+/* === Chat Bar === */
 .chat-bar {
-  @apply relative text-gray-700 dark:text-gray-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-100 dark:bg-gray-800 p-1 shadow-sm hover:shadow-none dark:border-gray-700;
+  @apply relative text-gray-700 dark:text-gray-300 grow flex cursor-pointer select-none items-center gap-2 bg-white dark:bg-gray-800 p-2 border-t border-gray-200 dark:border-gray-700 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700; /* Clean chat bar style */
   height: 50px;
-  transition: all 0.3s ease;
-  background-image: linear-gradient(to right, #f0f0f0, #e0e0e0);
+  transition: background-color 0.2s ease;
 }
 
 .chat-bar:hover {
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+   box-shadow: none; /* Remove hover shadow */
 }
 
-.chat-bar-button{
-  @apply text-gray-600 dark:text-gray-400 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500
-}
-
-.chat-bar-button:hover{
-  @apply bg-gray-200/50 dark:bg-gray-700/50;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.chat-bar-button:active{
-  @apply bg-gray-300/70 dark:bg-gray-600/70;
-}
-
-.nav-button{
-  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-200/40 hover:text-gray-800 dark:hover:bg-gray-700/40 text-gray-600 dark:text-gray-400
-}
-
-.nav-button-active{
-  @apply bg-gray-300 text-gray-900 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
+/* === SVG/Icon Buttons === */
 .svg-button{
-  @apply text-gray-500 dark:text-gray-400 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500;
-  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.1));
+  @apply text-gray-500 dark:text-gray-400 p-1.5 rounded-md transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500; /* Smaller padding, standard ring */
 }
 
 .svg-button:hover{
-  @apply bg-gray-200/40 dark:bg-gray-700/40;
-  filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
+  @apply bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200; /* Subtle background, slightly darker text */
 }
-
 .svg-button:active{
-  @apply bg-gray-300/60 dark:bg-gray-600/60;
+  @apply bg-gray-200 dark:bg-gray-600;
 }
 
+/* === Nav Buttons === */
 .nav-button{
-  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-200/40 dark:hover:bg-gray-700/40 text-gray-600 dark:text-gray-400
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100;
 }
 
 .nav-button-active{
-  @apply bg-gray-300 text-gray-900 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  @apply bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold; /* Subtle active state */
 }
 
+/* === On/Off Status Indicators === */
 .btn-on{
-  @apply text-blue-600 dark:text-blue-400;
-  text-shadow: 0 0 5px rgba(0, 0, 255, 0.2);
+  @apply text-green-600 dark:text-green-400;
 }
 
 .btn-off{
-  @apply text-gray-400 dark:text-gray-500;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  @apply text-red-600 dark:text-red-400;
 }
 
+/* === Interesting Facts Box === */
 .interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-gray-100/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 border border-gray-300/30;
-  background-image: linear-gradient(45deg, #f5f5f5, #e0e0e0);
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  @apply mt-6 mb-6 p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm; /* Cleaner style, no transform */
 }
 
+/* === Toolbar Buttons === */
 .toolbar-button {
-  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
+  @apply bg-transparent border-none cursor-pointer p-2 text-gray-600 dark:text-gray-400 transition-colors duration-200;
 }
-  
+
 .toolbar-button:hover {
-  @apply text-blue-600;
-  text-shadow: 0 0 5px rgba(0, 0, 255, 0.2);
+  @apply text-blue-600 dark:text-blue-400; /* Use accent color on hover */
 }
+
+/* === Context Menu (Sober Version) === */
+@keyframes context-fade-in { /* Simple fade-in */
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@layer components {
+  .context-menu {
+    @apply absolute bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md py-1 min-w-[150px] z-[1000] font-sans; /* Standard panel look */
+    animation: context-fade-in 0.1s ease-out; /* Simple fade */
+  }
+
+  /* Removed ::before pseudo-element */
+
+  .context-menu-item {
+    @apply px-4 py-1.5 text-sm text-gray-700 dark:text-gray-200 cursor-pointer transition-colors duration-150 ease-in-out;
+    @apply hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100;
+    /* Removed scale */
+  }
+
+  .context-menu-separator {
+    @apply h-px bg-gray-200 dark:bg-gray-600 my-1; /* Simple separator */
+  }
+
+  .context-menu-item-disabled {
+    @apply text-gray-400 dark:text-gray-500 cursor-not-allowed;
+     @apply hover:bg-transparent dark:hover:bg-transparent; /* No hover effect */
+  }
+
+  .context-menu-item-icon {
+    @apply mr-2 inline-block w-4 h-4 text-gray-500 dark:text-gray-400; /* Adjusted size/color */
+  }
+
+  /* Removed ::after pseudo-element */
+}
+
+
+/* === Steps Theming === */
+.steps-container {
+  @apply border border-gray-200 dark:border-gray-700 rounded-md mb-4 bg-white dark:bg-gray-800;
+}
+
+.steps-header {
+  @apply flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 cursor-pointer border-b border-gray-200 dark:border-gray-700;
+}
+
+.steps-icon {
+  @apply mr-3 text-gray-500 dark:text-gray-400; /* Adjusted icon color */
+}
+
+.steps-summary {
+  @apply flex-grow;
+}
+
+.steps-title {
+  @apply m-0 text-base font-medium text-gray-800 dark:text-gray-200;
+}
+
+.steps-status {
+  @apply m-0 text-sm text-gray-600 dark:text-gray-400;
+}
+
+.toggle-icon {
+  @apply text-sm text-gray-500 dark:text-gray-400;
+}
+
+.steps-content {
+  @apply p-4;
+}
+
+.steps-list {
+  @apply list-none p-0 m-0;
+}
+
+.step-item {
+  @apply mb-2 pl-4 border-l-2 border-gray-300 dark:border-gray-600 last:mb-0;
+}
+
+/* Step Component Styles */
+.step-container {
+  @apply mb-3 transition-all duration-300 ease-in-out; /* Reduced margin */
+}
+
+.step-wrapper {
+  @apply flex items-start p-2.5 rounded-md bg-transparent; /* Simpler wrapper */
+}
+
+.step-icon {
+  @apply flex-shrink-0 w-5 h-5 mr-3 mt-0.5; /* Adjusted size/margin */
+}
+
+/* Icon status colors already defined (.icon-success, .icon-fail) are fine */
+.icon-spinner {
+  @apply w-5 h-5 border-2 border-blue-500 dark:border-blue-400 border-t-transparent rounded-full animate-spin; /* Adjusted size */
+}
+
+.step-content {
+  @apply flex-grow;
+}
+
+.step-text {
+  @apply text-base font-normal text-gray-700 dark:text-gray-300; /* Regular weight */
+}
+
+.step-description {
+  @apply mt-0.5 text-sm text-gray-600 dark:text-gray-400;
+}
+
+/* Transition Styles */
+.fade-enter-active, .fade-leave-active {
+  @apply transition-opacity duration-200; /* Faster fade */
+}
+
+.fade-enter, .fade-leave-to {
+  @apply opacity-0;
+}
+
+/* Status Icon Styles */
+.status-icon {
+  @apply cursor-pointer transition-colors duration-200;
+}
+
+.icon {
+  @apply w-5 h-5; /* Consistent icon size */
+}
+
+/* .icon-success, .icon-fail colors are okay */
+.icon-text {
+  @apply text-lg font-semibold text-gray-700 dark:text-gray-300; /* Adjusted size/weight */
+}
+
+/* === User Settings Panel === */
+.user-settings-panel {
+  @apply bg-white dark:bg-gray-800 space-y-6 p-4 md:p-6 rounded-lg shadow text-gray-800 dark:text-gray-200; /* Use panel style */
+}
+
+/* === Folder Items (System Status) === */
+.folder-item-base {
+  @apply flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-colors duration-200 hover:shadow-sm;
+  @apply bg-gray-50 dark:bg-gray-700; /* Slightly offset background */
+  @apply hover:bg-gray-100 dark:hover:bg-gray-600;
+  @apply border border-gray-200 dark:border-gray-600; /* Subtle border */
+}
+
+.folder-item-icon {
+  @apply w-8 h-8 group-hover:scale-105 transition-transform duration-200 mb-1 text-gray-500 dark:text-gray-400; /* Neutral icon color */
+}
+
+.folder-item-label {
+  @apply mt-1 text-xs text-center text-gray-600 dark:text-gray-300;
+}
+
+/* Remove specific color borders/icons for neutrality */
+.folder-item-personalities { @apply border-gray-300 dark:border-gray-500; }
+.folder-item-icon-personalities { @apply text-gray-500 dark:text-gray-400; }
+
+.folder-item-functions { @apply border-gray-300 dark:border-gray-500; }
+.folder-item-icon-functions { @apply text-gray-500 dark:text-gray-400; }
+
+.folder-item-configs { @apply border-gray-300 dark:border-gray-500; }
+.folder-item-icon-configs { @apply text-gray-500 dark:text-gray-400; }
+
+.folder-item-outputs { @apply border-gray-300 dark:border-gray-500; }
+.folder-item-icon-outputs { @apply text-gray-500 dark:text-gray-400; }
+
+.folder-item-discussions { @apply border-gray-300 dark:border-gray-500; }
+.folder-item-icon-discussions { @apply text-gray-500 dark:text-gray-400; }
+
+/* === Settings Items Components === */
+@layer components {
+  .setting-item {
+      @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-3 border-t border-gray-200 dark:border-gray-700 first:border-t-0; /* Added border */
+  }
+
+  .setting-label {
+      @apply label md:w-52 flex-shrink-0; /* Adjusted width slightly */
+  }
+
+  .toggle-item {
+      @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-3 border-t border-gray-200 dark:border-gray-700 pt-3 mt-2 first:mt-0 first:pt-0 first:border-t-0;
+  }
+
+  .toggle-label {
+      @apply label !mb-0 flex-grow cursor-pointer mr-4;
+  }
+
+  .toggle-description {
+      @apply block text-xs text-gray-500 dark:text-gray-400 font-normal mt-1;
+  }
+
+  /* Range Input Styles */
+  .range-input {
+      @apply h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer w-full; /* Neutral track */
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+      @apply w-4 h-4 bg-blue-600 dark:bg-blue-500 rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out shadow; /* Accent thumb, slightly smaller */
+      margin-top: -4px; /* Adjust thumb position */
+  }
+  input[type='range']::-moz-range-thumb {
+      @apply w-4 h-4 bg-blue-600 dark:bg-blue-500 rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out shadow;
+  }
+  input[type='range']::-webkit-slider-runnable-track {
+      @apply h-2 bg-gray-200 dark:bg-gray-600 rounded-full w-full;
+  }
+  input[type='range']::-moz-range-track {
+      @apply h-2 bg-gray-200 dark:bg-gray-600 rounded-full w-full;
+  }
+
+  /* Status Dot Colors (Keep existing definitions) */
+  .bg-status-healthy { @apply bg-green-500 dark:bg-green-400; }
+  .bg-status-unhealthy { @apply bg-red-500 dark:bg-red-400; }
+  .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-400; }
+  .bg-status-unknown { @apply bg-gray-400 dark:bg-gray-500; }
+}
+
+/* === Prose Styling (Sober Version) === */
+@layer components {
+  .prose-sober { /* Renamed from prose-blue */
+    h3 { @apply text-xl font-semibold text-gray-700 dark:text-gray-300 mb-3 mt-5 border-b border-gray-200 dark:border-gray-700 pb-1; }
+    ul { @apply list-disc pl-6 space-y-1 mb-4 text-gray-700 dark:text-gray-300; }
+    ol { @apply list-decimal pl-6 space-y-1 mb-4 text-gray-700 dark:text-gray-300; } /* Added OL styling */
+    li::marker { color: theme('colors.gray.500'); @apply dark:text-gray-400; }
+    code:not(pre code) { @apply bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm font-mono text-gray-700 dark:text-gray-200 break-words; } /* Added break-words */
+    blockquote { @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-600 dark:text-gray-400 my-4 py-1; }
+    a { @apply link font-medium; } /* Uses .link style defined earlier */
+    p { @apply mb-3 leading-relaxed text-gray-700 dark:text-gray-300; }
+    pre { @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-md overflow-x-auto my-4 shadow-inner text-sm; } /* Style pre blocks */
+    pre code { @apply bg-transparent p-0 font-mono text-gray-800 dark:text-gray-200; } /* Code within pre */
+    table { @apply w-full my-4 border-collapse border border-gray-200 dark:border-gray-700; }
+    th { @apply bg-gray-100 dark:bg-gray-800 p-2 border border-gray-200 dark:border-gray-700 text-left font-semibold text-gray-800 dark:text-gray-100; }
+    td { @apply p-2 border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200; }
+    img { @apply rounded-md shadow-sm my-4 max-w-full h-auto; }
+  }
+}
+
+/* === Thinking Prose (Sober Version) === */
+/* Apply .prose-sober styles */
+.thinking-prose {
+    @apply prose-sober;
+}
+/* Overrides specific to thinking state if needed */
+.thinking-prose {
+    @apply text-sm; /* Smaller text for thinking */
+}
+.thinking-prose h1, .thinking-prose h2, .thinking-prose h3, .thinking-prose h4, .thinking-prose h5, .thinking-prose h6 {
+    @apply mt-4 mb-1 text-base font-medium; /* Less prominent headings */
+}
+.thinking-prose p {
+    @apply my-2 leading-snug; /* Tighter paragraph spacing */
+}
+.thinking-prose ul, .thinking-prose ol {
+    @apply my-2 pl-5; /* Tighter list spacing */
+}
+/* Remove bounce animation utility class if defined/used */
+.animate-bounce {
+    animation: none; /* Disable bounce if previously applied by class */
+}
+/* Remove the custom scrollbar specific to thinking-prose if not desired */
+.thinking-prose::-webkit-scrollbar { display: none; } /* Example: hide scrollbar */
+.thinking-prose { scrollbar-width: none; }
+
+
+/* === Help Content === */
+/* Apply .prose-sober styles directly or wrap content in a div with the class */
+.help-content {
+    @apply prose-sober p-4 md:p-6; /* Apply base prose style and padding */
+}
+/* Override specific help styles if needed, but prose-sober should cover most */
+.help-content h2 {
+    @apply text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-4 mt-6 border-b border-gray-200 dark:border-gray-700 pb-2;
+}
+.help-content h3 {
+    @apply text-xl font-semibold text-gray-700 dark:text-gray-300 mb-3 mt-5;
+}
+/* Ensure responsiveness for sidebar (keep original media query) */
+@media (max-width: 768px) {
+ .help-left-bar {
+   @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full bg-white dark:bg-gray-800 shadow-lg w-64 overflow-y-auto; /* Added background/size */
+ }
+ .help-main-content {
+   @apply ml-0;
+ }
+  .help-left-bar.open {
+     @apply translate-x-0;
+   }
+}
+
+/* === Animated Tooltip (Sober Fade-in) === */
+@keyframes simple-fade-in-up { /* Simple fade and slight upward move */
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 5px) scale(0.95); /* Start slightly below, smaller */
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1); /* Settle in final position */
+  }
+}
+
+@layer utilities {
+  .animate-simple-fade-in-up {
+    animation-name: simple-fade-in-up;
+    animation-duration: 0.15s; /* Faster animation */
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-out;
+  }
+
+  .animate-bubble-in-down {
+    animation-name: bubble-in-down;
+    animation-duration: 0.3s; /* Control animation speed */
+    animation-fill-mode: forwards; /* Keep final state */
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy easing */
+  }
+}
+
+@layer components {
+  /* Enhanced Thought Bubble Style (Appears Below) */
+  .animated-thought-bubble {
+    @apply absolute top-full left-1/2 mt-2 /* Position BELOW icon with space */
+           w-max max-w-[160px] /* Allow width to fit content, max width */
+           opacity-0 invisible /* Initially hidden */
+           bg-blue-200 dark:bg-blue-700 rounded-lg shadow-xl p-2 text-center z-20 /* Styling */
+           pointer-events-none /* Disable clicks initially */
+           origin-top /* Set transform origin for scaling from the TOP */
+           transition-opacity duration-150 /* Add transition for smoother opacity fallback */
+           /* Apply opacity/visibility/pointer events and the ANIMATION utility on hover */
+           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down; /* Use the downward animation */
+  }
+
+  /* Arrow for the bubble (Pointing UP) */
+  .animated-thought-bubble::after {
+    content: '';
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2 /* Position arrow ABOVE the bubble */
+           border-[7px] border-solid border-transparent /* Arrow shape */
+           /* Make the BOTTOM border colored to point arrow UP */
+           border-b-blue-200 dark:border-b-blue-700;
+  }
+}
+
+/* === Playground Component Tabs === */
+@layer components {
+  .active-tab-button {
+    /* Use primary button style but small */
+    @apply btn btn-primary btn-sm;
+    @apply ring-2 ring-offset-1 ring-offset-white dark:ring-offset-gray-800 ring-blue-500 dark:ring-blue-400; /* Add clear focus/active ring */
+  }
+  .inactive-tab-button {
+    /* Use secondary button style but small */
+    @apply btn btn-secondary btn-sm;
+    @apply opacity-70 hover:opacity-100; /* Slightly faded when inactive */
+  }
+}
+
+/* Remove unused matrix animation */
+@keyframes matrix-rain { }

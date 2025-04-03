@@ -1216,6 +1216,10 @@ html{
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
 }
+.my-12{
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+}
 .my-2{
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
@@ -3022,6 +3026,9 @@ html{
 .border-t-primary{
   border-top-color: var(--color-primary);
 }
+.border-t-transparent{
+  border-top-color: transparent;
+}
 .bg-\[rgb\(255\2c 0\2c 0\)\]{
   --tw-bg-opacity: 1;
   background-color: rgb(255 0 0 / var(--tw-bg-opacity));
@@ -4065,6 +4072,10 @@ html{
   --tw-text-opacity: 1;
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
+.text-green-100{
+  --tw-text-opacity: 1;
+  color: rgb(222 247 236 / var(--tw-text-opacity));
+}
 .text-green-200{
   --tw-text-opacity: 1;
   color: rgb(188 240 218 / var(--tw-text-opacity));
@@ -4274,6 +4285,14 @@ html{
 .placeholder-blue-400::placeholder{
   --tw-placeholder-opacity: 1;
   color: rgb(118 169 250 / var(--tw-placeholder-opacity));
+}
+.placeholder-blue-500::-moz-placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(63 131 248 / var(--tw-placeholder-opacity));
+}
+.placeholder-blue-500::placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(63 131 248 / var(--tw-placeholder-opacity));
 }
 .placeholder-gray-400::-moz-placeholder{
   --tw-placeholder-opacity: 1;
@@ -6482,7 +6501,7 @@ button:hover{
 .group:hover .group-hover\:animate-pulse{
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
-.group:hover .group-hover\:border-blue-500{
+.group\/mounted:hover .group-hover\/mounted\:border-blue-500{
   --tw-border-opacity: 1;
   border-color: rgb(63 131 248 / var(--tw-border-opacity));
 }
@@ -6554,6 +6573,9 @@ button:hover{
   color: rgb(17 24 39 / var(--tw-text-opacity));
 }
 .group\/item:hover .group-hover\/item\:opacity-100{
+  opacity: 1;
+}
+.group\/mounted:hover .group-hover\/mounted\:opacity-100{
   opacity: 1;
 }
 .group:hover .group-hover\:opacity-100{
@@ -7294,6 +7316,9 @@ button:hover{
   --tw-bg-opacity: 1;
   background-color: rgb(30 66 159 / var(--tw-bg-opacity));
 }
+.dark\:bg-blue-800\/30:is(.dark *){
+  background-color: rgb(30 66 159 / 0.3);
+}
 .dark\:bg-blue-800\/50:is(.dark *){
   background-color: rgb(30 66 159 / 0.5);
 }
@@ -7373,6 +7398,10 @@ button:hover{
 .dark\:bg-green-600:is(.dark *){
   --tw-bg-opacity: 1;
   background-color: rgb(5 122 85 / var(--tw-bg-opacity));
+}
+.dark\:bg-green-700:is(.dark *){
+  --tw-bg-opacity: 1;
+  background-color: rgb(4 108 78 / var(--tw-bg-opacity));
 }
 .dark\:bg-green-800:is(.dark *){
   --tw-bg-opacity: 1;
@@ -7549,6 +7578,10 @@ button:hover{
   --tw-text-opacity: 1;
   color: rgb(31 41 55 / var(--tw-text-opacity));
 }
+.dark\:text-green-100:is(.dark *){
+  --tw-text-opacity: 1;
+  color: rgb(222 247 236 / var(--tw-text-opacity));
+}
 .dark\:text-green-200:is(.dark *){
   --tw-text-opacity: 1;
   color: rgb(188 240 218 / var(--tw-text-opacity));
@@ -7612,6 +7645,10 @@ button:hover{
   --tw-text-opacity: 1;
   color: rgb(74 29 150 / var(--tw-text-opacity));
 }
+.dark\:text-red-100:is(.dark *){
+  --tw-text-opacity: 1;
+  color: rgb(253 232 232 / var(--tw-text-opacity));
+}
 .dark\:text-red-200:is(.dark *){
   --tw-text-opacity: 1;
   color: rgb(251 213 213 / var(--tw-text-opacity));
@@ -7666,6 +7703,14 @@ button:hover{
 .dark\:text-yellow-900:is(.dark *){
   --tw-text-opacity: 1;
   color: rgb(99 49 18 / var(--tw-text-opacity));
+}
+.dark\:placeholder-blue-400:is(.dark *)::-moz-placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(118 169 250 / var(--tw-placeholder-opacity));
+}
+.dark\:placeholder-blue-400:is(.dark *)::placeholder{
+  --tw-placeholder-opacity: 1;
+  color: rgb(118 169 250 / var(--tw-placeholder-opacity));
 }
 .dark\:placeholder-blue-500:is(.dark *)::-moz-placeholder{
   --tw-placeholder-opacity: 1;
@@ -7787,7 +7832,7 @@ button:hover{
   --tw-text-opacity: 1;
   color: rgb(63 131 248 / var(--tw-text-opacity));
 }
-.group:hover .dark\:group-hover\:border-blue-400:is(.dark *){
+.group\/mounted:hover .dark\:group-hover\/mounted\:border-blue-400:is(.dark *){
   --tw-border-opacity: 1;
   border-color: rgb(118 169 250 / var(--tw-border-opacity));
 }
@@ -8160,6 +8205,9 @@ button:hover{
   .sm\:w-auto{
     width: auto;
   }
+  .sm\:max-w-sm{
+    max-width: 24rem;
+  }
   .sm\:grid-cols-2{
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -8266,6 +8314,9 @@ button:hover{
   }
   .md\:w-auto{
     width: auto;
+  }
+  .md\:max-w-md{
+    max-width: 28rem;
   }
   .md\:max-w-xl{
     max-width: 36rem;
@@ -8401,6 +8452,9 @@ button:hover{
   }
   .xl\:w-1\/6{
     width: 16.666667%;
+  }
+  .xl\:grid-cols-4{
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 @media (min-width: 1536px){

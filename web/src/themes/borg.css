@@ -6,20 +6,42 @@
 @tailwind utilities;
 
 :root {
-  --lollms-title: The Borg Collective Lord;
-  --falling-object: B;
-  --activate-dropping-animation: 1;
-  --lollms-welcome-short-message: Welcome to the Borg collective;
-  --lollms-welcome-message: Resistance is futile;
-}
+  /* --- Borg Theme Specific Variables --- */
+  --lollms-title: "LoLLMS Collective"; /* Title reflecting Borg theme */
+  --falling-object: "❒"; /* Borg Cube representation */
+  --activate-dropping-animation: 1; /* Activate the falling object animation */
+  --lollms-welcome-short-message: "Resistance is futile."; /* Classic Borg line */
+  --lollms-welcome-message: "Your technological and biological distinctiveness will be added to our own. Prepare for assimilation into the LoLLMS Collective. Efficiency will be optimized. Individuality is irrelevant."; /* Borg-themed welcome */
 
+  /* --- Color Palette --- */
+  --color-primary: #00ff00; /* Bright, glowing green */
+  --color-primary-light: #66ff66; /* Lighter green */
+  --color-secondary: #008000; /* Darker, solid green */
+  --color-accent: #33ff33; /* Slightly less intense glowing green */
+  --color-light-text-panel: #e0ffe0; /* Very light green for text on dark panels */
+  --color-dark-text-panel: #a0ffa0; /* Light green for text */
+  --color-bg-light-panel: #1a2b1a; /* Dark green-tinged gray for light mode panels (less common for Borg) */
+  --color-bg-light: #222222; /* Dark gray for light mode background */
+  --color-bg-light-tone: #111111; /* Near black for light mode tone */
+  --color-bg-light-code-block: #1f2f1f; /* Dark green-gray for code blocks */
+  --color-bg-light-tone-panel: #152015; /* Darker green-gray panel tone */
+  --color-bg-light-discussion: #1c281c; /* Dark green-gray discussion bg */
+  --color-bg-light-discussion-odd: #1a2b1a; /* Slightly different shade for odd discussion items */
+  --color-bg-dark: #000000; /* Pure black for dark mode background */
+  --color-bg-dark-tone: #0a0a0a; /* Very dark gray tone */
+  --color-bg-dark-tone-panel: #0f0f0f; /* Slightly lighter black panel */
+  --color-bg-dark-code-block: #051005; /* Very dark green for code blocks */
+  --color-bg-dark-discussion: #080808; /* Near black discussion bg */
+  --color-bg-dark-discussion-odd: #050505; /* Very dark gray for odd discussion items */
+}
 
 @layer base {
   html {
     @apply scroll-smooth;
   }
   body {
-    font-family: 'Share Tech Mono', monospace;
+    font-family: 'Share Tech Mono', monospace; /* Monospaced font for Borg feel */
+    @apply bg-black text-green-300; /* Default to dark mode look */
   }
 }
 
@@ -38,255 +60,269 @@
   @apply hidden;
 }
 
-h1 { @apply text-4xl md:text-5xl font-bold text-green-400 font-['Orbitron'] mb-6; }
-h2 { @apply text-3xl font-semibold text-green-500 font-['Orbitron'] mb-4; }
-h3 { @apply text-2xl font-medium text-green-600 font-['Orbitron'] mb-3; }
-h4 { @apply text-xl font-medium text-green-400 font-['Orbitron'] mb-2; }
+/* --- Headings --- */
+h1 { @apply text-4xl md:text-5xl font-bold text-green-400 dark:text-green-400 mb-6 font-['Orbitron']; }
+h2 { @apply text-3xl font-semibold text-green-500 dark:text-green-500 mb-4 font-['Orbitron']; }
+h3 { @apply text-2xl font-medium text-green-600 dark:text-green-600 mb-3; }
+h4 { @apply text-xl font-medium text-green-700 dark:text-green-700 mb-2; }
 
-h1, h2 { @apply border-b border-green-600 pb-2; }
+h1, h2 { @apply border-b border-green-700 dark:border-green-700 pb-2; } /* Green border */
 
-p { @apply text-base text-gray-300 break-words; }
-/* Base list styling */
+/* --- Paragraphs --- */
+p {
+  @apply
+    text-base
+    text-green-300 dark:text-green-300 /* Greenish text */
+    break-words
+    font-mono /* Explicitly monospace */
+    antialiased
+    tracking-tight
+    leading-relaxed;
+}
+
+@screen md {
+  p {
+    @apply
+      text-lg
+      leading-loose;
+  }
+}
+
+
+/* --- Lists --- */
 ul, ol {
-  @apply 
-      my-4          /* Margin top and bottom */
-      px-4          /* Horizontal padding */
-      leading-7     /* Line height */
-      text-base;    /* Text size */
+  @apply
+      my-4
+      px-4
+      leading-7
+      text-base text-green-300 dark:text-green-300; /* Green text */
 }
 
-/* Unordered lists */
 ul {
-  @apply 
-      list-disc     /* Disc style bullets */
-      ml-2          /* Left margin */
-      space-y-2;    /* Vertical spacing */
+  @apply
+      list-disc /* Keep standard list style */
+      ml-2
+      space-y-2;
 }
 
-/* List items */
 li {
-  @apply 
-      pl-2         /* Padding left */
-      relative;    /* Positioning */
+  @apply
+      pl-2
+      relative;
 }
 
-/* Ordered lists */
 ol {
-  @apply 
-      list-decimal  /* Numbered style */
-      ml-2          /* Left margin */
-      space-y-2;    /* Vertical spacing */
+  @apply
+      list-decimal
+      ml-2
+      space-y-2;
 }
 
-/* Nested lists */
 ul ul, ol ol, ul ol, ol ul {
-  @apply 
-      mt-2         /* Top margin */
-      mb-0         /* Bottom margin */
-      ml-6;        /* Indentation */
+  @apply
+      mt-2
+      mb-0
+      ml-6;
 }
 
-/* For custom properties that aren't available in Tailwind, use regular CSS */
 li::marker {
-  color: #4B5563; /* gray-600 equivalent */
+  color: var(--color-primary); /* Use the primary green for markers */
 }
 
-
-:root {
-  --color-primary: #00ff00;
-  --color-primary-light: #40ff40;
-  --color-secondary: #1a1a1a;
-  --color-accent: #00cc00;
-  --color-light-text-panel: #00ff00;
-  --color-dark-text-panel: #40ff40;
-  --color-bg-light-panel: #121212;
-  --color-bg-light: #0a0a0a;
-  --color-bg-light-tone: #1a1a1a;
-  --color-bg-light-code-block: #080808;
-  --color-bg-light-tone-panel: #151515;
-  --color-bg-light-discussion: #0f0f0f;
-  --color-bg-light-discussion-odd: #0d0d0d;
-  --color-bg-dark: #000000;
-  --color-bg-dark-tone: #0a0a0a;
-  --color-bg-dark-tone-panel: #101010;
-  --color-bg-dark-code-block: #080808;
-  --color-bg-dark-discussion: #050505;
-  --color-bg-dark-discussion-odd: #030303;
-}
-
+/* --- Inputs --- */
 textarea, input, select {
-  @apply bg-gray-900 border-green-600 text-green-400;
+  @apply bg-gray-900 dark:bg-black border border-green-700 dark:border-green-600 text-green-300 dark:text-green-300 rounded-none focus:ring-1 focus:ring-green-500 focus:border-green-500; /* Dark bg, green border/focus, no rounding */
 }
 
+/* --- Layout Colors --- */
 .background-color {
-  @apply bg-gradient-to-br from-gray-900 to-black min-h-screen;
+  @apply bg-gradient-to-br from-black via-gray-900 to-black min-h-screen; /* Black/dark gray gradient */
 }
 
 .toolbar-color {
-  @apply text-green-400 bg-gray-900 rounded-lg shadow-md border border-green-600;
+  @apply text-green-300 dark:text-green-300 bg-black dark:bg-black border border-green-800 dark:border-green-700 rounded-none shadow-lg shadow-green-900/50; /* Black bg, green border/shadow, no rounding */
 }
 
 .panels-color {
-  @apply text-green-400 bg-gray-900 border-green-600;
+  @apply text-green-300 dark:text-green-300 bg-gray-950 dark:bg-gray-950 border border-gray-800 dark:border-gray-700 rounded-none; /* Very dark gray panels */
 }
 
 .unicolor-panels-color {
-  @apply bg-gray-900 border border-green-600;
+  @apply bg-gray-900 dark:bg-gray-900; /* Slightly lighter dark gray */
 }
 
 .chatbox-color {
-  @apply bg-black text-green-400;
+  @apply bg-black dark:bg-black border border-gray-800 dark:border-gray-800; /* Black chatbox */
 }
 
+/* --- Messages --- */
 .message {
-  @apply relative w-full rounded-lg border border-green-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
-  @apply bg-gray-900 text-green-400;
+  @apply relative w-full m-2 shadow-lg shadow-green-900/30 rounded-none border border-green-900 dark:border-green-800 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
+  @apply bg-black text-green-200 dark:bg-black dark:text-green-200; /* Black bg, light green text */
 }
 
 .message:hover {
-  @apply border-green-400;
+  @apply border-green-600 dark:border-green-500; /* Brighter green border on hover */
 }
 
+/* Alternating message backgrounds (subtle difference) */
 .message:nth-child(even) {
-  @apply bg-gray-900;
+  @apply bg-gray-950 dark:bg-gray-950; /* Very dark gray */
 }
 
 .message:nth-child(odd) {
-  @apply bg-gray-800;
+  @apply bg-black dark:bg-black; /* Pure black */
 }
 
 .message-header {
-  @apply text-xl font-['Orbitron'] font-semibold mb-2 text-green-400;
+  @apply text-xl font-semibold mb-2 text-green-400 dark:text-green-400; /* Brighter green for header */
 }
 
 .message-content {
-  @apply text-lg leading-relaxed text-gray-300;
+  @apply text-lg leading-relaxed text-green-300 dark:text-green-300;
 }
 
+/* --- Body & Discussion --- */
 body {
-  @apply bg-black text-green-400 min-h-screen text-base;
+  @apply bg-black dark:bg-black min-h-screen text-base text-green-300 dark:text-green-300; /* Black bg, green text */
 }
 
 .discussion {
-  @apply mr-2 text-xs text-green-400;
+  @apply mr-2 text-xs text-green-500 dark:text-green-500; /* Dimmer green for non-highlighted */
 }
 
 .discussion-hilighted {
-  @apply bg-gray-800 text-green-400 text-xs;
+  @apply bg-green-900 dark:bg-green-900 text-green-200 dark:text-green-200 text-xs rounded-none; /* Dark green bg, light green text, no rounding */
 }
 
+/* --- Gradients & Text --- */
 .bg-gradient-welcome {
-  @apply bg-gradient-to-br from-gray-900 to-black;
+  @apply bg-gradient-to-br from-black via-gray-900 to-black; /* Same as background */
 }
 
 .bg-gradient-progress {
-  @apply bg-gradient-to-r from-green-900 to-green-700;
+  @apply bg-gradient-to-r from-green-900 to-green-700 dark:from-green-900 dark:to-green-700; /* Dark green gradient */
 }
 
 .text-gradient-title {
-  @apply text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600;
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600 dark:from-green-400 dark:to-green-600; /* Green text gradient */
 }
 
 .text-subtitle {
-  @apply text-green-500;
+  @apply text-green-500 dark:text-green-500;
 }
 
 .text-author {
-  @apply text-green-400;
+  @apply text-green-600 dark:text-green-600; /* Slightly darker green */
 }
 
 .text-loading {
-  @apply text-green-400;
+  @apply text-green-400 dark:text-green-400;
 }
 
 .text-progress {
-  @apply text-green-500;
+  @apply text-green-300 dark:text-green-300;
+}
+
+/* --- Buttons --- */
+.btn {
+  @apply font-semibold py-2 px-4 rounded-none transition-all duration-300 ease-in-out shadow-md flex items-center border; /* No rounding, add border */
 }
 
 .btn-primary {
-  @apply bg-green-700 hover:bg-green-600 text-black font-bold py-2 px-4 rounded;
+  @apply bg-green-700 hover:bg-green-600 text-black dark:text-black font-bold border-green-500 hover:border-green-400 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-black; /* Green bg, black text, green border/focus */
 }
 
 .btn-secondary {
-  @apply bg-gray-800 hover:bg-gray-700 text-green-400 font-bold py-2 px-4 rounded border border-green-600;
+  @apply bg-gray-800 hover:bg-gray-700 text-green-300 dark:text-green-300 font-bold border-gray-600 hover:border-gray-500 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black; /* Gray bg, green text, gray border/focus */
 }
 
+/* --- UI Elements --- */
 .card {
-  @apply bg-gray-900 rounded-lg shadow-md p-6 border border-green-600;
+  @apply bg-black dark:bg-black rounded-none shadow-md shadow-green-900/50 p-6 border border-green-800 dark:border-green-700; /* Black bg, green shadow/border, no rounding */
 }
 
 .input {
-  @apply bg-gray-900 border border-green-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-green-400;
+  @apply bg-gray-900 dark:bg-black border border-green-700 dark:border-green-600 rounded-none px-4 py-2 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-500 text-green-300 dark:text-green-300; /* Consistent input style */
 }
 
 .label {
-  @apply block text-sm font-medium text-green-400 mb-1;
+  @apply block text-sm font-medium text-green-400 dark:text-green-400 mb-1; /* Brighter green label */
 }
 
 .link {
-  @apply text-green-400 hover:text-green-300;
+  @apply text-green-400 hover:text-green-300 dark:text-green-400 dark:hover:text-green-300 underline hover:no-underline; /* Green link, underline toggle */
 }
 
+/* --- Navigation --- */
 .navbar-container {
-  @apply text-green-400 bg-gray-900 rounded shadow-lg border border-green-600;
+  @apply text-green-300 dark:text-green-300 bg-black dark:bg-black rounded-none shadow-lg shadow-green-900/50 border-b border-green-800 dark:border-green-700; /* Black navbar, green shadow/border */
 }
 
-.game-menu {
+.game-menu { /* Renamed from original, kept structure */
   @apply flex justify-center items-center relative;
 }
 
 .text-shadow-custom {
-  text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+   /* Minimal shadow for Borg */
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 .menu-item {
-  @apply mb-2 px-4 py-2 text-green-400 font-['Orbitron'] font-bold text-lg transition-all duration-300 ease-in-out;
-  @apply hover:text-green-300 hover:transform hover:-translate-y-1;
+  @apply mb-2 px-4 py-2 text-green-500 dark:text-green-500 font-bold text-lg transition-all duration-300 ease-in-out rounded-none;
+  @apply hover:text-green-300 hover:dark:text-green-300 hover:bg-gray-800; /* Dark gray hover background */
 }
 
 .menu-item.active-link {
-  @apply rounded-t-md border-green-500 text-green-300 font-['Orbitron'] font-bold text-lg transition-all duration-300 ease-in-out scale-105;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  @apply border-green-500 text-green-300 dark:text-green-300 text-shadow-custom font-bold text-lg transition-all duration-300 ease-in-out scale-105 bg-gray-900; /* Darker gray active background */
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.7); /* Enhanced green glow */
 }
 
+/* Remove the complex ::before gradient, use a simple border */
 .menu-item.active-link::before {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  background: linear-gradient(to right, #00ff00, #40ff40, #00ff00);
-  border-radius: 10px;
-  animation: shimmer 2s infinite;
+ content: '';
+ position: absolute;
+ bottom: -2px; /* Adjust position */
+ left: 0;
+ width: 100%;
+ height: 2px; /* Simple line */
+ background-color: var(--color-primary); /* Primary green */
 }
 
-@keyframes shimmer {
-  0% { background-position: -100% 0; }
-  100% { background-position: 100% 0; }
+.dark .menu-item.active-link::before {
+ background-color: var(--color-primary); /* Same green for dark */
 }
 
+/* Remove bounce animation if not fitting */
+/* @keyframes bounce ... */
+/* .feather-emoji { ... } */
 
+/* --- App Cards --- */
 .app-card {
-  @apply transition-all duration-300 ease-in-out bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 border rounded-xl shadow-lg p-6 hover:shadow-xl ;
+  @apply transition-all duration-300 ease-in-out bg-black dark:bg-black text-green-300 dark:text-green-300 border border-green-800 rounded-none shadow-lg shadow-green-900/30 p-6 hover:shadow-xl hover:shadow-green-700/50 hover:border-green-600; /* Black bg, green border/shadow, no rounding */
 }
 
 .app-card:hover {
-  @apply transform -translate-y-1;
+  @apply transform scale-[1.02]; /* Slight scale instead of translate */
 }
 
+/* --- Buttons (General) --- */
 button {
-  @apply transition-all duration-300 ease-in-out;
+  @apply transition-all duration-300 ease-in-out rounded-none; /* Ensure no rounding */
 }
 
 button:hover {
-  @apply transform -translate-y-0.5;
+  @apply transform scale-[1.03]; /* Slight scale */
 }
 
-
+/* --- Scrollbar --- */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: #00ff00 #1a1a1a;
+  scrollbar-color: theme('colors.green.700') theme('colors.black'); /* Green thumb, black track */
+}
+
+.dark .scrollbar-thin {
+  scrollbar-color: theme('colors.green.600') theme('colors.black'); /* Slightly brighter green thumb */
 }
 
 .scrollbar-thin::-webkit-scrollbar {
@@ -294,195 +330,525 @@ button:hover {
 }
 
 .scrollbar-thin::-webkit-scrollbar-track {
-  @apply bg-gray-900 rounded-full;
+  @apply bg-black dark:bg-black rounded-none; /* Black track */
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply bg-green-600 rounded-full;
+  @apply bg-green-700 dark:bg-green-600 rounded-none; /* Green thumb */
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  @apply bg-green-500;
+  @apply bg-green-500 dark:bg-green-400; /* Brighter green on hover */
 }
 
-.btn {
-  @apply font-['Orbitron'] font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md flex items-center;
-}
-
+/* --- Search Input --- */
 .search-input {
-  @apply w-full border-b-2 border-green-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-green-400 bg-transparent text-green-400;
+  @apply w-full border-b-2 border-green-700 dark:border-green-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-green-400 dark:focus:border-green-400 bg-transparent text-green-300 dark:text-green-200 placeholder-green-700 dark:placeholder-green-700; /* Green border/text/placeholder */
 }
 
-.card-title {
-  @apply text-xl font-['Orbitron'] font-bold text-green-400 mb-2;
+/* --- General Scrollbar Utility --- */
+.scrollbar {
+  @apply scrollbar-thin scrollbar-track-black scrollbar-thumb-green-700 hover:scrollbar-thumb-green-500 dark:scrollbar-track-black dark:scrollbar-thumb-green-600 dark:hover:scrollbar-thumb-green-400;
 }
 
-.card-content {
-  @apply text-gray-300;
+/* --- Animated Progress Bar --- */
+.animated-progressbar-bg{
+  @apply w-full h-3 relative overflow-hidden bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-800 dark:to-gray-900 rounded-none shadow-inner shadow-black; /* Dark gray bg, no rounding */
+}
+.animated-progressbar-fg{
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-green-600 to-green-400 dark:from-green-600 dark:to-green-400 transition-all duration-300; /* Green gradient fg */
 }
 
-.subcard {
-  @apply bg-gray-900 rounded-lg shadow-md p-4 border border-green-600;
-}
-
-.subcard-title {
-  @apply text-lg font-['Orbitron'] font-bold text-green-400 mb-2;
-}
-
-.subcard-content {
-  @apply text-gray-300;
-}
-
-.interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-gray-800/80 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
-}
-
-.animated-progressbar-bg {
-  @apply w-full h-24 relative overflow-hidden bg-gradient-to-r from-zinc-900 to-slate-800 dark:from-black dark:to-zinc-900 rounded-none border-2 border-emerald-500/30 shadow-[inset_0_0_10px_rgba(16,185,129,0.3)]
-}
-
-.animated-progressbar-fg {
-  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-emerald-600 dark:from-emerald-400 dark:to-emerald-500 transition-all duration-300 
-  [background-image:repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(0,0,0,0.2)_10px,rgba(0,0,0,0.2)_20px)]
-}
-
-
+/* --- Discussion Toolbox --- */
 .discussion-toolbox{
-  @apply flex gap-2 items-center bg-green-700 dark:bg-gray-800 p-2 rounded-l-md shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300
+  @apply flex gap-2 items-center bg-black dark:bg-black border border-green-800 p-1 rounded-l-none shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300; /* Black bg, green border */
 }
 
-.lollms-title-style {
-  text-shadow: 2px 2px 4px rgba(0,255,0,0.2), 
-               2px 2px 0px #000000, 
-               -2px -2px 0px #000000, 
-               2px -2px 0px #000000, 
-               -2px 2px 0px #000000;
-  background: linear-gradient(45deg, #00ff00, #39ff14);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: greenyellow;
+/* --- LoLLMS Title Style --- */
+.lollms-title-style{
+  /* Simple, stark green title */
+  @apply text-green-400 font-['Orbitron'] font-bold;
+  text-shadow: 0 0 8px theme('colors.green.500'); /* Green glow */
 }
+
+/* --- Chat Bar --- */
 .chat-bar {
-  @apply relative text-green-400 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-gray-900 dark:bg-black p-1 shadow-sm hover:shadow-none dark:border-green-800;
+  @apply relative text-green-300 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-black dark:bg-black p-1 shadow-sm border-t border-green-900 dark:border-green-800 hover:border-green-600;
   height: 50px;
   transition: all 0.3s ease;
 }
 
 .chat-bar:hover {
-  box-shadow: 0 4px 6px -1px rgba(0, 255, 0, 0.1), 0 2px 4px -1px rgba(0, 255, 0, 0.06);
+   box-shadow: 0 0 10px 0 rgba(0, 255, 0, 0.3); /* Green glow on hover */
 }
 
-.chat-bar-button{
-  @apply text-green-400 dark:text-green-300 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
-}
-
-.chat-bar-button:hover{
-  @apply bg-gray-800 dark:bg-gray-700
-}
-
-.chat-bar-button:active{
-  @apply bg-gray-700 dark:bg-gray-600
-}
-
-.nav-button{
-  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-800 hover:text-green-400 dark:hover:bg-gray-700 text-green-300 dark:text-green-400
-}
-
-.nav-button-active{
-  @apply bg-green-700 text-gray-100 hover:bg-green-600 dark:bg-green-800 dark:hover:bg-green-700
-}
-
+/* --- SVG Buttons --- */
 .svg-button{
-  @apply text-green-500 dark:text-green-400 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+  @apply text-green-500 dark:text-green-500 p-2 rounded-none transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-green-500 border border-transparent hover:border-green-700; /* Green icon, no rounding, green focus/hover border */
 }
 
 .svg-button:hover{
-  @apply bg-gray-800 dark:bg-gray-700
+  @apply bg-gray-900 dark:bg-gray-900 text-green-300 dark:text-green-300; /* Dark bg, lighter green icon */
 }
-
 .svg-button:active{
-  @apply bg-gray-700 dark:bg-gray-600
+  @apply bg-gray-800 dark:bg-gray-800; /* Slightly lighter dark bg */
 }
 
+/* --- Nav Buttons --- */
 .nav-button{
-  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-800 dark:hover:bg-gray-700 text-green-400 dark:text-green-300
+  @apply px-3 py-2 rounded-none text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-800 dark:hover:bg-gray-800 text-green-500 dark:text-green-500 border border-transparent hover:border-gray-700; /* No rounding, green text */
 }
 
 .nav-button-active{
-  @apply bg-green-700 text-gray-100 hover:bg-green-600 dark:bg-green-800 dark:hover:bg-green-700
+  @apply bg-green-900 text-green-200 hover:bg-green-800 dark:bg-green-900 dark:hover:bg-green-800 border border-green-700; /* Dark green active bg */
 }
 
+/* --- On/Off Buttons --- */
 .btn-on{
-  @apply text-green-500 dark:text-green-400
+  @apply text-green-400 dark:text-green-400; /* Standard on green */
 }
 
 .btn-off{
-  @apply text-red-500 dark:text-red-400
+  @apply text-red-500 dark:text-red-500; /* Keep red for off/danger indication */
 }
 
+/* --- Interesting Facts Box --- */
 .interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-gray-800/80 dark:bg-black/80 rounded-lg shadow-lg transform hover:scale-105 border border-green-500
+  @apply mt-6 mb-6 p-4 bg-black/80 dark:bg-black/80 border border-green-800 rounded-none shadow-lg shadow-green-900/40 text-green-300 transform hover:scale-105; /* Black bg, green border/shadow */
 }
 
+/* --- Toolbar Buttons --- */
 .toolbar-button {
-  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
+  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300 text-green-500 dark:text-green-500; /* Green icon */
 }
-  
+
 .toolbar-button:hover {
-  @apply text-green-400;
-}
-.context-menu {
-  @apply absolute bg-opacity-90 bg-black border border-green-500 shadow-lg shadow-green-500/50 rounded-none py-2 min-w-[150px] z-[1000] font-mono;
-  
-  @apply dark:bg-opacity-90 dark:bg-gray-900 dark:border-green-400 dark:shadow-green-400/50;
-}
-
-.context-menu::before {
-  @apply content-[''] absolute inset-0 bg-gradient-to-b from-green-500/10 via-green-500/5 to-transparent bg-[length:100%_1000px] opacity-30 -z-10;
-}
-
-.context-menu-item {
-  @apply px-4 py-2 text-sm text-green-500 cursor-pointer transition-all duration-300 ease-in-out shadow-green-500/70;
-  
-  @apply hover:bg-green-900/40 hover:scale-105;
-  
-  @apply dark:text-green-400 dark:hover:bg-green-700/40;
-}
-
-.context-menu-separator {
-  @apply h-px bg-green-500 my-1 shadow-green-500;
-  
-  @apply dark:bg-green-400 dark:shadow-green-400;
-}
-
-.context-menu-item-disabled {
-  @apply text-gray-600 cursor-not-allowed shadow-none;
-  
-  @apply dark:text-gray-500;
-}
-
-.context-menu-item-icon {
-  @apply mr-2 text-green-500;
-  
-  @apply dark:text-green-400;
-}
-
-.context-menu-item::after {
-  @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-transparent via-green-500 to-transparent scale-x-0 origin-center transition-transform duration-300 ease-in-out;
-  
-  @apply dark:via-green-400;
-}
-
-.context-menu-item:hover::after {
-  @apply scale-x-100;
+  @apply text-green-300 dark:text-green-300; /* Lighter green on hover */
 }
 
 
-@keyframes borg-scan {
-  0% {
-    background-position: 0 0;
+/* --- Context Menu --- */
+/* Override the component layer for a more Borg look */
+@layer components {
+  .context-menu {
+    @apply absolute bg-black bg-opacity-95 border border-green-700 shadow-lg shadow-green-800/60 rounded-none py-1 min-w-[150px] z-[1000] font-mono; /* Black bg, green border/shadow, no rounding */
+    /* Remove matrix animation background */
   }
-  100% {
-    background-position: 0 1000px;
+
+  .context-menu-item {
+    @apply px-4 py-1.5 text-sm text-green-400 cursor-pointer transition-colors duration-150 ease-in-out;
+    @apply hover:bg-green-900 hover:text-green-200; /* Dark green hover */
+  }
+
+  .context-menu-separator {
+    @apply h-px bg-green-800 my-1 shadow-none; /* Dark green separator */
+  }
+
+  .context-menu-item-disabled {
+    @apply text-green-800 cursor-not-allowed shadow-none; /* Dark, dim green */
+  }
+
+  .context-menu-item-icon {
+    @apply mr-2 text-green-500; /* Standard green icon */
+  }
+
+  /* Remove hover ::after effect */
+   .context-menu-item::after {
+    content: none;
+   }
+}
+
+/* --- Steps Theming --- */
+/* Steps Container Styles */
+.steps-container {
+  @apply border border-green-800 rounded-none mb-4 bg-black dark:bg-black;
+}
+
+.steps-header {
+  @apply flex items-center p-3 bg-gray-950 dark:bg-gray-950 cursor-pointer border-b border-green-900 dark:border-green-800;
+}
+
+.steps-icon {
+  @apply mr-3 text-green-500; /* Green icon */
+}
+
+.steps-summary {
+  @apply flex-grow;
+}
+
+.steps-title {
+  @apply m-0 text-base font-semibold text-green-300 dark:text-green-300;
+}
+
+.steps-status {
+  @apply m-0 text-sm text-green-600 dark:text-green-600; /* Dimmer green */
+}
+
+.toggle-icon {
+  @apply text-sm text-green-700 dark:text-green-700; /* Darkest green */
+}
+
+.steps-content {
+  @apply p-4;
+}
+
+.steps-list {
+  @apply list-none p-0 m-0;
+}
+
+.step-item {
+  @apply mb-2 pl-4 border-l-2 border-green-700 dark:border-green-700 last:mb-0; /* Green left border */
+}
+
+/* Step Component Styles */
+.step-container {
+  @apply mb-4 transition-all duration-300 ease-in-out;
+}
+
+.step-wrapper {
+  @apply flex items-start p-2 rounded-none bg-gray-950 dark:bg-gray-950; /* Dark bg, no rounding */
+}
+
+.step-icon {
+  @apply flex-shrink-0 w-5 h-5 mr-3; /* Slightly smaller icon */
+}
+
+.icon-success {
+  @apply w-5 h-5 text-green-400 dark:text-green-400; /* Standard green */
+}
+
+.icon-fail {
+  @apply w-5 h-5 text-red-500 dark:text-red-500; /* Keep red for failure */
+}
+
+.icon-spinner {
+  @apply w-5 h-5 border-2 border-green-500 dark:border-green-500 border-t-transparent rounded-full animate-spin; /* Green spinner */
+}
+
+.step-content {
+  @apply flex-grow;
+}
+
+.step-text {
+  @apply text-base font-medium text-green-300 dark:text-green-300;
+}
+
+.step-description {
+  @apply mt-1 text-sm text-green-500 dark:text-green-500; /* Dimmer green description */
+}
+
+/* Transition Styles (Keep as is) */
+.fade-enter-active, .fade-leave-active {
+  @apply transition-opacity duration-300;
+}
+.fade-enter, .fade-leave-to {
+  @apply opacity-0;
+}
+
+/* Status Icon Styles */
+.status-icon {
+  @apply cursor-pointer transition-colors duration-300;
+}
+.icon {
+  @apply w-6 h-6;
+}
+.icon-text {
+  @apply text-xl font-bold text-green-300 dark:text-green-300;
+}
+
+/* --- User Settings Panel --- */
+.user-settings-panel {
+  @apply bg-black dark:bg-black space-y-6 p-4 md:p-6 rounded-none shadow-lg shadow-green-900/50 text-green-300 dark:text-green-300 border border-green-800; /* Black bg, green text/shadow/border */
+}
+
+/* --- Folder Items --- */
+.folder-item-base {
+  @apply flex flex-col items-center justify-center p-3 rounded-none cursor-pointer transition-all duration-200 hover:shadow-md hover:shadow-green-700/40;
+  @apply bg-gray-950 dark:bg-gray-950; /* Dark background */
+  @apply hover:bg-gray-900 dark:hover:bg-gray-900; /* Slightly lighter on hover */
+  @apply border border-green-800 hover:border-green-600; /* Green border */
+}
+
+.folder-item-icon {
+  @apply w-10 h-10 group-hover:scale-110 transition-transform duration-200 mb-1 text-green-500; /* Green icon */
+}
+
+.folder-item-label {
+  @apply mt-1 text-xs text-center text-green-400 dark:text-green-400; /* Green label */
+}
+
+/* Specific Folder Item Borders/Icons (use green variations) */
+.folder-item-personalities { @apply border-green-700 dark:border-green-700; }
+.folder-item-icon-personalities { @apply text-green-400 dark:text-green-400; }
+
+.folder-item-functions { @apply border-green-600 dark:border-green-600; }
+.folder-item-icon-functions { @apply text-green-500 dark:text-green-500; }
+
+.folder-item-configs { @apply border-green-500 dark:border-green-500; }
+.folder-item-icon-configs { @apply text-green-600 dark:text-green-600; }
+
+.folder-item-outputs { @apply border-green-400 dark:border-green-400; }
+.folder-item-icon-outputs { @apply text-green-700 dark:text-green-700; }
+
+.folder-item-discussions { @apply border-green-300 dark:border-green-300; }
+.folder-item-icon-discussions { @apply text-green-800 dark:text-green-800; }
+
+/* --- Settings Components Layer --- */
+@layer components {
+  .setting-item {
+      @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-2 border-t border-green-900 dark:border-green-800 first:border-t-0; /* Green separator */
+  }
+
+  .setting-label {
+      @apply label md:w-48 flex-shrink-0 text-green-400 dark:text-green-400; /* Use label class styles + green color */
+  }
+
+  .toggle-item {
+      @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-3 border-t border-green-900 dark:border-green-800 pt-3 mt-2; /* Green separator */
+  }
+
+  .toggle-label {
+      @apply label !mb-0 flex-grow cursor-pointer mr-4 text-green-300 dark:text-green-300; /* Use label styles, green color */
+  }
+
+  .toggle-description {
+      @apply block text-xs text-green-600 dark:text-green-600 font-normal mt-1; /* Dim green description */
+  }
+
+  /* Range Input Styles */
+  input[type='range'] {
+    @apply h-1 w-full cursor-pointer appearance-none rounded-none bg-gray-700 dark:bg-gray-700; /* Gray track, no rounding */
+  }
+  input[type='range']::-webkit-slider-thumb {
+      @apply w-4 h-4 bg-green-500 dark:bg-green-500 rounded-sm appearance-none cursor-pointer transition-colors duration-200 ease-in-out shadow-sm shadow-black; /* Square-ish green thumb */
+       margin-top: -7px; /* Adjust thumb position */
+  }
+  input[type='range']::-moz-range-thumb {
+      @apply w-4 h-4 bg-green-500 dark:bg-green-500 rounded-sm border-none cursor-pointer transition-colors duration-200 ease-in-out shadow-sm shadow-black; /* Square-ish green thumb */
+  }
+  /* Redefine track for Webkit/Mozilla if needed, though base class covers it */
+  input[type='range']::-webkit-slider-runnable-track {
+       @apply h-1 bg-gray-700 dark:bg-gray-700 rounded-none w-full;
+  }
+  input[type='range']::-moz-range-track {
+       @apply h-1 bg-gray-700 dark:bg-gray-700 rounded-none w-full;
+  }
+
+  /* Success button variant (using primary for consistency) */
+  .btn-success {
+    @apply btn btn-primary; /* Use primary button style */
+  }
+
+  /* Small button size modifier */
+  .btn-sm {
+    @apply py-1 px-2 text-sm;
+  }
+
+  /* Small input size modifier */
+  .input-sm {
+      @apply input px-3 py-1 text-sm rounded-none; /* Use .input styles, no rounding */
+  }
+
+  /* Range input base style */
+  .range-input {
+      @apply h-1 bg-gray-700 dark:bg-gray-700 rounded-none appearance-none cursor-pointer w-full; /* Base track */
+  }
+  .range-input::-webkit-slider-thumb {
+      @apply w-4 h-4 bg-green-500 dark:bg-green-500 rounded-sm appearance-none cursor-pointer transition-colors duration-200 ease-in-out shadow-sm shadow-black;
+      margin-top: -7px;
+  }
+  .range-input::-moz-range-thumb {
+      @apply w-4 h-4 bg-green-500 dark:bg-green-500 rounded-sm border-none cursor-pointer transition-colors duration-200 ease-in-out shadow-sm shadow-black;
+  }
+
+  /* Status dot colors */
+  .bg-status-healthy { @apply bg-green-500 dark:bg-green-500; } /* Standard green */
+  .bg-status-unhealthy { @apply bg-red-600 dark:bg-red-600; } /* Keep red */
+  .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-500; } /* Keep yellow */
+  .bg-status-unknown { @apply bg-gray-600 dark:bg-gray-600; } /* Neutral gray */
+}
+
+
+/* --- Prose Styling (Borg Adaptation) --- */
+@layer components {
+  .prose-borg { /* Renamed from prose-blue */
+    h3 { @apply text-xl font-semibold text-green-500 dark:text-green-500 mb-3 mt-5 border-b border-green-800 dark:border-green-700 pb-1; }
+    ul { @apply list-disc pl-6 space-y-1.5 mb-4 text-green-300 dark:text-green-300; }
+    li::marker { color: theme('colors.green.500'); } /* Green marker */
+    code { @apply bg-gray-800 dark:bg-gray-900 px-1.5 py-0.5 rounded-none text-sm font-mono text-green-400 dark:text-green-400; } /* Dark bg, green code, no rounding */
+    blockquote { @apply border-l-4 border-green-600 dark:border-green-600 pl-4 italic text-green-400 dark:text-green-400 my-4 py-1 bg-gray-950 dark:bg-gray-950; } /* Green border, dark bg */
+    a { @apply link font-medium text-green-400 hover:text-green-300; } /* Use link style */
+    p { @apply mb-3 leading-relaxed text-green-300 dark:text-green-300; } /* Green paragraph */
+  }
+
+  /* Dark mode inversion for prose is implicit with dark: prefixes above */
+}
+
+/* --- Thinking Prose Styling --- */
+.thinking-prose {
+  /* Base styles inherit from body/prose */
+}
+
+/* Define dark mode variables (already handled by dark: prefixes) */
+/* .dark .thinking-prose { ... } */
+
+.thinking-prose h1,
+.thinking-prose h2,
+.thinking-prose h3,
+.thinking-prose h4,
+.thinking-prose h5,
+.thinking-prose h6 {
+  @apply mt-5 mb-2 font-semibold text-green-400 dark:text-green-400 font-['Orbitron']; /* Green headings */
+}
+.thinking-prose h1 { @apply text-xl; }
+.thinking-prose h2 { @apply text-lg; }
+.thinking-prose h3 { @apply text-base; }
+
+.thinking-prose p {
+  @apply my-3 leading-relaxed text-green-300 dark:text-green-300; /* Green text */
+}
+
+.thinking-prose ul,
+.thinking-prose ol {
+  @apply my-3 pl-6 text-green-300 dark:text-green-300; /* Green lists */
+}
+.thinking-prose li::marker { color: theme('colors.green.500'); }
+
+.thinking-prose li > p {
+  @apply my-1;
+}
+
+.thinking-prose code:not(pre code) {
+  @apply px-1 py-0.5 bg-gray-800 dark:bg-gray-900 rounded-none text-sm font-mono text-green-400 dark:text-green-400 before:content-none after:content-none; /* Borg code style */
+}
+
+.thinking-prose pre {
+  @apply p-4 rounded-none overflow-x-auto my-4 shadow-inner bg-black dark:bg-black border border-green-900; /* Black bg, green border, no rounding */
+}
+.thinking-prose pre code {
+ @apply p-0 bg-transparent text-sm font-mono text-green-300 dark:text-green-300; /* Green code text */
+}
+
+.thinking-prose blockquote {
+  @apply pl-4 py-1 border-l-4 border-green-600 italic my-4 text-green-400 dark:text-green-400 bg-gray-950 dark:bg-gray-950; /* Borg blockquote style */
+}
+
+.thinking-prose a {
+  @apply hover:underline break-words text-green-400 dark:text-green-400 hover:text-green-300; /* Borg link style */
+}
+
+/* Custom Scrollbar for thinking-prose */
+.thinking-prose::-webkit-scrollbar { @apply w-2 h-2; }
+.thinking-prose::-webkit-scrollbar-track { @apply bg-black dark:bg-black rounded-none; }
+.thinking-prose::-webkit-scrollbar-thumb { @apply bg-green-700 dark:bg-green-600 rounded-none hover:bg-green-500 dark:hover:bg-green-400; }
+
+.thinking-prose {
+  scroll-behavior: smooth;
+}
+
+/* Bounce animation for thinking dots (Keep original keyframes) */
+@keyframes bounce {
+  0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+.animate-bounce { animation: bounce 1s infinite; }
+
+/* --- Help Content Styling --- */
+.help-content {
+    /* Apply the Borg prose style */
+    @apply prose-borg;
+}
+/* Override specific elements if prose-borg isn't sufficient */
+.help-content h2 {
+  @apply text-2xl font-semibold text-green-500 dark:text-green-500 mb-4 mt-6 border-b border-green-800 dark:border-green-700 pb-2 font-['Orbitron'];
+}
+.help-content h3 {
+  @apply text-xl font-semibold text-green-600 dark:text-green-600 mb-3 mt-5;
+}
+/* Lists, code, blockquote should inherit from prose-borg */
+
+/* Code block container specific styling */
+.help-content pre.hljs {
+   @apply bg-black dark:bg-black border border-green-900 p-4 rounded-none overflow-x-auto my-4 shadow-inner text-sm; /* Black bg, green border */
+}
+.help-content pre.hljs code {
+   @apply bg-transparent p-0 text-green-300 font-mono; /* Ensure code inside is styled correctly */
+}
+.help-content p {
+   @apply mb-4 leading-relaxed text-green-300 dark:text-green-300 text-base md:text-lg; /* Match theme's p */
+}
+.help-content img {
+   @apply rounded-none shadow-md shadow-green-900/50 my-4 max-w-full h-auto mx-auto border border-green-800; /* No rounding, green border/shadow */
+}
+.help-content table {
+   @apply w-full my-4 border-collapse border border-green-700 dark:border-green-700;
+}
+.help-content th {
+   @apply bg-gray-900 dark:bg-gray-900 p-2 border border-green-700 dark:border-green-700 text-left font-semibold text-green-400 dark:text-green-400; /* Dark header, green text/border */
+}
+.help-content td {
+   @apply p-2 border border-green-800 dark:border-green-800 text-green-300 dark:text-green-300 bg-black dark:bg-black; /* Black cells, green text/border */
+}
+
+/* Responsive sidebar (Keep structure, adapt colors if needed) */
+@media (max-width: 768px) {
+ .help-left-bar {
+   @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full bg-black border-r border-green-700; /* Black sidebar bg, green border */
+ }
+ .help-main-content {
+   @apply ml-0;
+ }
+  .help-left-bar.open {
+     @apply translate-x-0;
+   }
+}
+
+/* --- Animated Thought Bubble --- */
+/* Bubble animation keyframes (Keep original) */
+@keyframes bubble-in-down { /* ... */ }
+@layer utilities { .animate-bubble-in-down { /* ... */ } }
+
+@layer components {
+  .animated-thought-bubble {
+    @apply absolute top-full left-1/2 mt-2
+           w-max max-w-[160px]
+           opacity-0 invisible
+           bg-black dark:bg-black border border-green-600 rounded-none shadow-lg shadow-green-800/50 p-2 text-center z-20 /* Borg styling */
+           pointer-events-none
+           origin-top
+           transition-opacity duration-150
+           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down;
+    @apply text-green-300 dark:text-green-300 text-xs; /* Green text */
+  }
+
+  /* Arrow for the bubble */
+  .animated-thought-bubble::after {
+    content: '';
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2
+           border-[6px] border-solid border-transparent /* Slightly smaller arrow */
+           border-b-black dark:border-b-black; /* Arrow color matches bubble bg */
+     /* Add border to the arrow itself */
+     border-bottom-color: theme('colors.green.600'); /* Make arrow tip green */
+
   }
 }
+
+
+/* --- Playground Component Additions --- */
+@layer components {
+  .active-tab-button {
+    /* Use primary button style, small */
+    @apply btn btn-primary btn-sm;
+    /* Active state emphasis */
+    @apply ring-2 ring-offset-1 ring-offset-black dark:ring-offset-black ring-green-400 dark:ring-green-400;
+  }
+  .inactive-tab-button {
+    /* Use secondary button style, small */
+    @apply btn btn-secondary btn-sm;
+     /* Dim inactive state */
+    @apply opacity-70 hover:opacity-100;
+  }
+}
+
+/* Ensure matrix-rain keyframes are not included unless specifically wanted for a different element */
+/* @keyframes matrix-rain { ... } */
