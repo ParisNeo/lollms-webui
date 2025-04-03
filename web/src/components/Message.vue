@@ -757,12 +757,11 @@ export default {
             this.$emit('continueMessage', this.message.id, this.message.content)
         },
         getImgUrl() {
-            if (this.avatar && this.avatar.startsWith('http')) {
+            console.log("this.avatar")
+            console.log(this.avatar)
+            if (this.avatar) {
                 return this.avatar; // If avatar is a full URL
-            } else if (this.avatar) {
-                 // Assuming avatar is a relative path on the server
-                return (this.host || '') + '/' + this.avatar.split('/').pop(); // Use host + filename
-            }
+            } 
             //console.log("No valid avatar found, using placeholder.")
             return botImgPlaceholder;
         },

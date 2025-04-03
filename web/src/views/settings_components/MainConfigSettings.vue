@@ -262,7 +262,52 @@
              </div>
         </div>
 
-
+<!-- Security Measures Section (New) -->
+<div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
+            <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Security Measures</h3>
+            <div class="toggle-item">
+                <label for="turn_on_setting_update_validation" class="toggle-label">
+                    Validate Setting Updates
+                    <span class="toggle-description">Enable validation for changes to configuration settings to prevent unauthorized or invalid updates.</span>
+                </label>
+                <ToggleSwitch id="turn_on_setting_update_validation" :checked="config.turn_on_setting_update_validation" @update:checked="updateValue('turn_on_setting_update_validation', $event)" />
+            </div>
+            <div class="toggle-item">
+                <label for="turn_on_code_execution" class="toggle-label">
+                    Allow Code Execution
+                    <span class="toggle-description">Permit the execution of code snippets within the application (use with caution).</span>
+                </label>
+                <ToggleSwitch id="turn_on_code_execution" :checked="config.turn_on_code_execution" @update:checked="updateValue('turn_on_code_execution', $event)" />
+            </div>
+            <div class="toggle-item">
+                <label for="turn_on_code_validation" class="toggle-label">
+                    Validate Executed Code
+                    <span class="toggle-description">Enable validation of code before execution to ensure safety and correctness.</span>
+                </label>
+                <ToggleSwitch id="turn_on_code_validation" :checked="config.turn_on_code_validation" @update:checked="updateValue('turn_on_code_validation', $event)" />
+            </div>
+            <div class="toggle-item">
+                <label for="turn_on_open_file_validation" class="toggle-label">
+                    Validate File Opening
+                    <span class="toggle-description">Check files before opening to prevent access to unauthorized or harmful content.</span>
+                </label>
+                <ToggleSwitch id="turn_on_open_file_validation" :checked="config.turn_on_open_file_validation" @update:checked="updateValue('turn_on_open_file_validation', $event)" />
+            </div>
+            <div class="toggle-item">
+                <label for="turn_on_send_file_validation" class="toggle-label">
+                    Validate File Sending
+                    <span class="toggle-description">Validate files before sending to ensure they meet security and format requirements.</span>
+                </label>
+                <ToggleSwitch id="turn_on_send_file_validation" :checked="config.turn_on_send_file_validation" @update:checked="updateValue('turn_on_send_file_validation', $event)" />
+            </div>
+            <div class="toggle-item">
+                <label for="turn_on_language_validation" class="toggle-label">
+                    Validate Language Inputs
+                    <span class="toggle-description">Ensure language inputs are valid and safe before processing.</span>
+                </label>
+                <ToggleSwitch id="turn_on_language_validation" :checked="config.turn_on_language_validation" @update:checked="updateValue('turn_on_language_validation', $event)" />
+            </div>
+        </div>
         <!-- Thinking Methods Section -->
         <div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
             <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Thinking Methods</h3>
@@ -507,7 +552,7 @@ export default {
             this.loadLocalPresets();
             try {
                 // Use prop function
-                const response = await this.api_post_req('/get_thinking_methods');
+                const response = await this.api_post_req('get_thinking_methods');
                 if (response.status === 'success') {
                     this.thinkingPresets = response.thinking_methods || [];
                      // Set initial selectedPresetName based on current prop value
