@@ -1,5 +1,14 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 160
+version: 161
+
+# topbar
+current_language: english
+
+# skills library
+activate_skills_lib: false # Activate vectorizing previous conversations
+skills_lib_database_name: "default" # Default skills database
+
+max_summary_size: 512 # in tokens
 
 # video viewing and news recovering
 last_viewed_video: null
@@ -21,6 +30,9 @@ turn_on_send_file_validation: true
 turn_on_language_validation: true
 
 force_accept_remote_access: false
+
+# Execution engines parameters
+pdf_latex_path: null
 
 # Server information
 headless_server_mode: false
@@ -73,12 +85,12 @@ personalities: ["generic/lollms"]
 active_personality_id: 0
 override_personality_model_parameters: false #if true the personality parameters are overriden by those of the configuration (may affect personality behaviour) 
 
-extensions: []
 
+# interaction parameters
 user_name: user
 user_description: ""
-use_assistant_name_in_discussion: false
-use_user_name_in_discussions: false
+use_assistant_name_in_discussion: true
+use_user_name_in_discussions: true
 use_model_name_in_discussions: false
 user_avatar: null
 use_user_informations_in_discussion: false
@@ -86,165 +98,23 @@ use_user_informations_in_discussion: false
 # UI parameters
 discussion_db_name: default
 
-# Automatic updates
+#automatic stuff
+auto_show_browser: true
+auto_save: true
+auto_title: false
+
+# debug information
 debug: false
 debug_show_final_full_prompt: false
 debug_show_chunks: false
-
 debug_log_file_path: ""
+
+# Automatic updates
 auto_update: true
 auto_sync_personalities: true
 auto_sync_extensions: true
 auto_sync_bindings: true
 auto_sync_models: true
-
-
-
-auto_save: true
-auto_title: false
-# Install mode (cpu, cpu-noavx, nvidia-tensorcores, nvidia, amd-noavx, amd, apple-intel, apple-silicon)
-hardware_mode: nvidia-tensorcores
-# Automatically open the browser
-auto_show_browser: true
-
-# copy to clipboard 
-copy_to_clipboard_add_all_details: false
-
-# -------------------- Services global configurations --------------------------
-# Select the active test to speach, text to image and speach to text services
-active_tts_service: "None" # xtts (offline), openai_tts (API key required), elevenlabs_tts, fish_tts (API key required)
-active_tti_service: "None" # autosd (offline), diffusers (offline), diffusers_client (online), dall-e (online), midjourney (online)
-active_stt_service: "None" # whisper (offline), asr (offline or online), openai_whiosper (API key required)
-active_ttm_service: "None" # musicgen (offline)
-active_ttv_service: "None" # novita_ai, cog_video_x, diffusers, lumalab (offline)
-# -------------------- Services --------------------------
-
-# ***************** STT *****************
-stt_input_device: 0
-
-
-# STT service
-stt_listening_threshold: 1000
-stt_silence_duration: 2
-stt_sound_threshold_percentage: 10
-stt_gain: 1.0 
-stt_rate: 44100
-stt_channels: 1
-stt_buffer_size: 10
-
-stt_activate_word_detection: false
-stt_word_detection_file: null
-
-
-
-# ASR STT service 
-asr_enable: false
-asr_base_url: http://localhost:9000
-
-# openai_whisper configuration
-openai_whisper_key: ""
-openai_whisper_model: "whisper-1"
-
-
-# whisper configuration
-whisper_activate: false
-whisper_model: base
-
-
-# ***************** TTS *****************
-tts_output_device: 0
-
-# Voice service
-auto_read: false
-xtts_current_voice: null
-xtts_current_language: en
-xtts_stream_chunk_size: 100
-xtts_temperature: 0.75
-xtts_length_penalty: 1.0
-xtts_repetition_penalty: 5.0
-xtts_top_k: 50
-xtts_top_p: 0.85
-xtts_speed: 1
-xtts_enable_text_splitting: true
-xtts_freq: 22050
-
-# openai_whisper configuration
-openai_tts_key: ""
-openai_tts_model: "tts-1"
-openai_tts_voice: "alloy"
-
-
-elevenlabs_tts_key: ""
-elevenlabs_tts_model_id: "eleven_turbo_v2_5"
-elevenlabs_tts_voice_stability: 0.5
-elevenlabs_tts_voice_boost: 0.5
-elevenlabs_tts_voice_id: EXAVITQu4vr4xnSDxMaL
-
-fish_tts_key: ""
-fish_tts_voice: "default"
-
-# ***************** TTI *****************
-
-use_negative_prompt: true
-use_ai_generated_negative_prompt: false
-negative_prompt_generation_prompt: Generate negative prompt for the following prompt. negative prompt is a set of words that describe things we do not want to have in the generated image.
-default_negative_prompt: (((text))), (((ugly))), (((duplicate))), ((morbid)), ((mutilated)), out of frame, extra fingers, mutated hands, ((poorly drawn hands)), ((poorly drawn face)), (((mutation))), (((deformed))), blurry, ((bad anatomy)), (((bad proportions))), ((extra limbs)), cloned face, (((disfigured))), ((extra arms)), (((extra legs))), mutated hands, (fused fingers), (too many fingers), (((long neck))), ((watermark)), ((robot eyes))
-
-# Image generation service
-enable_sd_service: false
-sd_base_url: http://localhost:7860
-
-# Image generation service
-enable_fooocus_service: false
-fooocus_base_url: http://localhost:7860
-
-# diffusers
-diffusers_offloading_mode: sequential_cpu_offload # sequential_cpu_offload
-diffusers_model: v2ray/stable-diffusion-3-medium-diffusers
-
-# diffusers client
-diffusers_client_base_url: http://localhost:8593
-
-
-# Dall e service key
-dall_e_key: ""
-dall_e_generation_engine: "dall-e-3"
-
-# Midjourney service key
-midjourney_key: ""
-midjourney_timeout: 300
-midjourney_retries: 1
-
-# Image generation service comfyui
-enable_comfyui_service: false
-comfyui_base_url: http://127.0.0.1:8188/
-comfyui_model: v1-5-pruned-emaonly.ckpt
-
-# Motion control service
-enable_motion_ctrl_service: false
-motion_ctrl_base_url: http://localhost:7861
-
-
-# ***************** TTV *****************
-# Novita_ai configuration
-novita_ai_key: ""
-
-cog_video_x_model: "THUDM/CogVideoX-5b"
-
-# lumalabs configuration
-lumalabs_key: ""
-
-# ***************** TTT *****************
-
-# ollama service
-enable_ollama_service: false
-ollama_base_url: http://localhost:11434
-
-# petals service
-enable_petals_service: false
-petals_base_url: http://localhost:8064
-petals_model_path: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-petals_device: cuda
 
 # lollms service
 enable_lollms_service: false
@@ -260,23 +130,50 @@ activate_ollama_emulator: true
 activate_openai_emulator: true
 activate_mistralai_emulator: true
 
+
+# Install mode (cpu, cpu-noavx, nvidia-tensorcores, nvidia, amd-noavx, amd, apple-intel, apple-silicon)
+hardware_mode: nvidia-tensorcores
+
+# copy to clipboard 
+copy_to_clipboard_add_all_details: false
+
+# -------------------- Services global configurations --------------------------
+# Select the active test to speach, text to image and speach to text services
+active_tts_service: "None" # xtts (offline), openai_tts (API key required), elevenlabs_tts, fish_tts (API key required)
+active_tti_service: "None" # autosd (offline), diffusers (offline), diffusers_client (online), dall-e (online), midjourney (online)
+active_stt_service: "None" # whisper (offline), asr (offline or online), openai_whiosper (API key required)
+active_ttm_service: "None" # musicgen (offline)
+active_ttv_service: "None" # novita_ai, cog_video_x, diffusers, lumalab (offline)
+# -------------------- Services --------------------------
+
+# ***************** STT *****************
+stt_input_device: 0
+stt_listening_threshold: 1000
+stt_silence_duration: 2
+stt_sound_threshold_percentage: 10
+stt_gain: 1.0 
+stt_rate: 44100
+stt_channels: 1
+stt_buffer_size: 10
+
+stt_activate_word_detection: false
+stt_word_detection_file: null
+
+
+# ***************** TTS *****************
+tts_output_device: 0
+auto_read: false
+
+# ***************** TTV *****************
+
+# ***************** TTT *****************
+
+
+# Smart router
 use_smart_routing: false
 smart_routing_router_model : ""
 smart_routing_models_description : {}
 restore_model_after_smart_routing : false
-
-
-# elastic search service
-elastic_search_service: false
-elastic_search_url: http://localhost:9200
-
-# vll service
-enable_vllm_service: false
-vllm_url: http://localhost:8000
-vllm_model_path: TinyLlama/TinyLlama-1.1B-Chat-v1.0
-vllm_gpu_memory_utilization: 0.9
-vllm_max_model_len: 4096
-vllm_max_num_seqs: 256
 
 
 # Audio
@@ -320,11 +217,6 @@ rag_vectorizer_openai_key: "" # The open ai key (if not provided, this will use 
 
 contextual_summary: false #If activated this will completely replace the rag and instead will use contextual summary
 
-activate_skills_lib: false # Activate vectorizing previous conversations
-skills_lib_database_name: "default" # Default skills database
-
-max_summary_size: 512 # in tokens
-
 rag_put_chunk_informations_into_context: false # if true then each chunk will be preceded by its information which may waste some context space but allow the ai to point where it found th einformation
 rag_build_keys_words: true # If true, when querrying the database, we use keywords generated from the user prompt instead of the prompt itself.
 
@@ -337,13 +229,11 @@ internet_vectorization_nb_chunks: 4 # number of chunks to use
 internet_nb_search_pages: 8 # number of pages to select
 internet_quick_search: false # If active the search engine will not load and read the webpages
 internet_activate_search_decision: false # If active the ai decides by itself if it needs to do search
-# Helpers
-pdf_latex_path: null
+
 
 # boosting information
 positive_boost: null
 negative_boost: null
-current_language: english
 fun_mode: false
 think_first_mode: false
 thinking_prompt:   "Use a think first process to answer the user:

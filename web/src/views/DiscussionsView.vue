@@ -368,7 +368,7 @@
                                     class="w-full h-full object-cover"
                                 >
                             </button>
-                            <div class="animated-thought-bubble">
+                            <div class="animated-thought-bubble z-50">
                                 <span class="text-xs font-medium mb-1 block text-slate-800 dark:text-slate-100 cursor-pointer"
                                     @click.prevent="setModel(item)"
                                 >{{ item.name }}</span>

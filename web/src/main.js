@@ -8,7 +8,6 @@ import './assets/tailwind.css'
 
 const app = createApp(App)
 const STARRED_LOCAL_STORAGE_KEY = 'lollms_starred_personalities';
-
 function copyObject(obj) {
   if (obj === null || typeof obj !== 'object') {
     return obj;
@@ -419,17 +418,6 @@ export const store = createStore({
             commit('setDatabases', []);
         }
       },
-
-      async fetchIsRtOn({ commit }) {
-        try {
-          const response = await axios.get('/is_rt_on');
-          commit('setIsRtOn', response?.data?.status || false);
-        } catch(error) {
-            console.error("Error fetching RT status:", error);
-            commit('setIsRtOn', false);
-        }
-      },
-
       async fetchLanguages({ commit, state }) {
         try {
           const response = await axios.post('/get_personality_languages_list', { client_id: state.client_id });
@@ -452,7 +440,7 @@ export const store = createStore({
 
       async changeLanguage({ dispatch, state }, new_language) {
         try {
-          let response = await api_post_req('/set_personality_language', { language: new_language });
+          let response = await api_post_req('set_personality_language', { language: new_language });
 
           if(response?.status){
               await dispatch('fetchLanguage');
@@ -760,7 +748,31 @@ export const store = createStore({
          } else {
             console.warn("Could not find personality in main list to update starred status:", personalityPath);
          }
-      }
+      },
+      
+      async applyConfiguration({ commit, state }) {
+          try {
+              const res = await axios.post('/apply_settings', { client_id:state.client_id, config: state.config }, { headers: state.posts_headers });
+              if (res.data.status) {
+                 state.toast.showToast("Settings applied. Refreshing...", 4, true);
+                  await this.refreshConfigInView(); // Refreshes store, resets local state
+              } else {
+                 state.toast.showToast(`Apply failed: ${res.data.error || 'Error'}`, 4, false);
+              }
+          } catch (error) {
+             state.toast.showToast(`Error applying settings: ${error.message || error}`, 4, false);
+          }
+      },
+      async saveConfiguration({ commit, state }) {
+            this.isLoading = true;
+            this.loading_text = "Saving configuration...";
+          try {
+              const res = await axios.post('/save_settings', { client_id:state.client_id }, { headers: state.posts_headers });
+              if (res.data.status)state.toast.showToast("Settings saved successfully.", 4, true);
+              else state.messageBox.showMessage(`Error saving settings: ${res.data.error || 'Error'}`);
+          } catch (error) {state.messageBox.showMessage(`Error saving settings: ${error.message}`);
+          } finally { this.isLoading = false; }
+      },
     }
 })
 

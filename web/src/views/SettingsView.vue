@@ -127,15 +127,15 @@ export default {
             sections: [
                 { id: 'system_status', name: 'System Status', icon: 'activity', component: markRaw(SystemStatusSettings) },
                 { id: 'main_config', name: 'Main Config', icon: 'sliders', component: markRaw(MainConfigSettings) },
+                { id: 'model_config', name: 'Model Parameters', icon: 'cpu', component: markRaw(ModelConfigSettings) },
                 { id: 'smart_routing', name: 'Smart Routing', icon: 'git-branch', component: markRaw(SmartRoutingSettings) },
                 { id: 'data_management', name: 'Data Management', icon: 'database', component: markRaw(DataManagementSettings) },
                 { id: 'internet', name: 'Internet', icon: 'wifi', component: markRaw(InternetSettings) },
                 { id: 'services_zoo', name: 'Services Zoo', icon: 'server', component: markRaw(ServicesZooSettings) },
-                { id: 'model_config', name: 'Model Parameters', icon: 'cpu', component: markRaw(ModelConfigSettings) },
-                { id: 'binding_zoo', name: 'Bindings', icon: 'link', component: markRaw(BindingZooSettings) },
-                { id: 'models_zoo', name: 'Models', icon: 'package', component: markRaw(ModelsZooSettings) },
-                { id: 'personalities_zoo', name: 'Personalities', icon: 'users', component: markRaw(PersonalitiesZooSettings) },
-                { id: 'function_calls_zoo', name: 'Function Calls', icon: 'tool', component: markRaw(FunctionCallsZooSettings) },
+                { id: 'binding_zoo', name: 'Bindings Zoo', icon: 'link', component: markRaw(BindingZooSettings) },
+                { id: 'models_zoo', name: 'Models Zoo', icon: 'package', component: markRaw(ModelsZooSettings) },
+                { id: 'personalities_zoo', name: 'Personalities Zoo', icon: 'users', component: markRaw(PersonalitiesZooSettings) },
+                { id: 'function_calls_zoo', name: 'Function Calls Zoo', icon: 'tool', component: markRaw(FunctionCallsZooSettings) },
             ]
         };
     },
