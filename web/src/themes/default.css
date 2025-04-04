@@ -256,7 +256,7 @@ textarea, input, select {
 
 /* Updated Card Background for Dark Mode */
 .card {
-  @apply bg-white dark:bg-slate-800 rounded-lg shadow-md p-6 text-slate-800 dark:text-slate-200;
+  @apply bg-white dark:bg-slate-800 rounded-lg shadow-md p-4 text-slate-800 dark:text-slate-200; /* Reduced default padding */
 }
 
 /* Updated Input Styles for Dark Mode */
@@ -941,20 +941,21 @@ button:hover {
 @layer components {
   /* Updated Thought Bubble for Dark Mode */
   .animated-thought-bubble {
-    @apply absolute top-full left-1/2 mt-2
-           w-max max-w-[160px]
+    @apply absolute top-full left-1/2 mt-1 /* Reduce margin slightly */
+           w-max max-w-[150px] /* Slightly reduce max width */
            opacity-0 invisible
-           bg-blue-200 dark:bg-slate-700 rounded-lg shadow-xl p-2 text-center z-20 /* Use slate */
+           bg-blue-200 dark:bg-slate-700 rounded-lg shadow-xl p-2 text-center z-50 /* Increased z-index */
            pointer-events-none
            origin-top
            transition-opacity duration-150
            group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down;
   }
-
+  
+  /* Also update the ::after pseudo-element if needed (likely fine) */
   .animated-thought-bubble::after {
     content: '';
     @apply absolute bottom-full left-1/2 transform -translate-x-1/2
-           border-[7px] border-solid border-transparent
+           border-[6px] border-solid border-transparent /* Slightly smaller arrow */
            border-b-blue-200 dark:border-b-slate-700; /* Use slate */
   }
 }

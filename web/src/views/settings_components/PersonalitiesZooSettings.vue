@@ -436,7 +436,7 @@ export default {
              const obj = { id: finalId };
              try {
                  // Use api_post_req prop
-                 const res = await this.api_post_req(`/select_personality`, obj);
+                 const res = await this.api_post_req(`select_personality`, obj);
                  return res; // Assuming res already contains {status, ...}
              } catch (error) {
                  return { status: false, error: error.message };
@@ -478,7 +478,7 @@ export default {
                       category: pers.category || "",
                       folder: pers.folder || "",
                   };
-                  const res = await this.api_post_req('/mount_personality', obj);
+                  const res = await this.api_post_req('mount_personality', obj);
                   return res;
               } catch (error) {
                   return { status: false, error: error.message };
@@ -515,7 +515,7 @@ export default {
              }
              const obj = { path: path_to_unmount };
              try {
-                  const res = await this.api_post_req('/unmount_personality', obj);
+                  const res = await this.api_post_req('unmount_personality', obj);
                   return res;
              } catch (error) {
                  return { status: false, error: error.message };
@@ -526,7 +526,7 @@ export default {
             if (!yes) return;
             this.show_toast(`Unmounting all...`, 3, true);
             this.isLoading = true; // Use component loading state for this global action
-            const res = await this.api_post_req('/unmount_all_personalities');
+            const res = await this.api_post_req('unmount_all_personalities');
             if (res && res.status) {
                  await this.$store.dispatch('refreshConfig');
                  await this.$store.dispatch('refreshMountedPersonalities');
@@ -570,7 +570,7 @@ export default {
             if (pers.isProcessing) return;
              this.setPersonalityProcessing(persEntry, true);
             try {
-                const res = await this.api_post_req(`/get_personality_config`, {
+                const res = await this.api_post_req(`get_personality_config`, {
                     category: pers.category, name: pers.folder,
                 });
                 if (res.status && res.config) {
@@ -639,7 +639,7 @@ export default {
                        const result = await this.show_universal_form(settingsSchema, `Settings - ${pers.name}`, "Save", "Cancel");
                        if (result !== null && result !== undefined) {
                            this.setPersonalityProcessing(persEntry, true); // Keep processing
-                            const setResponse = await this.api_post_req(`/set_active_personality_settings`, result);
+                            const setResponse = await this.api_post_req(`set_active_personality_settings`, result);
                             if (setResponse?.status) {
                                 this.show_toast(`Settings for ${pers.name} updated.`, 4, true);
                             } else {

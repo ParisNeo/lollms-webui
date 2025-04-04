@@ -10,7 +10,6 @@ import NodesView from '../views/NodesView.vue'
 import ComfyuiView from '../views/ComfyuiView.vue'
 import AutoSDView from '../views/AutoSDView.vue'
 import AppsZoo from '../views/AppsZoo.vue'
-import PersonalitiesZoo from '../views/PersonalitiesZoo.vue'
 
 
 const router = createRouter({
@@ -20,12 +19,7 @@ const router = createRouter({
       path: '/apps_view/',
       name: 'AppsZoo',
       component: AppsZoo
-    },
-    {
-      path: '/personalities_view/',
-      name: 'PersonalitiesZoo',
-      component: PersonalitiesZoo
-    },    
+    },   
     {
       path: '/auto_sd_view/',
       name: 'AutoSD',

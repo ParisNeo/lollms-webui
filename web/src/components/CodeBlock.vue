@@ -379,18 +379,18 @@ export default {
 
     // --- Sanitized HTML Output ---
     sanitizedExecutionOutputHtml() {
-        return DOMPurify.sanitize(this.executionOutput, {
-             USE_PROFILES: { html: true },
-             // Allow specific tags needed for common outputs like Mermaid, Graphviz, basic HTML
-             ADD_TAGS: ['iframe', 'svg', 'path', 'g', 'circle', 'rect', 'line', 'polyline', 'polygon', 'text', 'tspan', 'style', 'defs', 'marker', 'use'],
-             // Allow attributes needed by these tags + basic styling/links
-             ADD_ATTS: ['style', 'transform', 'cx', 'cy', 'r', 'x', 'y', 'width', 'height', 'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'points', 'd', 'marker-start', 'marker-end', 'viewBox', 'preserveAspectRatio', 'class', 'id', 'href', 'target', 'text-anchor', 'dominant-baseline', 'font-size', 'font-family', 'dy', 'aria-label'],
-             ALLOW_DATA_ATTR: true, // Allow data-* attributes
-             ALLOW_UNKNOWN_PROTOCOLS: false, // Prevent protocols like javascript:
-             FORBID_TAGS: ['script'], // Disallow script tags
-             FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur'] // Disallow dangerous event handlers
-        });
+        const config = {
+            USE_PROFILES: { html: true },
+            ADD_TAGS: ['iframe', 'svg', 'path', 'g', 'circle', 'rect', 'line', 'polyline', 'polygon', 'text', 'tspan', 'style', 'defs', 'marker', 'use', 'a'],
+            ADD_ATTS: ['style', 'transform', 'cx', 'cy', 'r', 'x', 'y', 'width', 'height', 'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'points', 'd', 'marker-start', 'marker-end', 'viewBox', 'preserveAspectRatio', 'class', 'id', 'href', 'target', 'text-anchor', 'dominant-baseline', 'font-size', 'font-family', 'dy', 'aria-label'],
+            ALLOW_DATA_ATTR: true,
+            ALLOW_UNKNOWN_PROTOCOLS: false,
+            FORBID_TAGS: ['script'],
+            FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
+        };
+        return DOMPurify.sanitize(this.executionOutput, config);
     },
+
 
     // UI Computeds for button states/icons
     copyIcon() { return this.isCopied ? 'check' : 'copy'; },

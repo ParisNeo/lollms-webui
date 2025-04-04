@@ -49,6 +49,25 @@ function saveStarredToLocalStorage(starredPaths) {
         console.error("Failed to save starred personalities to localStorage:", e);
     }
 }
+const STARRED_FUNCTIONS_LOCAL_STORAGE_KEY = 'lollms_starred_functions';
+
+function loadStarredFunctionsFromLocalStorage() {
+    try {
+        const stored = localStorage.getItem(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY);
+        return stored ? JSON.parse(stored) : [];
+    } catch (e) {
+        console.error("Failed to load starred functions from localStorage:", e);
+        return [];
+    }
+}
+
+function saveStarredFunctionsToLocalStorage(starredPaths) {
+    try {
+        localStorage.setItem(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY, JSON.stringify(starredPaths));
+    } catch (e) {
+        console.error("Failed to save starred functions to localStorage:", e);
+    }
+}
 
 
 export const store = createStore({
@@ -107,6 +126,7 @@ export const store = createStore({
         selectedModel:null,
         personalities:[],
         starredPersonalities: loadStarredFromLocalStorage(), // Initialize from localStorage
+        starredFunctions: loadStarredFunctionsFromLocalStorage(), // NEW: starred functions state
         diskUsage:null,
         ramUsage:null,
         vramUsage:null,
@@ -144,6 +164,12 @@ export const store = createStore({
         state.view_mode = mode;
         localStorage.setItem('lollms_webui_view_mode', mode);
       },
+      setFunctions(state, functions) { state.functions = functions; }, // NEW: if managing functions in store
+
+      setStarredFunctions(state, starredPaths) { // NEW
+          state.starredFunctions = starredPaths;
+          saveStarredFunctionsToLocalStorage(starredPaths);
+      },      
       setYesNoDialog(state, dialog) { state.yesNoDialog = dialog; },
       setUniversalForm(state, form) { state.universalForm = form; },
       setSaveConfiguration(state, saveFn) { state.saveConfiguration = saveFn; },
@@ -194,7 +220,30 @@ export const store = createStore({
       setCurrentModel(state, currentModel) { state.currentModel = currentModel; },
       setCurrentBinding(state, currentBinding){ state.currentBinding = currentBinding; },
       setDatabases(state, databases) { state.databases = databases; },
+      addStarredFunction(state, functionPath) { // NEW
+          if (!state.starredFunctions.includes(functionPath)) {
+              state.starredFunctions.push(functionPath);
+              saveStarredFunctionsToLocalStorage(state.starredFunctions);
+          }
+      },
+      removeStarredFunction(state, functionPath) { // NEW
+          const index = state.starredFunctions.indexOf(functionPath);
+          if (index > -1) {
+              state.starredFunctions.splice(index, 1);
+              saveStarredFunctionsToLocalStorage(state.starredFunctions);
+          }
+      },
 
+      updateFunction(state, newFunctionData){ // NEW: If managing functions in store
+          const index = state.functions.findIndex(f => (f.id || f.full_path) === (newFunctionData.id || newFunctionData.full_path));
+          if (index !== -1) {
+              const updatedFunc = { ...state.functions[index], ...newFunctionData };
+              state.functions.splice(index, 1, updatedFunc);
+          } else {
+            console.warn("Couldn't update function (not found):", newFunctionData.full_path);
+          }
+          // Maybe update mounted list if needed? For functions, this might not be necessary unless they are tied to config
+      },
       updatePersonality(state, newPersonality){
         const index = state.personalities.findIndex(p => (p.id || p.full_path) === (newPersonality.id || newPersonality.full_path));
         if (index !== -1) {
@@ -270,6 +319,8 @@ export const store = createStore({
       getCurrentModel: state => state.currentModel,
       getCurrentBinding: state => state.currentBinding,
       getDatabases: state => state.databases,
+      getFunctions: state => state.functions, // NEW: if managing functions in store
+      getStarredFunctions: state => state.starredFunctions, // NEW      
     },
     actions: {
       async fetchIsRtOn({ commit }) {
@@ -300,7 +351,24 @@ export const store = createStore({
           commit('setVersion', 'unknown (error)');
         }
       },
+        // NEW: Action to toggle function star status
+        toggleStarFunction({ commit, state, dispatch }, func) {
+          if (!func || !func.full_path) {
+              console.warn("Attempted to toggle star on invalid function:", func);
+              return;
+          }
+          const functionPath = func.full_path;
+          const isCurrentlyStarred = state.starredFunctions.includes(functionPath);
 
+          if (isCurrentlyStarred) {
+              commit('removeStarredFunction', functionPath);
+          } else {
+              commit('addStarredFunction', functionPath);
+          }
+          // Update the isStarred status in the main functions list if managed by store
+          // If function list is local to component, component needs to handle its own state update
+          // dispatch('updateFunctionStarredStatus', { functionPath, isStarred: !isCurrentlyStarred }); // Uncomment if functions list is in store
+      },
       async refreshConfig({ commit, state }) {
         console.log("Fetching configuration");
         try {

@@ -1,6 +1,5 @@
 <template>
     <div class="user-settings-panel space-y-6">
-        <!-- Header Section -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-blue-300 dark:border-blue-600 pb-3 mb-4">
             <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-100 mb-2 sm:mb-0">
                 Models Zoo
@@ -17,7 +16,6 @@
             </div>
         </div>
 
-        <!-- Info and Warnings -->
         <p class="text-sm text-blue-600 dark:text-blue-400">
              Select a model compatible with your chosen binding (<span class="font-semibold">{{ currentBindingNameComputed || 'None Selected' }}</span>). Installed models are shown first. Models may require specific variants (e.g., GGUF, GPTQ) depending on the binding.
         </p>
@@ -25,7 +23,6 @@
             Please select a Binding from the 'Bindings' section to see available models.
         </div>
 
-        <!-- Controls: Search, Filters, Sort -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-center">
             <div class="relative md:col-span-2">
                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -60,7 +57,6 @@
             </div>
         </div>
 
-        <!-- Loading / Empty State -->
         <div v-if="isLoadingModels" class="flex justify-center items-center p-10 text-loading">
              <svg aria-hidden="true" class="w-8 h-8 mr-2 text-blue-300 animate-spin dark:text-blue-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/> <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/> </svg>
              <span>Loading models...</span>
@@ -72,20 +68,19 @@
              No models available for the selected binding. Try adding a reference or downloading below.
         </div>
 
-        <!-- Models Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" ref="scrollContainer">
              <ModelEntry
                  v-for="model in pagedModels"
-                :key="model.id || model.name"
+                :key="model.id"
                 :model="model"
                 :is-selected="config.model_name === model.name" 
                 :is-installed="model.isInstalled"
                 :is-processing="model.isProcessing"
-                :progress="downloadProgress.details?.model_id === (model.id || model.name) ? downloadProgress.progress : 0"
-                :speed="downloadProgress.details?.model_id === (model.id || model.name) ? downloadProgress.speed : 0"
-                :total_size="downloadProgress.details?.model_id === (model.id || model.name) ? downloadProgress.total_size : 0"
-                :downloaded_size="downloadProgress.details?.model_id === (model.id || model.name) ? downloadProgress.downloaded_size : 0"
-                :progress-name="downloadProgress.details?.model_id === (model.id || model.name) ? downloadProgress.name : ''"
+                :progress="downloadProgress.details?.model_id === model.id ? downloadProgress.progress : 0"
+                :speed="downloadProgress.details?.model_id === model.id ? downloadProgress.speed : 0"
+                :total_size="downloadProgress.details?.model_id === model.id ? downloadProgress.total_size : 0"
+                :downloaded_size="downloadProgress.details?.model_id === model.id ? downloadProgress.downloaded_size : 0"
+                :progress-name="downloadProgress.details?.model_id === model.id ? downloadProgress.name : ''"
                 @select="handleSelect"
                 @install="handleInstall"
                 @uninstall="handleUninstall"
@@ -95,7 +90,6 @@
              />
         </div>
 
-        <!-- Load More Button -->
         <div class="mt-6 text-center" v-if="hasMoreModelsToLoad">
             <button @click="loadMoreModels" :disabled="isLoadingModels || isSearching" class="btn btn-secondary">
                 <span v-if="isLoadingModels || isSearching">
@@ -106,7 +100,6 @@
             </button>
         </div>
 
-        <!-- Add Model / Reference Section -->
          <section class="pt-6 border-t border-blue-200 dark:border-blue-700 mt-6">
              <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Add Model</h3>
              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -159,7 +152,7 @@
 
 <script>
 import { nextTick } from 'vue';
-import { useStore } from 'vuex'; // Import useStore
+import { useStore } from 'vuex';
 import feather from 'feather-icons';
 import filesize from '@/plugins/filesize';
 import ModelEntry from '@/components/ModelEntry.vue';
@@ -168,13 +161,13 @@ import socket from '@/services/websocket.js';
 import defaultModelIcon from "@/assets/default_model.png";
 
 export default {
-    name: 'ModelsZooSettings', // Changed name
+    name: 'ModelsZooSettings',
     components: {
         ModelEntry,
         ChoiceDialog
     },
     props: {
-        config: { type: Object, required: true }, // The editable config from parent
+        config: { type: Object, required: true },
         loading: { type: Boolean, default: false },
         api_post_req: { type: Function, required: true },
         api_get_req: { type: Function, required: true },
@@ -182,7 +175,7 @@ export default {
         show_yes_no_dialog: { type: Function, required: true },
         client_id: { type: String, required: true },
     },
-    emits: ['setting-updated'], // Emits updates for parent
+    emits: ['setting-updated'],
 
     data() {
         return {
@@ -202,56 +195,46 @@ export default {
             searchDebounceTimer: null,
             downloadProgress: { visible: false, name: '', progress: 0, speed: 0, total_size: 0, downloaded_size: 0, details: null },
             variantSelectionDialog: { visible: false, title: "Select Model Variant", choices: [], modelToInstall: null, selectedVariant: null },
-            defaultIcon: defaultModelIcon
+            defaultIcon: defaultModelIcon,
+            store: useStore() // Access store instance
         };
     },
-    setup(props) {
-         // Cannot use setup with Options API's data/computed/methods/etc.
-         // We will use Options API structure fully.
-    },
     computed: {
-        // Use store state for applied config checks and data
         effectiveConfig() {
-             return this.$store.state.config || {};
+             return this.store.state.config || {};
         },
         storeModelsZoo() {
-             return this.$store.state.modelsZoo || [];
+             return this.store.state.modelsZoo || [];
         },
         storeInstalledModelsArr() {
-             return this.$store.state.modelsArr || [];
+             return this.store.state.modelsArr || [];
         },
         storeBindingsZoo() {
-            return this.$store.state.bindingsZoo || [];
+            return this.store.state.bindingsZoo || [];
         },
-
         currentBindingNameComputed() {
             const currentBindingFolder = this.effectiveConfig.binding_name;
             if (!currentBindingFolder) return 'None Selected';
             const binding = this.storeBindingsZoo.find(b => b.folder === currentBindingFolder);
             return binding ? binding.name : currentBindingFolder;
         },
-
         currentModelInfoComputed() {
             const currentModelName = this.effectiveConfig.model_name;
             if (!currentModelName || this.allModels.length === 0) return null;
             const current = this.allModels.find(m => m.name === currentModelName);
             return current ? { name: current.name, icon: current.icon || this.defaultIcon } : null;
         },
-
         hasMoreModelsToLoad() {
             return this.pagedModels.length < this.filteredModels.length;
         },
         speedComputed() { return filesize(this.downloadProgress.speed || 0); },
         totalSizeComputed() { return filesize(this.downloadProgress.total_size || 0); },
         downloadedSizeComputed() { return filesize(this.downloadProgress.downloaded_size || 0); },
-
         watchSources() {
-            // Watch local filters and the main processed list
             return [ this.searchTerm, this.sortOption, this.showInstalledOnly, this.allModels ];
         }
     },
     watch: {
-        // Watch the *applied* binding name from the store
         '$store.state.config.binding_name': {
             async handler(newBinding, oldBinding) {
                 if (newBinding !== oldBinding) {
@@ -260,203 +243,534 @@ export default {
                     this.searchTerm = ''; this.showInstalledOnly = false; this.currentPage = 1;
 
                     if (newBinding) {
-                         // Rely on parent to have triggered store refreshes
-                         // We just need to wait for those to complete, which the watchers below handle.
-                         // This watcher mainly resets local state for the UI.
-                         console.log(`Binding watcher: Binding changed to ${newBinding}, resetting local state.`);
+                        // Data processing will be triggered by store watchers below
                     } else {
-                        this.isLoadingModels = false; // No binding, no loading needed
+                        this.isLoadingModels = false;
                     }
                 }
             },
-            // immediate: true // Run on load if necessary
         },
-        // Watch the store's model lists
         '$store.state.modelsZoo': { handler() { this.processAndCombineModels(); }, deep: true },
         '$store.state.modelsArr': { handler() { this.processAndCombineModels(); }, deep: true },
-
-        // Watch combined/processed list
         allModels: {
             handler(newModels, oldModels) {
-                // Only apply filters if the array content actually changes
-                // Avoid infinite loops if processAndCombineModels triggers this watcher unnecessarily
                  if (JSON.stringify(newModels) !== JSON.stringify(oldModels)) {
-                     console.log("Processed allModels changed, applying filters/sort.");
-                     this.currentPage = 1;
-                     this.pagedModels = [];
-                     this.applyFiltersAndSort(); // This populates filteredModels
-                     this.loadMoreModels();     // This populates pagedModels from filteredModels
-                 }
-                 // Ensure loading stops once models are processed (unless downloading)
-                 if (this.allModels.length > 0 && !this.isDownloading) {
-                     this.isLoadingModels = false;
-                 }
-            },
-             // deep: true // Deep watcher might be too expensive here, rely on reference change
-        },
-        // Watch local filters
-        watchSources: {
-            handler(newVal, oldVal) {
-                 // Check if filters actually changed (excluding allModels check handled above)
-                 if (newVal[0] !== oldVal[0] || newVal[1] !== oldVal[1] || newVal[2] !== oldVal[2]) {
-                     console.log("Filters changed, resetting page and applying.");
                      this.currentPage = 1;
                      this.pagedModels = [];
                      this.applyFiltersAndSort();
-                     this.loadMoreModels();
+                     this.$nextTick(() => {
+                         this.loadMoreModels();
+                     });
+                 }
+                 if (!this.isDownloading) {
+                    this.isLoadingModels = false;
                  }
             },
-             // deep: false // No need for deep here as we watch the array ref
+        },
+        watchSources: {
+            handler(newVal, oldVal) {
+                 if (newVal[0] !== oldVal[0] || newVal[1] !== oldVal[1] || newVal[2] !== oldVal[2]) {
+                     this.currentPage = 1;
+                     this.pagedModels = [];
+                     this.applyFiltersAndSort();
+                     this.$nextTick(() => {
+                         this.loadMoreModels();
+                     });
+                 }
+            },
         }
     },
     methods: {
+        createModelId(model) {
+            // Simple ID generation, adjust if needed for more complex scenarios (e.g., variants)
+            return model.name || model.path || `${model.author || 'unknown'}-${Date.now()}`;
+        },
         processAndCombineModels() {
             if (!this.effectiveConfig.binding_name) {
-                this.allModels = []; // Clear if no binding
+                this.allModels = [];
                 this.isLoadingModels = false;
                 return;
             }
 
-            console.log("Reprocessing models list...");
-            this.isLoadingModels = true; // Set loading true during processing
-            const zooModels = this.storeModelsZoo;
-            const installedSet = new Set(this.storeInstalledModelsArr);
-            const createModelId = (model) => { /* ... same ID logic ... */ };
+            this.isLoadingModels = true;
+            const zooModels = this.storeModelsZoo || [];
+            const installedArray = this.storeInstalledModelsArr || [];
+            const installedSet = new Set(installedArray);
             const currentProcessingModelId = this.downloadProgress.details?.model_id;
 
-            const combined = (zooModels || []).map(model => {
-                const modelId = createModelId(model);
+            const combined = zooModels.map(model => {
+                const modelId = this.createModelId(model);
                 const isInstalledCheck = installedSet.has(model.name) || (model.variants && model.variants.some(v => installedSet.has(v.name)));
                 return {
-                    /* ... model properties ... */
-                    name: model.name, author: model.author, rank: model.rank, quantizer: model.quantizer,
-                    description: model.description, license: model.license, last_commit_time: model.last_commit_time,
-                    variants: model.variants ? [...model.variants] : [], filename: model.filename, path: model.path,
-                    type: model.type, icon: model.icon || this.defaultIcon, id: modelId,
+                    name: model.name,
+                    author: model.author,
+                    rank: model.rank ?? 9999, // Default rank if missing
+                    quantizer: model.quantizer,
+                    description: model.description,
+                    license: model.license,
+                    last_commit_time: model.last_commit_time,
+                    variants: model.variants ? [...model.variants] : [],
+                    filename: model.filename,
+                    path: model.path,
+                    type: model.type,
+                    icon: model.icon || this.defaultIcon,
+                    id: modelId,
                     isInstalled: isInstalledCheck,
                     isProcessing: (currentProcessingModelId === modelId && this.isDownloading) || false,
+                    isCustomModel: false, // Mark models from the zoo
                 };
             });
 
-            this.storeInstalledModelsArr.forEach(installedName => {
-                const isInZoo = combined.some(m => m.name === installedName || (m.variants && m.variants.some(v => v.name === installedName)));
-                if (!isInZoo) {
-                    const customModelId = installedName;
+            const combinedNames = new Set(combined.map(m => m.name));
+            combined.forEach(m => {
+                 if (m.variants) m.variants.forEach(v => combinedNames.add(v.name));
+            });
+
+
+            installedArray.forEach(installedName => {
+                if (!combinedNames.has(installedName)) {
+                    const customModelId = this.createModelId({ name: installedName }); // Use name for ID
                     combined.push({
-                        /* ... custom model properties ... */
-                         name: installedName, isInstalled: true, isCustomModel: true, icon: this.defaultIcon,
-                         id: customModelId, rank: -1, author: 'Local',
+                         name: installedName,
+                         author: 'Local/Custom',
+                         rank: -1, // Rank custom models high
+                         quantizer: '',
+                         description: 'Locally installed model reference.',
+                         license: '',
+                         last_commit_time: '',
+                         variants: [],
+                         filename: '',
+                         path: '',
+                         type: '',
+                         icon: this.defaultIcon,
+                         id: customModelId,
+                         isInstalled: true,
                          isProcessing: (currentProcessingModelId === customModelId && this.isDownloading) || false,
+                         isCustomModel: true,
                     });
                 }
             });
 
-            // Update the data property, this will trigger the allModels watcher
             this.allModels = combined;
-
-            // isLoadingModels will be set to false by the watcher or install listener
-            console.log(`Finished processing ${this.allModels.length} models.`);
+            // isLoadingModels will be set by the watcher or resetDownloadState
         },
 
         applyFiltersAndSort() {
-             this.isSearching = true; // Indicate filtering/sorting is happening
-             console.time("FilterSortModels");
-             let result = [...this.allModels]; // Start with the processed list
-             if (this.showInstalledOnly) result = result.filter(m => m.isInstalled);
+             this.isSearching = true;
+             let result = [...this.allModels];
+
+             if (this.showInstalledOnly) {
+                 result = result.filter(m => m.isInstalled);
+             }
+
              if (this.searchTerm) {
                  const lowerSearch = this.searchTerm.toLowerCase();
                  result = result.filter(m =>
-                     m.name?.toLowerCase().includes(lowerSearch) || m.author?.toLowerCase().includes(lowerSearch) ||
-                     m.quantizer?.toLowerCase().includes(lowerSearch) || m.description?.toLowerCase().includes(lowerSearch) ||
+                     m.name?.toLowerCase().includes(lowerSearch) ||
+                     m.author?.toLowerCase().includes(lowerSearch) ||
+                     m.quantizer?.toLowerCase().includes(lowerSearch) ||
+                     m.description?.toLowerCase().includes(lowerSearch) ||
                      m.license?.toLowerCase().includes(lowerSearch)
                  );
              }
-             result.sort((a, b) => { /* ... same sorting logic ... */ });
-             this.filteredModels = result; // Update the filtered list
-             console.timeEnd("FilterSortModels");
-             this.isSearching = false; // Done filtering/sorting
-             console.log(`Filtered/Sorted models: ${this.filteredModels.length}`);
+
+            // Primary sort: Installed models first
+            result.sort((a, b) => (b.isInstalled - a.isInstalled));
+
+            // Secondary sort based on selection
+             const sortOption = this.sortOption;
+             result.sort((a, b) => {
+                 // Keep installed status primary
+                 const installedCompare = (b.isInstalled - a.isInstalled);
+                 if (installedCompare !== 0) return installedCompare;
+
+                 // Secondary sort logic
+                 switch (sortOption) {
+                    case 'rank':
+                         // Lower rank is better. Handle potential nulls/undefineds
+                         const rankA = a.rank ?? 9999;
+                         const rankB = b.rank ?? 9999;
+                         return rankA - rankB;
+                    case 'name':
+                         return (a.name || '').localeCompare(b.name || '');
+                     case 'last_commit_time':
+                          // Assuming ISO 8601 strings, newer first
+                          const dateA = a.last_commit_time || '0';
+                          const dateB = b.last_commit_time || '0';
+                          return dateB.localeCompare(dateA); // Reversed for newer first
+                     case 'quantizer':
+                          return (a.quantizer || '').localeCompare(b.quantizer || '');
+                     case 'license':
+                          return (a.license || '').localeCompare(b.license || '');
+                     default:
+                          return 0; // Should not happen
+                 }
+             });
+
+             this.filteredModels = result;
+             this.isSearching = false;
         },
 
-        debounceSearch() { /* ... same logic ... */ },
-        loadMoreModels() { /* ... same logic ... */ },
+        debounceSearch() {
+            this.isSearching = true; // Show spinner immediately
+            clearTimeout(this.searchDebounceTimer);
+            this.searchDebounceTimer = setTimeout(() => {
+                // The watcher on `searchTerm` will trigger applyFiltersAndSort
+                // We just need to turn off the spinner if the watcher doesn't run immediately
+                // Or rely on applyFiltersAndSort to turn it off
+                // For simplicity, let the applyFiltersAndSort in the watcher handle turning it off
+            }, 300); // 300ms delay
+        },
 
-        handleSelect(model) {
-            if (this.isDownloading || this.isLoadingModels) { this.show_toast("Wait for current operation.", 3, false); return; }
-            if (!model.isInstalled) { this.show_toast(`Model "${model.name}" not installed.`, 3, false); return; }
-            // Only emit if different from the *editable* config
+        loadMoreModels() {
+            if (this.isLoadingModels || this.isSearching) return;
+
+            const start = (this.currentPage - 1) * this.itemsPerPage;
+            const end = start + this.itemsPerPage;
+            const modelsToLoad = this.filteredModels.slice(start, end);
+
+            if (modelsToLoad.length > 0) {
+                 this.pagedModels.push(...modelsToLoad);
+                 this.currentPage++;
+            }
+            this.replaceFeatherIcons();
+        },
+
+        handleSelect(payload) {
+            const model = payload.model;
+            if (this.isDownloading || this.isLoadingModels) {
+                this.show_toast("Wait for current operation to finish.", 3, false);
+                return;
+            }
+            if (!model.isInstalled) {
+                this.show_toast(`Model "${model.name}" is not installed. Please install it first.`, 3, false);
+                return;
+            }
             if (this.config.model_name !== model.name) {
                  this.$emit('setting-updated', { key: 'model_name', value: model.name });
-                 this.show_toast(`Selected model: ${model.name}. Apply changes.`, 3, true);
+                 this.show_toast(`Selected model: ${model.name}. Remember to apply changes.`, 3, true);
             }
         },
-        handleInstall(payload) { /* ... unchanged, uses props/local state ... */ },
-        handleVariantSelected(choice) { /* ... unchanged ... */ },
-        handleVariantValidated(choice) { /* ... unchanged ... */ },
-        closeVariantDialog() { /* ... unchanged ... */ },
-        startDownload(model, path, variantName) { /* ... unchanged, uses props/local state/socket ... */ },
-        async handleUninstall(payload) {
-             const model = payload.model; const modelId = model.id || model.name;
-             if (this.isDownloading) { this.show_toast("Operation in progress.", 3, false); return; }
-             const yes = await this.show_yes_no_dialog(`Uninstall "${model.name}"?`, 'Uninstall', 'Cancel');
-             if (!yes) return;
-             const currentBinding = this.effectiveConfig.binding_name; // Use applied binding
+
+        async handleInstall(payload) {
+             const model = payload.model;
+             if (this.isDownloading) { this.show_toast("Another operation is already in progress.", 3, false); return; }
+             const currentBinding = this.effectiveConfig.binding_name;
              if (!currentBinding) { this.show_toast("No binding selected.", 4, false); return; }
 
-             this.setModelProcessing(modelId, true); this.isDownloading = true; this.isLoadingModels = true;
-             this.downloadProgress = { /* ... progress state ... */ };
-
-             socket.emit('uninstall_model', { /* ... payload ... */ });
+             if (model.variants && model.variants.length > 0) {
+                 this.variantSelectionDialog = {
+                     visible: true,
+                     title: `Select Variant for ${model.name}`,
+                     choices: model.variants.map(v => ({ id: v.name, text: `${v.name} (${filesize(v.size || 0)})` })),
+                     modelToInstall: model,
+                     selectedVariant: null
+                 };
+             } else {
+                 const yes = await this.show_yes_no_dialog(`Install model "${model.name}"?`, 'Install', 'Cancel');
+                 if (yes) {
+                     this.startDownload(model, model.path || model.name); // Use path or name as identifier
+                 }
+             }
         },
-        handleCancelInstall(payload) { /* ... unchanged, uses props/local state/socket ... */ },
-        handleCopy(payload) { navigator.clipboard.writeText(payload.text); this.show_toast("Copied", 3, true); },
-        handleCopyLink(payload) { navigator.clipboard.writeText(payload.link); this.show_toast("Link copied", 3, true); },
-        async createReference() { /* ... unchanged, uses props/local state ... */ },
-        installFromInput() { /* ... unchanged, uses props/local state ... */ },
-        imgPlaceholder(event) { /* ... unchanged ... */ },
+
+        handleVariantSelected(choice) {
+            this.variantSelectionDialog.selectedVariant = choice;
+        },
+
+        async handleVariantValidated(choice) {
+            if (!this.variantSelectionDialog.modelToInstall || !choice) {
+                this.closeVariantDialog();
+                return;
+            }
+            const selectedVariantInfo = this.variantSelectionDialog.modelToInstall.variants.find(v => v.name === choice.id);
+            const modelToInstall = this.variantSelectionDialog.modelToInstall;
+            this.closeVariantDialog(); // Close dialog first
+
+            const yes = await this.show_yes_no_dialog(`Install variant "${choice.id}" for model "${modelToInstall.name}"?`, 'Install', 'Cancel');
+            if (yes) {
+                // Pass variant info if needed, or just the name/path
+                this.startDownload(modelToInstall, selectedVariantInfo.path || choice.id, choice.id);
+            }
+        },
+
+        closeVariantDialog() {
+            this.variantSelectionDialog = { visible: false, title: "Select Model Variant", choices: [], modelToInstall: null, selectedVariant: null };
+        },
+
+        startDownload(model, path, variantName = null) {
+            const modelId = model.id || this.createModelId(model);
+            const nameToDisplay = variantName || model.name;
+
+            this.setModelProcessing(modelId, true);
+            this.isDownloading = true;
+            this.isLoadingModels = true; // Keep global loading indicator
+            this.downloadProgress = {
+                visible: true,
+                name: `Installing ${nameToDisplay}...`,
+                progress: 0,
+                speed: 0,
+                total_size: 0,
+                downloaded_size: 0,
+                details: { // Store details needed for cancellation/progress
+                    model_id: modelId,
+                    model_name: nameToDisplay, // Use the name being installed
+                    path: path,
+                    binding: this.effectiveConfig.binding_name,
+                    client_id: this.client_id,
+                 }
+            };
+
+            socket.emit('install_model', {
+                 model_path: path,
+                 binding: this.effectiveConfig.binding_name,
+                 client_id: this.client_id,
+                 model_id: modelId, // Pass the ID back for progress tracking
+                 model_name: nameToDisplay // Pass the specific name/variant being installed
+             });
+        },
+
+        async handleUninstall(payload) {
+             const model = payload.model;
+             const modelId = model.id || this.createModelId(model);
+             if (this.isDownloading) {
+                 this.show_toast("Another operation is in progress. Please wait.", 3, false);
+                 return;
+             }
+             const yes = await this.show_yes_no_dialog(`Are you sure you want to uninstall the model "${model.name}"?`, 'Uninstall', 'Cancel');
+             if (!yes) return;
+
+             const currentBinding = this.effectiveConfig.binding_name;
+             if (!currentBinding) {
+                 this.show_toast("No binding selected. Cannot uninstall.", 4, false);
+                 return;
+             }
+
+             this.setModelProcessing(modelId, true);
+             this.isDownloading = true;
+             this.isLoadingModels = true;
+             this.downloadProgress = {
+                 visible: true,
+                 name: `Uninstalling ${model.name}...`,
+                 progress: 0, // Indicate activity
+                 speed: 0, total_size: 0, downloaded_size: 0,
+                 details: { model_id: modelId, model_name: model.name } // Basic details for reset
+             };
+
+             socket.emit('uninstall_model', {
+                 model_name: model.name, // Use the model name for backend identification
+                 binding: currentBinding,
+                 client_id: this.client_id,
+                 model_id: modelId // Pass ID for frontend tracking
+             });
+        },
+
+        handleCancelInstall(details) {
+            if (!details || !this.isDownloading) return;
+             // Send necessary info from 'details' for the backend to identify the process
+             const payload = {
+                 model_id: details.model_id, // ID used to start the install
+                 model_path: details.path, // Path/ID sent to backend
+                 binding: details.binding,
+                 client_id: this.client_id
+             };
+            socket.emit('cancel_install', payload);
+            this.show_toast(`Cancellation request sent for ${details.model_name}.`, 3, true);
+            // Don't reset state immediately, wait for confirmation or timeout
+        },
+
+        handleCopy(payload) {
+            navigator.clipboard.writeText(payload.text).then(() => {
+                this.show_toast("Copied to clipboard!", 2, true);
+            }).catch(err => {
+                this.show_toast("Failed to copy text.", 4, false);
+            });
+        },
+
+        handleCopyLink(payload) {
+             navigator.clipboard.writeText(payload.link).then(() => {
+                 this.show_toast("Model link copied!", 2, true);
+             }).catch(err => {
+                 this.show_toast("Failed to copy link.", 4, false);
+             });
+        },
+
+        async createReference() {
+             if (!this.referencePath) {
+                 this.show_toast("Please enter a valid file or folder path.", 3, false);
+                 return;
+             }
+             const currentBinding = this.effectiveConfig.binding_name;
+             if (!currentBinding) {
+                 this.show_toast("No binding selected. Cannot add reference.", 4, false);
+                 return;
+             }
+
+             try {
+                 this.isLoadingModels = true; // Indicate activity
+                 const response = await this.api_post_req('add_reference', {
+                     binding: currentBinding,
+                     path: this.referencePath,
+                     client_id: this.client_id
+                 });
+                 if (response && response.status === 'success') {
+                     this.show_toast(response.message || "Reference added successfully.", 2, true);
+                     this.referencePath = ''; // Clear input
+                     // Manually trigger store refresh or wait for potential automatic updates
+                     this.store.dispatch('refreshModels'); // Assuming such an action exists
+                 } else {
+                     this.show_toast(response.error || "Failed to add reference.", 4, false);
+                 }
+             } catch (error) {
+                 this.show_toast(`Error adding reference: ${error.message || error}`, 4, false);
+             } finally {
+                 this.isLoadingModels = false; // Reset loading state
+             }
+        },
+
+        installFromInput() {
+            if (!this.modelUrl) {
+                this.show_toast("Please enter a Model URL or Hugging Face ID.", 3, false);
+                return;
+            }
+            if (this.isDownloading) {
+                this.show_toast("Another operation is already in progress.", 3, false);
+                return;
+            }
+            const currentBinding = this.effectiveConfig.binding_name;
+            if (!currentBinding) {
+                this.show_toast("No binding selected. Cannot download.", 4, false);
+                return;
+            }
+
+             // Determine a placeholder name and ID
+             const potentialName = this.modelUrl.split('/').pop() || this.modelUrl;
+             const tempModelId = `download-${potentialName}-${Date.now()}`;
+
+             this.isDownloading = true;
+             this.isLoadingModels = true;
+             this.setModelProcessing(tempModelId, true); // Use a temporary ID for processing state if needed
+             this.downloadProgress = {
+                 visible: true,
+                 name: `Initiating install for ${potentialName}...`,
+                 progress: 0, speed: 0, total_size: 0, downloaded_size: 0,
+                 details: {
+                     model_id: tempModelId, // Temporary ID
+                     model_name: potentialName,
+                     path: this.modelUrl, // The input URL/ID is the path here
+                     binding: currentBinding,
+                     client_id: this.client_id
+                 }
+             };
+
+            socket.emit('install_model', {
+                 model_path: this.modelUrl, // Send the URL/ID as the path
+                 binding: currentBinding,
+                 client_id: this.client_id,
+                 model_id: tempModelId, // Pass temp ID for tracking
+                 model_name: potentialName
+             });
+             this.modelUrl = ''; // Clear input after starting
+        },
+
+        imgPlaceholder(event) {
+            event.target.src = this.defaultIcon;
+        },
 
         setModelProcessing(modelId, state) {
-             const indexAll = this.allModels.findIndex(m => (m.id || m.name) === modelId);
-             if (indexAll !== -1 && this.allModels[indexAll].isProcessing !== state) {
-                 // Update the item in the array immutably to trigger watcher
+            // Update allModels immutably to trigger watchers properly
+            const indexAll = this.allModels.findIndex(m => m.id === modelId);
+            if (indexAll !== -1) {
+                 const updatedModel = { ...this.allModels[indexAll], isProcessing: state };
                  const newAllModels = [...this.allModels];
-                 newAllModels[indexAll] = { ...newAllModels[indexAll], isProcessing: state };
-                 this.allModels = newAllModels; // This triggers the 'allModels' watcher
-             }
-             // Update pagedModels directly for immediate UI feedback if the item is visible
-             const indexPaged = this.pagedModels.findIndex(m => (m.id || m.name) === modelId);
-             if (indexPaged !== -1 && this.pagedModels[indexPaged].isProcessing !== state) {
-                  this.pagedModels[indexPaged].isProcessing = state;
-             }
+                 newAllModels[indexAll] = updatedModel;
+                 this.allModels = newAllModels; // This triggers the watcher
+            } else if (state) {
+                 // Handle case where a temporary model (like from URL download) needs processing state
+                 // This might require adding a temporary entry if not already done, or handling separately
+            }
+
+            // Update pagedModels directly for immediate UI feedback if visible
+            const indexPaged = this.pagedModels.findIndex(m => m.id === modelId);
+            if (indexPaged !== -1) {
+                 // Avoid direct mutation if possible, but sometimes necessary for performance/simplicity
+                 this.pagedModels[indexPaged].isProcessing = state;
+            }
         },
 
         resetDownloadState(modelId = null, success = false) {
-             if (!modelId || (this.downloadProgress.details && this.downloadProgress.details.model_id === modelId)) {
-                 this.downloadProgress.visible = false; this.downloadProgress.details = null; this.isDownloading = false;
+             const currentDetails = this.downloadProgress.details;
+             if (modelId && currentDetails && currentDetails.model_id === modelId) {
+                 this.setModelProcessing(modelId, false);
              }
-             if (modelId) this.setModelProcessing(modelId, false);
-             // Only stop global loading if no longer downloading AND models are processed/available
-             if (!this.isDownloading && (!this.effectiveConfig.binding_name || this.allModels.length > 0)) {
+             // Reset global state only if the completed/cancelled operation was the one being tracked
+            if (!modelId || (currentDetails && currentDetails.model_id === modelId)) {
+                 this.downloadProgress = { visible: false, name: '', progress: 0, speed: 0, total_size: 0, downloaded_size: 0, details: null };
+                 this.isDownloading = false;
+             }
+             // Stop global loading only if no other download is active
+             if (!this.isDownloading) {
                  this.isLoadingModels = false;
+             }
+             // Refresh lists if operation was successful
+             if(success) {
+                 this.store.dispatch('refreshModels'); // Assumes Vuex action exists
              }
         },
 
-        installProgressListener(response) { /* ... same logic ... */ },
+        installProgressListener(response) {
+            const modelId = response.model_id; // ID sent back from backend
+            const currentTrackedId = this.downloadProgress.details?.model_id;
+
+            if (!modelId || modelId !== currentTrackedId) {
+                // Progress update is not for the currently tracked operation, ignore or handle logging
+                return;
+            }
+
+            if (response.status === 'progress') {
+                this.downloadProgress.name = response.stage || `Processing ${response.model_name || 'model'}...`;
+                this.downloadProgress.progress = response.progress || 0;
+                this.downloadProgress.speed = response.speed || 0;
+                this.downloadProgress.total_size = response.total_size || 0;
+                this.downloadProgress.downloaded_size = response.downloaded_size || 0;
+            } else if (response.status === 'cancelled') {
+                this.show_toast(`Operation cancelled for ${this.downloadProgress.details?.model_name || 'model'}.`, 3, true);
+                this.resetDownloadState(modelId, false);
+            } else if (response.status === 'failed') {
+                this.show_toast(response.error || `Operation failed for ${this.downloadProgress.details?.model_name || 'model'}.`, 4, false);
+                this.resetDownloadState(modelId, false);
+            } else if (response.status === 'success') {
+                this.show_toast(response.message || `${this.downloadProgress.details?.model_name || 'Model'} operation successful.`, 2, true);
+                this.resetDownloadState(modelId, true); // Mark as success for potential refresh
+            } else if (response.status === 'processing') {
+                 // Handle intermediate stages like 'extracting', 'verifying' etc.
+                 this.downloadProgress.name = response.stage || `Processing ${response.model_name || 'model'}...`;
+                 this.downloadProgress.progress = response.progress !== undefined ? response.progress : 100; // Show 100% if progress not specified but processing
+            }
+            this.replaceFeatherIcons();
+        },
 
         replaceFeatherIcons() {
-             nextTick(() => { try { feather.replace(); } catch (e) {} });
+             nextTick(() => {
+                 try {
+                    feather.replace();
+                 } catch (e) {
+                    // Ignore errors if feather is not loaded or fails temporarily
+                 }
+             });
         }
     },
     mounted() {
-        // Fetch initial lists from store or API - rely on watchers now
-        // this.processAndCombineModels(); // Initial processing if store has data
-        this.installProgressListener = this.installProgressListener.bind(this); // Ensure correct 'this'
+        this.installProgressListener = this.installProgressListener.bind(this);
         socket.on('install_progress', this.installProgressListener);
-        this.replaceFeatherIcons();
-        // Trigger initial model processing if binding already exists
+
+        // Initial data processing if binding already exists
          if (this.effectiveConfig.binding_name) {
             this.processAndCombineModels();
+         } else {
+            this.isLoadingModels = false; // Not loading if no binding
          }
+        this.replaceFeatherIcons();
     },
     unmounted() {
         socket.off('install_progress', this.installProgressListener);
@@ -469,7 +783,6 @@ export default {
 </script>
 
 <style scoped>
-/* Styles remain the same */
 .input { @apply block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-offset-gray-900 sm:text-sm disabled:opacity-50 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500; }
 .input-sm { @apply block w-full px-2.5 py-1.5 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-offset-gray-900 sm:text-sm disabled:opacity-50 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500; }
 .label { @apply block text-sm font-medium text-gray-700 dark:text-gray-300; }
