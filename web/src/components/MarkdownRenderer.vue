@@ -1,7 +1,7 @@
 <template>
   <div class="break-all container w-full">
-    <div class="markdown-content">
-      <div v-for="(item, index) in markdownItems" :key="item.id">
+    <div ref="mdRender" class="markdown-content">
+      <div v-for="(item, index) in markdownItems" :key="index">
         <code-block
           v-if="item.type === 'code'"
           :host="host"
@@ -10,234 +10,355 @@
           :discussion_id="discussion_id"
           :message_id="message_id"
           :client_id="client_id"
-          @update-code="handleCodeUpdate(item.id, $event)"
+          @update-code="updateCode(index, $event)"
         ></code-block>
         <thinking-block
           v-else-if="item.type === 'thinking'"
           :content="item.content"
           :is-done="item.is_done"
         ></thinking-block>
-        <div v-else-if="item.type === 'markdown'" v-html="renderMarkdownChunk(item.content)"></div>
+        <div v-else v-html="item.html"></div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { nextTick } from 'vue';
 import feather from 'feather-icons';
 import MarkdownIt from 'markdown-it';
 import emoji from 'markdown-it-emoji';
 import anchor from 'markdown-it-anchor';
 import implicitFigures from 'markdown-it-implicit-figures';
-import 'highlight.js/styles/github.css'; // Light theme
-import 'highlight.js/styles/tokyo-night-dark.css'; // Dark theme
+import 'highlight.js/styles/tokyo-night-dark.css';
 import attrs from 'markdown-it-attrs';
-import { debounce } from 'lodash-es';
-
 import CodeBlock from './CodeBlock.vue';
 import ThinkingBlock from './ThinkingBlock.vue';
+import hljs from 'highlight.js';
+import mathjax from 'markdown-it-mathjax3';
 
-const MARKDOWN_UPDATE_DEBOUNCE_MS = 200; // Debounce interval for markdown parsing
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, "&")
+    .replace(/</g, "<")
+    .replace(/>/g, ">")
+    .replace(/"/g, "\"")
+    .replace(/'/g, "'");
+}
+
+function findNextTag(state, startLine) {
+  for (let i = startLine; i < state.lineMax; i++) {
+    let line = state.src.slice(state.bMarks[i], state.eMarks[i]).trim();
+    if (line === '<thinking>' || line === '<think>' || line === '</thinking>' || line === '</think>') {
+      return { line: i, tag: line };
+    }
+  }
+  return null;
+}
+
+const thinkingRule = (state, startLine, endLine, silent) => {
+    let startPos = state.bMarks[startLine] + state.tShift[startLine];
+    let maxPos = state.eMarks[startLine];
+    let lineTextTrimmed = state.src.slice(startPos, maxPos).trim();
+    let isExplicitStart = lineTextTrimmed === '<thinking>' || lineTextTrimmed === '<think>';
+    let nextTagInfo = findNextTag(state, startLine + (isExplicitStart ? 1 : 0));
+    let isImplicitStart = !isExplicitStart && nextTagInfo && (nextTagInfo.tag === '</thinking>' || nextTagInfo.tag === '</think>');
+
+    if (isExplicitStart || isImplicitStart) {
+        let startTag = isExplicitStart ? lineTextTrimmed : (nextTagInfo.tag === '</thinking>' ? '<thinking>' : '<think>');
+        let endTag = startTag.replace('<', '</');
+        let contentLines = [];
+        let contentStartLine = startLine + (isExplicitStart ? 1 : 0);
+        let blockEndLine = endLine;
+        let foundEndTag = false;
+        let currentLineIdx = contentStartLine;
+
+        while (currentLineIdx < endLine) {
+             let currentLineRaw = state.src.slice(state.bMarks[currentLineIdx], state.eMarks[currentLineIdx]);
+             let currentLineTrimmed = currentLineRaw.trim();
+
+             if (isExplicitStart && currentLineTrimmed === endTag) {
+                foundEndTag = true;
+                blockEndLine = currentLineIdx + 1;
+                break;
+             }
+             if (isImplicitStart && currentLineIdx === nextTagInfo.line) {
+                 foundEndTag = true;
+                 blockEndLine = currentLineIdx + 1;
+                 break;
+             }
+             if( (!isExplicitStart || currentLineIdx < endLine) && (!isImplicitStart || currentLineIdx < nextTagInfo.line) ){
+                contentLines.push(currentLineRaw);
+             }
+             currentLineIdx++;
+        }
+        if (isImplicitStart) {
+            blockEndLine = nextTagInfo.line + 1;
+        } else if (!foundEndTag){
+             blockEndLine = currentLineIdx;
+        }
+
+        let isDone = (isExplicitStart && foundEndTag) || isImplicitStart;
+
+        if (silent) return true;
+
+        let rawBlockContent = state.src.slice(state.bMarks[startLine], state.eMarks[blockEndLine - 1]);
+        let innerContent = contentLines.join('\n');
+
+        let token = state.push('thinking_open', 'div', 1);
+        token.markup = startTag;
+        token.block = true;
+        token.is_done = isDone;
+        token.implicit = isImplicitStart;
+        token.map = [startLine, blockEndLine];
+        token.meta = { rawBlock: rawBlockContent, innerContent: innerContent };
+
+        token = state.push('thinking_content', '', 0);
+        token.content = innerContent;
+        token.is_done = isDone;
+
+        token = state.push('thinking_close', 'div', -1);
+        token.markup = endTag;
+        token.block = true;
+        token.is_done = isDone;
+
+        state.line = blockEndLine;
+        return true;
+    }
+    return false;
+};
 
 export default {
   name: 'MarkdownRenderer',
-  props: {
-    host: { type: String, required: false, default: "" },
-    client_id: { type: String, required: true },
-    markdownText: { type: String, required: true },
-    discussion_id: { type: [String, Number], default: "0", required: false },
-    message_id: { type: [String, Number], default: "0", required: false },
-  },
   components: {
     CodeBlock,
     ThinkingBlock,
   },
-  emits: ['code-block-updated'], // Event emitted when a code block's content changes
-
-  setup(props, { emit }) {
-    // Configure MarkdownIt instance
-    const md = new MarkdownIt({
-      html: true, // Allow HTML tags passed through from markdown source
-      breaks: true, // Convert '\n' in paragraphs into <br>
-      linkify: true, // Autoconvert URL-like text to links
-      typographer: true, // Enable smart quotes and other typographic improvements
-    }).use(emoji)
-      .use(anchor, { // Add anchors to headings
-          permalink: anchor.permalink.ariaHidden({ placement: 'before', symbol: '#' })
-       })
-      .use(implicitFigures, { figcaption: true }) // Auto-wrap images in <figure>
-      .use(attrs); // Allow adding classes/IDs like {.class #id}
-
-    const markdownItems = ref([]); // Reactive array holding parsed markdown segments
-    let uniqueIdCounter = 0; // Counter for generating unique keys for v-for
-
-    // Function to parse the markdown text into structured items
-    const parseAndStructure = (text) => {
-        const items = [];
-        uniqueIdCounter = 0;
-        let currentIndex = 0;
-
-        // Regex to find the start of code blocks or thinking blocks
-        const delimiterRegex = /(```(\w*)\r?\n)|(<(thinking|think)>)/g;
-        let match;
-
-        while ((match = delimiterRegex.exec(text)) !== null) {
-            const matchIndex = match.index;
-
-            // Add preceding markdown chunk
-            if (matchIndex > currentIndex) {
-                items.push({ id: uniqueIdCounter++, type: 'markdown', content: text.substring(currentIndex, matchIndex) });
+  props: {
+    host: {
+      type: String,
+      required: false,
+      default: "http://localhost:9600",
+    },
+    client_id: {
+      type: String,
+      required: true,
+    },
+    markdownText: {
+      type: String,
+      required: true,
+    },
+    discussion_id: {
+      type: [String, Number],
+      default: "0",
+      required: false,
+    },
+    message_id: {
+      type: [String, Number],
+      default: "0",
+      required: false,
+    },
+  },
+  emits: ['update:markdownText'],
+  data() {
+    return {
+      markdownItems: [],
+      md: null,
+      _isUpdatingInternally: false,
+    };
+  },
+  watch: {
+    markdownText(newValue) {
+      if (!this._isUpdatingInternally) {
+        this.parseAndRenderMarkdown();
+      }
+      this._isUpdatingInternally = false;
+    }
+  },
+  created() {
+    this.md = new MarkdownIt({
+        html: false,
+        breaks: true,
+        highlight: (code, language) => {
+            const validLanguage = language && hljs.getLanguage(language) ? language : 'plaintext';
+            try {
+                return hljs.highlight(validLanguage, code).value;
+            } catch (__) {
+                return escapeHtml(code);
             }
+        },
+    })
+    .use(emoji)
+    .use(anchor)
+    .use(implicitFigures, { figcaption: true })
+    .use(attrs)
+    .use(mathjax);
 
-            let blockType = '';
-            let blockInfo = {};
-            let delimiterLength = match[0].length;
-            let blockContent = '';
-            let consumedLength = delimiterLength;
-            let blockEndIndex = -1;
+    this.md.renderer.rules.thinking_open = () => '';
+    this.md.renderer.rules.thinking_content = () => '';
+    this.md.renderer.rules.thinking_close = () => '';
+    this.md.renderer.rules.fence = () => '';
 
-            if (match[1]) { // Code block started (match[1] is ```lang\n)
-                blockType = 'code';
-                blockInfo = { language: match[2] || 'plaintext' }; // match[2] is the language
-                const endCodeDelimiter = '\n```';
-                blockEndIndex = text.indexOf(endCodeDelimiter, matchIndex + delimiterLength);
+    this.md.block.ruler.before('fence', 'thinking', thinkingRule);
+  },
+  mounted() {
+    this.parseAndRenderMarkdown();
+  },
+  methods: {
+    getRawMarkdownChunk(startLine, endLine) {
+        if (startLine == null || endLine == null || startLine < 0 || endLine <= startLine) {
+            return '';
+        }
+        const lines = this.markdownText.split('\n');
+        const safeEndLine = Math.min(endLine, lines.length);
+        if(startLine >= safeEndLine) return '';
+        return lines.slice(startLine, safeEndLine).join('\n');
+    },
+    parseAndRenderMarkdown() {
+      if (!this.markdownText || !this.md) {
+        this.markdownItems = [];
+        return;
+      }
 
-                if (blockEndIndex !== -1) {
-                    blockContent = text.substring(matchIndex + delimiterLength, blockEndIndex);
-                    consumedLength += blockContent.length + endCodeDelimiter.length;
-                } else { // Unclosed block
-                    blockContent = text.substring(matchIndex + delimiterLength);
-                    consumedLength += blockContent.length;
-                }
-                 items.push({ id: uniqueIdCounter++, type: 'code', language: blockInfo.language, code: blockContent });
+      const tokens = this.md.parse(this.markdownText, {});
+      const newItems = [];
+      let lastProcessedLine = 0;
+      const lineCount = this.markdownText.split('\n').length;
 
-            } else if (match[3]) { // Thinking block started (match[3] is <thinking> or <think>)
-                blockType = 'thinking';
-                const startTag = match[3]; // e.g., <thinking>
-                const endTag = startTag.replace('<', '</'); // e.g., </thinking>
-                blockEndIndex = text.indexOf(endTag, matchIndex + delimiterLength);
-                let isDone = false;
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
 
-                if (blockEndIndex !== -1) {
-                    blockContent = text.substring(matchIndex + delimiterLength, blockEndIndex);
-                    consumedLength += blockContent.length + endTag.length;
-                    isDone = true;
-                } else { // Unclosed block
-                    blockContent = text.substring(matchIndex + delimiterLength);
-                    consumedLength += blockContent.length;
-                }
-                 items.push({ id: uniqueIdCounter++, type: 'thinking', content: blockContent, is_done: isDone });
-            }
-
-             currentIndex = matchIndex + consumedLength;
-             // Ensure regex search continues from the new position
-             delimiterRegex.lastIndex = currentIndex;
-
-        } // end while
-
-        // Add any remaining markdown chunk after the last delimiter
-        if (currentIndex < text.length) {
-            items.push({ id: uniqueIdCounter++, type: 'markdown', content: text.substring(currentIndex) });
+        if (!token.map || token.map[0] < lastProcessedLine) {
+             if (token.type === 'thinking_content' || token.type === 'thinking_close') continue;
         }
 
-        // Update the reactive ref; Vue handles efficient DOM updates
-        markdownItems.value = items;
+        const startLine = token.map ? token.map[0] : lastProcessedLine;
+        const endLine = token.map ? token.map[1] : startLine + 1;
 
-        // Update Feather icons after the DOM has potentially changed
-        nextTick(() => {
-            try { feather.replace(); } catch (e) { /* Ignore errors if icons aren't present */ }
-        });
-    };
-
-    // Create a debounced version of the parsing function
-    const debouncedParseAndStructure = debounce(parseAndStructure, MARKDOWN_UPDATE_DEBOUNCE_MS, { leading: false, trailing: true });
-
-    // Renders a markdown string chunk to HTML using the configured MarkdownIt instance
-    const renderMarkdownChunk = (markdown) => {
-      try {
-        return md.render(markdown || '');
-      } catch (e) {
-        console.error("Markdown rendering error:", e);
-        // Return escaped error message for safety
-        const safeError = String(e).replace(/</g, "<").replace(/>/g, ">");
-        return `<pre style="color: red; background-color: #fdd; padding: 5px; border: 1px solid red;">Error rendering markdown chunk:\n${safeError}</pre>`;
-      }
-    };
-
-    // Handles the 'update-code' event from CodeBlock components
-    const handleCodeUpdate = (itemId, newCode) => {
-        const itemIndex = markdownItems.value.findIndex(item => item.id === itemId);
-         if (itemIndex !== -1 && markdownItems.value[itemIndex].type === 'code') {
-            // Emit an event upwards for the parent component to handle the data change
-            emit('code-block-updated', {
-                id: itemId, // Pass the unique ID for reliable identification
-                index: itemIndex, // Pass index as well, might be useful
-                language: markdownItems.value[itemIndex].language,
-                newCode: newCode, // The updated code content
+        if (startLine > lastProcessedLine) {
+          const rawChunk = this.getRawMarkdownChunk(lastProcessedLine, startLine);
+          if (rawChunk) { // Store even if just whitespace to preserve structure
+            newItems.push({
+              type: 'markdown',
+              raw: rawChunk,
+              html: this.md.render(rawChunk),
             });
-            // *Immediately* update the local state for a responsive UI.
-            // The parent's update will eventually confirm this via prop change,
-            // but this prevents perceived lag during editing.
-             markdownItems.value[itemIndex].code = newCode;
-         }
-    };
+          }
+        }
 
-    // Watch the incoming markdownText prop for changes
-    watch(() => props.markdownText, (newValue) => {
-        // Use the debounced function to avoid excessive parsing during rapid updates (e.g., streaming)
-        debouncedParseAndStructure(newValue || '');
-    }, { immediate: true }); // Parse immediately on component mount
+        if (token.type === 'thinking_open') {
+          const blockEndLine = token.map ? token.map[1] : endLine;
+          newItems.push({
+            type: 'thinking',
+            raw: token.meta?.rawBlock || this.getRawMarkdownChunk(startLine, blockEndLine),
+            content: token.meta?.innerContent || '',
+            is_done: token.is_done,
+            implicit: token.implicit,
+          });
+          lastProcessedLine = blockEndLine;
+          i += 2;
 
-    onMounted(() => {
-      // Initial parse is handled by the immediate watcher
-      // Feather icons update is handled within parseAndStructure's nextTick
-    });
+        } else if (token.type === 'fence') {
+           const rawFence = this.getRawMarkdownChunk(startLine, endLine);
+           newItems.push({
+            type: 'code',
+            raw: rawFence,
+            language: escapeHtml(token.info.trim()),
+            code: token.content,
+          });
+          lastProcessedLine = endLine;
+        }
+      }
 
-    // Expose necessary data and methods to the template
-    return {
-      markdownItems,
-      handleCodeUpdate,
-      renderMarkdownChunk,
-      // Make props directly available if needed in template (though already accessible)
-      host: props.host,
-      client_id: props.client_id,
-      discussion_id: props.discussion_id,
-      message_id: props.message_id
-    };
+      if (lastProcessedLine < lineCount) {
+        const rawChunk = this.getRawMarkdownChunk(lastProcessedLine, lineCount);
+        if (rawChunk) {
+          newItems.push({
+            type: 'markdown',
+            raw: rawChunk,
+            html: this.md.render(rawChunk),
+          });
+        }
+      }
+
+      this.markdownItems = newItems;
+
+      nextTick(() => {
+        feather.replace();
+        if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+           window.MathJax.typesetPromise([this.$refs.mdRender]).catch((err) => console.error('MathJax typesetting failed:', err));
+        } else if (window.MathJax && typeof window.MathJax.Hub !== 'undefined') {
+           window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, this.$refs.mdRender]);
+        }
+      });
+    },
+    updateCode(index, newCode) {
+      if (this.markdownItems[index]?.type === 'code') {
+        const item = this.markdownItems[index];
+        item.code = newCode;
+        // Regenerate raw based on current state
+        const lang = item.language || '';
+        const tick = '```';
+        item.raw = `${tick}${lang}\n${newCode}\n${tick}`; // Add newline before closing ticks
+
+        const newMarkdownText = this.reconstructMarkdown();
+
+        this._isUpdatingInternally = true;
+        this.$emit('update:markdownText', newMarkdownText);
+      }
+    },
+    reconstructMarkdown() {
+      // Join raw parts, ensuring correct spacing potentially lost if chunks didn't capture trailing/leading newlines perfectly
+      return this.markdownItems.map(item => item.raw).join('');
+    },
   }
 };
 </script>
 
-<style>
-/* Apply styles globally within this component's scope or remove 'scoped' if needed */
-.markdown-content { word-wrap: break-word; }
-.markdown-content p { margin-bottom: 0.5rem; }
-.markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4, .markdown-content h5, .markdown-content h6 { margin-top: 1rem; margin-bottom: 0.5rem; font-weight: 600; }
-.markdown-content ul, .markdown-content ol { margin-left: 1.5rem; margin-bottom: 0.5rem; padding-left: 1rem; } /* Added padding-left */
-.markdown-content li { margin-bottom: 0.25rem; }
-.markdown-content li > p { margin-bottom: 0.1rem; }
-.markdown-content blockquote { margin-left: 0; padding-left: 1rem; border-left: 4px solid #e2e8f0; /* Tailwind gray-200 */ color: #4a5568; /* Tailwind gray-700 */ margin-bottom: 0.5rem; }
-.dark .markdown-content blockquote { border-left-color: #4a5568; /* Tailwind gray-600 */ color: #a0aec0; /* Tailwind gray-400 */ }
-.markdown-content code:not(pre > code) { @apply font-mono bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm text-red-600 dark:text-red-400; } /* Example color change */
-.markdown-content a { @apply text-blue-600 dark:text-blue-400 hover:underline; }
-.thinking-block { /* Optional container styles */ }
-.thinking-content { white-space: pre-wrap; font-style: italic; color: #718096; /* Tailwind gray-600 */ }
-.dark .thinking-content { color: #a0aec0; /* Tailwind gray-500 */ }
-.markdown-content .feather { width: 1em; height: 1em; vertical-align: -0.125em; stroke-width: 2; }
-.markdown-content table { @apply w-full border-collapse border border-gray-300 dark:border-gray-600 my-2 text-sm; }
-.markdown-content th, .markdown-content td { @apply border border-gray-300 dark:border-gray-600 p-1.5 text-left; }
-.markdown-content th { @apply bg-gray-100 dark:bg-gray-700 font-semibold; }
-.markdown-content figure { margin: 1em 0; text-align: center; }
-.markdown-content figure img { @apply inline-block; } /* Center image within figure */
-.markdown-content figure figcaption { font-size: 0.9em; color: #718096; /* Tailwind gray-600 */ margin-top: 0.5em; font-style: italic; }
-.dark .markdown-content figure figcaption { color: #a0aec0; /* Tailwind gray-500 */ }
-/* Header anchor link style */
-.markdown-content .header-anchor { margin-left: 0.25rem; opacity: 0.5; transition: opacity 0.2s ease-in-out; text-decoration: none; }
-.markdown-content h1:hover .header-anchor,
-.markdown-content h2:hover .header-anchor,
-.markdown-content h3:hover .header-anchor,
-.markdown-content h4:hover .header-anchor,
-.markdown-content h5:hover .header-anchor,
-.markdown-content h6:hover .header-anchor { opacity: 1; }
+<style scoped>
+.markdown-content :deep(code:not(pre code)) {
+  background-color: #f0f0f0;
+  padding: 0.2em 0.4em;
+  margin: 0;
+  font-size: 85%;
+  border-radius: 3px;
+  color: #333;
+}
+.markdown-content :deep(pre code) {
+   background-color: transparent;
+   padding: 0;
+   margin: 0;
+   font-size: inherit;
+   border-radius: 0;
+   color: inherit;
+}
+.markdown-content :deep(.MathJax_Display) {
+  display: block !important;
+  margin: 1em 0 !important;
+}
+.markdown-content :deep(mjx-container[display="true"]) {
+  display: block !important;
+  margin: 1em 0 !important;
+}
+.markdown-content :deep(mjx-container[display="false"]) {
+ display: inline-block !important;
+}
+.markdown-content :deep(.thinking-block) {
+  border-left: 3px solid orange;
+  padding: 0.5em 1em;
+  margin: 1em 0;
+  background-color: #fff8e1;
+  opacity: 0.8;
+  transition: opacity 0.3s ease-in-out;
+}
+.markdown-content :deep(.thinking-block[data-done="true"]) {
+   opacity: 1;
+   border-left-color: #4caf50;
+   background-color: #e8f5e9;
+}
+.markdown-content :deep(.thinking-content) {
+  white-space: pre-wrap;
+  font-style: italic;
+  color: #616161;
+}
 </style>
