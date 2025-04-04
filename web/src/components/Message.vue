@@ -757,8 +757,6 @@ export default {
             this.$emit('continueMessage', this.message.id, this.message.content)
         },
         getImgUrl() {
-            console.log("this.avatar")
-            console.log(this.avatar)
             if (this.avatar) {
                 return this.avatar; // If avatar is a full URL
             } 
