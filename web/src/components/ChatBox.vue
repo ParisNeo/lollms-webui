@@ -44,7 +44,7 @@
             :class="[ isDragging ? 'cursor-grabbing' : 'cursor-grab' ]"
             @mousedown.prevent="onMouseDown"
           >
-            <span class="text-xs font-medium text-blue-700 dark:text-blue-300 select-none">Chat</span>
+            <span class="chat-box-title-barselect-none">Chat</span>
             <button
                 @click.stop="toggleShrink"
                 class="svg-button p-1 rounded-full hover:bg-blue-300 dark:hover:bg-blue-700"
@@ -819,9 +819,6 @@ export default {
           handleFileUploadError(data) {
              if (data && data.client_id === this.$store.state.client_id) {
                  this.onShowToastMessage(`Upload failed for ${data.filename}: ${data.error}`, 4, false);
-                  const index = data.fileIndex;
-                  if (typeof index === 'number' && index >= 0 && index < this.filesList.length) {
-                  }
              }
           },
          removeItem(fileToRemove) {

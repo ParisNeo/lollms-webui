@@ -2,7 +2,8 @@
 <template>
   <div class="relative inline-block text-left">
     <div>
-      <ToolbarButton @click.stop="toggleMenu" :title="title" icon="code" />
+      <!-- Bind the icon prop here -->
+      <ToolbarButton @click.stop="toggleMenu" :title="title" :icon="icon" />
     </div>
 
     <teleport to="body">
@@ -23,7 +24,11 @@ export default {
   components: {
     ToolbarButton
   },
-  props: ['title'],
+  // Add 'icon' to props
+  props: {
+      title: { type: String, required: true },
+      icon: { type: String, required: true } // Make icon required
+  },
   data() {
     return {
       isOpen: false,
@@ -49,31 +54,49 @@ export default {
         this.$nextTick(() => {
           this.createPopper()
         })
+      } else if (this.popperInstance) {
+        // Destroy popper when closing to avoid potential memory leaks/issues
+        this.popperInstance.destroy();
+        this.popperInstance = null;
       }
     },
     closeMenu(event) {
-      if (!this.$el.contains(event.target) && !this.$refs.dropdown?.contains(event.target)) {
-        this.isOpen = false
+      // Close only if clicking outside the button AND the dropdown itself
+      const button = this.$el?.querySelector('button'); // Get reference to the button
+      if (button && !button.contains(event.target) && !this.$refs.dropdown?.contains(event.target)) {
+        if (this.isOpen) { // Only change state and destroy if currently open
+            this.isOpen = false;
+            if (this.popperInstance) {
+                this.popperInstance.destroy();
+                this.popperInstance = null;
+            }
+        }
       }
     },
     createPopper() {
-      const button = this.$el.querySelector('button')
+       // Destroy existing instance before creating a new one
+       if (this.popperInstance) {
+           this.popperInstance.destroy();
+           this.popperInstance = null;
+       }
+      const button = this.$el?.querySelector('button') // Use optional chaining
       const dropdown = this.$refs.dropdown
 
       if (button && dropdown) {
         this.popperInstance = createPopper(button, dropdown, {
-          placement: 'bottom-end',
+          placement: 'bottom-start', // Changed default placement for toolbars
           modifiers: [
+             { name: 'offset', options: { offset: [0, 8], }, }, // Add some space
             {
               name: 'flip',
               options: {
-                fallbackPlacements: ['top-end', 'bottom-start', 'top-start'],
+                fallbackPlacements: ['top-start', 'bottom-end', 'top-end'],
               },
             },
             {
               name: 'preventOverflow',
               options: {
-                boundary: document.body,
+                boundary: 'clippingParents', // Usually better than document.body
               },
             },
           ],
@@ -90,6 +113,6 @@ export default {
 }
 
 :root.dark .dropdown-shadow {
-  box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.1), 0 2px 4px -1px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.05), 0 2px 4px -1px rgba(255, 255, 255, 0.03); /* Adjusted for dark mode */
 }
 </style>

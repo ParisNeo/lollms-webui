@@ -344,7 +344,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
 
                 prompt = text
                 try:
-                    nb_tokens = len(self.model.tokenize(prompt))
+                    nb_tokens = self.model.count_tokens(prompt)
                 except:
                     nb_tokens = None
                 message = client.discussion.add_message(
@@ -493,8 +493,8 @@ class LOLLMSWebUI(LOLLMSElfServer):
         available_space = (
             self.config.ctx_size
             - 150
-            - len(self.model.tokenize(discussion_messages))
-            - len(self.model.tokenize(discussion_title))
+            - self.model.count_tokens(discussion_messages)
+            - self.model.count_tokens(discussion_title)
         )
         # Initialize a list to store the full messages
         full_message_list = []
@@ -700,6 +700,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                     "content": content,
                     "metadata": None,
                     "ui": None,
+                    "discussion_id":client.discussion.discussion_id,
                     "id": msg.id,
                     "parent_message_id": msg.parent_message_id,
                     "binding": self.binding.binding_folder_name,
@@ -1499,7 +1500,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
         if client.discussion:
             try:
                 ASCIIColors.info(
-                    f"Received message : {message.content} ({len(self.model.tokenize(message.content))})"
+                    f"Received message : {message.content} ({self.model.count_tokens(message.content)})"
                 )
                 # First we need to send the new message ID to the client
                 if is_continue:
@@ -1619,24 +1620,9 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                                 MSG_OPERATION_TYPE.MSG_OPERATION_TYPE_STEP_START,
                                 client_id=client_id,
                             )
-                            from lollms.services.tts.xtts.lollms_xtts import \
-                                LollmsXTTS
-
-                            voice = self.config.xtts_current_voice
-                            if voice != "main_voice":
-                                voices_folder = self.lollms_paths.custom_voices_path
-                            else:
-                                voices_folder = (
-                                    Path(__file__).parent.parent.parent
-                                    / "services/xtts/voices"
-                                )
-
                             if self.tts.ready:
                                 language = convert_language_name(
                                     self.personality.language
-                                )
-                                self.tts.set_speaker_folder(
-                                    Path(self.personality.audio_samples[0]).parent
                                 )
                                 fn = (
                                     self.personality.name.lower()
@@ -1818,6 +1804,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
                 )
             except Exception as ex:
                 ASCIIColors.warning("Couldn't send status update to client")
+            ASCIIColors.yellow("Closing message")
             self.close_message(client_id)
 
             client.processing = False
@@ -1871,7 +1858,7 @@ Don't forget encapsulate the code inside a markdown code tag. This is mandatory.
     def receive_and_generate(self, text, client: Client, callback=None):
         prompt = text
         try:
-            nb_tokens = len(self.model.tokenize(prompt))
+            nb_tokens = self.model.count_tokens(prompt)
         except:
             nb_tokens = None
 

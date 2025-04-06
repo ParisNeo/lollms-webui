@@ -217,120 +217,203 @@ export default {
     this.parseAndRenderMarkdown();
   },
   methods: {
-    getRawMarkdownChunk(startLine, endLine) {
-        if (startLine == null || endLine == null || startLine < 0 || endLine <= startLine) {
-            return '';
-        }
-        const lines = this.markdownText.split(/\r?\n/);
-        const safeEndLine = Math.min(endLine, lines.length);
-        if(startLine >= safeEndLine) return '';
-        return lines.slice(startLine, safeEndLine).join('\n');
-    },
+// Inside MarkdownRenderer.vue methods:
 
-    parseAndRenderMarkdown() {
-      if (!this.markdownText || !this.md) {
+getRawMarkdownChunk(startLine, endLine) {
+    if (typeof startLine !== 'number' || typeof endLine !== 'number' || startLine < 0 || endLine <= startLine) {
+        // console.warn(`getRawMarkdownChunk called with invalid lines: ${startLine}, ${endLine}`);
+        return '';
+    }
+    const lines = this.markdownText.split(/\r?\n/);
+    const safeStartLine = Math.min(startLine, lines.length);
+    const safeEndLine = Math.min(endLine, lines.length);
+    if (safeStartLine >= safeEndLine) return '';
+    // Slice captures lines from start index up to, but not including, end index.
+    return lines.slice(safeStartLine, safeEndLine).join('\n');
+},
+
+parseAndRenderMarkdown() {
+    if (!this.markdownText || !this.md) {
         this.markdownItems = [];
         return;
-      }
+    }
 
-      const tokens = this.md.parse(this.markdownText, {});
-      const newItems = [];
-      let lastProcessedLine = 0;
-      const lineCount = this.markdownText.split(/\r?\n/).length;
+    try {
+        const tokens = this.md.parse(this.markdownText, {});
+        const newItems = [];
+        let lastProcessedLine = 0;
+        const totalLines = this.markdownText.split(/\r?\n/).length;
 
-      for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i];
-        let skipToNext = false;
+        for (let i = 0; i < tokens.length; i++) {
+            const token = tokens[i];
 
-        if (!token.map || token.map[0] < lastProcessedLine) {
-             if (token.type === 'thinking_content' || token.type === 'thinking_close') continue;
+            // Skip tokens that don't represent distinct blocks or are handled implicitly
+            if (!token.map || !Array.isArray(token.map) || token.map.length < 2) continue;
+            // Skip closing tags for blocks we handle explicitly by their opening tag
+            if (token.type === 'thinking_close' || token.type === 'thinking_content') continue;
+            // Skip inline math handled by math_block/math_inline rules already
+            // if (token.type === 'math_inline_double' || token.type === 'math_block_label') continue;
+
+            const startLine = token.map[0];
+            let endLine = token.map[1]; // Use let for potential adjustment
+
+             // --- Logic ---
+
+             // 1. Render any standard markdown *before* this token's block starts
+            if (startLine > lastProcessedLine) {
+                const rawChunk = this.getRawMarkdownChunk(lastProcessedLine, startLine);
+                if (rawChunk) { // Add even if just whitespace, preserving structure
+                    newItems.push({
+                        type: 'markdown',
+                        raw: rawChunk,
+                        html: this.md.render(rawChunk) // Render only this chunk
+                    });
+                }
+                lastProcessedLine = startLine; // Advance past the rendered gap
+            } else if (startLine < lastProcessedLine) {
+                 // Overlap situation, likely means this token is inside a block already processed.
+                 // Safest is often to skip it to avoid duplication.
+                 continue;
+            }
+
+
+            // 2. Identify and process the *current* block based on the token type
+            let blockProcessed = false;
+            if (token.type === 'thinking_open') {
+                // Look ahead for content and close tokens to get the full range & data
+                let thinkingEndLine = endLine;
+                let thinkingContent = '';
+                let isDone = false; // Assume not done unless close tag found
+                let consumedTokens = 0;
+
+                if (i + 1 < tokens.length && tokens[i+1].type === 'thinking_content') {
+                     thinkingContent = tokens[i+1].content;
+                     consumedTokens = 1;
+                     if(tokens[i+1].map) thinkingEndLine = Math.max(thinkingEndLine, tokens[i+1].map[1]);
+
+                     if (i + 2 < tokens.length && tokens[i+2].type === 'thinking_close') {
+                         isDone = tokens[i+2].is_done !== undefined ? tokens[i+2].is_done : true; // Default to true if closed
+                         consumedTokens = 2;
+                         if(tokens[i+2].map) thinkingEndLine = Math.max(thinkingEndLine, tokens[i+2].map[1]);
+                     }
+                }
+
+                const rawContent = this.getRawMarkdownChunk(startLine, thinkingEndLine);
+                newItems.push({
+                    type: 'thinking',
+                    raw: rawContent,
+                    content: thinkingContent,
+                    is_done: isDone,
+                    implicit: token.implicit || false,
+                });
+                lastProcessedLine = thinkingEndLine;
+                i += consumedTokens; // Skip the consumed content/close tokens
+                blockProcessed = true;
+
+            } else if (token.type === 'fence') {
+                const rawFence = this.getRawMarkdownChunk(startLine, endLine);
+                 newItems.push({
+                    type: 'code',
+                    raw: rawFence,
+                    language: escapeHtml(token.info.trim()),
+                    code: token.content,
+                });
+                lastProcessedLine = endLine;
+                blockProcessed = true;
+
+            } else if (token.type === 'math_inline' || token.type === 'math_block') {
+                const isInline = token.type === 'math_inline';
+                const delimiter = isInline ? '$' : '$$';
+                const rawLatex = token.markup && token.content ? `${delimiter}${token.content}${delimiter}` : this.getRawMarkdownChunk(startLine, endLine);
+                 newItems.push({
+                    type: 'latex',
+                    raw: rawLatex,
+                    code: token.content,
+                    inline: isInline,
+                });
+                lastProcessedLine = endLine;
+                blockProcessed = true;
+
+            } else if (token.level === 0 && !token.hidden && token.type.endsWith('_open')) {
+                 // --- Potential Standard Markdown Block Start ---
+                 // This is a heuristic: identifies top-level opening tags like paragraph_open, list_item_open, etc.
+                 // We need to find the corresponding closing tag to get the full range.
+                 let blockEndLine = endLine;
+                 let nestingLevel = 0;
+                 let j = i + 1;
+                 for (; j < tokens.length; j++) {
+                    const innerToken = tokens[j];
+                    if(innerToken.type === token.type) { // Same opening tag type
+                        nestingLevel++;
+                    } else if (innerToken.type === token.type.replace('_open', '_close')) {
+                        if (nestingLevel === 0) {
+                            blockEndLine = innerToken.map ? Math.max(endLine, innerToken.map[1]) : endLine;
+                            break; // Found the matching close tag
+                        } else {
+                            nestingLevel--;
+                        }
+                    }
+                     // Make sure endLine tracks the maximum extent within the block
+                     if(innerToken.map) blockEndLine = Math.max(blockEndLine, innerToken.map[1]);
+                 }
+
+                 // Now we have the range [startLine, blockEndLine] for this standard block
+                const rawChunk = this.getRawMarkdownChunk(startLine, blockEndLine);
+                if (rawChunk.trim()) { // Only add if it has content
+                     newItems.push({
+                        type: 'markdown',
+                        raw: rawChunk,
+                        html: this.md.render(rawChunk)
+                    });
+                     lastProcessedLine = blockEndLine;
+                     i = j; // Skip all tokens within this processed block
+                     blockProcessed = true;
+                } else if (rawChunk) { // Preserve whitespace blocks if necessary
+                    newItems.push({ type: 'markdown', raw: rawChunk, html: '' });
+                     lastProcessedLine = blockEndLine;
+                     i = j;
+                     blockProcessed = true;
+                } else {
+                     // Empty block, just advance lastProcessedLine if needed
+                     lastProcessedLine = Math.max(lastProcessedLine, blockEndLine);
+                }
+            }
+
+            // 3. If no block was explicitly processed, but the token advanced lines, update lastProcessedLine.
+            // This catches simple cases or tokens missed by the block logic.
+             if (!blockProcessed && endLine > lastProcessedLine) {
+                 // This path should ideally be hit less often with the block detection above.
+                 // Could render the single token's range as markdown if needed, but might cause issues.
+                 // For now, just advance the line counter.
+                 lastProcessedLine = endLine;
+             }
+        } // End for loop
+
+        // 4. Handle any final trailing markdown chunk after the last processed token/block.
+        if (lastProcessedLine < totalLines) {
+            const rawChunk = this.getRawMarkdownChunk(lastProcessedLine, totalLines);
+             if (rawChunk) { // Add if non-empty (including whitespace)
+                newItems.push({
+                    type: 'markdown',
+                    raw: rawChunk,
+                    html: this.md.render(rawChunk),
+                });
+            }
         }
 
-        const startLine = token.map ? token.map[0] : lastProcessedLine;
-        const endLine = token.map ? token.map[1] : startLine + 1;
+        this.markdownItems = newItems;
 
-        if (startLine > lastProcessedLine) {
-          const rawChunk = this.getRawMarkdownChunk(lastProcessedLine, startLine);
-          if (rawChunk && rawChunk.trim()) {
-            newItems.push({
-              type: 'markdown',
-              raw: rawChunk,
-              html: this.md.render(rawChunk),
-            });
-          } else if (rawChunk) {
-             newItems.push({ type: 'markdown', raw: rawChunk, html: '' });
-          }
-        }
-
-        if (token.type === 'thinking_open') {
-          const blockEndLine = token.map ? token.map[1] : endLine;
-          const rawContent = this.getRawMarkdownChunk(startLine, blockEndLine);
-          newItems.push({
-            type: 'thinking',
-            raw: rawContent,
-            content: token.meta?.innerContent || '',
-            is_done: token.is_done,
-            implicit: token.implicit,
-          });
-          lastProcessedLine = blockEndLine;
-          i += 2;
-          skipToNext = true;
-
-        } else if (token.type === 'fence') {
-           const rawFence = this.getRawMarkdownChunk(startLine, endLine);
-           newItems.push({
-            type: 'code',
-            raw: rawFence,
-            language: escapeHtml(token.info.trim()),
-            code: token.content,
-          });
-          lastProcessedLine = endLine;
-
-        } else if (token.type === 'math_inline' || token.type === 'math_block') {
-          const isInline = token.type === 'math_inline';
-          const delimiter = isInline ? '$' : '$$';
-          const rawLatex = token.markup && token.content
-                            ? `${delimiter}${token.content}${delimiter}`
-                            : this.getRawMarkdownChunk(startLine, endLine);
-
-          newItems.push({
-            type: 'latex',
-            raw: rawLatex,
-            code: token.content,
-            inline: isInline,
-          });
-          lastProcessedLine = endLine;
-        }
-
-        if (skipToNext) {
-            // Loop continues correctly
-        }
-      }
-
-      if (lastProcessedLine < lineCount) {
-        const rawChunk = this.getRawMarkdownChunk(lastProcessedLine, lineCount);
-         if (rawChunk && rawChunk.trim()) {
-          newItems.push({
-            type: 'markdown',
-            raw: rawChunk,
-            html: this.md.render(rawChunk),
-          });
-        } else if (rawChunk) {
-           newItems.push({ type: 'markdown', raw: rawChunk, html: '' });
-        }
-      }
-
-      this.markdownItems = newItems;
-
-      nextTick(() => {
-        feather.replace();
-        if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
-            // No longer needed
-        } else if (window.MathJax && typeof window.MathJax.Hub !== 'undefined') {
-            // No longer needed
-        }
-      });
-    },
+    } catch (error) {
+        console.error("Error parsing markdown:", error);
+        // Fallback: Render the whole thing simply in case of error
+        this.markdownItems = [{ type: 'markdown', raw: this.markdownText, html: this.md.render(this.markdownText) }];
+    } finally {
+        nextTick(() => {
+            feather.replace();
+            // MathJax if needed
+        });
+    }
+},
 
     updateCode(index, newCode) {
       if (index >= 0 && index < this.markdownItems.length && this.markdownItems[index]?.type === 'code') {

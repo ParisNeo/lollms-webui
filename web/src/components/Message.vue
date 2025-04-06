@@ -1,18 +1,18 @@
 <template>
-    <div class="message group relative border-2 border-transparent hover:border-blue-400 dark:hover:border-blue-500 p-2 rounded-lg transition-colors duration-150 ease-in-out">
+    <div class="message group relative border-2 border-transparent hover:border-blue-400 dark:hover:border-sky-500 rounded-lg transition-colors duration-150 ease-in-out">
         <div class="flex flex-row gap-2">
             <div class="flex-shrink-0">
                 <div class="group/avatar">
                     <img :src="getImgUrl()" @error="defaultImg($event)" :data-popover-target="'avatar' + message.id" data-popover-placement="bottom"
-                        class="w-10 h-10 rounded-full object-fill border border-blue-300 dark:border-blue-600">
+                        class="w-10 h-10 rounded-full object-fill border border-blue-300 dark:border-slate-600">
                 </div>
             </div>
 
             <div class="flex flex-col w-full flex-grow">
                 <div class="flex flex-row flex-grow items-start">
                     <div class="flex flex-col mb-2">
-                        <div class="message-header text-blue-800 dark:text-blue-100 font-bold text-lg ">{{ message.sender }}</div>
-                        <div class="text-xs text-blue-500 dark:text-blue-400 font-thin" v-if="message.created_at"
+                        <div class="message-header">{{ message.sender }}</div>
+                        <div class="text-xs text-blue-500 dark:text-slate-400 font-thin" v-if="message.created_at"
                             :title="'Created at: ' + created_at_parsed">
                             {{ created_at }}
                         </div>
@@ -37,9 +37,9 @@
                             ref="markdownEditor"
                             v-model="editableContent"
                             :theme="editorTheme"
-                            editor-class="min-h-[150px] max-h-[70vh]"
-                            toolbar-class="dark:bg-gray-700 dark:border-gray-600"
-                            button-class="px-1.5 py-1 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded hover:bg-gray-200 dark:hover:bg-gray-500 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 dark:text-gray-200 flex items-center justify-center w-7 h-7"
+                            editor-class="min-h-[150px] max-h-[70vh] message-editor-content"
+                            toolbar-class="md-editor-toolbar-theme"
+                            button-class="md-editor-button-theme"
                             :toolbar-button-icon-size="16"
                         />
                     </div>
@@ -59,17 +59,17 @@
 
                     <div class="message-details w-full max-w-4xl mx-auto mt-2">
                          <div v-if="message.steps && message.steps.length > 0 && !editMsgMode" class="steps-container">
-                            <div class="steps-header flex items-center cursor-pointer p-1 hover:bg-blue-100 dark:hover:bg-blue-800 rounded" @click="toggleExpanded">
+                            <div class="steps-header" @click="toggleExpanded">
                                 <div class="w-5 h-5 mr-2 flex-shrink-0 flex items-center justify-center">
                                     <transition name="fade-icon" mode="out-in">
                                         <div v-if="isProcessingSteps" key="header-spinner" class="step-spinner"></div>
-                                        <svg v-else-if="finalStepsStatus === true" key="header-success" class="step-icon-success w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                        <svg v-else-if="finalStepsStatus === false" key="header-fail" class="step-icon-fail w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
-                                        <svg v-else key="header-unknown" class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                                        <svg v-else-if="finalStepsStatus === true" key="header-success" class="step-icon-success w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        <svg v-else-if="finalStepsStatus === false" key="header-fail" class="step-icon-fail w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                                        <svg v-else key="header-unknown" class="w-4 h-4 text-gray-400 dark:text-slate-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
                                     </transition>
                                 </div>
-                                <span class="steps-status truncate pr-2 text-sm text-blue-700 dark:text-blue-300">{{ headerStepText }}</span>
-                                <span class="toggle-icon text-xs text-blue-500 dark:text-blue-400 transform transition-transform duration-200 ml-auto" :class="{ 'rotate-180': expanded }">
+                                <span class="steps-status truncate pr-2 text-sm">{{ headerStepText }}</span>
+                                <span class="toggle-icon text-xs transform transition-transform duration-200 ml-auto" :class="{ 'rotate-180': expanded }">
                                     <i data-feather="chevron-down" class="w-5 h-5"></i>
                                 </span>
                             </div>
@@ -81,7 +81,7 @@
                                 leave-from-class="opacity-100 max-h-[500px]"
                                 leave-to-class="opacity-0 max-h-0"
                             >
-                                <div v-if="expanded" class="steps-content border-l-2 border-blue-200 dark:border-blue-700 ml-2 pl-4 pt-1 pb-1">
+                                <div v-if="expanded" class="steps-content">
                                     <div v-for="(step, index) in message.steps" :key="`step-${message.id}-${index}`" class="step-item animate-step-slide-in" :style="{ animationDelay: `${index * 80}ms` }">
                                         <Step :done="step.done" :text="step.text" :status="step.status" :description="step.description"/>
                                     </div>
@@ -97,46 +97,46 @@
                     </div>
                 </div>
 
-                <div class="flex flex-row justify-end items-center mt-1 mx-2">
-                    <div class="absolute bottom-2 right-2 invisible group-hover:visible flex flex-row items-center gap-1 bg-blue-200/70 dark:bg-blue-900/70 rounded-md p-1 shadow">
+                <div class="message-toolbar-wrapper">
+                    <div class="message-toolbar">
                         <div v-if="editMsgMode" class="flex items-center gap-1">
                             <ToolbarButton @click.stop="cancelEdit" title="Cancel edit" icon="x" class="svg-button text-red-500 hover:bg-red-100 dark:hover:bg-red-900" />
                             <ToolbarButton @click.stop="updateMessage" title="Update message" icon="check" class="svg-button text-green-500 hover:bg-green-100 dark:hover:bg-green-900" />
-                            
+
                         </div>
                          <div v-else class="flex items-center gap-1">
-                            <ToolbarButton @click.stop="startEdit" title="Edit message" icon="edit" class="svg-button" />
-                            <ToolbarButton @click="copyContentToClipboard" title="Copy message to clipboard" icon="copy" class="svg-button" />
+                            <ToolbarButton @click.stop="startEdit" title="Edit message" icon="edit" class="svg-button toolbar-button" />
+                            <ToolbarButton @click="copyContentToClipboard" title="Copy message to clipboard" icon="copy" class="svg-button toolbar-button" />
                             <div v-if="message.sender !== $store.state.mountedPers.name" class="flex items-center gap-1">
-                                <ToolbarButton @click.stop="resendMessage('full_context')" title="Resend message with full context" icon="send" class="svg-button" />
-                                <ToolbarButton @click.stop="resendMessage('full_context_with_internet')" title="Resend message with internet search" icon="globe" class="svg-button" />
-                                <ToolbarButton @click.stop="resendMessage('simple_question')" title="Resend message without context" icon="refresh-cw" class="svg-button" />
+                                <ToolbarButton @click.stop="resendMessage('full_context')" title="Resend message with full context" icon="send" class="svg-button toolbar-button" />
+                                <ToolbarButton @click.stop="resendMessage('full_context_with_internet')" title="Resend message with internet search" icon="globe" class="svg-button toolbar-button" />
+                                <ToolbarButton @click.stop="resendMessage('simple_question')" title="Resend message without context" icon="refresh-cw" class="svg-button toolbar-button" />
                             </div>
                             <div v-if="message.sender === $store.state.mountedPers.name" class="flex items-center gap-1">
-                                <ToolbarButton @click.stop="continueMessage" title="Continue message" icon="fast-forward" class="svg-button" />
+                                <ToolbarButton @click.stop="continueMessage" title="Continue message" icon="fast-forward" class="svg-button toolbar-button" />
                             </div>
                             <div v-if="deleteMsgMode" class="flex items-center gap-1">
-                                <ToolbarButton @click.stop="deleteMsgMode = false" title="Cancel removal" icon="x" class="svg-button text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-700" />
+                                <ToolbarButton @click.stop="deleteMsgMode = false" title="Cancel removal" icon="x" class="svg-button toolbar-button text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-700" />
                                 <ToolbarButton @click.stop="deleteMsg()" title="Confirm removal" icon="check" class="svg-button text-red-500 hover:bg-red-100 dark:hover:bg-red-900" />
                             </div>
                             <ToolbarButton v-else title="Remove message" icon="trash" @click="deleteMsgMode = true" class="svg-button text-red-500 hover:bg-red-100 dark:hover:bg-red-900" />
-                            <ToolbarButton @click.stop="rankUp()" title="Upvote" icon="thumbs-up" class="svg-button text-blue-500 dark:text-blue-400" />
+                            <ToolbarButton @click.stop="rankUp()" title="Upvote" icon="thumbs-up" class="svg-button toolbar-button text-blue-500 dark:text-blue-400" />
                             <div class="flex items-center">
                                 <ToolbarButton @click.stop="rankDown()" title="Downvote" icon="thumbs-down" class="svg-button text-red-500 dark:text-red-400" />
                                 <div v-if="message.rank != 0" class="text-xs font-bold rounded-full px-1.5 py-0.5 flex items-center justify-center cursor-default" :class="message.rank > 0 ? 'bg-blue-500 text-white' : 'bg-red-500 text-white'" title="Rank">{{ message.rank }}</div>
                             </div>
                             <div v-if="this.$store.state.config.active_tts_service!='None'" class="flex items-center gap-1">
-                                <ToolbarButton title="Speak message" icon="volume-2" @click.stop="speak()" class="svg-button" :class="{ 'text-red-500 dark:text-red-400 animate-pulse': isSpeaking }"/>
+                                <ToolbarButton title="Speak message" icon="volume-2" @click.stop="speak()" class="svg-button toolbar-button" :class="{ 'text-red-500 dark:text-red-400 animate-pulse': isSpeaking }"/>
                             </div>
                             <div v-if="this.$store.state.config.xtts_enable && !this.$store.state.config.xtts_use_streaming_mode" class="flex items-center gap-1">
-                                <ToolbarButton v-if="!isSynthesizingVoice" title="Generate audio" icon="mic" @click.stop="read()" class="svg-button" />
-                                <img v-else :src="loading_svg" class="w-5 h-5 animate-spin text-blue-500 dark:text-blue-400">
+                                <ToolbarButton v-if="!isSynthesizingVoice" title="Generate audio" icon="mic" @click.stop="read()" class="svg-button toolbar-button" />
+                                <img v-else :src="loading_svg" class="w-5 h-5 animate-spin text-blue-500 dark:text-sky-400">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                 <div class="text-xs text-blue-500 dark:text-blue-400 mt-2 pt-1 border-t border-blue-100 dark:border-blue-800">
+                 <div class="message-footer">
                     <div class="flex flex-row flex-wrap items-center gap-x-3 gap-y-1">
                         <p v-if="message.binding" class="footer-item">Binding: <span class="footer-value">{{ message.binding }}</span></p>
                         <p v-if="message.model" class="footer-item">Model: <span class="footer-value">{{ message.model }}</span></p>
@@ -352,7 +352,8 @@ export default {
         },
         cancelEdit() { this.editMsgMode = false; },
         updateMessage() {
-            this.$emit('updateMessage', this.message.id, this.editableContent, this.message.metadata);
+            console.log(`sending updateMessage with: ${this.message.id}, ${this.editableContent}, ${this.message.metadata}`)
+            this.$emit('updateMessage', {id:this.message.id, content:this.editableContent, metadata:this.message.metadata});
             this.editMsgMode = false;
         },
         resendMessage(msg_type) { this.$emit('resendMessage', this.message.id, this.message.content, msg_type); },
@@ -479,11 +480,7 @@ export default {
 .fade-icon-enter-active, .fade-icon-leave-active { transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out; }
 .fade-icon-enter-from, .fade-icon-leave-to { opacity: 0; transform: scale(0.8); }
 .fade-icon-enter-to, .fade-icon-leave-from { opacity: 1; transform: scale(1); }
-.step-spinner { border: 2px solid rgba(0, 0, 0, 0.1); border-left-color: #2563eb; border-radius: 50%; width: 1rem; height: 1rem; animation: spin 1s linear infinite; }
-.dark .step-spinner { border-left-color: #60a5fa; }
 @keyframes spin { to { transform: rotate(360deg); } }
-.footer-item { @apply text-gray-600 dark:text-gray-400; }
-.footer-value { @apply font-medium text-gray-700 dark:text-gray-300; }
 .svg-button i[data-feather] { width: 1.1rem; height: 1.1rem; }
 :deep(.cm-editor) { font-size: 0.95rem; }
 :deep(.cm-scroller) { font-family: 'Consolas', 'Monaco', 'Courier New', Courier, monospace; }

@@ -1,483 +1,1028 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+/* ========================================================================== */
+/* LoLLMS WebUI Theme: Milkshake Strawberry                                 */
+/* Built by ParisNeo, Adapted by AI                                          */
+/* ========================================================================== */
+
+/* ========================================================================== */
+/* 1. Base Setup: Imports and Tailwind Directives                           */
+/* ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================================================== */
+/* 2. Root Variables: Colors, Theme Configuration                           */
+/* ========================================================================== */
+
 :root {
+  /* Theme Meta */
   --lollms-title: LoLLMS;
-  --falling-object: "";
-  --activate-dropping-animation: 0;
+  --falling-object: "🍓"; /* Customize with emoji or image URL if animation is active */
+  --activate-dropping-animation: 0; /* Set to 1 to activate */
   --lollms-welcome-short-message: Welcome to LoLLMS;
-  --lollms-welcome-message: Embark on a journey through the realm of advanced AI with LoLLMS, your ultimate companion for intelligent conversations and multimodal interactions. Unleash the power of large language models and explore new frontiers in artificial intelligence.;
+  --lollms-welcome-message: Dive into a sweet AI experience with LoLLMS, your delightful companion for intelligent conversations and multimodal interactions. Enjoy the blend of powerful language models and a fresh, creamy interface!;
+
+  /* --- Light Mode Colors - Strawberry Milkshake --- */
+  --color-primary: #F472B6;        /* Primary Pink (pink-400) - Strawberry */
+  --color-primary-light: #F9A8D4; /* Lighter Pink (pink-300) */
+  --color-secondary: #FECDD3;     /* Light Rose (rose-200) - Creamy Pink */
+  --color-accent: #EC4899;        /* Accent Pink (pink-500) - Stronger Strawberry */
+  --color-light-text: #374151;      /* gray-700 - Base Text (Dark Gray for readability) */
+  --color-light-text-panel: #1F2937; /* gray-800 - Text on lighter panels (Slightly darker) */
+  --color-bg-light: #FFF7F9;      /* Custom - Very Light Pink/Cream (Milk base) */
+  --color-bg-light-tone: #FFF1F2; /* rose-50 - Subtle Pink Tone */
+  --color-bg-light-panel: #FFE4E6; /* rose-100 - Light Pink Panels */
+  --color-bg-light-tone-panel: #FECDD3; /* rose-200 - Slightly Darker Pink Tone */
+  --color-bg-light-code-block: #FFF1F2; /* rose-50 - Code Blocks */
+  --color-bg-light-discussion: #FFF7F9; /* Custom - Main discussion BG (same as main BG) */
+  --color-bg-light-discussion-odd: #FFF1F2; /* rose-50 - Alt Discussion BG */
+
+  /* --- Dark Mode Colors - Raspberry/Dark Berry Sorbet --- */
+  /* A darker, richer interpretation keeping the berry theme */
+  --color-dark-text: #F3F4F6;      /* gray-100 - Base Text */
+  --color-dark-text-panel: #F3F4F6; /* gray-100 - Text on Panels */
+  --color-bg-dark: #2C1D27;        /* Custom - Deep Magenta/Purple Gray */
+  --color-bg-dark-tone: #3E2A39;    /* Custom - Slightly lighter tone */
+  --color-bg-dark-panel: #50364A;   /* Custom - More distinct panel color */
+  --color-bg-dark-tone-panel: #3E2A39; /* Custom - Panel Tones (same as tone for contrast) */
+  --color-bg-dark-code-block: #3E2A39; /* Custom - Code Blocks */
+  --color-bg-dark-discussion: #3E2A39; /* Custom - Discussion BG */
+  --color-bg-dark-discussion-odd: #2C1D27; /* Custom - Alt Discussion BG (Same as main) */
+
+  /* --- Accent Colors (Adjusted for theme where applicable) --- */
+  /* Using primary/accent pinks for focus/sky accents */
+  --color-accent-sky-light: #F472B6; /* pink-400 */
+  --color-accent-sky-dark: #EC4899; /* pink-500 */
+  /* Standard feedback colors (slightly softened if possible) */
+  --color-green-light: #4ADE80;   /* green-400 */
+  --color-green-dark: #22C55E;    /* green-500 */
+  --color-red-light: #F87171;      /* red-400 */
+  --color-red-dark: #EF4444;       /* red-500 */
+  --color-yellow-light: #FACC15;  /* yellow-400 */
+  --color-yellow-dark: #EAB308;   /* yellow-500 */
+  --color-purple-light: #E879F9;  /* fuchsia-400 */
+  --color-purple-dark: #D946EF;   /* fuchsia-500 */
 }
+
+/* ========================================================================== */
+/* 3. Base HTML Elements: HTML, Body                                        */
+/* ========================================================================== */
 
 @layer base {
   html {
     @apply scroll-smooth;
   }
   body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Inter', 'Roboto', sans-serif; /* Added Inter with fallback */
+    /* Base background and text colors */
+    @apply bg-[color:var(--color-bg-light)] dark:bg-[color:var(--color-bg-dark)] min-h-screen text-base text-[color:var(--color-light-text)] dark:text-[color:var(--color-dark-text)];
   }
 }
 
-@layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+/* ========================================================================== */
+/* 4. Typography: Headings, Paragraphs, Lists                               */
+/* ========================================================================== */
 
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+/* Headings */
+h1 { @apply text-4xl md:text-5xl font-bold text-[color:var(--color-primary)] dark:text-pink-200 mb-6 border-b border-rose-200 dark:border-pink-900 pb-2; }
+h2 { @apply text-3xl font-semibold text-[color:var(--color-accent)] dark:text-pink-300 mb-4 border-b border-rose-200 dark:border-pink-900 pb-2; }
+h3 { @apply text-2xl font-medium text-pink-600 dark:text-pink-400 mb-3; }
+h4 { @apply text-xl font-medium text-pink-500 dark:text-pink-500 mb-2; }
+
+/* Paragraphs */
+p {
+  @apply text-base text-gray-700 dark:text-gray-300 /* Explicit text colors */
+         break-words font-sans antialiased tracking-tight leading-relaxed;
+}
+@screen md {
+  p { @apply text-lg leading-loose; }
 }
 
-.display-none {
-  @apply hidden;
-}
-
-h1 { @apply text-4xl md:text-5xl font-bold text-pink-800 dark:text-pink-100 mb-6; }
-h2 { @apply text-3xl font-semibold text-pink-700 dark:text-pink-200 mb-4; }
-h3 { @apply text-2xl font-medium text-pink-600 dark:text-pink-300 mb-3; }
-h4 { @apply text-xl font-medium text-pink-500 dark:text-pink-400 mb-2; }
-
-h1, h2 { @apply border-b border-pink-300 dark:border-pink-600 pb-2; }
-
-p { @apply text-base text-pink-600 dark:text-pink-300 break-words; }
-/* Base list styling */
+/* Lists */
 ul, ol {
-  @apply 
-      my-4          /* Margin top and bottom */
-      px-4          /* Horizontal padding */
-      leading-7     /* Line height */
-      text-base;    /* Text size */
+  @apply my-4 px-4 leading-7 text-base text-gray-700 dark:text-gray-300; /* Adjusted text color */
 }
-
-/* Unordered lists */
 ul {
-  @apply 
-      list-disc     /* Disc style bullets */
-      ml-2          /* Left margin */
-      space-y-2;    /* Vertical spacing */
+  @apply list-disc ml-2 space-y-2;
 }
-
-/* List items */
-li {
-  @apply 
-      pl-2         /* Padding left */
-      relative;    /* Positioning */
-}
-
-/* Ordered lists */
 ol {
-  @apply 
-      list-decimal  /* Numbered style */
-      ml-2          /* Left margin */
-      space-y-2;    /* Vertical spacing */
+  @apply list-decimal ml-2 space-y-2;
 }
-
-/* Nested lists */
+li {
+  @apply pl-2 relative;
+}
 ul ul, ol ol, ul ol, ol ul {
-  @apply 
-      mt-2         /* Top margin */
-      mb-0         /* Bottom margin */
-      ml-6;        /* Indentation */
+  @apply mt-2 mb-0 ml-6;
 }
-
-/* For custom properties that aren't available in Tailwind, use regular CSS */
 li::marker {
-  color: #4B5563; /* gray-600 equivalent */
+  @apply text-pink-400 dark:text-pink-500; /* Themed marker color */
 }
 
-
-:root {
-  --color-primary: #ff4d8c;
-  --color-primary-light: #ff80ab;
-  --color-secondary: #ffb3c1;
-  --color-accent: #ff1a66;
-  --color-light-text-panel: #ffffff;
-  --color-dark-text-panel: #ffe0e0;
-  --color-bg-light-panel: #fff0f5;
-  --color-bg-light: #ffffff;
-  --color-bg-light-tone: #ffe0f0;
-  --color-bg-light-code-block: #fff5fa;
-  --color-bg-light-tone-panel: #ffd0e0;
-  --color-bg-light-discussion: #fff8fa;
-  --color-bg-light-discussion-odd: #fff0f5;
-  --color-bg-dark: #1a0a0f;
-  --color-bg-dark-tone: #211515;
-  --color-bg-dark-tone-panel: #2a1c1c;
-  --color-bg-dark-code-block: #211515;
-  --color-bg-dark-discussion: #1a0e0e;
-  --color-bg-dark-discussion-odd: #1a0d0d;
-}
-
-textarea, input, select {
-  @apply bg-pink-100 dark:bg-pink-900;
-}
+/* ========================================================================== */
+/* 5. Layout Containers & Panels                                            */
+/* ========================================================================== */
 
 .background-color {
-  @apply bg-gradient-to-br from-pink-100 to-red-300 dark:from-pink-800 dark:to-red-900 min-h-screen;
+  @apply bg-gradient-to-br from-[color:var(--color-bg-light-tone)] to-[color:var(--color-bg-light-panel)]
+         dark:from-[color:var(--color-bg-dark)] dark:to-[color:var(--color-bg-dark-tone)] min-h-screen;
 }
 
 .toolbar-color {
-  @apply text-pink-700 dark:text-pink-200 bg-pink-200 dark:bg-pink-800 rounded-lg shadow-md;
+  @apply text-[color:var(--color-primary)] dark:text-[color:var(--color-dark-text)]
+         bg-[color:var(--color-bg-light-panel)] dark:bg-[color:var(--color-bg-dark-tone)] rounded-lg shadow-md;
 }
 
 .panels-color {
-  @apply text-pink-700 dark:text-pink-200 bg-pink-100 dark:bg-pink-800;
+  @apply text-[color:var(--color-light-text)] dark:text-[color:var(--color-dark-text)]
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-tone)]; /* Standard panel color */
 }
 
-.unicolor-panels-color {
-  @apply bg-pink-200 dark:bg-pink-700;
+.unicolor-panels-color { /* Panels with a single, slightly darker tone */
+  @apply bg-[color:var(--color-bg-light-tone-panel)] dark:bg-[color:var(--color-bg-dark-panel)];
 }
 
 .chatbox-color {
-  @apply bg-pink-50 dark:bg-pink-800;
+  @apply bg-[color:var(--color-bg-light-discussion)] dark:bg-[color:var(--color-bg-dark-tone)]; /* Using tone for chatbox BG */
 }
 
-.message {
-  @apply relative w-full rounded-lg border border-pink-300 dark:border-pink-600 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
-  @apply bg-pink-100 text-pink-900 dark:bg-gradient-to-br dark:from-pink-900 dark:to-pink-800 dark:text-pink-100;
+.chat-box-title-bar{
+  @apply text-xs font-medium bg-[color:var(--color-bg-light-discussion)] dark:bg-[color:var(--color-bg-dark-tone)];
 }
-
-.message:hover {
-  @apply border-pink-400 dark:border-pink-500;
-}
-
-.message:nth-child(even) {
-  @apply bg-pink-50 dark:bg-pink-900;
-}
-
-.message:nth-child(odd) {
-  @apply bg-pink-100 dark:bg-pink-800;
-}
-
-.message-header {
-  @apply text-xl font-semibold mb-2;
-}
-
-.message-content {
-  @apply text-lg leading-relaxed;
-}
-
-body {
-  @apply bg-pink-100 dark:bg-pink-900 min-h-screen text-base;
-}
-
-.discussion {
-  @apply mr-2 text-xs;
-}
-
-.discussion-hilighted {
-  @apply bg-pink-200 dark:bg-pink-800 text-xs;
-}
-
-.bg-gradient-welcome {
-  @apply bg-gradient-to-br from-pink-100 to-red-300 dark:from-pink-800 dark:to-red-900;
-}
-
-.bg-gradient-progress {
-  @apply bg-gradient-to-r from-pink-200 to-pink-300 dark:from-pink-700 dark:to-pink-600;
-}
-
-.text-gradient-title {
-  @apply text-transparent bg-clip-text bg-gradient-to-r from-pink-700 to-pink-500 dark:from-pink-300 dark:to-pink-500;
-}
-
-.text-subtitle {
-  @apply text-pink-600 dark:text-pink-400;
-}
-
-.text-author {
-  @apply text-pink-500 dark:text-pink-400;
-}
-
-.text-loading {
-  @apply text-pink-700 dark:text-pink-300;
-}
-
-.text-progress {
-  @apply text-pink-600 dark:text-pink-400;
-}
-
-.btn-primary {
-  @apply bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded;
-}
-
-.btn-secondary {
-  @apply bg-pink-400 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded;
-}
-
-.card {
-  @apply bg-white dark:bg-pink-800 rounded-lg shadow-md p-6;
-}
-
-.input {
-  @apply bg-pink-100 dark:bg-pink-700 border border-pink-300 dark:border-pink-600 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500 dark:focus:ring-pink-400;
-}
-
-.label {
-  @apply block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1;
-}
-
-.link {
-  @apply text-pink-600 hover:text-pink-800 dark:text-pink-400 dark:hover:text-pink-200;
-}
-
 .navbar-container {
-  @apply text-pink-700 dark:text-pink-200 bg-pink-200 dark:bg-pink-800 rounded shadow-lg;
+  @apply text-[color:var(--color-primary)] dark:text-[color:var(--color-dark-text)]
+         bg-[color:var(--color-bg-light-panel)] dark:bg-[color:var(--color-bg-dark-tone)] rounded shadow-lg;
 }
 
+/* Game Menu container (Used for Main Nav) */
 .game-menu {
   @apply flex justify-center items-center relative;
 }
 
-.text-shadow-custom {
-  text-shadow: 1px 1px 0px #ffe0e0, -1px -1px 0px #ffe0e0, 1px -1px 0px #ffe0e0, -1px 1px 0px #ffe0e0;
+/* ========================================================================== */
+/* 6. Forms & Inputs                                                        */
+/* ========================================================================== */
+
+/* Base Input Styles */
+textarea, input:not([type='range']):not([type='checkbox']):not([type='radio']), select {
+  @apply bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)]
+         text-gray-900 dark:text-[color:var(--color-dark-text)]
+         border border-rose-200 dark:border-gray-600 rounded /* Themed border */
+         focus:ring-[color:var(--color-primary)] dark:focus:ring-[color:var(--color-accent-sky-dark)]
+         focus:border-[color:var(--color-primary)] dark:focus:border-[color:var(--color-accent-sky-dark)]
+         focus:outline-none focus:ring-1; /* Adjusted focus ring */
 }
 
+/* General Input Class */
+.input {
+  @apply block w-full px-3 py-2 rounded-md shadow-sm sm:text-sm disabled:opacity-50
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)]
+         border border-rose-200 dark:border-gray-600 /* Themed border */
+         text-gray-900 dark:text-[color:var(--color-dark-text)]
+         placeholder-gray-400 dark:placeholder-gray-500
+         focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)] focus:border-[color:var(--color-primary)]
+         dark:focus:ring-[color:var(--color-accent-sky-dark)] dark:focus:border-[color:var(--color-accent-sky-dark)];
+}
+
+/* Small Input */
+.input-sm {
+  @apply input px-2.5 py-1.5 text-sm; /* Reduced padding slightly */
+}
+
+/* Label */
+.label {
+  @apply block text-sm font-medium text-pink-700 dark:text-pink-300 mb-1; /* Themed label */
+}
+
+/* Search Input */
+.search-input {
+  @apply w-full border-b-2 border-rose-300 dark:border-gray-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none
+         focus:border-[color:var(--color-primary)] dark:focus:border-[color:var(--color-accent-sky-dark)]
+         bg-transparent text-pink-800 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400; /* Themed text/border */
+}
+
+/* Settings Layout Components */
+@layer components {
+  .setting-item {
+    @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-2;
+  }
+  .setting-label {
+    @apply label md:w-48 flex-shrink-0; /* Uses .label styles */
+  }
+
+  /* Toggle Switch Layout */
+  .toggle-item {
+    @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-3 border-t border-rose-200 dark:border-gray-700 mt-2; /* Adjusted padding/margin/border */
+  }
+  .toggle-label {
+    @apply label !mb-0 flex-grow cursor-pointer mr-4; /* Uses .label styles */
+  }
+  .toggle-description {
+    @apply block text-xs text-pink-500 dark:text-pink-400 font-normal mt-1; /* Themed description */
+  }
+
+  /* Range Input Specific Styles */
+  .range-input {
+    @apply h-2 bg-rose-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer w-full; /* Adjusted colors */
+  }
+  /* Webkit Thumb */
+  input[type='range']::-webkit-slider-thumb,
+  .range-input::-webkit-slider-thumb {
+    @apply w-5 h-5 bg-[color:var(--color-primary)] dark:bg-[color:var(--color-accent-sky-dark)] rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out;
+    margin-top: -6px; /* Adjust thumb position */
+  }
+  /* Firefox Thumb */
+  input[type='range']::-moz-range-thumb,
+  .range-input::-moz-range-thumb {
+    @apply w-5 h-5 bg-[color:var(--color-primary)] dark:bg-[color:var(--color-accent-sky-dark)] rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out;
+  }
+   /* Webkit Track */
+  input[type='range']::-webkit-slider-runnable-track {
+      @apply h-2 bg-rose-200 dark:bg-gray-600 rounded-full w-full;
+  }
+  /* Firefox Track */
+  input[type='range']::-moz-range-track {
+      @apply h-2 bg-rose-200 dark:bg-gray-600 rounded-full w-full;
+  }
+}
+
+/* ========================================================================== */
+/* 7. Buttons                                                               */
+/* ========================================================================== */
+
+/* Base Button Styles */
+button {
+  @apply transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed;
+}
+button:not(:disabled):hover {
+  @apply transform scale-[1.03]; /* Slightly different hover effect */
+}
+
+/* General Button Class */
+.btn {
+  @apply inline-flex items-center justify-center font-semibold py-2 px-4 rounded-lg transition-all duration-150 ease-in-out shadow-md border border-transparent
+         focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-[color:var(--color-bg-dark)] whitespace-nowrap;
+}
+
+/* Button Variants */
+.btn-primary {
+  @apply btn bg-[color:var(--color-primary)] text-white hover:bg-pink-500 focus:ring-[color:var(--color-primary-light)]; /* Darker pink hover */
+}
+.btn-secondary {
+  @apply btn text-pink-700 dark:text-gray-100 bg-rose-100 dark:bg-gray-600 /* Themed text/bg */
+         hover:bg-rose-200 dark:hover:bg-gray-500
+         focus:ring-rose-300 dark:focus:ring-gray-500 /* Themed focus */
+         border-rose-200 dark:border-gray-500; /* Added subtle themed border */
+}
+.btn-success {
+  @apply btn bg-[color:var(--color-green-light)] text-white hover:bg-[color:var(--color-green-dark)] focus:ring-green-300;
+}
+.btn-sm {
+  @apply py-1.5 px-2.5 text-sm font-medium; /* Adjusted padding/size */
+}
+
+/* On/Off Status Buttons (Text Color Only) */
+.btn-on{
+  @apply text-[color:var(--color-green-light)] dark:text-green-400;
+}
+.btn-off{
+  @apply text-[color:var(--color-red-light)] dark:text-red-400;
+}
+
+/* SVG Buttons (e.g., chat bar controls, toolbar icons) */
+.svg-button {
+  @apply inline-flex items-center justify-center text-gray-600 dark:text-gray-300 p-1.5 rounded-full transition-colors duration-200 ease-in-out
+         hover:bg-rose-100 dark:hover:bg-gray-700 /* Themed hover BG */
+         focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[color:var(--color-accent-sky-dark)] dark:ring-offset-[color:var(--color-bg-dark-tone)];
+}
+.svg-button:active{
+  @apply bg-rose-200 dark:bg-gray-600; /* Themed active BG */
+}
+
+/* Navigation Buttons (Main Menu) */
+.nav-button {
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out
+         text-gray-700 dark:text-gray-300
+         hover:bg-rose-100 dark:hover:bg-gray-700; /* Themed hover BG */
+}
+.nav-button-active {
+  @apply nav-button bg-[color:var(--color-primary)] text-white hover:bg-pink-500 /* Use primary pink */
+         dark:bg-[color:var(--color-primary)] dark:hover:bg-pink-500; /* Keep primary pink for active */
+}
+
+/* Toolbar Buttons (e.g., message hover toolbar) */
+.toolbar-button {
+  @apply bg-transparent border-none cursor-pointer p-1.5 rounded transition-colors duration-200
+         text-gray-600 dark:text-gray-400
+         hover:text-[color:var(--color-primary)] dark:hover:text-[color:var(--color-accent-sky-light)]; /* Themed hover text */
+}
+
+/* Tab Buttons (e.g., Playground) */
+@layer components {
+  .active-tab-button {
+    @apply btn btn-primary btn-sm; /* Uses primary pink */
+    @apply ring-2 ring-offset-1 ring-offset-[color:var(--color-bg-light-tone)] dark:ring-offset-[color:var(--color-bg-dark)] ring-[color:var(--color-primary)] dark:ring-[color:var(--color-primary)];
+  }
+  .inactive-tab-button {
+    @apply btn btn-secondary btn-sm; /* Uses secondary (rose/gray) style */
+    @apply opacity-70 hover:opacity-100; /* Dim inactive */
+  }
+}
+
+/* Code Block Buttons (Execute, Copy etc.) */
+.code-block-button {
+  @apply p-1 rounded text-gray-600 dark:text-gray-300
+         hover:bg-[color:var(--color-primary)] dark:hover:bg-[color:var(--color-primary)] hover:text-white /* Themed hover */
+         transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-[color:var(--color-primary)]
+         disabled:opacity-50 disabled:cursor-not-allowed
+         disabled:hover:bg-transparent disabled:hover:text-gray-600 dark:disabled:hover:text-gray-300;
+}
+.code-block-button i[data-feather], .code-block-button img { vertical-align: middle; }
+.execute-button { @apply inline-flex items-center justify-center; }
+
+/* ========================================================================== */
+/* 8. Messages & Chat Interface                                             */
+/* ========================================================================== */
+
+/* Message Bubble */
+.message {
+  @apply relative w-full m-2 shadow-lg rounded-lg border
+         border-rose-200 dark:border-gray-700 /* Themed border */
+         flex flex-col overflow-visible p-4 /* Adjusted padding */
+         bg-[color:var(--color-bg-light-discussion-odd)] dark:bg-[color:var(--color-bg-dark-discussion-odd)] /* Use odd color as base */
+         text-gray-900 dark:text-[color:var(--color-dark-text)]
+         transition-colors duration-200;
+  padding-bottom: 2.8rem; /* Ensure space for toolbar */
+}
+.message:hover {
+  @apply border-rose-300 dark:border-pink-700; /* Themed hover border */
+}
+
+/* Message Alternating Backgrounds */
+.message:nth-child(even) {
+  @apply bg-[color:var(--color-bg-light-discussion)] dark:bg-[color:var(--color-bg-dark-discussion)];
+}
+
+/* Message Header, Content, Footer */
+.message-header {
+  @apply text-lg font-semibold mb-2 text-pink-800 dark:text-pink-200; /* Themed header text */
+}
+.message-content {
+  @apply text-base leading-relaxed text-gray-700 dark:text-gray-300;
+}
+.message-footer {
+  @apply text-xs text-pink-600 dark:text-pink-400 mt-3 pt-2 border-t border-rose-100 dark:border-gray-700 flex flex-wrap gap-x-3 gap-y-1; /* Adjusted styling & theme */
+}
+.footer-item {
+  @apply text-gray-600 dark:text-gray-400;
+}
+.footer-value {
+  @apply font-medium text-gray-700 dark:text-gray-300 ml-1; /* Added margin */
+}
+
+/* Message Hover Toolbar */
+.message-toolbar-wrapper { /* Exists for positioning context if needed, often identical to footer */
+  @apply flex flex-row justify-end items-center mt-1 mx-2; /* Can be removed if footer handles layout */
+}
+.message-toolbar {
+  @apply absolute bottom-1.5 right-1.5 /* Adjusted position */
+         invisible group-hover:visible flex flex-row items-center gap-1
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)] /* Use panel colors */
+         backdrop-blur-sm rounded-md p-1 shadow-md; /* Added blur */
+}
+
+/* Discussion List Item */
+.discussion {
+  @apply mr-2 p-2 rounded-md transition-colors duration-150 cursor-pointer
+         text-sm text-gray-700 dark:text-gray-300 /* Adjusted size/color */
+         hover:bg-rose-100 dark:hover:bg-gray-700; /* Themed hover */
+}
+.discussion-hilighted {
+  @apply discussion bg-rose-200 dark:bg-gray-600 /* Use secondary button colors */
+         text-gray-800 dark:text-gray-100 font-medium;
+}
+
+/* Discussion Toolbox (appears on hover) */
+.discussion-toolbox{
+  @apply flex gap-1 items-center bg-white dark:bg-gray-800 p-1 rounded-l-md shadow-md
+         transform translate-x-full group-hover:translate-x-0 transition-transform duration-300;
+}
+
+/* Chat Input Bar */
+.chat-bar {
+  @apply relative flex grow items-center gap-2 p-1 shadow-sm transition-all duration-300 ease-in-out
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-tone)]
+         border-t border-rose-200 dark:border-gray-700 /* Themed border */
+         text-pink-700 dark:text-pink-300 /* Themed text */
+         hover:shadow-md dark:hover:bg-gray-700; /* Darken on hover */
+  min-height: 50px; /* Ensure minimum height */
+}
+
+/* ========================================================================== */
+/* 9. Navigation & Menus                                                    */
+/* ========================================================================== */
+
+/* Main Menu Item (Game Menu Style) */
 .menu-item {
-  @apply mb-2 px-4 py-2 text-pink-600 dark:text-pink-300 font-bold text-lg transition-all duration-300 ease-in-out;
-  @apply hover:text-pink-800 hover:dark:text-pink-200 hover:transform hover:-translate-y-1;
+  @apply relative mb-2 px-4 py-2 text-pink-600 dark:text-pink-300 font-bold text-lg transition-all duration-300 ease-in-out /* Themed text */
+         hover:text-pink-800 hover:dark:text-pink-100 hover:transform hover:-translate-y-1;
 }
-
 .menu-item.active-link {
-  @apply rounded-t-md border-pink-500 dark:text-pink-300 text-shadow-custom text-pink-800 font-bold text-lg transition-all duration-300 ease-in-out scale-105;
-  @apply hover:text-pink-900 hover:dark:text-pink-200 hover:transform hover:-translate-y-1;
-  text-shadow: 0 0 10px rgba(128, 128, 128, 0.5);
+  @apply text-pink-800 dark:text-pink-100 scale-105; /* Apply base and enhance */
+  text-shadow: 0 0 8px rgba(200, 150, 160, 0.4); /* Subtle pinkish shadow */
+  /* No dark mode text shadow override needed unless explicitly desired */
 }
 
+/* Active Link Underline/Shimmer Effect */
 .menu-item.active-link::before {
   content: '';
   position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  background: linear-gradient(to right, #ff4d8c, #ffb3c1, #ff4d8c);
+  bottom: -4px; /* Adjusted position */
+  left: 10%; /* Indent slightly */
+  width: 80%;
+  height: 4px; /* Thinner line */
+  /* Updated gradient with pinks */
+  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-secondary), var(--color-primary), transparent);
+  background-size: 200% 100%; /* For animation */
   border-radius: 10px;
-  animation: shimmer 2s infinite;
+  animation: shimmer 3s linear infinite; /* Slower shimmer */
 }
-
 .dark .menu-item.active-link::before {
-  background: linear-gradient(to right, #ff80ab, #aaaaaa, #ff80ab);
+  /* Updated dark mode gradient with pinks/light text color */
+  background: linear-gradient(90deg, transparent, var(--color-accent-sky-light), var(--color-dark-text), var(--color-accent-sky-light), transparent);
+  background-size: 200% 100%;
 }
 
-@keyframes shimmer {
-  0% { background-position: -100% 0; }
-  100% { background-position: 100% 0; }
+
+/* Context Menu (Themed Pink - replacing green) */
+@layer components {
+  .context-menu {
+    @apply absolute bg-rose-100/90 dark:bg-pink-950/90 border border-pink-500 dark:border-pink-400 /* Pink theme */
+           shadow-lg shadow-pink-500/40 dark:shadow-pink-400/40 rounded-md /* Changed to rounded-md */
+           py-1 min-w-[160px] z-[1000] font-mono backdrop-blur-sm; /* Added blur */
+  }
+
+  /* Optional Matrix Rain Effect (Disabled by default - Would need pink colors) */
+  /*
+  .context-menu::before {
+    @apply content-[''] absolute inset-0 bg-gradient-to-b from-pink-500/10 via-pink-500/5 to-transparent bg-[length:100%_1000px] opacity-30 -z-10;
+    animation: matrix-rain 10s linear infinite;
+  }
+  */
+
+  .context-menu-item {
+    @apply relative flex items-center px-3 py-1.5 text-sm text-pink-700 dark:text-pink-400 /* Adjusted colors/padding */
+           cursor-pointer transition-all duration-200 ease-in-out
+           hover:bg-pink-500/20 hover:scale-[1.02] hover:text-pink-800 dark:hover:text-pink-300; /* Adjusted hover */
+  }
+
+  .context-menu-separator {
+    @apply h-px bg-pink-400 dark:bg-pink-500 my-1 mx-2; /* Adjusted margin/color */
+  }
+
+  .context-menu-item-disabled {
+    @apply context-menu-item text-pink-500/60 dark:text-pink-600/70 cursor-not-allowed hover:bg-transparent hover:scale-100; /* Adjusted disabled style */
+  }
+
+  .context-menu-item-icon {
+    @apply mr-2.5 text-pink-600 dark:text-pink-400 inline-block w-4 h-4; /* Sized icon */
+  }
+
+  /* Hover effect line */
+  .context-menu-item::after {
+    @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-transparent via-pink-500 dark:via-pink-400 to-transparent scale-x-0 origin-center transition-transform duration-300 ease-in-out;
+  }
+  .context-menu-item:hover::after {
+    @apply scale-x-100;
+  }
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+
+/* ========================================================================== */
+/* 10. Cards & Specific Containers                                          */
+/* ========================================================================== */
+
+/* General Card */
+.card {
+  @apply bg-[color:var(--color-bg-light)] dark:bg-[color:var(--color-bg-dark-panel)] /* Use panel color */
+         rounded-lg shadow-md p-4 border border-rose-100 dark:border-gray-700 /* Softer themed border */
+         text-gray-800 dark:text-[color:var(--color-dark-text)];
 }
 
+/* Interesting Facts Box */
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg shadow-lg transition-transform duration-200 hover:scale-[1.02]; /* Kept neutral BG, added blur */
+}
+
+/* App Card (for Extensions/Models etc.) */
+.app-card {
+  @apply transition-all duration-300 ease-in-out
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)]
+         text-pink-800 dark:text-[color:var(--color-dark-text)] /* Themed text */
+         border border-rose-200 dark:border-gray-700 /* Themed border */
+         rounded-xl shadow-lg p-5 hover:shadow-xl; /* Adjusted padding */
+}
+.app-card:hover {
+  @apply transform -translate-y-1 dark:bg-gray-600; /* Darken on hover */
+}
+
+/* User Settings Panel */
+.user-settings-panel {
+  @apply bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)]
+         space-y-5 p-4 md:p-6 rounded-lg shadow-md
+         text-gray-900 dark:text-[color:var(--color-dark-text)];
+}
+
+/* Folder Items (File Browser) */
+.folder-item-base {
+  @apply flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 /* Added group */
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-tone)]
+         border border-transparent dark:border-gray-700 /* Default border */
+         hover:shadow-md hover:bg-rose-100 dark:hover:bg-gray-700; /* Consistent themed hover */
+}
+.folder-item-icon {
+  @apply w-10 h-10 group-hover:scale-110 transition-transform duration-200 mb-1; /* Reduced margin */
+}
+.folder-item-label {
+  @apply mt-1 text-xs text-center text-pink-700 dark:text-pink-300 break-words w-full px-1; /* Themed label, allow wrapping */
+}
+
+/* Folder Item Type Specific Borders/Icons (Themed colors) */
+.folder-item-personalities { @apply border-pink-400 dark:border-pink-500; }
+.folder-item-icon-personalities { @apply text-pink-500 dark:text-pink-400; }
+.folder-item-functions { @apply border-lime-500 dark:border-lime-400; } /* Using lime for contrast */
+.folder-item-icon-functions { @apply text-lime-500 dark:text-lime-400; }
+.folder-item-configs { @apply border-amber-500 dark:border-amber-400; } /* Using amber for contrast */
+.folder-item-icon-configs { @apply text-amber-500 dark:text-amber-400; }
+.folder-item-outputs { @apply border-fuchsia-500 dark:border-fuchsia-400; } /* Using fuchsia */
+.folder-item-icon-outputs { @apply text-fuchsia-500 dark:text-fuchsia-400; }
+.folder-item-discussions { @apply border-rose-500 dark:border-rose-400; } /* Using rose */
+.folder-item-icon-discussions { @apply text-rose-500 dark:text-rose-400; }
+
+/* ========================================================================== */
+/* 11. Visual Styles & Effects                                              */
+/* ========================================================================== */
+
+/* Gradients */
+.bg-gradient-welcome {
+  @apply bg-gradient-to-br from-[color:var(--color-bg-light-tone)] to-[color:var(--color-bg-light-panel)]
+         dark:from-[color:var(--color-bg-dark)] dark:to-[color:var(--color-bg-dark-tone)];
+}
+.bg-gradient-progress {
+  @apply bg-gradient-to-r from-rose-200 to-rose-300 dark:from-gray-700 dark:to-gray-600; /* Themed progress BG */
+}
+
+/* Text Styles */
+.text-gradient-title {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-pink-400 dark:from-[color:var(--color-accent-sky-light)] dark:to-[color:var(--color-accent-sky-dark)]; /* Adjusted dark gradient with new pinks */
+}
+.lollms-title-style { /* Specific orange/yellow gradient for LoLLMS text - KEPT AS IS per original */
+  text-shadow: none;
+  background: linear-gradient(45deg, #f59e0b, #fbbf24);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+.dark .lollms-title-style {
+  text-shadow: none; /* Explicitly remove shadow in dark mode */
+}
+.text-subtitle {
+  @apply text-pink-600 dark:text-pink-400; /* Themed subtitle */
+}
+.text-author {
+  @apply text-pink-500 dark:text-pink-400; /* Themed author */
+}
+.text-loading {
+  @apply text-pink-700 dark:text-pink-300; /* Themed loading */
+}
+.text-progress {
+  @apply text-pink-600 dark:text-pink-400; /* Themed progress */
+}
+.link {
+  @apply text-[color:var(--color-primary)] hover:text-pink-600 dark:text-[color:var(--color-accent-sky-light)] dark:hover:text-pink-300 underline transition-colors; /* Themed link */
+}
+
+/* Custom Text Shadow (Subtle Outline) */
+.text-shadow-custom {
+  text-shadow: 1px 1px 0px #FFE4E6, -1px -1px 0px #FFE4E6, 1px -1px 0px #FFE4E6, -1px 1px 0px #FFE4E6; /* Lighter pink shadow (rose-100) */
+}
+
+/* Feather Emoji Bounce */
 .feather-emoji {
   display: inline-block;
   margin-left: 5px;
-  animation: bounce 2s infinite;
+  animation: bounce 2s infinite ease-in-out; /* Added easing */
 }
 
-.app-card {
-  @apply transition-all duration-300 ease-in-out bg-pink-100 dark:bg-pink-800 text-pink-800 dark:text-pink-100 border rounded-xl shadow-lg p-6 hover:shadow-xl;
+/* ========================================================================== */
+/* 12. Scrollbars                                                           */
+/* ========================================================================== */
+
+/* Tailwind Scrollbar Utility Integration */
+.scrollbar {
+  @apply scrollbar-thin scrollbar-track-rose-100 scrollbar-thumb-rose-300 hover:scrollbar-thumb-rose-400 /* Themed light */
+         dark:scrollbar-track-gray-700 dark:scrollbar-thumb-gray-500 dark:hover:scrollbar-thumb-gray-400; /* Neutral dark */
 }
 
-.app-card:hover {
-  @apply transform -translate-y-1;
-}
-
-button {
-  @apply transition-all duration-300 ease-in-out;
-}
-
-button:hover {
-  @apply transform -translate-y-0.5;
-}
-
+/* Standalone Scrollbar Class (if needed, matches utility) */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: theme('colors.pink.400') theme('colors.pink.200');
+  scrollbar-color: theme('colors.rose.300') theme('colors.rose.100'); /* Themed light */
 }
-
 .dark .scrollbar-thin {
-  scrollbar-color: theme('colors.pink.600') theme('colors.pink.800');
+  scrollbar-color: theme('colors.gray.500') theme('colors.gray.700'); /* Neutral dark */
 }
+.scrollbar-thin::-webkit-scrollbar { @apply w-1.5 h-1.5; } /* Thinner scrollbar */
+.scrollbar-thin::-webkit-scrollbar-track { @apply bg-rose-100 dark:bg-gray-700 rounded-full; }
+.scrollbar-thin::-webkit-scrollbar-thumb { @apply bg-rose-300 dark:bg-gray-500 rounded-full border-2 border-solid border-transparent bg-clip-content; } /* Added border for padding effect */
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { @apply bg-rose-400 dark:bg-gray-400; }
 
-.scrollbar-thin::-webkit-scrollbar {
-  @apply w-2;
-}
+/* No Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-.scrollbar-thin::-webkit-scrollbar-track {
-  @apply bg-pink-200 dark:bg-pink-800 rounded-full;
-}
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply bg-pink-400 dark:bg-pink-600 rounded-full;
-}
+/* ========================================================================== */
+/* 13. Progress Indicators                                                  */
+/* ========================================================================== */
 
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  @apply bg-pink-500 dark:bg-pink-500;
-}
-
-.btn {
-  @apply font-semibold py-2 px-4 rounded-lg transition-all duration-300 ease-in-out shadow-md flex items-center;
-}
-
-.btn-primary {
-  @apply bg-pink-600 text-white hover:bg-pink-700 focus:ring-4 focus:ring-pink-300 dark:focus:ring-pink-600;
-}
-
-.btn-secondary {
-  @apply bg-pink-200 text-pink-700 hover:bg-pink-300 focus:ring-4 focus:ring-pink-200 dark:bg-pink-700 dark:text-pink-200 dark:hover:bg-pink-600 dark:focus:ring-pink-600;
-}
-
-.search-input {
-  @apply w-full border-b-2 border-pink-300 dark:border-pink-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-pink-500 dark:focus:border-pink-400 bg-transparent text-pink-800 dark:text-pink-100;
-}
-
-.scrollbar {
-  @apply scrollbar-thin scrollbar-track-pink-200 scrollbar-thumb-pink-400 hover:scrollbar-thumb-pink-500 dark:scrollbar-track-pink-700 dark:scrollbar-thumb-pink-600 dark:hover:scrollbar-thumb-pink-500;
-}
-
-.card-title {
-  @apply text-xl font-bold text-pink-800 dark:text-pink-100 mb-2;
-}
-
-.card-content {
-  @apply text-pink-600 dark:text-pink-300;
-}
-
-.card-footer {
-  @apply mt-4 flex justify-between items-center;
-}
-
-.card-footer-button {
-  @apply bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded;
-}
-
-.subcard {
-  @apply bg-pink-50 dark:bg-pink-800 rounded-lg shadow-md p-4;
-}
-
-.subcard-title {
-  @apply text-lg font-bold text-pink-800 dark:text-pink-100 mb-2;
-}
-
-.subcard-content {
-  @apply text-pink-600 dark:text-pink-300;
-}
-
-.subcard-footer {
-  @apply mt-4 flex justify-between items-center;
-}
-
-.subcard-footer-button {
-  @apply bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded;
-}
-
-.interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-red-200 dark:bg-gray-800/80 rounded-lg shadow-lg transform hover:scale-105 
-}
-
+/* Animated Progress Bar */
 .animated-progressbar-bg {
-  @apply w-full h-12 relative overflow-hidden bg-gradient-to-r from-pink-50 to-rose-100 dark:from-pink-300 dark:to-rose-200 rounded-full shadow-lg
+  @apply w-full h-4 relative overflow-hidden bg-gradient-to-r from-rose-100 to-pink-100 dark:from-gray-700 dark:to-gray-600 rounded-full shadow-inner; /* Adjusted height/colors */
 }
-
 .animated-progressbar-fg {
-  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-pink-300 to-rose-400 dark:from-pink-400 dark:to-rose-500 transition-all duration-300
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-pink-400 to-fuchsia-400 dark:from-[color:var(--color-accent-sky-dark)] dark:to-purple-500 transition-all duration-500 ease-out rounded-full; /* Smoother transition, themed */
 }
 
+/* Steps Component Styling */
+@layer components {
+    .steps-container {
+      @apply border border-rose-200 dark:border-gray-700 rounded-lg mb-4 bg-gradient-to-b from-white/70 to-rose-50/70 dark:from-gray-800/70 dark:to-gray-900/50 shadow-sm overflow-hidden; /* Added transparency & theme */
+    }
+    .steps-header {
+      @apply flex items-center p-3 cursor-pointer border-b border-rose-200 dark:border-gray-700 hover:bg-rose-100/50 dark:hover:bg-gray-700/50 transition-colors duration-200; /* Themed border/hover */
+    }
+    .steps-icon { /* Icon in header */
+      @apply mr-3 text-gray-500 dark:text-gray-400 w-5 h-5; /* Adjusted margin/size */
+    }
+    .steps-status {
+      @apply font-medium text-sm text-pink-700 dark:text-pink-300 flex-grow; /* Themed status text */
+    }
+    .toggle-icon { /* Chevron icon */
+      @apply text-xs text-pink-500 dark:text-pink-400 transition-transform duration-300; /* Themed icon */
+    }
+    .toggle-icon i { /* Feather icon size */
+        @apply w-4 h-4; /* Smaller chevron */
+    }
+    .steps-content { /* Content area when expanded */
+       @apply p-2 bg-rose-50/30 dark:bg-gray-800/20 border-l-2 border-rose-200 dark:border-gray-600 ml-2 pl-4; /* Adjusted border/padding/theme */
+    }
 
-.lollms-title-style {
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2), 
-               2px 2px 0px #fce7f3, 
-               -2px -2px 0px #fce7f3, 
-               2px -2px 0px #fce7f3, 
-               -2px 2px 0px #fce7f3;
-  background: linear-gradient(45deg, #ec4899, #fbcfe8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-.chat-bar {
-  @apply relative text-pink-700 dark:text-pink-300 grow flex cursor-pointer select-none items-center gap-2 bg-pink-50 dark:bg-pink-900 p-1 shadow-sm hover:shadow-none dark:border-pink-700;
-  height: 50px;
-  transition: all 0.3s ease;
-  background-image: linear-gradient(to right, #fff0f3, #ffe4e8);
-}
+    /* Individual Step Item (Step.vue root) */
+    .step-component {
+       @apply flex items-start gap-3 p-2 rounded-md border-l-4 transition-all duration-300 ease-in-out my-1; /* Start aligned, gap, margin */
+    }
 
-.chat-bar:hover {
-  box-shadow: 0 0 15px rgba(255, 182, 193, 0.3);
-}
+    /* Step Component Status Variants */
+    .step-component-pending {
+        @apply bg-pink-100/40 dark:bg-gray-800/30 border-[color:var(--color-accent-sky-light)] hover:bg-pink-100/70 dark:hover:bg-gray-700/50; /* Themed pending */
+    }
+    .step-component-success {
+        @apply bg-green-100/50 dark:bg-green-900/20 border-[color:var(--color-green-light)] dark:border-green-400 hover:bg-green-100/80 dark:hover:bg-green-800/30;
+    }
+    .step-component-fail {
+        @apply bg-red-100/50 dark:bg-red-900/20 border-[color:var(--color-red-light)] dark:border-red-400 hover:bg-red-100/80 dark:hover:bg-red-800/30;
+    }
 
-.chat-bar-button{
-  @apply text-pink-600 dark:text-pink-300 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400
-}
-
-.chat-bar-button:hover{
-  @apply bg-pink-200/50 dark:bg-pink-800/50;
-  box-shadow: 0 0 10px rgba(255, 182, 193, 0.4);
-}
-
-.chat-bar-button:active{
-  @apply bg-pink-300/70 dark:bg-pink-700/70;
-}
-
-.nav-button{
-  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-pink-100/40 hover:text-pink-700 dark:hover:bg-pink-800/40 text-pink-600 dark:text-pink-300
-}
-
-.nav-button-active{
-  @apply bg-pink-200 text-pink-800 hover:bg-pink-300 dark:bg-pink-700 dark:hover:bg-pink-600;
-  box-shadow: 0 0 10px rgba(255, 182, 193, 0.3);
-}
-
-.svg-button{
-  @apply text-pink-500 dark:text-pink-400 p-2 rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400;
-  filter: drop-shadow(0 0 2px rgba(255, 182, 193, 0.5));
-}
-
-.svg-button:hover{
-  @apply bg-pink-100/40 dark:bg-pink-800/40;
-  filter: drop-shadow(0 0 5px rgba(255, 182, 193, 0.7));
-}
-
-.svg-button:active{
-  @apply bg-pink-200/60 dark:bg-pink-700/60;
-}
-
-.nav-button{
-  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-pink-100/40 dark:hover:bg-pink-800/40 text-pink-600 dark:text-pink-300
-}
-
-.nav-button-active{
-  @apply bg-pink-200 text-pink-800 hover:bg-pink-300 dark:bg-pink-700 dark:hover:bg-pink-600;
-  box-shadow: 0 0 10px rgba(255, 182, 193, 0.3);
+    /* Step Component Inner Elements */
+    .step-icon-wrapper {
+       @apply flex-shrink-0 w-5 h-5 flex items-center justify-center relative mt-0.5; /* Align with text */
+    }
+    .step-spinner { /* Spinner for pending */
+      @apply w-4 h-4 border-2 border-rose-200 dark:border-gray-600 border-t-[color:var(--color-accent-sky-dark)] rounded-full animate-spin animate-pulse-border; /* Themed spinner */
+    }
+    .step-icon-success { /* Checkmark */
+        @apply w-5 h-5 text-[color:var(--color-green-light)] dark:text-green-400;
+    }
+    .step-icon-fail { /* X mark */
+        @apply w-5 h-5 text-[color:var(--color-red-light)] dark:text-red-400;
+    }
+    .step-text-content {
+        @apply min-w-0 flex-grow;
+    }
+    .step-text { /* Main step text */
+        @apply text-sm font-medium text-gray-700 dark:text-gray-200; /* Removed truncate */
+    }
+    .step-description { /* Optional description */
+        @apply text-xs text-gray-500 dark:text-gray-400 pt-0.5; /* Removed truncate */
+    }
 }
 
-.btn-on{
-  @apply text-red-400 dark:text-red-300;
-  text-shadow: 0 0 5px rgba(255, 99, 71, 0.7);
+/* Standalone Status Icons (Used in Step.vue etc.) */
+.status-icon { @apply cursor-pointer transition-colors duration-300 inline-block; }
+.icon { @apply w-5 h-5; } /* Default size */
+.icon-success { @apply icon text-[color:var(--color-green-light)] dark:text-green-400; }
+.icon-fail { @apply icon text-[color:var(--color-red-light)] dark:text-red-400; }
+.icon-spinner { @apply icon border-2 border-rose-300 dark:border-gray-500 border-t-[color:var(--color-accent-sky-dark)] rounded-full animate-spin; } /* Themed spinner */
+.icon-text { @apply text-lg font-semibold text-gray-700 dark:text-gray-300; } /* For text-based status */
+
+/* Status Dots */
+@layer utilities {
+  .status-dot { @apply inline-block w-2.5 h-2.5 rounded-full mr-1.5 align-middle; } /* Base dot */
+  .bg-status-healthy { @apply status-dot bg-green-500 dark:bg-green-400; }
+  .bg-status-unhealthy { @apply status-dot bg-red-500 dark:bg-red-400; }
+  .bg-status-loading { @apply status-dot bg-yellow-500 dark:bg-yellow-400 animate-pulse; } /* Added pulse */
+  .bg-status-unknown { @apply status-dot bg-gray-400 dark:bg-gray-500; }
 }
 
-.btn-off{
-  @apply text-gray-400 dark:text-gray-500;
-  text-shadow: 0 0 5px rgba(128, 128, 128, 0.7);
+/* ========================================================================== */
+/* 14. Markdown & Prose Styles                                              */
+/* ========================================================================== */
+
+/* Base Prose Styles for Message Content ('prose-strawberry' theme) */
+@layer components {
+  .prose-strawberry { /* Renamed from prose-blue */
+    h3 { @apply text-lg font-semibold text-pink-700 dark:text-pink-300 mb-2 mt-4 border-b border-rose-100 dark:border-gray-700 pb-1; } /* Adjusted size/margins/theme */
+    ul { @apply list-disc pl-5 space-y-1 mb-3 text-gray-700 dark:text-gray-300; } /* Adjusted color/padding */
+    ol { @apply list-decimal pl-5 space-y-1 mb-3 text-gray-700 dark:text-gray-300; }
+    li::marker { color: theme('colors.pink.500'); @apply dark:text-pink-500; } /* Themed marker */
+    code:not(pre code) { @apply bg-rose-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs font-mono text-pink-700 dark:text-pink-300; } /* Adjusted size/dark color/theme */
+    blockquote { @apply border-l-4 border-rose-300 dark:border-gray-600 pl-3 italic text-pink-600 dark:text-gray-400 my-3 py-0.5; } /* Adjusted padding/colors/theme */
+    a { @apply link font-medium; } /* Inherits .link style (already themed) */
+    p { @apply mb-3 leading-relaxed text-gray-700 dark:text-gray-300; } /* Uses default P */
+    pre { @apply my-4; } /* Add margin to pre blocks */
+    pre code.hljs { @apply p-3 rounded-md shadow-inner text-sm; } /* Style the code block itself */
+    img { @apply rounded-md shadow my-3 max-w-full h-auto dark:opacity-95; } /* Style images */
+    table { @apply w-full my-3 border-collapse border border-rose-200 dark:border-gray-700 text-sm; } /* Themed table */
+    th { @apply bg-rose-50 dark:bg-gray-700 p-2 border border-rose-200 dark:border-gray-600 text-left font-semibold text-pink-800 dark:text-gray-200; } /* Themed table header */
+    td { @apply p-2 border border-rose-200 dark:border-gray-600 text-gray-700 dark:text-gray-300; } /* Themed table cell */
+  }
+
+  /* Thinking Prose Styles (Minimalistic for AI thinking process) */
+  /* NOTE: Requires the @tailwindcss/typography plugin to be installed and configured */
+  .thinking-prose {
+    @apply prose prose-sm max-w-none dark:prose-invert;
+    /* Override Tailwind Prose defaults - using gray/pink where appropriate */
+    @apply prose-headings:text-gray-700 dark:prose-headings:text-gray-300 prose-headings:font-semibold prose-headings:mt-4 prose-headings:mb-1;
+    @apply prose-p:text-gray-600 dark:prose-p:text-gray-400 prose-p:my-1.5;
+    @apply prose-ul:text-gray-600 dark:prose-ul:text-gray-400 prose-ul:my-1.5 prose-ul:pl-4;
+    @apply prose-ol:text-gray-600 dark:prose-ol:text-gray-400 prose-ol:my-1.5 prose-ol:pl-4;
+    @apply prose-li:my-0.5;
+    @apply prose-li:marker:text-gray-400 dark:prose-li:marker:text-gray-500;
+    @apply prose-code:text-pink-700 dark:prose-code:text-pink-300 prose-code:bg-rose-100 dark:prose-code:bg-gray-700 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:font-mono; /* Themed code */
+    @apply prose-pre:bg-rose-100 dark:prose-pre:bg-gray-800 prose-pre:p-2 prose-pre:rounded prose-pre:my-2 prose-pre:text-xs prose-pre:shadow-inner; /* Themed pre */
+    @apply prose-blockquote:border-l-4 prose-blockquote:border-rose-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-3 prose-blockquote:italic prose-blockquote:text-gray-500 dark:prose-blockquote:text-gray-500 prose-blockquote:my-2 prose-blockquote:py-0.5; /* Themed blockquote */
+    @apply prose-a:text-pink-600 dark:prose-a:text-pink-400 hover:prose-a:underline; /* Themed link */
+    /* Custom Scrollbar */
+    @apply scrollbar;
+    scroll-behavior: smooth;
+  }
+} /* End of @layer components for prose */
+
+
+/* Help Content Styling (Similar to prose-strawberry but uses .help-content class) */
+/* This section does NOT use @apply prose */
+.help-content {
+  @apply text-gray-800 dark:text-gray-200;
+}
+.help-content h2 { @apply text-2xl font-semibold text-pink-700 dark:text-pink-200 mb-4 mt-6 border-b border-rose-200 dark:border-gray-700 pb-2; } /* Themed */
+.help-content h3 { @apply text-xl font-semibold text-pink-600 dark:text-pink-300 mb-3 mt-5; } /* Themed */
+.help-content ul { @apply list-disc pl-6 space-y-1.5 mb-4 text-gray-700 dark:text-gray-300; }
+.help-content ol { @apply list-decimal pl-6 space-y-1.5 mb-4 text-gray-700 dark:text-gray-300; }
+.help-content li::marker { @apply text-pink-500 dark:text-pink-500; } /* Themed */
+.help-content code:not(pre code) { @apply bg-rose-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm font-mono text-pink-700 dark:text-pink-300; } /* Themed */
+.help-content pre.hljs { @apply bg-rose-50 dark:bg-gray-800/80 p-4 rounded-lg overflow-x-auto my-4 shadow-inner text-sm; } /* Themed */
+.help-content pre.hljs code { @apply bg-transparent p-0; }
+.help-content blockquote { @apply border-l-4 border-rose-400 dark:border-gray-500 pl-4 italic text-pink-600 dark:text-gray-400 my-4 py-1; } /* Themed */
+.help-content p { @apply mb-4 leading-relaxed text-gray-700 dark:text-gray-300 text-base md:text-lg; }
+.help-content img { @apply rounded-lg shadow-md my-4 max-w-full h-auto mx-auto dark:opacity-90; }
+.help-content table { @apply w-full my-4 border-collapse border border-rose-200 dark:border-gray-700; } /* Themed */
+.help-content th { @apply bg-rose-100 dark:bg-gray-800 p-2 border border-rose-200 dark:border-gray-700 text-left font-semibold text-pink-800 dark:text-gray-200; } /* Themed */
+.help-content td { @apply p-2 border border-rose-200 dark:border-gray-700 text-gray-800 dark:text-gray-300; } /* Themed */
+/* Help Sidebar Responsiveness */
+@media (max-width: 768px) {
+ .help-left-bar { @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full; }
+ .help-main-content { @apply ml-0; }
+ .help-left-bar.open { @apply translate-x-0; }
+}
+/* ========================================================================== */
+/* 15. Code Execution & Editor Styling                                      */
+/* ========================================================================== */
+
+/* CodeMirror Editor Base */
+.cm-editor-wrapper { @apply relative; }
+.cm-editor-wrapper.editing-border { @apply ring-1 ring-[color:var(--color-primary)]; } /* Use ring for border (themed pink) */
+.cm-editor { @apply h-full max-h-96 min-h-[3em] text-sm; } /* Adjusted max-height, text size */
+.cm-scroller { @apply overflow-auto scrollbar; } /* Added custom scrollbar (already themed) */
+.cm-editor .cm-gutters { @apply select-none bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700; } /* Gutter styling (neutral gray) */
+.cm-editor .cm-content { @apply whitespace-pre-wrap break-words; } /* Allow wrapping */
+.cm-editor .cm-line { @apply px-1; } /* Line padding */
+
+/* Search/Replace Panel within CodeMirror */
+.search-replace-panel {
+  @apply border-b border-gray-300 dark:border-gray-600 p-1 flex items-center gap-1 bg-gray-100 dark:bg-gray-700; /* Layout (neutral gray) */
+}
+.search-replace-panel input[type="text"] {
+  @apply px-1.5 py-0.5 border border-gray-300 dark:border-gray-500 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs
+         focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)] focus:border-[color:var(--color-primary)] min-w-[80px]; /* Themed focus */
+}
+.search-replace-panel .search-status {
+  @apply text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap px-1 min-w-[50px] text-center;
+}
+.search-replace-panel .search-button { /* Individual search action buttons */
+  @apply p-0.5 text-xs code-block-button; /* Use code-block-button style (already themed) */
+}
+.search-replace-panel .search-button i[data-feather] { @apply w-3.5 h-3.5; }
+.active-search-button { /* Highlight active search option */
+  @apply bg-[color:var(--color-primary)] text-white hover:bg-[color:var(--color-primary)]; /* Themed active */
 }
 
-.interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-pink-50/80 dark:bg-pink-900/80 rounded-lg shadow-lg transform hover:scale-105 border border-pink-200/30;
-  background-image: linear-gradient(45deg, #fff0f3, #ffe4e8);
-  box-shadow: 0 0 15px rgba(255, 182, 193, 0.2);
+/* Code Execution Output Area */
+.execution-output-content {
+  @apply p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded mt-2 text-sm text-gray-800 dark:text-gray-200 scrollbar; /* Neutral BG/Border */
+  max-height: 300px; /* Limit height */
+  overflow-y: auto;
+}
+/* Basic HTML elements within Execution Output */
+.execution-output-content a { @apply text-pink-600 dark:text-pink-400 hover:underline; } /* Themed link */
+.execution-output-content h1,
+.execution-output-content h2,
+.execution-output-content h3,
+.execution-output-content h4,
+.execution-output-content h5,
+.execution-output-content h6 { @apply font-semibold my-1 text-gray-900 dark:text-gray-100; }
+.execution-output-content h1 { @apply text-lg border-b border-gray-200 dark:border-gray-700 pb-1 mb-1.5; }
+.execution-output-content h2 { @apply text-base; }
+.execution-output-content h3 { @apply text-sm; }
+.execution-output-content p { @apply my-1 leading-normal; }
+.execution-output-content ul { @apply list-disc list-inside ml-4 my-1 space-y-0.5; }
+.execution-output-content ol { @apply list-decimal list-inside ml-4 my-1 space-y-0.5; }
+.execution-output-content code:not(pre > code) { @apply font-mono bg-rose-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs text-pink-700 dark:text-pink-300; } /* Themed inline code */
+.execution-output-content pre { @apply font-mono bg-rose-100 dark:bg-gray-700 p-2 rounded my-1 overflow-x-auto text-xs shadow-inner; } /* Themed pre BG */
+.execution-output-content pre > code { @apply p-0 bg-transparent text-inherit; }
+.execution-output-content blockquote { @apply border-l-4 border-rose-300 dark:border-gray-600 pl-2 italic my-1 text-gray-600 dark:text-gray-400 text-sm; } /* Themed blockquote border */
+.execution-output-content table { @apply w-auto max-w-full border-collapse border border-gray-300 dark:border-gray-600 my-2 text-xs; } /* Changed to w-auto */
+.execution-output-content th,
+.execution-output-content td { @apply border border-gray-300 dark:border-gray-600 p-1 text-left; }
+.execution-output-content th { @apply bg-gray-100 dark:bg-gray-700 font-semibold; }
+.execution-output-content img { @apply max-w-full h-auto my-1 rounded border border-gray-200 dark:border-gray-700; }
+.execution-output-content svg { @apply max-w-full h-auto my-1; }
+.execution-output-content hr { @apply border-t border-gray-300 dark:border-gray-600 my-2; }
+
+/* Highlight.js theme override for Execution Output (Inline code, NOT pre blocks) */
+.execution-output-content.hljs { background: none !important; padding: 0 !important; margin: 0 !important; color: inherit !important;}
+/* Light Mode HLJS (GitHub Light) - Kept as is for standard syntax highlighting */
+html:not(.dark) .execution-output-content .hljs {color:#24292e}html:not(.dark) .execution-output-content .hljs-meta{color:#6a737d}html:not(.dark) .execution-output-content .hljs-comment{color:#6a737d;font-style:italic}html:not(.dark) .execution-output-content .hljs-tag{color:#22863a}html:not(.dark) .execution-output-content .hljs-tag .hljs-name,html:not(.dark) .execution-output-content .hljs-tag .hljs-attr{color:#22863a}html:not(.dark) .execution-output-content .hljs-keyword,html:not(.dark) .execution-output-content .hljs-selector-tag,html:not(.dark) .execution-output-content .hljs-literal,html:not(.dark) .execution-output-content .hljs-name{color:#d73a49}html:not(.dark) .execution-output-content .hljs-deletion,html:not(.dark) .execution-output-content .hljs-number,html:not(.dark) .execution-output-content .hljs-attribute,html:not(.dark) .execution-output-content .hljs-variable,html:not(.dark) .execution-output-content .hljs-template-variable,html:not(.dark) .execution-output-content .hljs-symbol{color:#005cc5}html:not(.dark) .execution-output-content .hljs-section,html:not(.dark) .execution-output-content .hljs-title,html:not(.dark) .execution-output-content .hljs-type{color:#6f42c1}html:not(.dark) .execution-output-content .hljs-string,html:not(.dark) .execution-output-content .hljs-subst,html:not(.dark) .execution-output-content .hljs-regexp,html:not(.dark) .execution-output-content .hljs-link,html:not(.dark) .execution-output-content .hljs-addition,html:not(.dark) .execution-output-content .hljs-selector-id,html:not(.dark) .execution-output-content .hljs-selector-class{color:#032f62}html:not(.dark) .execution-output-content .hljs-built_in,html:not(.dark) .execution-output-content .hljs-bullet,html:not(.dark) .execution-output-content .hljs-code,html:not(.dark) .execution-output-content .hljs-formula{color:#e36209}html:not(.dark) .execution-output-content .hljs-emphasis{font-style:italic}html:not(.dark) .execution-output-content .hljs-strong{font-weight:bold}
+/* Dark Mode HLJS (Tokyo Night Dark) - Kept as is for standard syntax highlighting */
+.dark .execution-output-content .hljs{color:#a9b1d6}.dark .execution-output-content .hljs-meta{color:#ff9e64}.dark .execution-output-content .hljs-comment{color:#565f89;font-style:italic}.dark .execution-output-content .hljs-tag{color:#f7768e}.dark .execution-output-content .hljs-tag .hljs-name,.dark .execution-output-content .hljs-tag .hljs-attr{color:#f7768e}.dark .execution-output-content .hljs-keyword,.dark .execution-output-content .hljs-selector-tag,.dark .execution-output-content .hljs-literal,.dark .execution-output-content .hljs-name{color:#bb9af7}.dark .execution-output-content .hljs-deletion,.dark .execution-output-content .hljs-number,.dark .execution-output-content .hljs-attribute,.dark .execution-output-content .hljs-variable,.dark .execution-output-content .hljs-template-variable,.dark .execution-output-content .hljs-symbol{color:#ff9e64}.dark .execution-output-content .hljs-section,.dark .execution-output-content .hljs-title,.dark .execution-output-content .hljs-type{color:#7aa2f7}.dark .execution-output-content .hljs-string,.dark .execution-output-content .hljs-subst,.dark .execution-output-content .hljs-regexp,.dark .execution-output-content .hljs-link,.dark .execution-output-content .hljs-addition,.dark .execution-output-content .hljs-selector-id,.dark .execution-output-content .hljs-selector-class{color:#9ece6a}.dark .execution-output-content .hljs-built_in,.dark .execution-output-content .hljs-bullet,.dark .execution-output-content .hljs-code,.dark .execution-output-content .hljs-formula{color:#7dcfff}.dark .execution-output-content .hljs-emphasis{font-style:italic}.dark .execution-output-content .hljs-strong{font-weight:bold}
+
+/* ========================================================================== */
+/* 16. Utilities & Animations                                               */
+/* ========================================================================== */
+
+/* Display Utilities */
+.display-none { @apply hidden; }
+.hidden { display: none; } /* Ensure basic hidden works */
+/* Dark Mode Specific Display (used in Code Block icons) */
+.dark .dark\:hidden { display: none; }
+.dark .dark\:inline { display: inline; }
+html:not(.dark) .light\:hidden { display: none; } /* Utility to hide only in light mode */
+html:not(.dark) .light\:inline { display: inline; } /* Utility to show only in light mode */
+
+
+/* Feather Icon Size Utility */
+.feather-small { @apply w-3.5 h-3.5 inline-block align-middle; } /* Slightly larger */
+
+/* Keyframes */
+@keyframes shimmer { /* For active menu item */
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes bounce { /* For feather emoji */
+  0%, 100% { transform: translateY(-15%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+@keyframes matrix-rain { /* For context menu (optional - uses pink if enabled) */
+  0% { background-position: 0 0; }
+  100% { background-position: 0 1000px; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes bubble-in-down { /* For thought bubble */
+  0% { opacity: 0; transform: translate(-50%, -8px) scale(0.9); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+@keyframes pulse-border { /* For pending spinner - Themed */
+  0%, 100% { box-shadow: 0 0 0 0 rgba(244, 114, 182, 0.4); } /* Light: --color-primary (pink-400) */
+  50% { box-shadow: 0 0 0 3px rgba(244, 114, 182, 0); }
+}
+.dark @keyframes pulse-border {
+   0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); } /* Dark: --color-accent-sky-dark (pink-500) */
+   50% { box-shadow: 0 0 0 3px rgba(236, 72, 153, 0); }
+}
+@keyframes step-slide-in { /* For step items */
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fall { /* For optional falling object animation */
+  from { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+  to { transform: translateY(calc(100vh + 30px)) rotate(360deg); opacity: 0.5; } /* Fade out at end */
 }
 
-.toolbar-button {
-  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300;
+/* Animation Utility Classes */
+.animate-bounce { animation: bounce 1.5s infinite ease-in-out; } /* Slower bounce */
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-pulse-border { animation: pulse-border 1.5s infinite cubic-bezier(0.66, 0, 0, 1); }
+.animate-step-slide-in { animation: step-slide-in 0.4s ease-out forwards; } /* Slower slide */
+.animate-fall { animation: fall linear infinite; }
+
+/* Transition Utilities (Vue <transition>) */
+@layer utilities {
+  /* Generic Fade */
+  .fade-enter-active, .fade-leave-active { @apply transition-opacity duration-300 ease-out; }
+  .fade-enter-from, .fade-leave-to { @apply opacity-0; }
+
+  /* Icon Fade & Scale (for Step icons) */
+  .fade-icon-enter-active, .fade-icon-leave-active {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  }
+  .fade-icon-enter-from, .fade-icon-leave-to { opacity: 0; transform: scale(0.7); } /* Start smaller */
+  .fade-icon-enter-to, .fade-icon-leave-from { opacity: 1; transform: scale(1); }
+
+  /* Thought Bubble Animation */
+  .animate-bubble-in-down {
+    animation-name: bubble-in-down;
+    animation-duration: 0.25s; /* Faster bubble */
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Slide Transitions */
+  .slide-right-enter-active, .slide-right-leave-active { transition: transform 0.3s ease-out; }
+  .slide-right-enter-from, .slide-right-leave-to { transform: translateX(-100%); }
+
+  .slide-left-enter-active, .slide-left-leave-active { transition: transform 0.3s ease-out; }
+  .slide-left-enter-from, .slide-left-leave-to { transform: translateX(100%); }
+
+  /* List Transitions (e.g., Discussions) */
+  .discussionsList-move,
+  .discussionsList-enter-active,
+  .discussionsList-leave-active { transition: all 0.35s ease; } /* Slightly longer */
+  .discussionsList-enter-from { opacity: 0; transform: translateX(-25px); }
+  .discussionsList-leave-to { opacity: 0; transform: translateX(25px); }
+  .discussionsList-leave-active { position: absolute; width: calc(100% - 1rem); /* Needs adjustment based on parent padding */ }
+
+  .list-move,
+  .list-enter-active,
+  .list-leave-active { transition: all 0.4s ease; } /* Generic list transition */
+  .list-enter-from { opacity: 0; transform: translateY(-20px); }
+  .list-leave-to { opacity: 0; transform: translateY(20px); }
+  .list-leave-active { position: absolute; width: calc(100% - 1rem); /* Adjust width */ }
+
+   /* Fade and Fly Up */
+  .fade-and-fly-enter-active, .fade-and-fly-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .fade-and-fly-enter-from, .fade-and-fly-leave-to {
+    opacity: 0;
+    transform: translateY(10px); /* Fly from bottom */
+  }
 }
-  
-.toolbar-button:hover {
-  @apply text-red-400;
-  text-shadow: 0 0 5px rgba(255, 99, 71, 0.7);
+
+/* Animated Thought Bubble Component (Tooltip) */
+@layer components {
+  .animated-thought-bubble {
+    @apply absolute bottom-[calc(100%+6px)] left-1/2 /* Position above parent + arrow space */
+           opacity-0 invisible group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto /* Group hover control */
+           bg-gray-700 dark:bg-gray-200 /* Inverted colors for contrast (neutral gray) */
+           text-white dark:text-gray-800
+           rounded-md shadow-lg px-2.5 py-1.5 text-xs z-50 /* Style */
+           w-max max-w-[180px] /* Size */
+           transform -translate-x-1/2 /* Center */
+           origin-bottom /* Animate from bottom */
+           transition-opacity duration-150 /* Smooth fade */
+           group-hover/item:animate-bubble-in-down; /* Apply animation */
+  }
+
+  .animated-thought-bubble::after { /* Arrow */
+    content: '';
+    @apply absolute top-full left-1/2 transform -translate-x-1/2
+           border-[6px] border-solid border-transparent
+           border-t-gray-700 dark:border-t-gray-200; /* Arrow color matches bubble */
+  }
 }
+
+/* Line Clamp Utility */
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ========================================================================== */
+/* End of Theme                                                             */
+/* ========================================================================== */

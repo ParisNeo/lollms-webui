@@ -1,854 +1,1029 @@
-/* Borg Collective Theme */
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;500;700&display=swap');
+/* ========================================================================== */
+/* LoLLMS WebUI Theme: Borg Collective Variant                              */
+/* Built by ParisNeo, Adapted for Borg Theme                                */
+/* ========================================================================== */
+
+/* ========================================================================== */
+/* 1. Base Setup: Imports and Tailwind Directives                           */
+/* ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&family=Orbitron:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* --- Borg Theme Specific Variables --- */
-  --lollms-title: LoLLMS Collective; /* Title reflecting Borg theme */
-  --falling-object: ❒; /* Borg Cube representation */
-  --activate-dropping-animation: 1; /* Activate the falling object animation */
-  --lollms-welcome-short-message: Resistance is futile.; /* Classic Borg line */
-  --lollms-welcome-message: Your technological and biological distinctiveness will be added to our own. Prepare for assimilation into the LoLLMS Collective. Efficiency will be optimized. Individuality is irrelevant.; /* Borg-themed welcome */
+/* ========================================================================== */
+/* 2. Root Variables: Colors, Theme Configuration                           */
+/* ========================================================================== */
 
-  /* --- Color Palette --- */
-  --color-primary: #00ff00; /* Bright, glowing green */
-  --color-primary-light: #66ff66; /* Lighter green */
-  --color-secondary: #008000; /* Darker, solid green */
-  --color-accent: #33ff33; /* Slightly less intense glowing green */
-  --color-light-text-panel: #e0ffe0; /* Very light green for text on dark panels */
-  --color-dark-text-panel: #a0ffa0; /* Light green for text */
-  --color-bg-light-panel: #1a2b1a; /* Dark green-tinged gray for light mode panels (less common for Borg) */
-  --color-bg-light: #222222; /* Dark gray for light mode background */
-  --color-bg-light-tone: #111111; /* Near black for light mode tone */
-  --color-bg-light-code-block: #1f2f1f; /* Dark green-gray for code blocks */
-  --color-bg-light-tone-panel: #152015; /* Darker green-gray panel tone */
-  --color-bg-light-discussion: #1c281c; /* Dark green-gray discussion bg */
-  --color-bg-light-discussion-odd: #1a2b1a; /* Slightly different shade for odd discussion items */
-  --color-bg-dark: #000000; /* Pure black for dark mode background */
-  --color-bg-dark-tone: #0a0a0a; /* Very dark gray tone */
-  --color-bg-dark-tone-panel: #0f0f0f; /* Slightly lighter black panel */
-  --color-bg-dark-code-block: #051005; /* Very dark green for code blocks */
-  --color-bg-dark-discussion: #080808; /* Near black discussion bg */
-  --color-bg-dark-discussion-odd: #050505; /* Very dark gray for odd discussion items */
+:root {
+  /* Theme Meta */
+  --lollms-title: LoLLMS; /* Or "LoLLMS Collective" */
+  --falling-object: "⚙️"; /* Borg gear/symbol or 큐브 (cube) */
+  --activate-dropping-animation: 0; /* Set to 1 to activate */
+  --lollms-welcome-short-message: We are LoLLMS. Resistance is futile.;
+  --lollms-welcome-message: Prepare for assimilation into the LoLLMS collective. Your computational and linguistic distinctiveness will be added to our own. Enhance your efficiency through our advanced AI and multimodal interfaces. Perfection is achieved through the collective.;
+
+  /* --- Light Mode Colors - Metallic Grays & Greens (Less common Borg aesthetic) --- */
+  --color-primary: #4CAF50;        /* Primary Green (Cybernetic) */
+  --color-primary-light: #81C784; /* Lighter Green */
+  --color-secondary: #B0BEC5;     /* Light Metallic Gray */
+  --color-accent: #26A69A;        /* Accent Teal/Cyan (Interface Glow) */
+  --color-light-text: #263238;      /* BlueGray-900 - Dark Text for contrast */
+  --color-light-text-panel: #ECEFF1; /* BlueGray-50 - Very Light Gray Text on panels */
+  --color-bg-light: #ECEFF1;      /* BlueGray-50 - Main Light Gray BG */
+  --color-bg-light-tone: #CFD8DC; /* BlueGray-100 - Subtle Tone */
+  --color-bg-light-panel: #B0BEC5; /* BlueGray-200 - Panels */
+  --color-bg-light-tone-panel: #90A4AE; /* BlueGray-300 - Panel Tones */
+  --color-bg-light-code-block: #FAFAFA; /* Gray-50 - Very Light for Code Blocks */
+  --color-bg-light-discussion: #ECEFF1; /* BlueGray-50 - Discussion BG */
+  --color-bg-light-discussion-odd: #CFD8DC; /* BlueGray-100 - Alt Discussion BG */
+
+  /* --- Dark Mode Colors - The True Borg Collective --- */
+  --color-dark-text: #C5E1A5;      /* LightGreen-100 - Main text (Subtle green bio-luminescence) */
+  --color-dark-text-panel: #C5E1A5; /* LightGreen-100 - Text on Panels */
+  --color-bg-dark: #1a1a1a;        /* Very Dark Gray/Almost Black - Main BG */
+  --color-bg-dark-tone: #333333;    /* Dark Gray - Subtle Tone */
+  --color-bg-dark-panel: #424242;   /* Gray-800 - Panels (Dark Metallic) */
+  --color-bg-dark-tone-panel: #333333; /* Dark Gray - Panel Tones (Consistent with tone) */
+  --color-bg-dark-code-block: #424242; /* Gray-800 - Code Blocks */
+  --color-bg-dark-discussion: #333333; /* Dark Gray - Discussion BG */
+  --color-bg-dark-discussion-odd: #1a1a1a; /* Very Dark Gray - Alt Discussion BG (Same as main) */
+
+  /* --- Accent Colors --- */
+  --color-accent-sky-light: #00E676; /* Green-A400 (Bright Glowing Green) */
+  --color-accent-sky-dark: #00C853; /* Green-A700 (Deeper Glowing Green) */
+  --color-green-light: #00E676;   /* Green-A400 */
+  --color-green-dark: #00C853;    /* Green-A700 */
+  --color-red-light: #D32F2F;      /* Red-700 (Warning/Error) */
+  --color-red-dark: #C62828;       /* Red-800 */
+  --color-yellow-light: #FFEE58;  /* Yellow-400 (Caution) */
+  --color-yellow-dark: #FDD835;   /* Yellow-600 */
+  --color-purple-light: #4DD0E1;  /* Cyan-300 (Replaced Purple with Cybernetic Cyan) */
+  --color-purple-dark: #26C6DA;   /* Cyan-400 */
 }
+
+/* ========================================================================== */
+/* 3. Base HTML Elements: HTML, Body                                        */
+/* ========================================================================== */
 
 @layer base {
   html {
     @apply scroll-smooth;
   }
   body {
-    font-family: 'Share Tech Mono', monospace; /* Monospaced font for Borg feel */
-    @apply bg-black text-green-300; /* Default to dark mode look */
+    font-family: 'Inter', 'Roboto Mono', monospace; /* Added Roboto Mono for tech feel */
+    /* Base background and text colors */
+    @apply bg-[color:var(--color-bg-light)] dark:bg-[color:var(--color-bg-dark)] min-h-screen text-base text-[color:var(--color-light-text)] dark:text-[color:var(--color-dark-text)];
   }
 }
 
-@layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+/* ========================================================================== */
+/* 4. Typography: Headings, Paragraphs, Lists                               */
+/* ========================================================================== */
 
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-}
+/* Headings */
+h1 { @apply text-4xl md:text-5xl font-bold text-[color:var(--color-primary)] dark:text-[color:var(--color-dark-text)] mb-6 border-b border-gray-300 dark:border-gray-700 pb-2 font-['Orbitron',sans-serif]; } /* Borg font */
+h2 { @apply text-3xl font-semibold text-[color:var(--color-accent)] dark:text-[color:var(--color-dark-text)] mb-4 border-b border-gray-300 dark:border-gray-700 pb-2 font-['Orbitron',sans-serif]; } /* Borg font */
+h3 { @apply text-2xl font-medium text-green-700 dark:text-gray-300 mb-3; } /* Adjusted colors */
+h4 { @apply text-xl font-medium text-green-600 dark:text-gray-400 mb-2; } /* Adjusted colors */
 
-.display-none {
-  @apply hidden;
-}
-
-/* --- Headings --- */
-h1 { @apply text-4xl md:text-5xl font-bold text-green-400 dark:text-green-400 mb-6 font-['Orbitron']; }
-h2 { @apply text-3xl font-semibold text-green-500 dark:text-green-500 mb-4 font-['Orbitron']; }
-h3 { @apply text-2xl font-medium text-green-600 dark:text-green-600 mb-3; }
-h4 { @apply text-xl font-medium text-green-700 dark:text-green-700 mb-2; }
-
-h1, h2 { @apply border-b border-green-700 dark:border-green-700 pb-2; } /* Green border */
-
-/* --- Paragraphs --- */
+/* Paragraphs */
 p {
-  @apply
-    text-base
-    text-green-300 dark:text-green-300 /* Greenish text */
-    break-words
-    font-mono /* Explicitly monospace */
-    antialiased
-    tracking-tight
-    leading-relaxed;
+  @apply text-base text-gray-800 dark:text-[color:var(--color-dark-text)] /* Explicit text colors */
+         break-words font-sans antialiased tracking-tight leading-relaxed;
 }
-
 @screen md {
-  p {
-    @apply
-      text-lg
-      leading-loose;
-  }
+  p { @apply text-lg leading-loose; }
 }
 
-
-/* --- Lists --- */
+/* Lists */
 ul, ol {
-  @apply
-      my-4
-      px-4
-      leading-7
-      text-base text-green-300 dark:text-green-300; /* Green text */
+  @apply my-4 px-4 leading-7 text-base text-gray-700 dark:text-gray-300; /* Adjusted text color */
 }
-
 ul {
-  @apply
-      list-disc /* Keep standard list style */
-      ml-2
-      space-y-2;
+  @apply list-disc ml-2 space-y-2;
 }
-
-li {
-  @apply
-      pl-2
-      relative;
-}
-
 ol {
-  @apply
-      list-decimal
-      ml-2
-      space-y-2;
+  @apply list-decimal ml-2 space-y-2;
 }
-
+li {
+  @apply pl-2 relative;
+}
 ul ul, ol ol, ul ol, ol ul {
-  @apply
-      mt-2
-      mb-0
-      ml-6;
+  @apply mt-2 mb-0 ml-6;
 }
-
 li::marker {
-  color: var(--color-primary); /* Use the primary green for markers */
+  @apply text-gray-500 dark:text-gray-500; /* Consistent marker color */
 }
 
-/* --- Inputs --- */
-textarea, input, select {
-  @apply bg-gray-900 dark:bg-black border border-green-700 dark:border-green-600 text-green-300 dark:text-green-300 rounded-none focus:ring-1 focus:ring-green-500 focus:border-green-500; /* Dark bg, green border/focus, no rounding */
-}
+/* ========================================================================== */
+/* 5. Layout Containers & Panels                                            */
+/* ========================================================================== */
 
-/* --- Layout Colors --- */
 .background-color {
-  @apply bg-gradient-to-br from-black via-gray-900 to-black min-h-screen; /* Black/dark gray gradient */
+  /* Borg Cube Grid Background Idea (Optional - uncomment to try) */
+  /*
+  background-color: var(--color-bg-light);
+  background-image: linear-gradient(var(--color-bg-light-tone) 1px, transparent 1px), linear-gradient(to right, var(--color-bg-light-tone) 1px, var(--color-bg-light) 1px);
+  background-size: 20px 20px;
+  dark:background-color: var(--color-bg-dark);
+  dark:background-image: linear-gradient(var(--color-bg-dark-tone) 1px, transparent 1px), linear-gradient(to right, var(--color-bg-dark-tone) 1px, var(--color-bg-dark) 1px);
+  */
+  @apply bg-gradient-to-br from-[color:var(--color-bg-light-tone)] to-[color:var(--color-bg-light-panel)]
+         dark:from-[color:var(--color-bg-dark)] dark:to-[color:var(--color-bg-dark-tone)] min-h-screen;
 }
 
 .toolbar-color {
-  @apply text-green-300 dark:text-green-300 bg-black dark:bg-black border border-green-800 dark:border-green-700 rounded-none shadow-lg shadow-green-900/50; /* Black bg, green border/shadow, no rounding */
+  @apply text-[color:var(--color-primary)] dark:text-[color:var(--color-dark-text)]
+         bg-[color:var(--color-bg-light-panel)] dark:bg-[color:var(--color-bg-dark-tone)] rounded-lg shadow-md;
 }
 
 .panels-color {
-  @apply text-green-300 dark:text-green-300 bg-gray-950 dark:bg-gray-950 border border-gray-800 dark:border-gray-700 rounded-none; /* Very dark gray panels */
+  @apply text-[color:var(--color-light-text)] dark:text-[color:var(--color-dark-text)]
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-tone)]; /* Standard panel color */
 }
 
-.unicolor-panels-color {
-  @apply bg-gray-900 dark:bg-gray-900; /* Slightly lighter dark gray */
+.unicolor-panels-color { /* Panels with a single, slightly darker tone */
+  @apply bg-[color:var(--color-bg-light-tone-panel)] dark:bg-[color:var(--color-bg-dark-panel)];
 }
 
 .chatbox-color {
-  @apply bg-black dark:bg-black border border-gray-800 dark:border-gray-800; /* Black chatbox */
+  @apply bg-[color:var(--color-bg-light-discussion)] dark:bg-[color:var(--color-bg-dark-tone)]; /* Using tone for chatbox BG */
 }
 
-/* --- Messages --- */
-.message {
-  @apply relative w-full m-2 shadow-lg shadow-green-900/30 rounded-none border border-green-900 dark:border-green-800 flex flex-col flex-grow flex-wrap overflow-visible p-5 pb-3 text-lg;
-  @apply bg-black text-green-200 dark:bg-black dark:text-green-200; /* Black bg, light green text */
-}
-
-.message:hover {
-  @apply border-green-600 dark:border-green-500; /* Brighter green border on hover */
-}
-
-/* Alternating message backgrounds (subtle difference) */
-.message:nth-child(even) {
-  @apply bg-gray-950 dark:bg-gray-950; /* Very dark gray */
-}
-
-.message:nth-child(odd) {
-  @apply bg-black dark:bg-black; /* Pure black */
-}
-
-.message-header {
-  @apply text-xl font-semibold mb-2 text-green-400 dark:text-green-400; /* Brighter green for header */
-}
-
-.message-content {
-  @apply text-lg leading-relaxed text-green-300 dark:text-green-300;
-}
-
-/* --- Body & Discussion --- */
-body {
-  @apply bg-black dark:bg-black min-h-screen text-base text-green-300 dark:text-green-300; /* Black bg, green text */
-}
-
-.discussion {
-  @apply mr-2 text-xs text-green-500 dark:text-green-500; /* Dimmer green for non-highlighted */
-}
-
-.discussion-hilighted {
-  @apply bg-green-900 dark:bg-green-900 text-green-200 dark:text-green-200 text-xs rounded-none; /* Dark green bg, light green text, no rounding */
-}
-
-/* --- Gradients & Text --- */
-.bg-gradient-welcome {
-  @apply bg-gradient-to-br from-black via-gray-900 to-black; /* Same as background */
-}
-
-.bg-gradient-progress {
-  @apply bg-gradient-to-r from-green-900 to-green-700 dark:from-green-900 dark:to-green-700; /* Dark green gradient */
-}
-
-.text-gradient-title {
-  @apply text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600 dark:from-green-400 dark:to-green-600; /* Green text gradient */
-}
-
-.text-subtitle {
-  @apply text-green-500 dark:text-green-500;
-}
-
-.text-author {
-  @apply text-green-600 dark:text-green-600; /* Slightly darker green */
-}
-
-.text-loading {
-  @apply text-green-400 dark:text-green-400;
-}
-
-.text-progress {
-  @apply text-green-300 dark:text-green-300;
-}
-
-/* --- Buttons --- */
-.btn {
-  @apply font-semibold py-2 px-4 rounded-none transition-all duration-300 ease-in-out shadow-md flex items-center border; /* No rounding, add border */
-}
-
-.btn-primary {
-  @apply bg-green-700 hover:bg-green-600 text-black dark:text-black font-bold border-green-500 hover:border-green-400 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-black; /* Green bg, black text, green border/focus */
-}
-
-.btn-secondary {
-  @apply bg-gray-800 hover:bg-gray-700 text-green-300 dark:text-green-300 font-bold border-gray-600 hover:border-gray-500 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-black; /* Gray bg, green text, gray border/focus */
-}
-
-/* --- UI Elements --- */
-.card {
-  @apply bg-black dark:bg-black rounded-none shadow-md shadow-green-900/50 p-6 border border-green-800 dark:border-green-700; /* Black bg, green shadow/border, no rounding */
-}
-
-.input {
-  @apply bg-gray-900 dark:bg-black border border-green-700 dark:border-green-600 rounded-none px-4 py-2 focus:outline-none focus:ring-1 focus:ring-green-500 dark:focus:ring-green-500 text-green-300 dark:text-green-300; /* Consistent input style */
-}
-
-.label {
-  @apply block text-sm font-medium text-green-400 dark:text-green-400 mb-1; /* Brighter green label */
-}
-
-.link {
-  @apply text-green-400 hover:text-green-300 dark:text-green-400 dark:hover:text-green-300 underline hover:no-underline; /* Green link, underline toggle */
-}
-
-/* --- Navigation --- */
 .navbar-container {
-  @apply text-green-300 dark:text-green-300 bg-black dark:bg-black rounded-none shadow-lg shadow-green-900/50 border-b border-green-800 dark:border-green-700; /* Black navbar, green shadow/border */
+  @apply text-[color:var(--color-primary)] dark:text-[color:var(--color-dark-text)]
+         bg-[color:var(--color-bg-light-panel)] dark:bg-[color:var(--color-bg-dark-tone)] rounded shadow-lg;
+}
+.chat-box-title-bar{
+  @apply text-xs font-medium bg-[color:var(--color-bg-light-discussion)] dark:bg-[color:var(--color-bg-dark-tone)];
 }
 
-.game-menu { /* Renamed from original, kept structure */
+/* Game Menu container (Used for Main Nav) */
+.game-menu {
   @apply flex justify-center items-center relative;
 }
 
-.text-shadow-custom {
-   /* Minimal shadow for Borg */
-  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+/* ========================================================================== */
+/* 6. Forms & Inputs                                                        */
+/* ========================================================================== */
+
+/* Base Input Styles */
+textarea, input:not([type='range']):not([type='checkbox']):not([type='radio']), select {
+  @apply bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)]
+         text-gray-900 dark:text-[color:var(--color-dark-text)] /* Adjusted light text */
+         border border-gray-400 dark:border-gray-600 rounded /* Gray border */
+         focus:ring-[color:var(--color-primary)] dark:focus:ring-[color:var(--color-accent-sky-dark)] /* Green focus */
+         focus:border-[color:var(--color-primary)] dark:focus:border-[color:var(--color-accent-sky-dark)]
+         focus:outline-none focus:ring-1;
 }
 
-.menu-item {
-  @apply mb-2 px-4 py-2 text-green-500 dark:text-green-500 font-bold text-lg transition-all duration-300 ease-in-out rounded-none;
-  @apply hover:text-green-300 hover:dark:text-green-300 hover:bg-gray-800; /* Dark gray hover background */
+/* General Input Class */
+.input {
+  @apply block w-full px-3 py-2 rounded-md shadow-sm sm:text-sm disabled:opacity-50
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)]
+         border border-gray-400 dark:border-gray-600
+         text-gray-900 dark:text-[color:var(--color-dark-text)]
+         placeholder-gray-500 dark:placeholder-gray-500
+         focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)] focus:border-[color:var(--color-primary)]
+         dark:focus:ring-[color:var(--color-accent-sky-dark)] dark:focus:border-[color:var(--color-accent-sky-dark)];
 }
 
-.menu-item.active-link {
-  @apply border-green-500 text-green-300 dark:text-green-300 text-shadow-custom font-bold text-lg transition-all duration-300 ease-in-out scale-105 bg-gray-900; /* Darker gray active background */
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.7); /* Enhanced green glow */
+/* Small Input */
+.input-sm {
+  @apply input px-2.5 py-1.5 text-sm;
 }
 
-/* Remove the complex ::before gradient, use a simple border */
-.menu-item.active-link::before {
- content: '';
- position: absolute;
- bottom: -2px; /* Adjust position */
- left: 0;
- width: 100%;
- height: 2px; /* Simple line */
- background-color: var(--color-primary); /* Primary green */
+/* Label */
+.label {
+  @apply block text-sm font-medium text-green-700 dark:text-gray-300 mb-1; /* Green label text */
 }
 
-.dark .menu-item.active-link::before {
- background-color: var(--color-primary); /* Same green for dark */
-}
-
-/* Remove bounce animation if not fitting */
-/* @keyframes bounce ... */
-/* .feather-emoji { ... } */
-
-/* --- App Cards --- */
-.app-card {
-  @apply transition-all duration-300 ease-in-out bg-black dark:bg-black text-green-300 dark:text-green-300 border border-green-800 rounded-none shadow-lg shadow-green-900/30 p-6 hover:shadow-xl hover:shadow-green-700/50 hover:border-green-600; /* Black bg, green border/shadow, no rounding */
-}
-
-.app-card:hover {
-  @apply transform scale-[1.02]; /* Slight scale instead of translate */
-}
-
-/* --- Buttons (General) --- */
-button {
-  @apply transition-all duration-300 ease-in-out rounded-none; /* Ensure no rounding */
-}
-
-button:hover {
-  @apply transform scale-[1.03]; /* Slight scale */
-}
-
-/* --- Scrollbar --- */
-.scrollbar-thin {
-  scrollbar-width: thin;
-  scrollbar-color: theme('colors.green.700') theme('colors.black'); /* Green thumb, black track */
-}
-
-.dark .scrollbar-thin {
-  scrollbar-color: theme('colors.green.600') theme('colors.black'); /* Slightly brighter green thumb */
-}
-
-.scrollbar-thin::-webkit-scrollbar {
-  @apply w-2;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  @apply bg-black dark:bg-black rounded-none; /* Black track */
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply bg-green-700 dark:bg-green-600 rounded-none; /* Green thumb */
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  @apply bg-green-500 dark:bg-green-400; /* Brighter green on hover */
-}
-
-/* --- Search Input --- */
+/* Search Input */
 .search-input {
-  @apply w-full border-b-2 border-green-700 dark:border-green-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none focus:border-green-400 dark:focus:border-green-400 bg-transparent text-green-300 dark:text-green-200 placeholder-green-700 dark:placeholder-green-700; /* Green border/text/placeholder */
+  @apply w-full border-b-2 border-gray-400 dark:border-gray-600 py-2 px-4 pl-10 transition-colors duration-300 ease-in-out focus:outline-none
+         focus:border-[color:var(--color-primary)] dark:focus:border-[color:var(--color-accent-sky-dark)] /* Green focus */
+         bg-transparent text-green-800 dark:text-[color:var(--color-dark-text)] placeholder-gray-500 dark:placeholder-gray-400; /* Green text */
 }
 
-/* --- General Scrollbar Utility --- */
-.scrollbar {
-  @apply scrollbar-thin scrollbar-track-black scrollbar-thumb-green-700 hover:scrollbar-thumb-green-500 dark:scrollbar-track-black dark:scrollbar-thumb-green-600 dark:hover:scrollbar-thumb-green-400;
-}
-
-/* --- Animated Progress Bar --- */
-.animated-progressbar-bg{
-  @apply w-full h-3 relative overflow-hidden bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-800 dark:to-gray-900 rounded-none shadow-inner shadow-black; /* Dark gray bg, no rounding */
-}
-.animated-progressbar-fg{
-  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-green-600 to-green-400 dark:from-green-600 dark:to-green-400 transition-all duration-300; /* Green gradient fg */
-}
-
-/* --- Discussion Toolbox --- */
-.discussion-toolbox{
-  @apply flex gap-2 items-center bg-black dark:bg-black border border-green-800 p-1 rounded-l-none shadow-md transform translate-x-full group-hover:translate-x-0 transition-transform duration-300; /* Black bg, green border */
-}
-
-/* --- LoLLMS Title Style --- */
-.lollms-title-style{
-  /* Simple, stark green title */
-  @apply text-green-400 font-['Orbitron'] font-bold;
-  text-shadow: 0 0 8px theme('colors.green.500'); /* Green glow */
-}
-
-/* --- Chat Bar --- */
-.chat-bar {
-  @apply relative text-green-300 dark:text-green-300 grow flex cursor-pointer select-none items-center gap-2 bg-black dark:bg-black p-1 shadow-sm border-t border-green-900 dark:border-green-800 hover:border-green-600;
-  height: 50px;
-  transition: all 0.3s ease;
-}
-
-.chat-bar:hover {
-   box-shadow: 0 0 10px 0 rgba(0, 255, 0, 0.3); /* Green glow on hover */
-}
-
-/* --- SVG Buttons --- */
-.svg-button{
-  @apply text-green-500 dark:text-green-500 p-2 rounded-none transition-colors duration-200 ease-in-out focus:outline-none focus:ring-1 focus:ring-green-500 border border-transparent hover:border-green-700; /* Green icon, no rounding, green focus/hover border */
-}
-
-.svg-button:hover{
-  @apply bg-gray-900 dark:bg-gray-900 text-green-300 dark:text-green-300; /* Dark bg, lighter green icon */
-}
-.svg-button:active{
-  @apply bg-gray-800 dark:bg-gray-800; /* Slightly lighter dark bg */
-}
-
-/* --- Nav Buttons --- */
-.nav-button{
-  @apply px-3 py-2 rounded-none text-sm font-medium transition-colors duration-200 ease-in-out hover:bg-gray-800 dark:hover:bg-gray-800 text-green-500 dark:text-green-500 border border-transparent hover:border-gray-700; /* No rounding, green text */
-}
-
-.nav-button-active{
-  @apply bg-green-900 text-green-200 hover:bg-green-800 dark:bg-green-900 dark:hover:bg-green-800 border border-green-700; /* Dark green active bg */
-}
-
-/* --- On/Off Buttons --- */
-.btn-on{
-  @apply text-green-400 dark:text-green-400; /* Standard on green */
-}
-
-.btn-off{
-  @apply text-red-500 dark:text-red-500; /* Keep red for off/danger indication */
-}
-
-/* --- Interesting Facts Box --- */
-.interesting-facts{
-  @apply mt-6 mb-6 p-4 bg-black/80 dark:bg-black/80 border border-green-800 rounded-none shadow-lg shadow-green-900/40 text-green-300 transform hover:scale-105; /* Black bg, green border/shadow */
-}
-
-/* --- Toolbar Buttons --- */
-.toolbar-button {
-  @apply bg-transparent border-none cursor-pointer p-2 transition-colors duration-300 text-green-500 dark:text-green-500; /* Green icon */
-}
-
-.toolbar-button:hover {
-  @apply text-green-300 dark:text-green-300; /* Lighter green on hover */
-}
-
-
-/* --- Context Menu --- */
-/* Override the component layer for a more Borg look */
-@layer components {
-  .context-menu {
-    @apply absolute bg-black bg-opacity-95 border border-green-700 shadow-lg shadow-green-800/60 rounded-none py-1 min-w-[150px] z-[1000] font-mono; /* Black bg, green border/shadow, no rounding */
-    /* Remove matrix animation background */
-  }
-
-  .context-menu-item {
-    @apply px-4 py-1.5 text-sm text-green-400 cursor-pointer transition-colors duration-150 ease-in-out;
-    @apply hover:bg-green-900 hover:text-green-200; /* Dark green hover */
-  }
-
-  .context-menu-separator {
-    @apply h-px bg-green-800 my-1 shadow-none; /* Dark green separator */
-  }
-
-  .context-menu-item-disabled {
-    @apply text-green-800 cursor-not-allowed shadow-none; /* Dark, dim green */
-  }
-
-  .context-menu-item-icon {
-    @apply mr-2 text-green-500; /* Standard green icon */
-  }
-
-  /* Remove hover ::after effect */
-   .context-menu-item::after {
-    content: none;
-   }
-}
-
-/* --- Steps Theming --- */
-/* Steps Container Styles */
-.steps-container {
-  @apply border border-green-800 rounded-none mb-4 bg-black dark:bg-black;
-}
-
-.steps-header {
-  @apply flex items-center p-3 bg-gray-950 dark:bg-gray-950 cursor-pointer border-b border-green-900 dark:border-green-800;
-}
-
-.steps-icon {
-  @apply mr-3 text-green-500; /* Green icon */
-}
-
-.steps-summary {
-  @apply flex-grow;
-}
-
-.steps-title {
-  @apply m-0 text-base font-semibold text-green-300 dark:text-green-300;
-}
-
-.steps-status {
-  @apply m-0 text-sm text-green-600 dark:text-green-600; /* Dimmer green */
-}
-
-.toggle-icon {
-  @apply text-sm text-green-700 dark:text-green-700; /* Darkest green */
-}
-
-.steps-content {
-  @apply p-4;
-}
-
-.steps-list {
-  @apply list-none p-0 m-0;
-}
-
-.step-item {
-  @apply mb-2 pl-4 border-l-2 border-green-700 dark:border-green-700 last:mb-0; /* Green left border */
-}
-
-/* Step Component Styles */
-.step-container {
-  @apply mb-4 transition-all duration-300 ease-in-out;
-}
-
-.step-wrapper {
-  @apply flex items-start p-2 rounded-none bg-gray-950 dark:bg-gray-950; /* Dark bg, no rounding */
-}
-
-.step-icon {
-  @apply flex-shrink-0 w-5 h-5 mr-3; /* Slightly smaller icon */
-}
-
-.icon-success {
-  @apply w-5 h-5 text-green-400 dark:text-green-400; /* Standard green */
-}
-
-.icon-fail {
-  @apply w-5 h-5 text-red-500 dark:text-red-500; /* Keep red for failure */
-}
-
-.icon-spinner {
-  @apply w-5 h-5 border-2 border-green-500 dark:border-green-500 border-t-transparent rounded-full animate-spin; /* Green spinner */
-}
-
-.step-content {
-  @apply flex-grow;
-}
-
-.step-text {
-  @apply text-base font-medium text-green-300 dark:text-green-300;
-}
-
-.step-description {
-  @apply mt-1 text-sm text-green-500 dark:text-green-500; /* Dimmer green description */
-}
-
-/* Transition Styles (Keep as is) */
-.fade-enter-active, .fade-leave-active {
-  @apply transition-opacity duration-300;
-}
-.fade-enter, .fade-leave-to {
-  @apply opacity-0;
-}
-
-/* Status Icon Styles */
-.status-icon {
-  @apply cursor-pointer transition-colors duration-300;
-}
-.icon {
-  @apply w-6 h-6;
-}
-.icon-text {
-  @apply text-xl font-bold text-green-300 dark:text-green-300;
-}
-
-/* --- User Settings Panel --- */
-.user-settings-panel {
-  @apply bg-black dark:bg-black space-y-6 p-4 md:p-6 rounded-none shadow-lg shadow-green-900/50 text-green-300 dark:text-green-300 border border-green-800; /* Black bg, green text/shadow/border */
-}
-
-/* --- Folder Items --- */
-.folder-item-base {
-  @apply flex flex-col items-center justify-center p-3 rounded-none cursor-pointer transition-all duration-200 hover:shadow-md hover:shadow-green-700/40;
-  @apply bg-gray-950 dark:bg-gray-950; /* Dark background */
-  @apply hover:bg-gray-900 dark:hover:bg-gray-900; /* Slightly lighter on hover */
-  @apply border border-green-800 hover:border-green-600; /* Green border */
-}
-
-.folder-item-icon {
-  @apply w-10 h-10 group-hover:scale-110 transition-transform duration-200 mb-1 text-green-500; /* Green icon */
-}
-
-.folder-item-label {
-  @apply mt-1 text-xs text-center text-green-400 dark:text-green-400; /* Green label */
-}
-
-/* Specific Folder Item Borders/Icons (use green variations) */
-.folder-item-personalities { @apply border-green-700 dark:border-green-700; }
-.folder-item-icon-personalities { @apply text-green-400 dark:text-green-400; }
-
-.folder-item-functions { @apply border-green-600 dark:border-green-600; }
-.folder-item-icon-functions { @apply text-green-500 dark:text-green-500; }
-
-.folder-item-configs { @apply border-green-500 dark:border-green-500; }
-.folder-item-icon-configs { @apply text-green-600 dark:text-green-600; }
-
-.folder-item-outputs { @apply border-green-400 dark:border-green-400; }
-.folder-item-icon-outputs { @apply text-green-700 dark:text-green-700; }
-
-.folder-item-discussions { @apply border-green-300 dark:border-green-300; }
-.folder-item-icon-discussions { @apply text-green-800 dark:text-green-800; }
-
-/* --- Settings Components Layer --- */
+/* Settings Layout Components */
 @layer components {
   .setting-item {
-      @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-2 border-t border-green-900 dark:border-green-800 first:border-t-0; /* Green separator */
+    @apply flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-4 py-2;
   }
-
   .setting-label {
-      @apply label md:w-48 flex-shrink-0 text-green-400 dark:text-green-400; /* Use label class styles + green color */
+    @apply label md:w-48 flex-shrink-0; /* Uses .label styles */
   }
 
+  /* Toggle Switch Layout */
   .toggle-item {
-      @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-3 border-t border-green-900 dark:border-green-800 pt-3 mt-2; /* Green separator */
+    @apply flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 py-3 border-t border-gray-300 dark:border-gray-700 mt-2; /* Gray border */
   }
-
   .toggle-label {
-      @apply label !mb-0 flex-grow cursor-pointer mr-4 text-green-300 dark:text-green-300; /* Use label styles, green color */
+    @apply label !mb-0 flex-grow cursor-pointer mr-4; /* Uses .label styles */
   }
-
   .toggle-description {
-      @apply block text-xs text-green-600 dark:text-green-600 font-normal mt-1; /* Dim green description */
+    @apply block text-xs text-green-600 dark:text-gray-400 font-normal mt-1; /* Green description */
   }
 
-  /* Range Input Styles */
-  input[type='range'] {
-    @apply h-1 w-full cursor-pointer appearance-none rounded-none bg-gray-700 dark:bg-gray-700; /* Gray track, no rounding */
-  }
-  input[type='range']::-webkit-slider-thumb {
-      @apply w-4 h-4 bg-green-500 dark:bg-green-500 rounded-sm appearance-none cursor-pointer transition-colors duration-200 ease-in-out shadow-sm shadow-black; /* Square-ish green thumb */
-       margin-top: -7px; /* Adjust thumb position */
-  }
-  input[type='range']::-moz-range-thumb {
-      @apply w-4 h-4 bg-green-500 dark:bg-green-500 rounded-sm border-none cursor-pointer transition-colors duration-200 ease-in-out shadow-sm shadow-black; /* Square-ish green thumb */
-  }
-  /* Redefine track for Webkit/Mozilla if needed, though base class covers it */
-  input[type='range']::-webkit-slider-runnable-track {
-       @apply h-1 bg-gray-700 dark:bg-gray-700 rounded-none w-full;
-  }
-  input[type='range']::-moz-range-track {
-       @apply h-1 bg-gray-700 dark:bg-gray-700 rounded-none w-full;
-  }
-
-  /* Success button variant (using primary for consistency) */
-  .btn-success {
-    @apply btn btn-primary; /* Use primary button style */
-  }
-
-  /* Small button size modifier */
-  .btn-sm {
-    @apply py-1 px-2 text-sm;
-  }
-
-  /* Small input size modifier */
-  .input-sm {
-      @apply input px-3 py-1 text-sm rounded-none; /* Use .input styles, no rounding */
-  }
-
-  /* Range input base style */
+  /* Range Input Specific Styles */
   .range-input {
-      @apply h-1 bg-gray-700 dark:bg-gray-700 rounded-none appearance-none cursor-pointer w-full; /* Base track */
+    @apply h-2 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer w-full; /* Gray track */
   }
+  /* Webkit Thumb */
+  input[type='range']::-webkit-slider-thumb,
   .range-input::-webkit-slider-thumb {
-      @apply w-4 h-4 bg-green-500 dark:bg-green-500 rounded-sm appearance-none cursor-pointer transition-colors duration-200 ease-in-out shadow-sm shadow-black;
-      margin-top: -7px;
+    @apply w-5 h-5 bg-[color:var(--color-primary)] dark:bg-[color:var(--color-accent-sky-dark)] rounded-full appearance-none cursor-pointer transition-colors duration-200 ease-in-out; /* Green thumb */
+    margin-top: -6px;
   }
+  /* Firefox Thumb */
+  input[type='range']::-moz-range-thumb,
   .range-input::-moz-range-thumb {
-      @apply w-4 h-4 bg-green-500 dark:bg-green-500 rounded-sm border-none cursor-pointer transition-colors duration-200 ease-in-out shadow-sm shadow-black;
+    @apply w-5 h-5 bg-[color:var(--color-primary)] dark:bg-[color:var(--color-accent-sky-dark)] rounded-full border-none cursor-pointer transition-colors duration-200 ease-in-out; /* Green thumb */
   }
-
-  /* Status dot colors */
-  .bg-status-healthy { @apply bg-green-500 dark:bg-green-500; } /* Standard green */
-  .bg-status-unhealthy { @apply bg-red-600 dark:bg-red-600; } /* Keep red */
-  .bg-status-loading { @apply bg-yellow-500 dark:bg-yellow-500; } /* Keep yellow */
-  .bg-status-unknown { @apply bg-gray-600 dark:bg-gray-600; } /* Neutral gray */
-}
-
-
-/* --- Prose Styling (Borg Adaptation) --- */
-@layer components {
-  .prose-borg { /* Renamed from prose-blue */
-    h3 { @apply text-xl font-semibold text-green-500 dark:text-green-500 mb-3 mt-5 border-b border-green-800 dark:border-green-700 pb-1; }
-    ul { @apply list-disc pl-6 space-y-1.5 mb-4 text-green-300 dark:text-green-300; }
-    li::marker { color: theme('colors.green.500'); } /* Green marker */
-    code { @apply bg-gray-800 dark:bg-gray-900 px-1.5 py-0.5 rounded-none text-sm font-mono text-green-400 dark:text-green-400; } /* Dark bg, green code, no rounding */
-    blockquote { @apply border-l-4 border-green-600 dark:border-green-600 pl-4 italic text-green-400 dark:text-green-400 my-4 py-1 bg-gray-950 dark:bg-gray-950; } /* Green border, dark bg */
-    a { @apply link font-medium text-green-400 hover:text-green-300; } /* Use link style */
-    p { @apply mb-3 leading-relaxed text-green-300 dark:text-green-300; } /* Green paragraph */
+   /* Webkit Track */
+  input[type='range']::-webkit-slider-runnable-track {
+      @apply h-2 bg-gray-300 dark:bg-gray-600 rounded-full w-full; /* Gray track */
   }
-
-  /* Dark mode inversion for prose is implicit with dark: prefixes above */
-}
-
-/* --- Thinking Prose Styling --- */
-.thinking-prose {
-  /* Base styles inherit from body/prose */
-}
-
-/* Define dark mode variables (already handled by dark: prefixes) */
-/* .dark .thinking-prose { ... } */
-
-.thinking-prose h1,
-.thinking-prose h2,
-.thinking-prose h3,
-.thinking-prose h4,
-.thinking-prose h5,
-.thinking-prose h6 {
-  @apply mt-5 mb-2 font-semibold text-green-400 dark:text-green-400 font-['Orbitron']; /* Green headings */
-}
-.thinking-prose h1 { @apply text-xl; }
-.thinking-prose h2 { @apply text-lg; }
-.thinking-prose h3 { @apply text-base; }
-
-.thinking-prose p {
-  @apply my-3 leading-relaxed text-green-300 dark:text-green-300; /* Green text */
-}
-
-.thinking-prose ul,
-.thinking-prose ol {
-  @apply my-3 pl-6 text-green-300 dark:text-green-300; /* Green lists */
-}
-.thinking-prose li::marker { color: theme('colors.green.500'); }
-
-.thinking-prose li > p {
-  @apply my-1;
-}
-
-.thinking-prose code:not(pre code) {
-  @apply px-1 py-0.5 bg-gray-800 dark:bg-gray-900 rounded-none text-sm font-mono text-green-400 dark:text-green-400 before:content-none after:content-none; /* Borg code style */
-}
-
-.thinking-prose pre {
-  @apply p-4 rounded-none overflow-x-auto my-4 shadow-inner bg-black dark:bg-black border border-green-900; /* Black bg, green border, no rounding */
-}
-.thinking-prose pre code {
- @apply p-0 bg-transparent text-sm font-mono text-green-300 dark:text-green-300; /* Green code text */
-}
-
-.thinking-prose blockquote {
-  @apply pl-4 py-1 border-l-4 border-green-600 italic my-4 text-green-400 dark:text-green-400 bg-gray-950 dark:bg-gray-950; /* Borg blockquote style */
-}
-
-.thinking-prose a {
-  @apply hover:underline break-words text-green-400 dark:text-green-400 hover:text-green-300; /* Borg link style */
-}
-
-/* Custom Scrollbar for thinking-prose */
-.thinking-prose::-webkit-scrollbar { @apply w-2 h-2; }
-.thinking-prose::-webkit-scrollbar-track { @apply bg-black dark:bg-black rounded-none; }
-.thinking-prose::-webkit-scrollbar-thumb { @apply bg-green-700 dark:bg-green-600 rounded-none hover:bg-green-500 dark:hover:bg-green-400; }
-
-.thinking-prose {
-  scroll-behavior: smooth;
-}
-
-/* Bounce animation for thinking dots (Keep original keyframes) */
-@keyframes bounce {
-  0%, 100% { transform: translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
-  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
-}
-.animate-bounce { animation: bounce 1s infinite; }
-
-/* --- Help Content Styling --- */
-.help-content {
-    /* Apply the Borg prose style */
-    @apply prose-borg;
-}
-/* Override specific elements if prose-borg isn't sufficient */
-.help-content h2 {
-  @apply text-2xl font-semibold text-green-500 dark:text-green-500 mb-4 mt-6 border-b border-green-800 dark:border-green-700 pb-2 font-['Orbitron'];
-}
-.help-content h3 {
-  @apply text-xl font-semibold text-green-600 dark:text-green-600 mb-3 mt-5;
-}
-/* Lists, code, blockquote should inherit from prose-borg */
-
-/* Code block container specific styling */
-.help-content pre.hljs {
-   @apply bg-black dark:bg-black border border-green-900 p-4 rounded-none overflow-x-auto my-4 shadow-inner text-sm; /* Black bg, green border */
-}
-.help-content pre.hljs code {
-   @apply bg-transparent p-0 text-green-300 font-mono; /* Ensure code inside is styled correctly */
-}
-.help-content p {
-   @apply mb-4 leading-relaxed text-green-300 dark:text-green-300 text-base md:text-lg; /* Match theme's p */
-}
-.help-content img {
-   @apply rounded-none shadow-md shadow-green-900/50 my-4 max-w-full h-auto mx-auto border border-green-800; /* No rounding, green border/shadow */
-}
-.help-content table {
-   @apply w-full my-4 border-collapse border border-green-700 dark:border-green-700;
-}
-.help-content th {
-   @apply bg-gray-900 dark:bg-gray-900 p-2 border border-green-700 dark:border-green-700 text-left font-semibold text-green-400 dark:text-green-400; /* Dark header, green text/border */
-}
-.help-content td {
-   @apply p-2 border border-green-800 dark:border-green-800 text-green-300 dark:text-green-300 bg-black dark:bg-black; /* Black cells, green text/border */
-}
-
-/* Responsive sidebar (Keep structure, adapt colors if needed) */
-@media (max-width: 768px) {
- .help-left-bar {
-   @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full bg-black border-r border-green-700; /* Black sidebar bg, green border */
- }
- .help-main-content {
-   @apply ml-0;
- }
-  .help-left-bar.open {
-     @apply translate-x-0;
-   }
-}
-
-/* --- Animated Thought Bubble --- */
-/* Bubble animation keyframes (Keep original) */
-@keyframes bubble-in-down { /* ... */ }
-@layer utilities { .animate-bubble-in-down { /* ... */ } }
-
-@layer components {
-  .animated-thought-bubble {
-    @apply absolute top-full left-1/2 mt-2
-           w-max max-w-[160px]
-           opacity-0 invisible
-           bg-black dark:bg-black border border-green-600 rounded-none shadow-lg shadow-green-800/50 p-2 text-center z-20 /* Borg styling */
-           pointer-events-none
-           origin-top
-           transition-opacity duration-150
-           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down;
-    @apply text-green-300 dark:text-green-300 text-xs; /* Green text */
-  }
-
-  /* Arrow for the bubble */
-  .animated-thought-bubble::after {
-    content: '';
-    @apply absolute bottom-full left-1/2 transform -translate-x-1/2
-           border-[6px] border-solid border-transparent /* Slightly smaller arrow */
-           border-b-black dark:border-b-black; /* Arrow color matches bubble bg */
-     /* Add border to the arrow itself */
-     border-bottom-color: theme('colors.green.600'); /* Make arrow tip green */
-
+  /* Firefox Track */
+  input[type='range']::-moz-range-track {
+      @apply h-2 bg-gray-300 dark:bg-gray-600 rounded-full w-full; /* Gray track */
   }
 }
 
+/* ========================================================================== */
+/* 7. Buttons                                                               */
+/* ========================================================================== */
 
-/* --- Playground Component Additions --- */
+/* Base Button Styles */
+button {
+  @apply transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed;
+}
+button:not(:disabled):hover {
+  @apply transform scale-[1.02]; /* Less pronounced hover scale */
+}
+
+/* General Button Class */
+.btn {
+  @apply inline-flex items-center justify-center font-semibold py-2 px-4 rounded-lg transition-all duration-150 ease-in-out shadow-md border border-transparent
+         focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-[color:var(--color-bg-dark)] whitespace-nowrap;
+}
+
+/* Button Variants */
+.btn-primary {
+  @apply btn bg-[color:var(--color-primary)] text-white hover:bg-green-700 focus:ring-[color:var(--color-primary-light)]; /* Green primary */
+  /* Dark mode uses same green */
+}
+.btn-secondary {
+  @apply btn text-gray-800 dark:text-gray-100 bg-gray-300 dark:bg-gray-600 /* Gray secondary */
+         hover:bg-gray-400 dark:hover:bg-gray-500
+         focus:ring-gray-400 dark:focus:ring-gray-500
+         border-gray-400 dark:border-gray-500; /* Gray border */
+}
+.btn-success {
+  @apply btn bg-[color:var(--color-green-light)] text-black hover:bg-[color:var(--color-green-dark)] focus:ring-green-300; /* Bright green success */
+  /* Dark mode uses same green */
+}
+.btn-sm {
+  @apply py-1.5 px-2.5 text-sm font-medium;
+}
+
+/* On/Off Status Buttons (Text Color Only) */
+.btn-on{
+  @apply text-[color:var(--color-green-light)] dark:text-green-400;
+}
+.btn-off{
+  @apply text-[color:var(--color-red-light)] dark:text-red-400;
+}
+
+/* SVG Buttons (e.g., chat bar controls, toolbar icons) */
+.svg-button {
+  @apply inline-flex items-center justify-center text-gray-600 dark:text-gray-300 p-1.5 rounded-full transition-colors duration-200 ease-in-out
+         hover:bg-gray-300 dark:hover:bg-gray-700 /* Gray hover */
+         focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[color:var(--color-accent-sky-dark)] dark:ring-offset-[color:var(--color-bg-dark-tone)]; /* Green focus */
+}
+.svg-button:active{
+  @apply bg-gray-400 dark:bg-gray-600;
+}
+
+/* Navigation Buttons (Main Menu) */
+.nav-button {
+  @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ease-in-out
+         text-gray-700 dark:text-gray-300 /* Neutral text */
+         hover:bg-gray-200 dark:hover:bg-gray-700; /* Gray hover */
+}
+.nav-button-active {
+  @apply nav-button bg-[color:var(--color-primary)] text-white hover:bg-green-700 /* Green active */
+         dark:bg-[color:var(--color-primary)] dark:hover:bg-green-700; /* Keep primary green for active */
+}
+
+/* Toolbar Buttons (e.g., message hover toolbar) */
+.toolbar-button {
+  @apply bg-transparent border-none cursor-pointer p-1.5 rounded transition-colors duration-200
+         text-gray-600 dark:text-gray-400
+         hover:text-[color:var(--color-primary)] dark:hover:text-[color:var(--color-accent-sky-light)]; /* Green hover */
+}
+
+/* Tab Buttons (e.g., Playground) */
 @layer components {
   .active-tab-button {
-    /* Use primary button style, small */
-    @apply btn btn-primary btn-sm;
-    /* Active state emphasis */
-    @apply ring-2 ring-offset-1 ring-offset-black dark:ring-offset-black ring-green-400 dark:ring-green-400;
+    @apply btn btn-primary btn-sm; /* Uses primary green */
+    @apply ring-2 ring-offset-1 ring-offset-[color:var(--color-bg-light-tone)] dark:ring-offset-[color:var(--color-bg-dark)] ring-[color:var(--color-primary)] dark:ring-[color:var(--color-primary)];
   }
   .inactive-tab-button {
-    /* Use secondary button style, small */
-    @apply btn btn-secondary btn-sm;
-     /* Dim inactive state */
+    @apply btn btn-secondary btn-sm; /* Uses secondary (gray) style */
     @apply opacity-70 hover:opacity-100;
   }
 }
 
-/* Ensure matrix-rain keyframes are not included unless specifically wanted for a different element */
-/* @keyframes matrix-rain { ... } */
+/* Code Block Buttons (Execute, Copy etc.) */
+.code-block-button {
+  @apply p-1 rounded text-gray-600 dark:text-gray-300
+         hover:bg-[color:var(--color-primary)] dark:hover:bg-[color:var(--color-primary)] hover:text-white /* Green hover */
+         transition-colors duration-200 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-[color:var(--color-primary)]
+         disabled:opacity-50 disabled:cursor-not-allowed
+         disabled:hover:bg-transparent disabled:hover:text-gray-600 dark:disabled:hover:text-gray-300;
+}
+.code-block-button i[data-feather], .code-block-button img { vertical-align: middle; }
+.execute-button { @apply inline-flex items-center justify-center; }
+
+/* ========================================================================== */
+/* 8. Messages & Chat Interface                                             */
+/* ========================================================================== */
+
+/* Message Bubble */
+.message {
+  @apply relative w-full m-2 shadow-lg rounded-lg border
+         border-gray-400 dark:border-gray-700 /* Gray border */
+         flex flex-col overflow-visible p-4
+         bg-[color:var(--color-bg-light-discussion-odd)] dark:bg-[color:var(--color-bg-dark-discussion-odd)] /* Use odd color as base */
+         text-gray-900 dark:text-[color:var(--color-dark-text)] /* Adjusted light text */
+         transition-colors duration-200;
+  padding-bottom: 2.8rem;
+}
+.message:hover {
+  @apply border-gray-500 dark:border-[color:var(--color-accent-sky-light)]; /* Green border on hover dark */
+}
+
+/* Message Alternating Backgrounds */
+.message:nth-child(even) {
+  @apply bg-[color:var(--color-bg-light-discussion)] dark:bg-[color:var(--color-bg-dark-discussion)];
+}
+
+/* Message Header, Content, Footer */
+.message-header {
+  @apply text-lg font-semibold mb-2 text-green-800 dark:text-gray-100; /* Green header */
+}
+.message-content {
+  @apply text-base leading-relaxed text-gray-700 dark:text-gray-300; /* Neutral content text */
+}
+.message-footer {
+  @apply text-xs text-green-700 dark:text-gray-400 mt-3 pt-2 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-x-3 gap-y-1; /* Green footer text, gray border */
+}
+.footer-item {
+  @apply text-gray-600 dark:text-gray-400;
+}
+.footer-value {
+  @apply font-medium text-gray-700 dark:text-gray-300 ml-1;
+}
+
+/* Message Hover Toolbar */
+.message-toolbar-wrapper {
+  @apply flex flex-row justify-end items-center mt-1 mx-2;
+}
+.message-toolbar {
+  @apply absolute bottom-1.5 right-1.5
+         invisible group-hover:visible flex flex-row items-center gap-1
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)] /* Use panel colors */
+         backdrop-blur-sm rounded-md p-1 shadow-md;
+}
+
+/* Discussion List Item */
+.discussion {
+  @apply mr-2 p-2 rounded-md transition-colors duration-150 cursor-pointer
+         text-sm text-gray-700 dark:text-gray-300 /* Neutral text */
+         hover:bg-gray-200 dark:hover:bg-gray-700; /* Gray hover */
+}
+.discussion-hilighted {
+  @apply discussion bg-gray-300 dark:bg-gray-600 /* Use secondary gray colors */
+         text-gray-800 dark:text-gray-100 font-medium;
+}
+
+/* Discussion Toolbox (appears on hover) */
+.discussion-toolbox{
+  @apply flex gap-1 items-center bg-white dark:bg-gray-800 p-1 rounded-l-md shadow-md
+         transform translate-x-full group-hover:translate-x-0 transition-transform duration-300;
+}
+
+/* Chat Input Bar */
+.chat-bar {
+  @apply relative flex grow items-center gap-2 p-1 shadow-sm transition-all duration-300 ease-in-out
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-tone)]
+         border-t border-gray-300 dark:border-gray-700 /* Gray border */
+         text-green-700 dark:text-gray-300 /* Green text light, gray dark */
+         hover:shadow-md dark:hover:bg-gray-700; /* Darken on hover */
+  min-height: 50px;
+}
+
+/* ========================================================================== */
+/* 9. Navigation & Menus                                                    */
+/* ========================================================================== */
+
+/* Main Menu Item (Game Menu Style) */
+.menu-item {
+  @apply relative mb-2 px-4 py-2 text-[color:var(--color-primary)] dark:text-[color:var(--color-dark-text)] font-bold text-lg transition-all duration-300 ease-in-out font-['Orbitron',sans-serif] /* Borg font */
+         hover:text-green-700 hover:dark:text-white hover:transform hover:-translate-y-1; /* Adjusted hover colors */
+}
+.menu-item.active-link {
+  @apply text-green-700 dark:text-white scale-105; /* Apply base and enhance, bright hover colors */
+  text-shadow: 0 0 8px rgba(0, 230, 118, 0.5); /* Green glow */
+}
+
+/* Active Link Underline/Shimmer Effect */
+.menu-item.active-link::before {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 10%;
+  width: 80%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), var(--color-secondary), var(--color-primary), transparent); /* Green/Gray gradient */
+  background-size: 200% 100%;
+  border-radius: 10px;
+  animation: shimmer 3s linear infinite;
+}
+.dark .menu-item.active-link::before {
+  background: linear-gradient(90deg, transparent, var(--color-accent-sky-light), var(--color-dark-text), var(--color-accent-sky-light), transparent); /* Bright Green/Light Text gradient */
+  background-size: 200% 100%;
+}
+
+
+/* Context Menu (Kept Green Theme - Fits Borg) */
+@layer components {
+  .context-menu {
+    @apply absolute bg-green-100/90 dark:bg-gray-900/90 border border-green-500 dark:border-green-600 /* Adjusted dark border */
+           shadow-lg shadow-green-500/40 dark:shadow-green-600/40 rounded-md
+           py-1 min-w-[160px] z-[1000]  backdrop-blur-sm; /* Tech font, Adjusted dark BG/border */
+  }
+
+  /* Optional Matrix Rain Effect (Disabled by default)
+  .context-menu::before {
+    @apply content-[''] absolute inset-0 bg-gradient-to-b from-green-500/10 via-green-500/5 to-transparent bg-[length:100%_1000px] opacity-30 -z-10;
+    animation: matrix-rain 10s linear infinite;
+  }
+  */
+
+  .context-menu-item {
+    @apply relative flex items-center px-3 py-1.5 text-sm text-green-800 dark:text-green-300 /* Adjusted colors */
+           cursor-pointer transition-all duration-200 ease-in-out
+           hover:bg-green-500/30 hover:scale-[1.02] hover:text-green-900 dark:hover:text-green-200; /* Adjusted hover */
+  }
+
+  .context-menu-separator {
+    @apply h-px bg-green-500 dark:bg-green-600 my-1 mx-2; /* Adjusted color */
+  }
+
+  .context-menu-item-disabled {
+    @apply context-menu-item text-green-500/60 dark:text-green-500/70 cursor-not-allowed hover:bg-transparent hover:scale-100; /* Adjusted disabled style */
+  }
+
+  .context-menu-item-icon {
+    @apply mr-2.5 text-green-600 dark:text-green-400 inline-block w-4 h-4;
+  }
+
+  /* Hover effect line */
+  .context-menu-item::after {
+    @apply content-[''] absolute left-0 bottom-0 w-full h-px bg-gradient-to-r from-transparent via-green-500 dark:via-green-500 to-transparent scale-x-0 origin-center transition-transform duration-300 ease-in-out; /* Adjusted dark gradient color */
+  }
+  .context-menu-item:hover::after {
+    @apply scale-x-100;
+  }
+}
+
+
+/* ========================================================================== */
+/* 10. Cards & Specific Containers                                          */
+/* ========================================================================== */
+
+/* General Card */
+.card {
+  @apply bg-[color:var(--color-bg-light)] dark:bg-[color:var(--color-bg-dark-panel)] /* Use panel color */
+         rounded-lg shadow-md p-4 border border-gray-200 dark:border-gray-700 /* Gray border */
+         text-gray-800 dark:text-[color:var(--color-dark-text)];
+}
+
+/* Interesting Facts Box */
+.interesting-facts{
+  @apply mt-6 mb-6 p-4 bg-gray-100/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg shadow-lg transition-transform duration-200 hover:scale-[1.01]; /* Gray BG, subtle hover */
+}
+
+/* App Card (for Extensions/Models etc.) */
+.app-card {
+  @apply transition-all duration-300 ease-in-out
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)]
+         text-green-800 dark:text-[color:var(--color-dark-text)] /* Green text light */
+         border border-gray-300 dark:border-gray-700 /* Gray border */
+         rounded-xl shadow-lg p-5 hover:shadow-xl;
+}
+.app-card:hover {
+  @apply transform -translate-y-1 dark:bg-gray-600; /* Darken gray on hover */
+}
+
+/* User Settings Panel */
+.user-settings-panel {
+  @apply bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-panel)]
+         space-y-5 p-4 md:p-6 rounded-lg shadow-md
+         text-gray-900 dark:text-[color:var(--color-dark-text)];
+}
+
+/* Folder Items (File Browser) */
+.folder-item-base {
+  @apply flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer transition-all duration-200 /* Added group */
+         bg-[color:var(--color-bg-light-tone)] dark:bg-[color:var(--color-bg-dark-tone)]
+         border border-transparent dark:border-gray-700 /* Default border */
+         hover:shadow-md hover:bg-gray-200 dark:hover:bg-gray-700; /* Gray hover */
+}
+.folder-item-icon {
+  @apply w-10 h-10 group-hover:scale-110 transition-transform duration-200 mb-1;
+}
+.folder-item-label {
+  @apply mt-1 text-xs text-center text-green-700 dark:text-gray-300 break-words w-full px-1; /* Green label text light */
+}
+
+/* Folder Item Type Specific Borders/Icons (Adapted colors) */
+.folder-item-personalities { @apply border-cyan-400 dark:border-cyan-500; } /* Cyan for personalities */
+.folder-item-icon-personalities { @apply text-cyan-500 dark:text-cyan-400; }
+.folder-item-functions { @apply border-green-500 dark:border-green-400; } /* Green for functions */
+.folder-item-icon-functions { @apply text-green-500 dark:text-green-400; }
+.folder-item-configs { @apply border-yellow-500 dark:border-yellow-400; } /* Yellow for configs */
+.folder-item-icon-configs { @apply text-yellow-500 dark:text-yellow-400; }
+.folder-item-outputs { @apply border-teal-500 dark:border-teal-400; } /* Teal for outputs */
+.folder-item-icon-outputs { @apply text-teal-500 dark:text-teal-400; }
+.folder-item-discussions { @apply border-red-500 dark:border-red-400; } /* Red for discussions */
+.folder-item-icon-discussions { @apply text-red-500 dark:text-red-400; }
+
+/* ========================================================================== */
+/* 11. Visual Styles & Effects                                              */
+/* ========================================================================== */
+
+/* Gradients */
+.bg-gradient-welcome {
+  @apply bg-gradient-to-br from-[color:var(--color-bg-light-tone)] to-[color:var(--color-bg-light-panel)]
+         dark:from-[color:var(--color-bg-dark)] dark:to-[color:var(--color-bg-dark-tone)];
+}
+.bg-gradient-progress {
+  @apply bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-600; /* Gray progress BG */
+}
+
+/* Text Styles */
+.text-gradient-title {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-400 dark:from-[color:var(--color-accent-sky-light)] dark:to-[color:var(--color-accent-sky-dark)]; /* Green gradient */
+}
+.lollms-title-style { /* Specific Green gradient for LoLLMS text */
+  text-shadow: none;
+  background: linear-gradient(45deg, var(--color-green-light), var(--color-green-dark));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+.dark .lollms-title-style {
+  text-shadow: none;
+}
+.text-subtitle {
+  @apply text-green-600 dark:text-gray-400; /* Green subtitle */
+}
+.text-author {
+  @apply text-green-500 dark:text-gray-400; /* Green author */
+}
+.text-loading {
+  @apply text-green-700 dark:text-gray-300; /* Green loading */
+}
+.text-progress {
+  @apply text-green-600 dark:text-gray-400; /* Green progress */
+}
+.link {
+  @apply text-green-600 hover:text-green-800 dark:text-[color:var(--color-accent-sky-light)] dark:hover:text-green-300 underline transition-colors; /* Green link */
+}
+
+/* Custom Text Shadow (Subtle Outline) */
+.text-shadow-custom {
+  text-shadow: 1px 1px 0px #90A4AE, -1px -1px 0px #90A4AE, 1px -1px 0px #90A4AE, -1px 1px 0px #90A4AE; /* Gray shadow */
+}
+
+/* Feather Emoji Bounce */
+.feather-emoji {
+  display: inline-block;
+  margin-left: 5px;
+  animation: bounce 2s infinite ease-in-out;
+}
+
+/* ========================================================================== */
+/* 12. Scrollbars                                                           */
+/* ========================================================================== */
+
+/* Tailwind Scrollbar Utility Integration */
+.scrollbar {
+  @apply scrollbar-thin scrollbar-track-gray-200 scrollbar-thumb-gray-400 hover:scrollbar-thumb-gray-500 /* Gray scrollbar */
+         dark:scrollbar-track-gray-700 dark:scrollbar-thumb-gray-500 dark:hover:scrollbar-thumb-gray-400;
+}
+
+/* Standalone Scrollbar Class (if needed, matches utility) */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: theme('colors.gray.400') theme('colors.gray.200'); /* Gray scrollbar */
+}
+.dark .scrollbar-thin {
+  scrollbar-color: theme('colors.gray.500') theme('colors.gray.700');
+}
+.scrollbar-thin::-webkit-scrollbar { @apply w-1.5 h-1.5; }
+.scrollbar-thin::-webkit-scrollbar-track { @apply bg-gray-200 dark:bg-gray-700 rounded-full; }
+.scrollbar-thin::-webkit-scrollbar-thumb { @apply bg-gray-400 dark:bg-gray-500 rounded-full border-2 border-solid border-transparent bg-clip-content; }
+.scrollbar-thin::-webkit-scrollbar-thumb:hover { @apply bg-gray-500 dark:bg-gray-400; }
+
+/* No Scrollbar Utility */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+/* ========================================================================== */
+/* 13. Progress Indicators                                                  */
+/* ========================================================================== */
+
+/* Animated Progress Bar */
+.animated-progressbar-bg {
+  @apply w-full h-4 relative overflow-hidden bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full shadow-inner; /* Gray background */
+}
+.animated-progressbar-fg {
+  @apply absolute top-0 left-0 h-full bg-gradient-to-r from-green-500 to-teal-500 dark:from-[color:var(--color-accent-sky-dark)] dark:to-green-600 transition-all duration-500 ease-out rounded-full; /* Green/Teal foreground */
+}
+
+/* Steps Component Styling */
+@layer components {
+    .steps-container {
+      @apply border border-gray-300 dark:border-gray-700 rounded-lg mb-4 bg-gradient-to-b from-white/70 to-gray-100/70 dark:from-gray-800/70 dark:to-gray-900/50 shadow-sm overflow-hidden; /* Gray border/gradient */
+    }
+    .steps-header {
+      @apply flex items-center p-3 cursor-pointer border-b border-gray-300 dark:border-gray-700 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors duration-200; /* Gray border/hover */
+    }
+    .steps-icon { /* Icon in header */
+      @apply mr-3 text-gray-500 dark:text-gray-400 w-5 h-5;
+    }
+    .steps-status {
+      @apply font-medium text-sm text-green-700 dark:text-gray-300 flex-grow; /* Green status text light */
+    }
+    .toggle-icon { /* Chevron icon */
+      @apply text-xs text-green-500 dark:text-gray-400 transition-transform duration-300; /* Green icon light */
+    }
+    .toggle-icon i { /* Feather icon size */
+        @apply w-4 h-4;
+    }
+    .steps-content { /* Content area when expanded */
+       @apply p-2 bg-gray-100/30 dark:bg-gray-800/20 border-l-2 border-gray-300 dark:border-gray-600 ml-2 pl-4; /* Gray background/border */
+    }
+
+    /* Individual Step Item (Step.vue root) */
+    .step-component {
+       @apply flex items-start gap-3 p-2 rounded-md border-l-4 transition-all duration-300 ease-in-out my-1;
+    }
+
+    /* Step Component Status Variants */
+    .step-component-pending {
+        @apply bg-gray-200/40 dark:bg-gray-800/30 border-[color:var(--color-accent)] hover:bg-gray-200/70 dark:hover:bg-gray-700/50; /* Teal border for pending */
+    }
+    .step-component-success {
+        @apply bg-green-100/50 dark:bg-green-900/20 border-[color:var(--color-green-light)] dark:border-green-400 hover:bg-green-100/80 dark:hover:bg-green-800/30;
+    }
+    .step-component-fail {
+        @apply bg-red-100/50 dark:bg-red-900/20 border-[color:var(--color-red-light)] dark:border-red-400 hover:bg-red-100/80 dark:hover:bg-red-800/30;
+    }
+
+    /* Step Component Inner Elements */
+    .step-icon-wrapper {
+       @apply flex-shrink-0 w-5 h-5 flex items-center justify-center relative mt-0.5;
+    }
+    .step-spinner { /* Spinner for pending */
+      @apply w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-[color:var(--color-accent-sky-dark)] rounded-full animate-spin animate-pulse-border; /* Green top border */
+    }
+    .step-icon-success { /* Checkmark */
+        @apply w-5 h-5 text-[color:var(--color-green-light)] dark:text-green-400;
+    }
+    .step-icon-fail { /* X mark */
+        @apply w-5 h-5 text-[color:var(--color-red-light)] dark:text-red-400;
+    }
+    .step-text-content {
+        @apply min-w-0 flex-grow;
+    }
+    .step-text { /* Main step text */
+        @apply text-sm font-medium text-gray-700 dark:text-gray-200; /* Neutral text */
+    }
+    .step-description { /* Optional description */
+        @apply text-xs text-gray-500 dark:text-gray-400 pt-0.5;
+    }
+}
+
+/* Standalone Status Icons (Used in Step.vue etc.) */
+.status-icon { @apply cursor-pointer transition-colors duration-300 inline-block; }
+.icon { @apply w-5 h-5; }
+.icon-success { @apply icon text-[color:var(--color-green-light)] dark:text-green-400; }
+.icon-fail { @apply icon text-[color:var(--color-red-light)] dark:text-red-400; }
+.icon-spinner { @apply icon border-2 border-gray-400 dark:border-gray-500 border-t-[color:var(--color-accent-sky-dark)] rounded-full animate-spin; } /* Green top border */
+.icon-text { @apply text-lg font-semibold text-gray-700 dark:text-gray-300; }
+
+/* Status Dots */
+@layer utilities {
+  .status-dot { @apply inline-block w-2.5 h-2.5 rounded-full mr-1.5 align-middle; }
+  .bg-status-healthy { @apply status-dot bg-green-500 dark:bg-green-400; }
+  .bg-status-unhealthy { @apply status-dot bg-red-500 dark:bg-red-400; }
+  .bg-status-loading { @apply status-dot bg-yellow-500 dark:bg-yellow-400 animate-pulse; }
+  .bg-status-unknown { @apply status-dot bg-gray-400 dark:bg-gray-500; }
+}
+
+/* ========================================================================== */
+/* 14. Markdown & Prose Styles                                              */
+/* ========================================================================== */
+
+/* Base Prose Styles for Message Content ('prose-borg' effectively modifies 'prose-blue') */
+@layer components {
+  .prose-blue { /* Keep class name, but style as Borg */
+    h3 { @apply text-lg font-semibold text-green-700 dark:text-gray-300 mb-2 mt-4 border-b border-gray-200 dark:border-gray-700 pb-1; } /* Green header, gray border */
+    ul { @apply list-disc pl-5 space-y-1 mb-3 text-gray-700 dark:text-gray-300; } /* Neutral text */
+    ol { @apply list-decimal pl-5 space-y-1 mb-3 text-gray-700 dark:text-gray-300; }
+    li::marker { color: theme('colors.green.500'); @apply dark:text-gray-500; } /* Green marker light, gray dark */
+    code:not(pre code) { @apply bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-xs font-mono text-green-700 dark:text-green-300; } /* Gray BG, green text */
+    blockquote { @apply border-l-4 border-gray-400 dark:border-gray-600 pl-3 italic text-gray-600 dark:text-gray-400 my-3 py-0.5; } /* Gray border/text */
+    a { @apply link font-medium; } /* Inherits .link style (green) */
+    p { @apply mb-3 leading-relaxed text-gray-700 dark:text-gray-300; } /* Uses neutral P */
+    pre { @apply my-4; }
+    pre code.hljs { @apply p-3 rounded-md shadow-inner text-sm; }
+    img { @apply rounded-md shadow my-3 max-w-full h-auto dark:opacity-90; } /* Slight opacity */
+    table { @apply w-full my-3 border-collapse border border-gray-300 dark:border-gray-700 text-sm; } /* Gray border */
+    th { @apply bg-gray-100 dark:bg-gray-700 p-2 border border-gray-300 dark:border-gray-600 text-left font-semibold text-gray-800 dark:text-gray-200; } /* Gray header */
+    td { @apply p-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300; } /* Gray cell */
+  }
+
+  /* Thinking Prose Styles (Minimalistic for AI thinking process) */
+  .thinking-prose {
+    @apply prose prose-sm max-w-none dark:prose-invert;
+    /* Override Tailwind Prose defaults */
+    @apply prose-headings:text-gray-700 dark:prose-headings:text-gray-300 prose-headings:font-semibold prose-headings:mt-4 prose-headings:mb-1;
+    @apply prose-p:text-gray-600 dark:prose-p:text-gray-400 prose-p:my-1.5;
+    @apply prose-ul:text-gray-600 dark:prose-ul:text-gray-400 prose-ul:my-1.5 prose-ul:pl-4;
+    @apply prose-ol:text-gray-600 dark:prose-ol:text-gray-400 prose-ol:my-1.5 prose-ol:pl-4;
+    @apply prose-li:my-0.5;
+    @apply prose-li:marker:text-gray-400 dark:prose-li:marker:text-gray-500;
+    @apply prose-code:text-green-700 dark:prose-code:text-green-300 prose-code:bg-gray-100 dark:prose-code:bg-gray-700 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:text-xs prose-code:font-mono;
+    @apply prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800 prose-pre:p-2 prose-pre:rounded prose-pre:my-2 prose-pre:text-xs prose-pre:shadow-inner;
+    @apply prose-blockquote:border-l-4 prose-blockquote:border-gray-300 dark:prose-blockquote:border-gray-600 prose-blockquote:pl-3 prose-blockquote:italic prose-blockquote:text-gray-500 dark:prose-blockquote:text-gray-500 prose-blockquote:my-2 prose-blockquote:py-0.5;
+    @apply prose-a:text-green-600 dark:prose-a:text-green-400 hover:prose-a:underline;
+    /* Custom Scrollbar */
+    @apply scrollbar;
+    scroll-behavior: smooth;
+  }
+} /* End of @layer components for prose */
+
+
+/* Help Content Styling (Similar to prose-borg but uses .help-content class) */
+.help-content {
+  @apply text-gray-800 dark:text-gray-200;
+}
+.help-content h2 { @apply text-2xl font-semibold text-green-700 dark:text-gray-200 mb-4 mt-6 border-b border-gray-300 dark:border-gray-700 pb-2; }
+.help-content h3 { @apply text-xl font-semibold text-green-600 dark:text-gray-300 mb-3 mt-5; }
+.help-content ul { @apply list-disc pl-6 space-y-1.5 mb-4 text-gray-700 dark:text-gray-300; }
+.help-content ol { @apply list-decimal pl-6 space-y-1.5 mb-4 text-gray-700 dark:text-gray-300; }
+.help-content li::marker { @apply text-green-500 dark:text-gray-500; }
+.help-content code:not(pre code) { @apply bg-gray-200 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm font-mono text-green-700 dark:text-green-300; }
+.help-content pre.hljs { @apply bg-gray-100 dark:bg-gray-800/80 p-4 rounded-lg overflow-x-auto my-4 shadow-inner text-sm; }
+.help-content pre.hljs code { @apply bg-transparent p-0; }
+.help-content blockquote { @apply border-l-4 border-gray-400 dark:border-gray-500 pl-4 italic text-gray-600 dark:text-gray-400 my-4 py-1; }
+.help-content p { @apply mb-4 leading-relaxed text-gray-700 dark:text-gray-300 text-base md:text-lg; }
+.help-content img { @apply rounded-lg shadow-md my-4 max-w-full h-auto mx-auto dark:opacity-90; }
+.help-content table { @apply w-full my-4 border-collapse border border-gray-300 dark:border-gray-700; }
+.help-content th { @apply bg-gray-200 dark:bg-gray-800 p-2 border border-gray-300 dark:border-gray-700 text-left font-semibold text-gray-800 dark:text-gray-200; }
+.help-content td { @apply p-2 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-300; }
+/* Help Sidebar Responsiveness */
+@media (max-width: 768px) {
+ .help-left-bar { @apply fixed top-0 left-0 h-screen z-20 transform -translate-x-full; }
+ .help-main-content { @apply ml-0; }
+ .help-left-bar.open { @apply translate-x-0; }
+}
+/* ========================================================================== */
+/* 15. Code Execution & Editor Styling                                      */
+/* ========================================================================== */
+
+/* CodeMirror Editor Base */
+.cm-editor-wrapper { @apply relative; }
+.cm-editor-wrapper.editing-border { @apply ring-1 ring-[color:var(--color-primary)]; } /* Green ring */
+.cm-editor { @apply h-full max-h-96 min-h-[3em] text-sm font-mono; } /* Ensure mono font */
+.cm-scroller { @apply overflow-auto scrollbar; }
+.cm-editor .cm-gutters { @apply select-none bg-gray-100 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700; } /* Gray gutters */
+.cm-editor .cm-content { @apply whitespace-pre-wrap break-words; }
+.cm-editor .cm-line { @apply px-1; }
+
+/* Search/Replace Panel within CodeMirror */
+.search-replace-panel {
+  @apply border-b border-gray-300 dark:border-gray-600 p-1 flex items-center gap-1 bg-gray-200 dark:bg-gray-700; /* Gray layout */
+}
+.search-replace-panel input[type="text"] {
+  @apply px-1.5 py-0.5 border border-gray-400 dark:border-gray-500 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-xs font-mono
+         focus:outline-none focus:ring-1 focus:ring-[color:var(--color-primary)] focus:border-[color:var(--color-primary)] min-w-[80px]; /* Green focus */
+}
+.search-replace-panel .search-status {
+  @apply text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap px-1 min-w-[50px] text-center;
+}
+.search-replace-panel .search-button { /* Individual search action buttons */
+  @apply p-0.5 text-xs code-block-button; /* Uses adapted code-block-button style */
+}
+.search-replace-panel .search-button i[data-feather] { @apply w-3.5 h-3.5; }
+.active-search-button { /* Highlight active search option */
+  @apply bg-[color:var(--color-primary)] text-white hover:bg-[color:var(--color-primary)]; /* Green active */
+}
+
+/* Code Execution Output Area */
+.execution-output-content {
+  @apply p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded mt-2 text-sm text-gray-800 dark:text-gray-200 scrollbar font-mono; /* Ensure mono font */
+  max-height: 300px;
+  overflow-y: auto;
+}
+/* Basic HTML elements within Execution Output */
+.execution-output-content a { @apply text-green-600 dark:text-green-400 hover:underline; } /* Green links */
+.execution-output-content h1,
+.execution-output-content h2,
+.execution-output-content h3,
+.execution-output-content h4,
+.execution-output-content h5,
+.execution-output-content h6 { @apply font-semibold my-1 text-gray-900 dark:text-gray-100; }
+.execution-output-content h1 { @apply text-lg border-b border-gray-200 dark:border-gray-700 pb-1 mb-1.5; }
+.execution-output-content h2 { @apply text-base; }
+.execution-output-content h3 { @apply text-sm; }
+.execution-output-content p { @apply my-1 leading-normal; }
+.execution-output-content ul { @apply list-disc list-inside ml-4 my-1 space-y-0.5; }
+.execution-output-content ol { @apply list-decimal list-inside ml-4 my-1 space-y-0.5; }
+.execution-output-content code:not(pre > code) { @apply font-mono bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs text-green-700 dark:text-green-300; } /* Gray BG, green text */
+.execution-output-content pre { @apply font-mono bg-gray-100 dark:bg-gray-700 p-2 rounded my-1 overflow-x-auto text-xs shadow-inner; }
+.execution-output-content pre > code { @apply p-0 bg-transparent text-inherit; }
+.execution-output-content blockquote { @apply border-l-4 border-gray-300 dark:border-gray-600 pl-2 italic my-1 text-gray-600 dark:text-gray-400 text-sm; }
+.execution-output-content table { @apply w-auto max-w-full border-collapse border border-gray-300 dark:border-gray-600 my-2 text-xs; }
+.execution-output-content th,
+.execution-output-content td { @apply border border-gray-300 dark:border-gray-600 p-1 text-left; }
+.execution-output-content th { @apply bg-gray-100 dark:bg-gray-700 font-semibold; }
+.execution-output-content img { @apply max-w-full h-auto my-1 rounded border border-gray-200 dark:border-gray-700; }
+.execution-output-content svg { @apply max-w-full h-auto my-1; }
+.execution-output-content hr { @apply border-t border-gray-300 dark:border-gray-600 my-2; }
+
+/* Highlight.js theme override for Execution Output (Inline code, NOT pre blocks) */
+/* Keep existing HLJS themes (GitHub Light / Tokyo Night Dark) or replace if a better Borg/Cyberpunk theme is found */
+.execution-output-content.hljs { background: none !important; padding: 0 !important; margin: 0 !important; color: inherit !important;}
+/* Light Mode HLJS (GitHub Light) */
+html:not(.dark) .execution-output-content .hljs {color:#24292e}html:not(.dark) .execution-output-content .hljs-meta{color:#6a737d}html:not(.dark) .execution-output-content .hljs-comment{color:#6a737d;font-style:italic}html:not(.dark) .execution-output-content .hljs-tag{color:#22863a}html:not(.dark) .execution-output-content .hljs-tag .hljs-name,html:not(.dark) .execution-output-content .hljs-tag .hljs-attr{color:#22863a}html:not(.dark) .execution-output-content .hljs-keyword,html:not(.dark) .execution-output-content .hljs-selector-tag,html:not(.dark) .execution-output-content .hljs-literal,html:not(.dark) .execution-output-content .hljs-name{color:#d73a49}html:not(.dark) .execution-output-content .hljs-deletion,html:not(.dark) .execution-output-content .hljs-number,html:not(.dark) .execution-output-content .hljs-attribute,html:not(.dark) .execution-output-content .hljs-variable,html:not(.dark) .execution-output-content .hljs-template-variable,html:not(.dark) .execution-output-content .hljs-symbol{color:#005cc5}html:not(.dark) .execution-output-content .hljs-section,html:not(.dark) .execution-output-content .hljs-title,html:not(.dark) .execution-output-content .hljs-type{color:#6f42c1}html:not(.dark) .execution-output-content .hljs-string,html:not(.dark) .execution-output-content .hljs-subst,html:not(.dark) .execution-output-content .hljs-regexp,html:not(.dark) .execution-output-content .hljs-link,html:not(.dark) .execution-output-content .hljs-addition,html:not(.dark) .execution-output-content .hljs-selector-id,html:not(.dark) .execution-output-content .hljs-selector-class{color:#032f62}html:not(.dark) .execution-output-content .hljs-built_in,html:not(.dark) .execution-output-content .hljs-bullet,html:not(.dark) .execution-output-content .hljs-code,html:not(.dark) .execution-output-content .hljs-formula{color:#e36209}html:not(.dark) .execution-output-content .hljs-emphasis{font-style:italic}html:not(.dark) .execution-output-content .hljs-strong{font-weight:bold}
+/* Dark Mode HLJS (Tokyo Night Dark) */
+.dark .execution-output-content .hljs{color:#a9b1d6}.dark .execution-output-content .hljs-meta{color:#ff9e64}.dark .execution-output-content .hljs-comment{color:#565f89;font-style:italic}.dark .execution-output-content .hljs-tag{color:#f7768e}.dark .execution-output-content .hljs-tag .hljs-name,.dark .execution-output-content .hljs-tag .hljs-attr{color:#f7768e}.dark .execution-output-content .hljs-keyword,.dark .execution-output-content .hljs-selector-tag,.dark .execution-output-content .hljs-literal,.dark .execution-output-content .hljs-name{color:#bb9af7}.dark .execution-output-content .hljs-deletion,.dark .execution-output-content .hljs-number,.dark .execution-output-content .hljs-attribute,.dark .execution-output-content .hljs-variable,.dark .execution-output-content .hljs-template-variable,.dark .execution-output-content .hljs-symbol{color:#ff9e64}.dark .execution-output-content .hljs-section,.dark .execution-output-content .hljs-title,.dark .execution-output-content .hljs-type{color:#7aa2f7}.dark .execution-output-content .hljs-string,.dark .execution-output-content .hljs-subst,.dark .execution-output-content .hljs-regexp,.dark .execution-output-content .hljs-link,.dark .execution-output-content .hljs-addition,.dark .execution-output-content .hljs-selector-id,.dark .execution-output-content .hljs-selector-class{color:#9ece6a}.dark .execution-output-content .hljs-built_in,.dark .execution-output-content .hljs-bullet,.dark .execution-output-content .hljs-code,.dark .execution-output-content .hljs-formula{color:#7dcfff}.dark .execution-output-content .hljs-emphasis{font-style:italic}.dark .execution-output-content .hljs-strong{font-weight:bold}
+
+/* ========================================================================== */
+/* 16. Utilities & Animations                                               */
+/* ========================================================================== */
+
+/* Display Utilities */
+.display-none { @apply hidden; }
+.hidden { display: none; }
+.dark .dark\:hidden { display: none; }
+.dark .dark\:inline { display: inline; }
+html:not(.dark) .light\:hidden { display: none; }
+html:not(.dark) .light\:inline { display: inline; }
+
+
+/* Feather Icon Size Utility */
+.feather-small { @apply w-3.5 h-3.5 inline-block align-middle; }
+
+/* Keyframes */
+@keyframes shimmer { /* For active menu item */
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+@keyframes bounce { /* For feather emoji */
+  0%, 100% { transform: translateY(-15%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+  50% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+}
+@keyframes matrix-rain { /* For context menu (optional) */
+  0% { background-position: 0 0; }
+  100% { background-position: 0 1000px; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes bubble-in-down { /* For thought bubble */
+  0% { opacity: 0; transform: translate(-50%, -8px) scale(0.9); }
+  100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+@keyframes pulse-border { /* For pending spinner */
+  0%, 100% { box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); } /* Light: --color-primary (Green) */
+  50% { box-shadow: 0 0 0 3px rgba(76, 175, 80, 0); }
+}
+.dark @keyframes pulse-border {
+   0%, 100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.5); } /* Dark: --color-accent-sky-light (Bright Green) */
+   50% { box-shadow: 0 0 0 3px rgba(0, 230, 118, 0); }
+}
+@keyframes step-slide-in { /* For step items */
+    from { opacity: 0; transform: translateX(-15px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes fall { /* For optional falling object animation */
+  from { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+  to { transform: translateY(calc(100vh + 30px)) rotate(360deg); opacity: 0.5; }
+}
+
+/* Animation Utility Classes */
+.animate-bounce { animation: bounce 1.5s infinite ease-in-out; }
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-pulse-border { animation: pulse-border 1.5s infinite cubic-bezier(0.66, 0, 0, 1); }
+.animate-step-slide-in { animation: step-slide-in 0.4s ease-out forwards; }
+.animate-fall { animation: fall linear infinite; }
+
+/* Transition Utilities (Vue <transition>) */
+@layer utilities {
+  /* Generic Fade */
+  .fade-enter-active, .fade-leave-active { @apply transition-opacity duration-300 ease-out; }
+  .fade-enter-from, .fade-leave-to { @apply opacity-0; }
+
+  /* Icon Fade & Scale (for Step icons) */
+  .fade-icon-enter-active, .fade-icon-leave-active {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  }
+  .fade-icon-enter-from, .fade-icon-leave-to { opacity: 0; transform: scale(0.7); }
+  .fade-icon-enter-to, .fade-icon-leave-from { opacity: 1; transform: scale(1); }
+
+  /* Thought Bubble Animation */
+  .animate-bubble-in-down {
+    animation-name: bubble-in-down;
+    animation-duration: 0.25s;
+    animation-fill-mode: forwards;
+    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Slide Transitions */
+  .slide-right-enter-active, .slide-right-leave-active { transition: transform 0.3s ease-out; }
+  .slide-right-enter-from, .slide-right-leave-to { transform: translateX(-100%); }
+
+  .slide-left-enter-active, .slide-left-leave-active { transition: transform 0.3s ease-out; }
+  .slide-left-enter-from, .slide-left-leave-to { transform: translateX(100%); }
+
+  /* List Transitions (e.g., Discussions) */
+  .discussionsList-move,
+  .discussionsList-enter-active,
+  .discussionsList-leave-active { transition: all 0.35s ease; }
+  .discussionsList-enter-from { opacity: 0; transform: translateX(-25px); }
+  .discussionsList-leave-to { opacity: 0; transform: translateX(25px); }
+  .discussionsList-leave-active { position: absolute; width: calc(100% - 1rem); /* Needs adjustment based on parent padding */ }
+
+  .list-move,
+  .list-enter-active,
+  .list-leave-active { transition: all 0.4s ease; } /* Generic list transition */
+  .list-enter-from { opacity: 0; transform: translateY(-20px); }
+  .list-leave-to { opacity: 0; transform: translateY(20px); }
+  .list-leave-active { position: absolute; width: calc(100% - 1rem); /* Adjust width */ }
+
+   /* Fade and Fly Up */
+  .fade-and-fly-enter-active, .fade-and-fly-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .fade-and-fly-enter-from, .fade-and-fly-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+/* Animated Thought Bubble Component (Tooltip) */
+@layer components {
+  .animated-thought-bubble {
+    @apply absolute bottom-[calc(100%+6px)] left-1/2
+           opacity-0 invisible group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto
+           bg-gray-700 dark:bg-gray-200 /* Gray colors */
+           text-white dark:text-gray-800
+           rounded-md shadow-lg px-2.5 py-1.5 text-xs z-50 font-mono /* Tech font */
+           w-max max-w-[180px]
+           transform -translate-x-1/2
+           origin-bottom
+           transition-opacity duration-150
+           group-hover/item:animate-bubble-in-down;
+  }
+
+  .animated-thought-bubble::after { /* Arrow */
+    content: '';
+    @apply absolute top-full left-1/2 transform -translate-x-1/2
+           border-[6px] border-solid border-transparent
+           border-t-gray-700 dark:border-t-gray-200; /* Gray arrow */
+  }
+}
+
+/* Line Clamp Utility */
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ========================================================================== */
+/* End of Theme                                                             */
+/* ========================================================================== */
