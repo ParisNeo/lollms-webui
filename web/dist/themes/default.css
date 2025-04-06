@@ -3335,17 +3335,18 @@ input[type='range']:is(.dark *)::-moz-range-track{
   visibility: hidden;
 }
 .animated-thought-bubble{
+  pointer-events: none;
   visibility: hidden;
   position: absolute;
   bottom: calc(100% + 6px);
   left: 50%;
   z-index: 50;
-  width: -moz-max-content;
-  width: max-content;
+  width: auto;
   max-width: 180px;
   transform-origin: bottom;
   --tw-translate-x: -50%;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  white-space: normal;
   border-radius: 0.375rem;
   --tw-bg-opacity: 1;
   background-color: rgb(51 65 85 / var(--tw-bg-opacity));
@@ -3353,6 +3354,7 @@ input[type='range']:is(.dark *)::-moz-range-track{
   padding-right: 0.625rem;
   padding-top: 0.375rem;
   padding-bottom: 0.375rem;
+  text-align: center;
   font-size: 0.75rem;
   line-height: 1rem;
   --tw-text-opacity: 1;
@@ -3381,6 +3383,8 @@ input[type='range']:is(.dark *)::-moz-range-track{
   color: rgb(30 41 59 / var(--tw-text-opacity));
 }
 .animated-thought-bubble { /* Apply animation */
+           /* Ensure pointer-events are re-enabled on hover if needed */
+           /* group-hover/item:pointer-events-auto; /* Re-enable pointer events for interaction */
   }
 .animated-thought-bubble::after { /* Arrow */
     content: '';
@@ -10475,6 +10479,34 @@ html:not(.dark) .light\:inline { display: inline; }
 .animate-fall { animation: fall linear infinite; }
 /* Transition Utilities (Vue <transition>) */
 /* Animated Thought Bubble Component (Tooltip) */
+/* Ensure you have the animation defined somewhere, e.g., in tailwind.config.js or a global CSS file */
+@keyframes bubble-in-down {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.95); /* Start slightly down and smaller */
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1); /* End at final position and size */
+  }
+}
+/* Add the animation to Tailwind theme (optional, if using JS config) */
+/* In tailwind.config.js */
+/*
+theme: {
+  extend: {
+    animation: {
+      'bubble-in-down': 'bubble-in-down 0.15s ease-out forwards',
+    },
+    keyframes: {
+      'bubble-in-down': {
+        '0%': { opacity: '0', transform: 'translate(-50%, 10px) scale(0.95)' },
+        '100%': { opacity: '1', transform: 'translate(-50%, 0) scale(1)' },
+      }
+    }
+  }
+}
+*/
 /* Line Clamp Utility */
 .line-clamp-4 {
   display: -webkit-box;

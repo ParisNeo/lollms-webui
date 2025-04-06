@@ -1024,6 +1024,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 {
                     "sender": self.personality.name,
                     "id": client.discussion.current_message.id,
+                    "discussion_id": client.discussion.discussion_id,
                     "content": client.generated_text,
                     "binding": self.binding.binding_folder_name,
                     "model": self.model.model_name,

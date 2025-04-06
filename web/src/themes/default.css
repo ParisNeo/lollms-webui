@@ -987,20 +987,23 @@ html:not(.dark) .light\:inline { display: inline; } /* Utility to show only in l
     transform: translateY(10px); /* Fly from bottom */
   }
 }
-
 /* Animated Thought Bubble Component (Tooltip) */
 @layer components {
   .animated-thought-bubble {
     @apply absolute bottom-[calc(100%+6px)] left-1/2 /* Position above parent + arrow space */
-           opacity-0 invisible group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto /* Group hover control */
+           opacity-0 invisible pointer-events-none group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto /* Group hover control - added pointer-events-none initially */
            bg-slate-700 dark:bg-slate-200 /* Inverted colors for contrast */
-           text-white dark:text-slate-800
+           text-white dark:text-slate-800 /* Base text color */
            rounded-md shadow-lg px-2.5 py-1.5 text-xs z-50 /* Style */
-           w-max max-w-[180px] /* Size */
-           transform -translate-x-1/2 /* Center */
+           w-auto max-w-[180px] /* Size: Allow auto width up to max, remove w-max */
+           text-center /* Center internal content */
+           whitespace-normal /* Allow text wrapping */
+           transform -translate-x-1/2 /* Center horizontally */
            origin-bottom /* Animate from bottom */
            transition-opacity duration-150 /* Smooth fade */
            group-hover/item:animate-bubble-in-down; /* Apply animation */
+           /* Ensure pointer-events are re-enabled on hover if needed */
+           /* group-hover/item:pointer-events-auto; /* Re-enable pointer events for interaction */
   }
 
   .animated-thought-bubble::after { /* Arrow */
@@ -1010,6 +1013,37 @@ html:not(.dark) .light\:inline { display: inline; } /* Utility to show only in l
            border-t-slate-700 dark:border-t-slate-200; /* Arrow color matches bubble */
   }
 }
+
+/* Ensure you have the animation defined somewhere, e.g., in tailwind.config.js or a global CSS file */
+@keyframes bubble-in-down {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.95); /* Start slightly down and smaller */
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1); /* End at final position and size */
+  }
+}
+
+/* Add the animation to Tailwind theme (optional, if using JS config) */
+/* In tailwind.config.js */
+/*
+theme: {
+  extend: {
+    animation: {
+      'bubble-in-down': 'bubble-in-down 0.15s ease-out forwards',
+    },
+    keyframes: {
+      'bubble-in-down': {
+        '0%': { opacity: '0', transform: 'translate(-50%, 10px) scale(0.95)' },
+        '100%': { opacity: '1', transform: 'translate(-50%, 0) scale(1)' },
+      }
+    }
+  }
+}
+*/
+
 
 /* Line Clamp Utility */
 .line-clamp-4 {
