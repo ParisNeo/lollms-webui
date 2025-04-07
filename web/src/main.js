@@ -639,7 +639,8 @@ export const store = createStore({
           try {
               let modelsArr = await api_get_req("list_models");
               console.log(`modelsArr: ${modelsArr}`)
-              console.log(`state.modelsZoo: ${state.modelsZoo}`)
+              console.log(`state.modelsZoo:`)
+              console.log(state.modelsZoo)
               if (!Array.isArray(modelsArr)) modelsArr = [];
               commit('setModelsArr', modelsArr);
 
@@ -650,6 +651,8 @@ export const store = createStore({
               const modelsZoo = state.modelsZoo || [];
               const modelsArrSet = new Set(modelsArr);
               modelsZoo.forEach(item => {
+                  console.log("modelsArrSet")
+                  console.log(modelsArrSet)
                    if (item && item.name) item.isInstalled = modelsArrSet.has(item.name);
               });
               commit('setModelsZoo', [...modelsZoo]);

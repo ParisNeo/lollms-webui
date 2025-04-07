@@ -230,7 +230,7 @@ export default {
             if (!binding?.installed) { this.show_toast(`Binding "${binding.name}" is not installed.`, 3, false); return; }
             if (this.config.binding_name !== binding.folder) {
                  this.$emit('setting-updated', { key: 'binding_name', value: binding.folder });
-                 this.$emit('setting-updated', { key: 'model_name', value: null });
+                 this.store.dispatch('refreshModels');
                  this.show_toast(`Selected binding: ${binding.name}. Apply changes.`, 3, true);
             }
         },

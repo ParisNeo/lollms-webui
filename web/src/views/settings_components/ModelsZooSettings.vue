@@ -437,7 +437,9 @@ export default {
         },
 
         handleSelect(payload) {
-            const model = payload.model;
+            console.log(`payload:`)
+            console.log(payload)
+            const model = payload;
             if (this.isDownloading || this.isLoadingModels) {
                 this.show_toast("Wait for current operation to finish.", 3, false);
                 return;
