@@ -223,8 +223,6 @@ export default {
     },
     getImgUrl() {
       // Prefer model icon, fallback to default
-      console.log("model icon:")
-      console.log(this.model.icon)
       return this.model.icon || defaultImgPlaceholder;
     },
     defaultImg(event) {

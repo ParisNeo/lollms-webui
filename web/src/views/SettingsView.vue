@@ -254,14 +254,17 @@ export default {
             this.settingsChanged = false;
         },
         async saveConfiguration() {
-             this.isLoading = true;
-             this.loading_text = "Saving configuration...";
+            this.isLoading = true;
+            this.loading_text = "Saving configuration...";
             try {
                 const res = await axios.post('/save_settings', { client_id: this.$store.state.client_id }, { headers: posts_headers });
                 if (res.data.status) this.$store.state.toast.showToast("Settings saved successfully.", 4, true);
                 else this.$store.state.messageBox.showMessage(`Error saving settings: ${res.data.error || 'Error'}`);
             } catch (error) { this.$store.state.messageBox.showMessage(`Error saving settings: ${error.message}`);
-            } finally { this.isLoading = false; }
+            } finally { this.isLoading = false; 
+                this.$store.commit('refreshBindings')
+                this.$store.commit('refreshModelsZoo')
+            }
         },
         reset_configuration() {
             this.$store.state.yesNoDialog.askQuestion("Reset config to default? This deletes current settings.", 'Reset', 'Cancel')

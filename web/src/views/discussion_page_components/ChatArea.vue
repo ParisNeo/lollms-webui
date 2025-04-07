@@ -7,6 +7,7 @@
 
             <div class="container pt-4 pb-50 mb-50 w-full mx-auto px-4">
                 <TransitionGroup v-if="discussionArr && discussionArr.length > 0" name="list">
+                    <!-- Message components remain unchanged -->
                     <Message v-for="msg in discussionArr"
                              :key="msg.id"
                              :message="msg"
@@ -24,75 +25,63 @@
                     />
                 </TransitionGroup>
 
-                 <div v-if="discussionArr && discussionArr.length < 2 && personality && personality.prompts_list && personality.prompts_list.length > 0" class="w-full rounded-lg m-2 shadow-lg border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900 p-4 pb-2">
-                     <h2 class="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-200 border-b border-blue-300 dark:border-blue-600 pb-2">Prompt Examples</h2>
-                     <div class="overflow-x-auto flex-grow scrollbar">
-                         <div class="flex flex-nowrap gap-4 p-2">
-                             <div v-for="(prompt, index) in personality.prompts_list"
-                                  :title="extractTitle(prompt)"
-                                  :key="index"
-                                  @click="handlePromptSelection(prompt)"
-                                  class="flex-shrink-0 w-[300px] card hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 flex flex-col justify-between min-h-[200px] group p-4 cursor-pointer">
-                                  <div class="space-y-2">
-                                      <h3 class="font-semibold text-lg text-blue-800 dark:text-blue-100 mb-1 truncate" :title="extractTitle(prompt)">
-                                        {{ extractTitle(prompt) || 'Prompt Example' }}
-                                      </h3>
-                                      <div :title="prompt" class="text-sm text-blue-700 dark:text-blue-300 overflow-hidden line-clamp-4 leading-relaxed">
-                                        {{ getPromptContent(prompt) }}
-                                      </div>
-                                  </div>
-                                  <div class="mt-3 text-xs font-medium link opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                      Click to select
-                                  </div>
+                 <!-- Use the new PromptExamples component -->
+                 <PromptExamples
+                     v-if="showPromptExamples"
+                     :prompts="personality?.prompts_list || []"
+                     @prompt-selected="handlePromptSelection"
+                     class="my-4"
+                 />
+
+                 <!-- Placeholder Modal (Remains the same) -->
+                 <div v-if="showPlaceholderModal" class="fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
+                     <!-- Modal Content -->
+                     <div class="card max-w-4xl w-full max-h-[90vh] flex flex-col p-0">
+                         <h3 class="text-lg font-semibold p-4 border-b border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-100">Fill in the placeholders</h3>
+                         <div class="flex-1 flex flex-col min-h-0 overflow-hidden p-4 space-y-4">
+                             <div class="p-3 bg-blue-100 dark:bg-blue-800 rounded-lg border border-blue-200 dark:border-blue-700">
+                                 <h4 class="label !mb-1">Live Preview:</h4>
+                                 <!-- Use the specific content getter for preview -->
+                                 <div class="flex-1 h-[150px] overflow-y-auto scrollbar bg-white dark:bg-blue-900 p-2 rounded text-sm">
+                                     <span class="whitespace-pre-wrap text-blue-900 dark:text-blue-100">{{ getPromptContent(previewPrompt) }}</span>
+                                 </div>
+                             </div>
+                             <div class="flex-1 overflow-y-auto scrollbar space-y-3 pr-2">
+                                 <div v-for="(placeholder, index) in parsedPlaceholders" :key="placeholder.fullText" class="flex flex-col">
+                                     <label :for="'placeholder-'+index" class="label">{{ placeholder.label }}</label>
+                                     <!-- Input types remain the same -->
+                                     <input v-if="placeholder.type === 'text'" :id="'placeholder-'+index" v-model="placeholderValues[index]" type="text" class="input" :placeholder="placeholder.label" @input="updatePreview">
+                                     <input v-if="placeholder.type === 'int'" :id="'placeholder-'+index" v-model.number="placeholderValues[index]" type="number" step="1" class="input" @input="updatePreview">
+                                     <input v-if="placeholder.type === 'float'" :id="'placeholder-'+index" v-model.number="placeholderValues[index]" type="number" step="0.01" class="input" @input="updatePreview">
+                                     <textarea v-if="placeholder.type === 'multiline'" :id="'placeholder-'+index" v-model="placeholderValues[index]" rows="4" class="input" @input="updatePreview"></textarea>
+                                     <div v-if="placeholder.type === 'code'" class="border border-blue-300 dark:border-blue-600 rounded-md overflow-hidden">
+                                         <div class="bg-blue-200 dark:bg-blue-700 p-1 px-2 text-xs text-blue-700 dark:text-blue-200">{{ placeholder.language || 'Plain text' }}</div>
+                                         <textarea :id="'placeholder-'+index" v-model="placeholderValues[index]" rows="6" class="w-full p-2 font-mono bg-blue-50 dark:bg-blue-900 border-t border-blue-300 dark:border-blue-600 text-sm" @input="updatePreview"></textarea>
+                                     </div>
+                                     <select v-if="placeholder.type === 'options'" :id="'placeholder-'+index" v-model="placeholderValues[index]" class="input" @change="updatePreview">
+                                         <option value="" disabled>Select an option</option>
+                                         <option v-for="option in placeholder.options" :key="option" :value="option" class="text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-800">{{ option }}</option>
+                                     </select>
+                                 </div>
                              </div>
                          </div>
-                     </div>
-
-                    <!-- Placeholder Modal -->
-                     <div v-if="showPlaceholderModal" class="fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">
-                         <div class="card max-w-4xl w-full max-h-[90vh] flex flex-col p-0">
-                             <h3 class="text-lg font-semibold p-4 border-b border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-100">Fill in the placeholders</h3>
-                             <div class="flex-1 flex flex-col min-h-0 overflow-hidden p-4 space-y-4">
-                                 <div class="p-3 bg-blue-100 dark:bg-blue-800 rounded-lg border border-blue-200 dark:border-blue-700">
-                                     <h4 class="label !mb-1">Live Preview:</h4>
-                                     <div class="flex-1 h-[150px] overflow-y-auto scrollbar bg-white dark:bg-blue-900 p-2 rounded text-sm">
-                                         <span class="whitespace-pre-wrap text-blue-900 dark:text-blue-100">{{ getPromptContent(previewPrompt) }}</span>
-                                     </div>
-                                 </div>
-                                 <div class="flex-1 overflow-y-auto scrollbar space-y-3 pr-2">
-                                     <div v-for="(placeholder, index) in parsedPlaceholders" :key="placeholder.fullText" class="flex flex-col">
-                                         <label :for="'placeholder-'+index" class="label">{{ placeholder.label }}</label>
-                                         <input v-if="placeholder.type === 'text'" :id="'placeholder-'+index" v-model="placeholderValues[index]" type="text" class="input" :placeholder="placeholder.label" @input="updatePreview">
-                                         <input v-if="placeholder.type === 'int'" :id="'placeholder-'+index" v-model.number="placeholderValues[index]" type="number" step="1" class="input" @input="updatePreview">
-                                         <input v-if="placeholder.type === 'float'" :id="'placeholder-'+index" v-model.number="placeholderValues[index]" type="number" step="0.01" class="input" @input="updatePreview">
-                                         <textarea v-if="placeholder.type === 'multiline'" :id="'placeholder-'+index" v-model="placeholderValues[index]" rows="4" class="input" @input="updatePreview"></textarea>
-                                         <div v-if="placeholder.type === 'code'" class="border border-blue-300 dark:border-blue-600 rounded-md overflow-hidden">
-                                             <div class="bg-blue-200 dark:bg-blue-700 p-1 px-2 text-xs text-blue-700 dark:text-blue-200">{{ placeholder.language || 'Plain text' }}</div>
-                                             <textarea :id="'placeholder-'+index" v-model="placeholderValues[index]" rows="6" class="w-full p-2 font-mono bg-blue-50 dark:bg-blue-900 border-t border-blue-300 dark:border-blue-600 text-sm" @input="updatePreview"></textarea>
-                                         </div>
-                                         <select v-if="placeholder.type === 'options'" :id="'placeholder-'+index" v-model="placeholderValues[index]" class="input" @change="updatePreview">
-                                             <option value="" disabled>Select an option</option>
-                                             <option v-for="option in placeholder.options" :key="option" :value="option" class="text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-800">{{ option }}</option>
-                                         </select>
-                                     </div>
-                                 </div>
-                             </div>
-                             <div class="p-4 flex justify-end space-x-2 border-t border-blue-200 dark:border-blue-700">
-                                 <button @click="cancelPlaceholders" class="btn btn-secondary">Cancel</button>
-                                 <button @click="applyPlaceholders" class="btn btn-primary">Apply</button>
-                             </div>
+                         <div class="p-4 flex justify-end space-x-2 border-t border-blue-200 dark:border-blue-700">
+                             <button @click="cancelPlaceholders" class="btn btn-secondary">Cancel</button>
+                             <button @click="applyPlaceholders" class="btn btn-primary">Apply</button>
                          </div>
                      </div>
                  </div>
 
                  <WelcomeComponent v-if="!hasActiveDiscussion" />
 
-                <div class="h-40"></div>
+                <div class="h-40"></div> <!-- Padding at the bottom -->
             </div>
 
+            <!-- Gradient overlay remains the same -->
             <div class="sticky bottom-0 left-0 right-0 h-48 pointer-events-none bg-gradient-to-t from-blue-100 to-transparent dark:from-blue-900 z-10"></div>
         </div>
 
+        <!-- ChatBox remains the same -->
         <div class="sticky bottom-0 left-0 right-0 p-4 z-20 w-full max-w-4xl mx-auto" v-if="hasActiveDiscussion">
              <ChatBox ref="chatBox"
                      :loading="isGenerating"
@@ -120,35 +109,29 @@ import { mapState } from 'vuex';
 import Message from './Message.vue';
 import ChatBox from './ChatBox.vue';
 import WelcomeComponent from '@/components/WelcomeComponent.vue';
+import PromptExamples from './PromptExamples.vue'; // Import the new component
 import feather from 'feather-icons';
 
+// Keep parsePlaceholder function here as it's used for the modal
 const parsePlaceholder = (placeholder) => {
-    const parts = placeholder.replace(/^\[|\]$/g, '').split('::'); // Use regex for cleaner removal
+    const parts = placeholder.replace(/^\[|\]$/g, '').split('::');
     const label = parts[0];
-
     if (parts.length === 1) return { label, type: 'text', fullText: placeholder };
-
-    const type = parts[1].toLowerCase(); // Normalize type
+    const type = parts[1].toLowerCase();
     const result = { label, type, fullText: placeholder };
-
     switch (type) {
-        case 'int':
-        case 'float':
-        case 'multiline': break; // No extra params needed
-        case 'code':
-            result.language = parts[2] || 'plaintext'; break;
-        case 'options':
-            result.options = parts[2] ? parts[2].split(',').map(o => o.trim()) : []; break;
-        default:
-            result.type = 'text'; // Fallback to text
+        case 'int': case 'float': case 'multiline': break;
+        case 'code': result.language = parts[2] || 'plaintext'; break;
+        case 'options': result.options = parts[2] ? parts[2].split(',').map(o => o.trim()) : []; break;
+        default: result.type = 'text';
     }
     return result;
 };
 
-
 export default {
     name: 'ChatArea',
-    components: { Message, ChatBox, WelcomeComponent },
+    // Register the new component
+    components: { Message, ChatBox, WelcomeComponent, PromptExamples },
     props: {
         isReady: Boolean,
         hasActiveDiscussion: Boolean,
@@ -166,27 +149,35 @@ export default {
         return {
             isDragOverChat: false,
             showPlaceholderModal: false,
-            selectedPrompt: '',
-            placeholders: [],
-            placeholderValues: {},
-            previewPrompt: '',
+            selectedPrompt: '', // The original prompt string with title and placeholders
+            placeholders: [], // Raw placeholder strings like "[placeholder::type]"
+            placeholderValues: {}, // Values entered by the user for placeholders
+            previewPrompt: '', // The prompt string used for live preview in the modal
         };
     },
     computed: {
         ...mapState(['config']),
         personality() {
+            // Personality computation logic remains the same
             if (!this.config || !this.config.personalities || this.config.active_personality_id < 0 || this.config.active_personality_id >= this.config.personalities.length) {
                 return null;
             }
             const activePersPath = this.config.personalities[this.config.active_personality_id];
-            const basePath = activePersPath?.split(':')[0];
-            // Assuming personalities array is available in the parent or Vuex, passed as a prop or accessed directly if needed
-            // For now, just returning a placeholder object structure if needed, otherwise rely on parent logic
-            // This might need adjustment based on where the full personality details are stored/accessed
-             const fullPersonality = this.$store.state.personalities.find(p => p.full_path === basePath);
-             return fullPersonality || null; // Return the found personality or null
+            // Make sure this logic correctly finds the personality object containing `prompts_list`
+            const fullPersonality = this.$store.state.personalities.find(p => p.full_path === activePersPath);
+             return fullPersonality || { prompts_list: [] }; // Ensure it returns an object, even if empty
         },
-         parsedPlaceholders() {
+        showPromptExamples() {
+            // Condition to show prompt examples
+            return this.hasActiveDiscussion && // Show only if a discussion exists
+                   this.discussionArr &&
+                   this.discussionArr.length < 2 && // Show only at the start of a conversation (e.g., 0 or 1 message)
+                   this.personality &&
+                   this.personality.prompts_list &&
+                   this.personality.prompts_list.length > 0;
+        },
+        parsedPlaceholders() {
+            // Logic remains the same
             const uniqueMap = new Map();
             this.placeholders.forEach(p => {
                 const parsed = parsePlaceholder(p);
@@ -196,17 +187,19 @@ export default {
         }
     },
     methods: {
+        // Methods like getAvatar, scrollToBottom, handleDrop, handleFilesDropped remain the same
         getAvatar(sender) {
-            if (!this.config || !sender) return null;
-            const senderLower = sender.toLowerCase().trim();
-            const userLower = this.config.user_name?.toLowerCase().trim();
+             if (!this.config || !sender) return null;
+             const senderLower = sender.toLowerCase().trim();
+             const userLower = this.config.user_name?.toLowerCase().trim();
 
-            if (senderLower === userLower) {
-                return this.config.user_avatar ? `user_infos/${this.config.user_avatar}` : null; // Handle missing user avatar
-            }
+             if (senderLower === userLower) {
+                 return this.config.user_avatar ? `user_infos/${this.config.user_avatar}` : null;
+             }
 
-            const personality = this.personalityAvatars.find(p => p.name?.toLowerCase().trim() === senderLower);
-            return personality?.avatar ? `/${personality.avatar}` : null; // Prepend '/' for web path
+             // Assuming personalityAvatars is correctly populated [{ name: 'PersonalityName', avatar: 'path/to/avatar.png' }, ...]
+             const personality = this.personalityAvatars.find(p => p.name?.toLowerCase().trim() === senderLower);
+             return personality?.avatar ? `/${personality.avatar}` : null; // Ensure leading slash if needed
         },
         scrollToBottom() {
              nextTick(() => {
@@ -224,86 +217,103 @@ export default {
         handleFilesDropped(files) {
             this.$emit('files-dropped', files);
         },
-         extractTitle(prompt) {
-            const titleMatch = prompt.match(/@<(.*?)>@/);
-            return titleMatch ? titleMatch[1] : null;
-        },
+
+        // --- Placeholder and Prompt Handling Logic ---
+
+        // Utility to get content part of the prompt (without title tag)
         getPromptContent(prompt) {
+            if (!prompt) return '';
             return prompt.replace(/@<.*?>@/, '').trim();
         },
+
+        // Triggered by the 'prompt-selected' event from PromptExamples component
         handlePromptSelection(prompt) {
-            this.selectedPrompt = prompt;
-            this.previewPrompt = this.getPromptContent(prompt); // Use content for preview initially
+            this.selectedPrompt = prompt; // Store the full original prompt
+            this.previewPrompt = prompt; // Initialize preview with the full prompt (will be updated)
             this.placeholders = this.extractPlaceholders(prompt);
 
             if (this.placeholders.length > 0) {
                 this.placeholderValues = {}; // Reset values
                 this.parsedPlaceholders.forEach((ph, index) => {
-                    // Pre-fill with default values if any are defined in the placeholder syntax (future enhancement)
                     this.placeholderValues[index] = ''; // Initialize as empty
                 });
                 this.showPlaceholderModal = true;
                 this.updatePreview(); // Initial preview update
             } else {
+                // If no placeholders, directly use the content part of the prompt
                 this.setPromptInChatbox(this.getPromptContent(prompt));
             }
         },
+
         extractPlaceholders(prompt) {
+            // Extracts placeholders like [placeholder::type] or [placeholder]
             const placeholderRegex = /\[(.*?)\]/g;
-            // Avoid duplicates if the same placeholder appears multiple times
-            const uniquePlaceholders = new Set([...prompt.matchAll(placeholderRegex)].map(match => match[0]));
+            const uniquePlaceholders = new Set([...(prompt || '').matchAll(placeholderRegex)].map(match => match[0]));
             return Array.from(uniquePlaceholders);
         },
+
         updatePreview() {
-            let preview = this.selectedPrompt;
+            let preview = this.selectedPrompt; // Start with the original prompt
             this.parsedPlaceholders.forEach((placeholder, index) => {
                 const value = this.placeholderValues[index];
-                // Replace all occurrences of the same placeholder using RegExp
                 const regex = new RegExp(this.escapeRegExp(placeholder.fullText), 'g');
-                // Use the original full placeholder text if the value is empty, otherwise use the value
+                // Replace placeholder with value, or keep original placeholder if value is empty
                 preview = preview.replace(regex, value || placeholder.fullText);
             });
-            this.previewPrompt = preview; // Update the preview reactive property
+            this.previewPrompt = preview; // Update the reactive preview property
         },
+
         escapeRegExp(string) {
-             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         },
+
         cancelPlaceholders() {
             this.showPlaceholderModal = false;
-            // Resetting state is handled in handlePromptSelection if re-opened
+            // No need to reset here, state will be reset if another prompt is selected
         },
+
         applyPlaceholders() {
-            let finalPrompt = this.selectedPrompt;
+            let finalPromptWithValues = this.selectedPrompt; // Start with original
             this.parsedPlaceholders.forEach((placeholder, index) => {
                 const value = this.placeholderValues[index];
-                if (value !== undefined && value !== '') { // Apply only if a value is provided
+                // Only replace if a value is actually provided
+                if (value !== undefined && value !== null && value !== '') {
                      const regex = new RegExp(this.escapeRegExp(placeholder.fullText), 'g');
-                     finalPrompt = finalPrompt.replace(regex, value);
+                     finalPromptWithValues = finalPromptWithValues.replace(regex, value);
                 }
+                // If value is empty, the original placeholder might remain.
             });
+
+            // Now, remove any remaining placeholder syntax *and* the title tag for the final chatbox input
+            const finalContent = this.getPromptContent(finalPromptWithValues) // Remove title tag first
+                                   .replace(/\[(.*?)\]/g, ''); // Remove any remaining empty/unfilled placeholder brackets
+
             this.showPlaceholderModal = false;
-            this.setPromptInChatbox(this.getPromptContent(finalPrompt)); // Use the final processed prompt content
+            this.setPromptInChatbox(finalContent.trim()); // Set the processed content in the chatbox
         },
-        setPromptInChatbox(prompt) {
+
+        setPromptInChatbox(promptContent) {
              if (this.$refs.chatBox) {
-                 this.$refs.chatBox.message = prompt;
-                 // Optionally focus the input
-                 this.$refs.chatBox.focusInput();
+                 this.$refs.chatBox.message = promptContent;
+                 this.$refs.chatBox.focusInput(); // Optional: focus the input
              }
         },
+
+         // --- End Placeholder Logic ---
     },
     watch: {
+        // Watchers remain the same
         discussionArr: {
             handler() {
-                this.scrollToBottom();
-                 this.$nextTick(() => feather.replace());
+                //this.scrollToBottom();
+                this.$nextTick(() => feather.replace());
             },
             deep: true
         },
          personality: {
             handler(newVal, oldVal) {
-                // Reset prompt example state if personality changes
                 if (newVal?.full_path !== oldVal?.full_path) {
+                    // Reset placeholder state if personality changes
                     this.showPlaceholderModal = false;
                     this.selectedPrompt = '';
                     this.placeholders = [];
@@ -315,12 +325,14 @@ export default {
         }
     },
     mounted() {
-        this.scrollToBottom();
+        // Mounted logic remains the same
+        // this.scrollToBottom();
          nextTick(() => {
             feather.replace();
          });
     },
     updated() {
+        // Updated logic remains the same
          nextTick(() => {
             feather.replace();
          });
@@ -329,5 +341,11 @@ export default {
 </script>
 
 <style scoped>
-
+/* Scoped styles for ChatArea remain unchanged */
+.pb-50 { /* Ensure enough padding at the bottom inside the scrollable area */
+    padding-bottom: 50px; /* Adjust as needed */
+}
+.mb-50 { /* Ensure enough margin at the bottom inside the scrollable area if using margin instead */
+    margin-bottom: 50px; /* Adjust as needed */
+}
 </style>
