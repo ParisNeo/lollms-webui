@@ -187,7 +187,7 @@ import feather from 'feather-icons';
 // Make sure this path is correct relative to your component file
 import botImgPlaceholder from "../assets/logo.svg";
 // Assuming DynamicUIRenderer is correctly imported and registered globally or locally
-import DynamicUIRenderer from "@/components/DynamicUIRenderer.vue";
+import DynamicUIRenderer from "@/components/MarkdownBundle/DynamicUIRenderer.vue";
 
 // Ensure VITE_LOLLMS_API_BASEURL is available in your environment (.env file)
 const bUrl = import.meta.env.VITE_LOLLMS_API_BASEURL || ''; // Provide a fallback

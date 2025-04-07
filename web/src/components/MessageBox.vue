@@ -27,7 +27,7 @@
   </template>
   
   <script>
-  import MarkdownRenderer from './MarkdownRenderer.vue';
+  import MarkdownRenderer from './MarkdownBundle/MarkdownRenderer.vue';
 
   export default {
     data() {

@@ -47,8 +47,8 @@
 
 <script>
 import axios from 'axios';
-import Discussion from '../components/Discussion.vue'
-import MarkdownRenderer from '../components/MarkdownRenderer.vue'
+import Discussion from '../views/discussion_page_components/Discussion.vue'
+import MarkdownRenderer from './MarkdownBundle/MarkdownRenderer.vue'
 
 
 export default {

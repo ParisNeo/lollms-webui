@@ -139,7 +139,7 @@ export default defineComponent({
             progress_visibility: false,
             progress_value: 0,
             interestingFacts: [
-                 "ParisNeo, the creator of LoLLMs, originally built his high-performance PC to play Cyberpunk 2077. However, his passion for AI took an unexpected turn, leading him to develop LoLLMs instead. Ironically, he never found the time to actually play the game that inspired his powerful setup!",
+                "ParisNeo, the creator of LoLLMs, originally built his high-performance PC to play Cyberpunk 2077. However, his passion for AI took an unexpected turn, leading him to develop LoLLMs instead. Ironically, he never found the time to actually play the game that inspired his powerful setup!",
                 "Saïph, version 14 of LoLLMs, is named after a star in Orion's constellation (Kappa Orionis), representing bright guidance in AI!",
                 "The 'LoLLMs' name stands for 'Lord of Large Language Models', a playful nod to the power and potential of these AI systems.",
                 "LoLLMs v15 introduced 'Personality Packages', allowing users to customize AI interactions like never before.",
@@ -210,7 +210,7 @@ export default defineComponent({
         },
     },
     methods: {
-        ...mapActions(['refreshConfig', 'refreshDatabase', 'refreshBindings', 'refreshPersonalitiesZoo', 'refreshMountedPersonalities', 'refreshModelsZoo', 'refreshModels', 'fetchLanguages', 'fetchLanguage', 'fetchIsRtOn', 'toggleStarPersonality', 'applyConfiguration', 'saveConfiguration', 'refreshModelStatus']),
+        ...mapActions(['refreshConfig', 'refreshDatabase', 'refreshBindings', 'refreshPersonalitiesZoo', 'refreshMountedPersonalities', 'refreshModelsZoo', 'refreshModels', 'fetchLanguages', 'fetchLanguage', 'fetchIsRtOn', 'toggleStarPersonality', 'toggleStarDiscussion', 'applyConfiguration', 'saveConfiguration', 'refreshModelStatus']),
 
         async initialLoad() {
              console.log("Initial Load Started");
@@ -398,7 +398,7 @@ export default defineComponent({
         },
 
          toggleStarDiscussion(item) {
-             this.toggleStarPersonality(String(item.id));
+             this.toggleStarDiscussionString(item.id);
              this.$nextTick(() => { this.$forceUpdate(); }); // May be needed for LeftPanel list re-render based on getter
         },
 
@@ -670,7 +670,7 @@ export default defineComponent({
         resetDB(){ console.warn("Reset DB function not fully implemented."); this.$store.state.toast.showToast("Database reset functionality not available.", 4, false); },
 
         showModelConfig(item = null) {
-            const bindingToShow = item || this.$store.state.bindings.find(b => b.name === this.config.binding_name);
+            const bindingToShow = item || this.$store.state.installedBindings.find(b => b.name === this.config.binding_name);
             if (!bindingToShow) { this.$store.state.toast.showToast("No binding selected or found.", 4, false); return; }
              try { this.loading = true; axios.post('/get_active_binding_settings', { client_id: this.client_id, binding_name: bindingToShow.name }) .then(res => { if (res.data && Object.keys(res.data).length > 0) { this.$store.state.universalForm.showForm(res.data, `Configure ${bindingToShow.name}`, "Save", "Cancel") .then(formData => { axios.post('/set_binding_settings', { client_id: this.client_id, binding_name: bindingToShow.name, settings: formData }).then(saveRes => { if (!saveRes.data?.status) throw new Error(saveRes.data?.error || "Save failed."); this.$store.state.toast.showToast(`${bindingToShow.name} settings updated.`, 4, true); }).catch(saveErr => this.$store.state.toast.showToast(`Error saving settings: ${saveErr.message}`, 5, false)); }) .catch(() => {}); } else { this.$store.state.toast.showToast(`${bindingToShow.name} has no configurable settings.`, 3, true); } }) .catch(err => this.$store.state.toast.showToast(`Error getting settings: ${err.message}`, 5, false)) .finally(() => this.loading = false); }
              catch (error) { this.loading = false; this.$store.state.toast.showToast(`Error: ${error.message}`, 5, false); }

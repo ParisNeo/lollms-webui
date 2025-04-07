@@ -210,6 +210,13 @@ export const store = createStore({
               saveStarredToLocalStorage(state.starredPersonalities);
           }
       },
+      removeStarredDiscussion(state, personalityPath) {
+          const index = state.starredPersonalities.indexOf(personalityPath);
+          if (index > -1) {
+              state.starredPersonalities.splice(index, 1);
+              saveStarredToLocalStorage(state.starredPersonalities);
+          }
+      },
       setDiskUsage(state, diskUsage) { state.diskUsage = diskUsage; },
       setRamUsage(state, ramUsage) { state.ramUsage = ramUsage; },
       setVramUsage(state, vramUsage) { state.vramUsage = vramUsage; },
@@ -740,6 +747,22 @@ export const store = createStore({
           // Update the isStarred status in the main personalities list for immediate UI feedback
           dispatch('updatePersonalityStarredStatus', { personalityPath, isStarred: !isCurrentlyStarred });
       },
+      toggleStarDiscussion({ commit, state, dispatch }, discussion) {
+        if (!discussion) {
+            console.warn("Attempted to toggle star on invalid discussion:", discussion);
+            return;
+        }
+        const discussion_id = discussion.id;
+        const isCurrentlyStarred = state.starredDiscussions.includes(discussion_id);
+
+        if (isCurrentlyStarred) {
+            commit('removeStarredDiscussion', discussion_id);
+        } else {
+            commit('addStarredDiscussion', discussion_id);
+        }
+        // Update the isStarred status in the main personalities list for immediate UI feedback
+        dispatch('updateDiscussionStarredStatus', { discussion_id, isStarred: !isCurrentlyStarred });
+    },      
 
       updatePersonalityStarredStatus({ commit, state }, { personalityPath, isStarred }) {
          const personality = state.personalities.find(p => p.full_path === personalityPath);

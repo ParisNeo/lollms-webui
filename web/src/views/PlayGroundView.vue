@@ -330,7 +330,7 @@ import feather from 'feather-icons'
 import axios from "axios";
 import socket from '@/services/websocket.js'
 import Toast from '../components/Toast.vue'
-import MarkdownRenderer from '../components/MarkdownRenderer.vue';
+import MarkdownRenderer from '../components/MarkdownBundle/MarkdownRenderer.vue';
 import ClipBoardTextInput from "@/components/ClipBoardTextInput.vue";
 import TokensHilighter from "@/components/TokensHilighter.vue"
 import ChatBarButton from "@/components/ChatBarButton.vue"
