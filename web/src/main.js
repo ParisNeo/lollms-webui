@@ -611,6 +611,16 @@ export const store = createStore({
         }
       },
 
+      async refreshModelStatus({ commit }) {
+        try {
+          let modelstatus = await api_get_req("get_model_status");
+          commit('setIsModelOk', modelstatus?.status || false);
+        } catch(error) {
+            console.error("Error refreshing model status:", error);
+            commit('setIsModelOk', false);
+        }
+      },
+
       async refreshModelsZoo({ commit }) {
         try {
           const response = await axios.get('/get_available_models');
@@ -625,19 +635,11 @@ export const store = createStore({
         }
       },
 
-      async refreshModelStatus({ commit }) {
-        try {
-          let modelstatus = await api_get_req("get_model_status");
-          commit('setIsModelOk', modelstatus?.status || false);
-        } catch(error) {
-            console.error("Error refreshing model status:", error);
-            commit('setIsModelOk', false);
-        }
-      },
-
       async refreshModels({ commit, state }) {
           try {
               let modelsArr = await api_get_req("list_models");
+              console.log(`modelsArr: ${modelsArr}`)
+              console.log(`state.modelsZoo: ${state.modelsZoo}`)
               if (!Array.isArray(modelsArr)) modelsArr = [];
               commit('setModelsArr', modelsArr);
 

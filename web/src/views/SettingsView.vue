@@ -212,11 +212,26 @@ export default {
             this.isLoading = true;
             this.loading_text = "Refreshing config...";
             try {
+                // 1. Refresh the main configuration (gets the new binding_name)
                 await this.$store.dispatch('refreshConfig');
+
+                // 2. **** ADD THIS ****: Explicitly refresh model lists based on the NEW config
+                //    (Assuming your store has actions named 'refreshModelsZoo' and 'refreshModelsArr'
+                //     that fetch models based on the current store.state.config.binding_name)
+                
+                await this.$store.dispatch('refreshModels');
+                await this.$store.dispatch('refreshModelsZoo');
+                await this.$store.dispatch('refreshModelsArr'); // Or a combined action if you prefer
+
+                // 3. Reset local editable state
                 this.editableConfig = null;
                 this.settingsChanged = false;
+
+                this.$store.state.toast.showToast("Configuration refreshed.", 2, true); // Optional feedback
+
             } catch (error) {
                 this.$store.state.toast.showToast("Failed to load configuration.", 4, false);
+                console.error("Error refreshing config or model lists:", error);
                 this.editableConfig = null; // Discard edits even on failure for safety
                 this.settingsChanged = false;
             } finally {

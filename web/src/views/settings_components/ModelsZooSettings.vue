@@ -715,6 +715,7 @@ export default {
              // Refresh lists if operation was successful
              if(success) {
                  this.store.dispatch('refreshModels'); // Assumes Vuex action exists
+                 this.store.dispatch('refreshModelsZoo'); // Assumes Vuex action exists
              }
         },
 
