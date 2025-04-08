@@ -45,7 +45,10 @@ def add_events(sio: socketio):
         lollmsElfServer.cancel_gen = True
         #kill thread
         ASCIIColors.error(f'Client {sid} requested cancelling generation')
-        client.generation_routine.cancel()
+        try:
+            client.generation_routine.cancel()
+        except Exception as ex:
+            pass
         lollmsElfServer.busy=False
         if lollmsElfServer.tts:
             lollmsElfServer.tts.stop()
@@ -59,7 +62,7 @@ def add_events(sio: socketio):
         client = lollmsElfServer.session.get_client(client_id)
         client.requested_stop=True
         print(f"Client {client_id} requested canceling generation")
-        lollmsElfServer.sio.emit("generation_canceled", {"message":"Generation is canceled."}, to=client_id)
+        await lollmsElfServer.sio.emit("generation_canceled", {"message":"Generation is canceled."}, to=client_id)
         lollmsElfServer.busy = False
 
 
@@ -102,11 +105,6 @@ def add_events(sio: socketio):
             )
 
             await lollmsElfServer.start_message_generation(message, message.id, client_id)
-
-            # lollmsElfServer.sio.sleep(0.01)
-            lollmsElfServer.busy = True
-            # tpe = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message_id, client_id))
-            # tpe.start()
         else:
             lollmsElfServer.error("I am busy. Come back later.", client_id=client_id)
 
@@ -154,10 +152,6 @@ def add_events(sio: socketio):
 
             await lollmsElfServer.start_message_generation(message, message.id, client_id, force_using_internet=True)
 
-            # lollmsElfServer.sio.sleep(0.01)
-            lollmsElfServer.busy = True
-            # tpe = threading.Thread(target=lollmsElfServer.start_message_generation, args=(message, message_id, client_id))
-            # tpe.start()
         else:
             lollmsElfServer.error("I am busy. Come back later.", client_id=client_id)
 
