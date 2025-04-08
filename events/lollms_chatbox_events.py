@@ -44,7 +44,7 @@ def add_events(sio: socketio):
     forbid_remote_access(lollmsElfServer)
 
     @sio.on("create_empty_message")
-    def create_empty_message(sid, data):
+    async def create_empty_message(sid, data):
         ASCIIColors.yellow("Creating empty user message")
         client_id = sid
         type = int(data.get("type", 0))
@@ -53,7 +53,7 @@ def add_events(sio: socketio):
             ASCIIColors.info(f"Building empty User message requested by : {client_id}")
             # send the message to the bot
             if lollmsElfServer.session.get_client(client_id).discussion:
-                lollmsElfServer.new_message(
+                await lollmsElfServer.new_message(
                     client_id,
                     lollmsElfServer.config.user_name,
                     message,
@@ -68,7 +68,7 @@ def add_events(sio: socketio):
             # send the message to the bot
             print(f"Creating an empty message for AI answer orientation")
             if lollmsElfServer.session.get_client(client_id).discussion:
-                lollmsElfServer.new_message(
+                await lollmsElfServer.new_message(
                     client_id,
                     lollmsElfServer.personality.name,
                     "[edit this to put your ai answer start]",
@@ -76,7 +76,7 @@ def add_events(sio: socketio):
                 )
 
     @sio.on("add_webpage")
-    def add_webpage(sid, data):
+    async def add_webpage(sid, data):
         lollmsElfServer.ShowBlockingMessage("Scraping web page\nPlease wait...")
         ASCIIColors.yellow("Scaping web page")
         client = lollmsElfServer.session.get_client(sid)
