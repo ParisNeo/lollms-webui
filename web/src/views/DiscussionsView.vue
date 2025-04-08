@@ -398,7 +398,7 @@ export default defineComponent({
         },
 
          toggleStarDiscussion(item) {
-             this.toggleStarDiscussionString(item.id);
+             this.toggleStarDiscussion(item.id);
              this.$nextTick(() => { this.$forceUpdate(); }); // May be needed for LeftPanel list re-render based on getter
         },
 
@@ -492,16 +492,7 @@ export default defineComponent({
              if (this.isGenerating) { this.$store.state.toast.showToast("Please wait for the current response.", 4, false); return; }
 
              this.$store.commit('setIsGenerating', true); this.setDiscussionLoading(this.currentDiscussion.id, true);
-             const emitEvent = type === 'internet' ? 'generate_msg_with_internet' : 'generate_msg';
-             let usrMessage = {
-                // ... construct user message object ...
-                sender: this.config?.user_name || "User",
-                message_type: this.msgTypes.MSG_TYPE_CONTENT,
-                sender_type: this.senderTypes.SENDER_TYPES_USER,
-                content: message,
-                // ... other fields ...
-            };
-            this.handleNewMessage(usrMessage); // Add user message to discussionArr via the handler             
+             const emitEvent = type === 'internet' ? 'generate_msg_with_internet' : 'generate_msg';      
             socket.emit(emitEvent, { prompt: message });
             this.scrollToBottomMessages();
         },
@@ -727,7 +718,7 @@ export default defineComponent({
         handleDiscussionRenamed({ discussion_id, title }) { if (discussion_id && title) { const index = this.discussionsList.findIndex(d => d.id === discussion_id); if (index !== -1) { this.discussionsList[index].title = title; } if (this.currentDiscussion?.id === discussion_id) { this.currentDiscussion.title = title; this.setPageTitle(this.currentDiscussion); } } },
          notify(notif) { console.log("Notification received:", notif); if (['finished', 'cancelled', 'error'].includes(notif.status)) { this.$store.commit('setIsGenerating', false); this.setDiscussionLoading(this.currentDiscussion?.id, false); this.scrollToBottomMessages(); this.playChime(); }
              switch (notif.display_type) {
-                 case 0: this.$store.state.toast.showToast(notif.content, notif.duration || 4, notif.notification_type !== 'error'); break;
+                 case 0: this.$store.state.toast.showToast(notif.content, notif.duration || 4, notif.notification_type !== 0); break;
                  case 1: this.$store.state.messageBox.showMessage(notif.content); break;
                  case 2: this.$store.state.messageBox.hideMessage(); this.$store.state.yesNoDialog.askQuestion(notif.content, 'Yes', 'No').then(yesRes => socket.emit("yesNoRes", { yesRes: yesRes, notification_id: notif.id })).catch(() => socket.emit("yesNoRes", { yesRes: false, notification_id: notif.id })); break;
                  case 3: this.$store.state.messageBox.showBlockingMessage(notif.content); break;
