@@ -469,7 +469,8 @@ export default defineComponent({
             const index = this.discussionArr.findIndex(m => m.id === msgObj.id);
              if (index !== -1) {
                  const messageItem = this.discussionArr[index];
-                 messageItem.content = msgObj.content; messageItem.finished_generating_at = msgObj.finished_generating_at; messageItem.nb_tokens = msgObj.nb_tokens; messageItem.binding = msgObj.binding;
+                 if (msgObj.content !== undefined) messageItem.content = msgObj.content;
+                 messageItem.finished_generating_at = msgObj.finished_generating_at; messageItem.nb_tokens = msgObj.nb_tokens; messageItem.binding = msgObj.binding;
                  messageItem.model = msgObj.model; messageItem.personality = msgObj.personality; messageItem.status_message = "Done";
                  this.$store.commit('setIsGenerating', false); this.setDiscussionLoading(this.currentDiscussion.id, false);
                  this.extractHtml(); this.recoverFiles(); this.scrollToBottomMessages(); this.playChime();
