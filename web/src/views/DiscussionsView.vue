@@ -10,7 +10,7 @@
     <div v-if="isReady" class="flex flex-row h-screen w-screen overflow-hidden">
          <LeftPanel
              :show-left-panel="showLeftPanel"
-             :discussions-list="discussionsList"
+             :discussions-list="discussionsListWithStarred"
              :current-discussion="currentDiscussion"
              :toolbar-loading="isGenerating"
              :formatted-database-name="formatted_database_name"
@@ -43,7 +43,7 @@
              @export-discussions-as-markdown="exportDiscussionsAsMarkdown"
              @show-database-selector="showDatabaseSelector"
              @import-discussion-file="importDiscussionFile"
-             @toggle-star-discussion="toggleStarDiscussion"
+             @toggle-star-discussion="handleToggleStarDiscussion"
          />
 
         <ChatArea
@@ -129,7 +129,7 @@ export default defineComponent({
     },
     data() {
         return {
-            discussionsList: [],
+            discussionsList: [], // Base list fetched from API
             currentDiscussion: {},
             discussionArr: [],
             personalityAvatars: [],
@@ -188,9 +188,14 @@ export default defineComponent({
             'ready', 'loading_infos', 'loading_progress', 'version', 'config',
             'databases', 'isConnected', 'isGenerating', 'client_id', 'leftPanelCollapsed',
             'rightPanelCollapsed', 'theme_vars', 'selectedPersonality',
-            'currentPersonConfig', 'personalities', 'personalities_ready'
+            'currentPersonConfig', 'personalities', 'personalities_ready',
+            'starredDiscussions' // Make sure this is in mapState or mapGetters
         ]),
-        ...mapGetters(['getIsReady', 'getVersion', 'getConfig', 'getClientId', 'getDatabases', 'getIsConnected', 'getIsGenerating', 'getLeftPanelCollapsed', 'getRightPanelCollapsed']),
+        ...mapGetters([
+            'getIsReady', 'getVersion', 'getConfig', 'getClientId', 'getDatabases',
+            'getIsConnected', 'getIsGenerating', 'getLeftPanelCollapsed',
+            'getRightPanelCollapsed', 'getStarredDiscussions' // Use getter if defined
+        ]),
         isReady() {
             return this.getIsReady;
         },
@@ -208,6 +213,14 @@ export default defineComponent({
             const db_name = this.config?.discussion_db_name || "default";
             return db_name.replace(/_/g, " ");
         },
+        // Computed property to add 'isStarred' to the discussions list for the LeftPanel prop
+        discussionsListWithStarred() {
+            const starredSet = new Set(this.getStarredDiscussions); // Use getter or direct state
+            return this.discussionsList.map(discussion => ({
+                ...discussion,
+                isStarred: starredSet.has(discussion.id)
+            }));
+        }
     },
     methods: {
         ...mapActions(['refreshConfig', 'refreshDatabase', 'refreshBindings', 'refreshPersonalitiesZoo', 'refreshMountedPersonalities', 'refreshModelsZoo', 'refreshModels', 'fetchLanguages', 'fetchLanguage', 'fetchIsRtOn', 'toggleStarPersonality', 'toggleStarDiscussion', 'applyConfiguration', 'saveConfiguration', 'refreshModelStatus']),
@@ -264,10 +277,11 @@ export default defineComponent({
                 this.loading = true;
                 const res = await axios.get('/list_discussions');
                 if (res && Array.isArray(res.data)) {
+                    // Store the raw list, the computed prop will add 'isStarred'
                     this.discussionsList = res.data.map(item => ({
                         id: item.id,
                         title: item.title,
-                        created_at: item.created_at, // Keep creation time for sorting/grouping
+                        created_at: item.created_at,
                         loading: false,
                     })).sort((a, b) => b.id - a.id);
                 } else { this.discussionsList = []; }
@@ -280,9 +294,10 @@ export default defineComponent({
         },
 
         loadLastUsedDiscussion() {
-            const id = localStorage.getItem('selected_discussion');
-             if (id) {
-                 const discussionItem = this.discussionsList.find(d => String(d.id) === id);
+            const id_str = localStorage.getItem('selected_discussion');
+             if (id_str) {
+                 const id = parseInt(id_str, 10); // Ensure ID is a number for comparison
+                 const discussionItem = this.discussionsList.find(d => d.id === id);
                  if (discussionItem) { this.selectDiscussion(discussionItem); }
                  else { localStorage.removeItem('selected_discussion'); this.currentDiscussion = {}; this.discussionArr = []; }
              } else { this.currentDiscussion = {}; this.discussionArr = []; }
@@ -291,7 +306,8 @@ export default defineComponent({
         selectDiscussion(item) {
              if (this.isGenerating) { this.$store.state.toast.showToast("Please wait for generation to finish or stop.", 4, false); return; }
              if (item && this.currentDiscussion?.id !== item.id) {
-                 this.currentDiscussion = { ...item }; this.setPageTitle(item);
+                 this.currentDiscussion = { ...item }; // Copy item, don't need isStarred here
+                 this.setPageTitle(item);
                  localStorage.setItem('selected_discussion', item.id); this.load_discussion(item.id);
              } else if (!item) {
                  this.currentDiscussion = {}; this.discussionArr = []; this.setPageTitle(); localStorage.removeItem('selected_discussion');
@@ -332,6 +348,10 @@ export default defineComponent({
                              await axios.post('/delete_discussion', { client_id: this.client_id, id: id });
                              this.$store.state.toast.showToast(`Discussion ${id} deleted.`, 4, true);
                              this.discussionsList = this.discussionsList.filter(d => d.id !== id);
+                             // Remove from starred if it was starred
+                             if (this.getStarredDiscussions.includes(id)) {
+                                 this.$store.commit('removeStarredDiscussion', id);
+                             }
                              if (this.currentDiscussion?.id === id) { this.selectDiscussion(null); }
                          } catch (error) {
                              console.error("Error deleting discussion:", error); this.$store.state.toast.showToast(`Error deleting discussion ${id}: ${error.message}`, 4, false); this.setDiscussionLoading(id, false);
@@ -349,10 +369,16 @@ export default defineComponent({
                         this.$store.state.toast.showToast(`Deleting ${numToDelete} discussions...`, 5, true);
                          let deletedCount = 0; let failedCount = 0;
                          idsToDelete.forEach(id => this.setDiscussionLoading(id, true));
+                         const currentStarred = this.getStarredDiscussions; // Get starred before loop
                         for (const id of idsToDelete) {
                             try {
                                 await axios.post('/delete_discussion', { client_id: this.client_id, id: id });
-                                deletedCount++; this.discussionsList = this.discussionsList.filter(d => d.id !== id);
+                                deletedCount++;
+                                this.discussionsList = this.discussionsList.filter(d => d.id !== id);
+                                // Remove from starred if it was starred
+                                if (currentStarred.includes(id)) {
+                                    this.$store.commit('removeStarredDiscussion', id);
+                                }
                                 if (this.currentDiscussion?.id === id) { this.selectDiscussion(null); }
                             } catch (error) { console.error(`Error deleting discussion ${id}:`, error); failedCount++; this.setDiscussionLoading(id, false); }
                         }
@@ -397,9 +423,15 @@ export default defineComponent({
              catch (error) { console.error("Error opening folder:", error); this.$store.state.toast.showToast(`Could not open folder: ${error.message}`, 4, false); }
         },
 
-         toggleStarDiscussion(item) {
-             this.toggleStarDiscussion(item.id);
-             this.$nextTick(() => { this.$forceUpdate(); }); // May be needed for LeftPanel list re-render based on getter
+        // Renamed handler to avoid conflict with mapActions name
+        handleToggleStarDiscussion(item) {
+             if (item && item.id !== undefined) {
+                 // Dispatch the action from the store
+                 this.toggleStarDiscussion(item); // Pass the whole item as the action expects {id: ...}
+             } else {
+                 console.warn("Attempted to toggle star on invalid discussion item:", item);
+             }
+             // No need for $forceUpdate, Vuex reactivity + computed prop should handle it
         },
 
         load_discussion(id, callback) {
@@ -493,7 +525,7 @@ export default defineComponent({
              if (this.isGenerating) { this.$store.state.toast.showToast("Please wait for the current response.", 4, false); return; }
 
              this.$store.commit('setIsGenerating', true); this.setDiscussionLoading(this.currentDiscussion.id, true);
-             const emitEvent = type === 'internet' ? 'generate_msg_with_internet' : 'generate_msg';      
+             const emitEvent = type === 'internet' ? 'generate_msg_with_internet' : 'generate_msg';
             socket.emit(emitEvent, { prompt: message });
             this.scrollToBottomMessages();
         },
@@ -557,8 +589,13 @@ export default defineComponent({
          createEmptyAIMessage() { if (!this.currentDiscussion?.id) return; socket.emit('create_empty_message', { type: 1 }); this.$store.state.toast.showToast("Creating empty AI message...", 2, true); },
 
         setDiscussionLoading(id, isLoading) {
-             const index = this.discussionsList.findIndex(d => d.id === id);
+            if(id!==undefined){
+                const index = this.discussionsList.findIndex(d => d.id === id);
              if (index !== -1) { this.discussionsList[index].loading = isLoading; }
+            }
+            else{
+                console.error("discussion id is undefined")
+            }
         },
         setPageTitle(item = null) {
             const baseTitle = 'L🌟LLMS WebUI'; let discussionTitle = "Welcome";
@@ -570,7 +607,7 @@ export default defineComponent({
         },
          scrollToDiscussionElement(id) {
             if (!id) return;
-             nextTick(() => { const el = document.getElementById(`dis-${id}`); const container = document.getElementById('leftPanelScroll'); if (el && container) { container.scrollTo({ top: el.offsetTop, behavior: 'smooth' }); } });
+             nextTick(() => { const el = document.getElementById(id); const container = document.getElementById('leftPanelScroll'); if (el && container) { container.scrollTo({ top: el.offsetTop, behavior: 'smooth' }); } });
         },
         copyToClipBoard(messageEntry) {
              let content = messageEntry.message.content || ""; let result = content;

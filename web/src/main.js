@@ -8,6 +8,9 @@ import './assets/tailwind.css'
 
 const app = createApp(App)
 const STARRED_LOCAL_STORAGE_KEY = 'lollms_starred_personalities';
+const STARRED_FUNCTIONS_LOCAL_STORAGE_KEY = 'lollms_starred_functions';
+const STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY = 'lollms_starred_discussions';
+
 function copyObject(obj) {
   if (obj === null || typeof obj !== 'object') {
     return obj;
@@ -31,43 +34,24 @@ function copyObject(obj) {
   return objCopy;
 }
 
-function loadStarredFromLocalStorage() {
+function loadStarredFromLocalStorage(key, description) {
     try {
-        const stored = localStorage.getItem(STARRED_LOCAL_STORAGE_KEY);
+        const stored = localStorage.getItem(key);
         return stored ? JSON.parse(stored) : [];
     } catch (e) {
-        console.error("Failed to load starred personalities from localStorage:", e);
+        console.error(`Failed to load starred ${description} from localStorage:`, e);
+        saveStarredToLocalStorage(key,[], description);
         return [];
     }
 }
 
-function saveStarredToLocalStorage(starredPaths) {
+function saveStarredToLocalStorage(key, starredItems, description) {
     try {
-        localStorage.setItem(STARRED_LOCAL_STORAGE_KEY, JSON.stringify(starredPaths));
+        localStorage.setItem(key, JSON.stringify(starredItems));
     } catch (e) {
-        console.error("Failed to save starred personalities to localStorage:", e);
+        console.error(`Failed to save starred ${description} to localStorage:`, e);
     }
 }
-const STARRED_FUNCTIONS_LOCAL_STORAGE_KEY = 'lollms_starred_functions';
-
-function loadStarredFunctionsFromLocalStorage() {
-    try {
-        const stored = localStorage.getItem(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY);
-        return stored ? JSON.parse(stored) : [];
-    } catch (e) {
-        console.error("Failed to load starred functions from localStorage:", e);
-        return [];
-    }
-}
-
-function saveStarredFunctionsToLocalStorage(starredPaths) {
-    try {
-        localStorage.setItem(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY, JSON.stringify(starredPaths));
-    } catch (e) {
-        console.error("Failed to save starred functions to localStorage:", e);
-    }
-}
-
 
 export const store = createStore({
     state () {
@@ -97,8 +81,8 @@ export const store = createStore({
           'Content-Type': 'application/json'
         },
         client_id:"",
-        leftPanelCollapsed:  false,
-        rightPanelCollapsed:  true,
+        leftPanelCollapsed: localStorage.getItem('lollms_webui_left_panel_collapsed') === 'true',
+        rightPanelCollapsed: localStorage.getItem('lollms_webui_right_panel_collapsed') !== 'false', // Default to true if not set or false
         view_mode: localStorage.getItem('lollms_webui_view_mode') || 'compact',
         yesNoDialog:null,
         universalForm:null,
@@ -112,6 +96,7 @@ export const store = createStore({
         ready:false,
         loading_infos: "",
         loading_progress: 0,
+        progress_value:0,
         version : "unknown",
         settingsChanged:false,
         isConnected: false,
@@ -124,8 +109,10 @@ export const store = createStore({
         modelsArr:[],
         selectedModel:null,
         personalities:[],
-        starredPersonalities: loadStarredFromLocalStorage(), // Initialize from localStorage
-        starredFunctions: loadStarredFunctionsFromLocalStorage(), // NEW: starred functions state
+        functions:[], // Added state for functions if managed globally
+        starredPersonalities: loadStarredFromLocalStorage(STARRED_LOCAL_STORAGE_KEY, 'personalities'),
+        starredFunctions: loadStarredFromLocalStorage(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY, 'functions'),
+        starredDiscussions: loadStarredFromLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, 'discussions'),
         diskUsage:null,
         ramUsage:null,
         vramUsage:null,
@@ -163,12 +150,15 @@ export const store = createStore({
         state.view_mode = mode;
         localStorage.setItem('lollms_webui_view_mode', mode);
       },
-      setFunctions(state, functions) { state.functions = functions; }, // NEW: if managing functions in store
-
-      setStarredFunctions(state, starredPaths) { // NEW
+      setFunctions(state, functions) { state.functions = functions; },
+      setStarredFunctions(state, starredPaths) {
           state.starredFunctions = starredPaths;
-          saveStarredFunctionsToLocalStorage(starredPaths);
-      },      
+          saveStarredToLocalStorage(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY, starredPaths, 'functions');
+      },
+      setStarredDiscussions(state, starredIds) {
+          state.starredDiscussions = starredIds;
+          saveStarredToLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, starredIds, 'discussions');
+      },
       setYesNoDialog(state, dialog) { state.yesNoDialog = dialog; },
       setUniversalForm(state, form) { state.universalForm = form; },
       setSaveConfiguration(state, saveFn) { state.saveConfiguration = saveFn; },
@@ -181,6 +171,7 @@ export const store = createStore({
       setIsReady(state, ready) { state.ready = ready; },
       setLoadingInfos(state, infos) { state.loading_infos = infos; },
       setLoadingProgress(state, progress) { state.loading_progress = progress; },
+      setProgressValue(state, progress_value) { state.progress_value = progress_value; },
       setVersion(state, version) { state.version = version; },
       setSettingsChanged(state, changed) { state.settingsChanged = changed; },
       setIsConnected(state, isConnected) { state.isConnected = isConnected; },
@@ -193,28 +184,47 @@ export const store = createStore({
       setModelsArr(state, modelsArr) { state.modelsArr = modelsArr; },
       setSelectedModel(state, selectedModel) { state.selectedModel = selectedModel; },
       setPersonalities(state, personalities) { state.personalities = personalities; },
-      setStarredPersonalities(state, starredPaths) { state.starredPersonalities = starredPaths; saveStarredToLocalStorage(starredPaths); },
+      setStarredPersonalities(state, starredPaths) {
+        state.starredPersonalities = starredPaths;
+        saveStarredToLocalStorage(STARRED_LOCAL_STORAGE_KEY, starredPaths, 'personalities');
+      },
       addStarredPersonality(state, personalityPath) {
-        try{
-          if (!state.starredPersonalities.includes(personalityPath)) {
-              state.starredPersonalities.push(personalityPath);
-              saveStarredToLocalStorage(state.starredPersonalities);
-          }
-
-        }catch{console.log("error")}
+        if (!state.starredPersonalities.includes(personalityPath)) {
+            state.starredPersonalities.push(personalityPath);
+            saveStarredToLocalStorage(STARRED_LOCAL_STORAGE_KEY, state.starredPersonalities, 'personalities');
+        }
       },
       removeStarredPersonality(state, personalityPath) {
           const index = state.starredPersonalities.indexOf(personalityPath);
           if (index > -1) {
               state.starredPersonalities.splice(index, 1);
-              saveStarredToLocalStorage(state.starredPersonalities);
+              saveStarredToLocalStorage(STARRED_LOCAL_STORAGE_KEY, state.starredPersonalities, 'personalities');
           }
       },
-      removeStarredDiscussion(state, personalityPath) {
-          const index = state.starredPersonalities.indexOf(personalityPath);
+      addStarredFunction(state, functionPath) {
+          if (!state.starredFunctions.includes(functionPath)) {
+              state.starredFunctions.push(functionPath);
+              saveStarredToLocalStorage(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY, state.starredFunctions, 'functions');
+          }
+      },
+      removeStarredFunction(state, functionPath) {
+          const index = state.starredFunctions.indexOf(functionPath);
           if (index > -1) {
-              state.starredPersonalities.splice(index, 1);
-              saveStarredToLocalStorage(state.starredPersonalities);
+              state.starredFunctions.splice(index, 1);
+              saveStarredToLocalStorage(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY, state.starredFunctions, 'functions');
+          }
+      },
+      addStarredDiscussion(state, discussionId) {
+          if (!state.starredDiscussions.includes(discussionId)) {
+              state.starredDiscussions.push(discussionId);
+              saveStarredToLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, state.starredDiscussions, 'discussions');
+          }
+      },
+      removeStarredDiscussion(state, discussionId) {
+          const index = state.starredDiscussions.indexOf(discussionId);
+          if (index > -1) {
+              state.starredDiscussions.splice(index, 1);
+              saveStarredToLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, state.starredDiscussions, 'discussions');
           }
       },
       setDiskUsage(state, diskUsage) { state.diskUsage = diskUsage; },
@@ -226,21 +236,7 @@ export const store = createStore({
       setCurrentModel(state, currentModel) { state.currentModel = currentModel; },
       setCurrentBinding(state, currentBinding){ state.currentBinding = currentBinding; },
       setDatabases(state, databases) { state.databases = databases; },
-      addStarredFunction(state, functionPath) { // NEW
-          if (!state.starredFunctions.includes(functionPath)) {
-              state.starredFunctions.push(functionPath);
-              saveStarredFunctionsToLocalStorage(state.starredFunctions);
-          }
-      },
-      removeStarredFunction(state, functionPath) { // NEW
-          const index = state.starredFunctions.indexOf(functionPath);
-          if (index > -1) {
-              state.starredFunctions.splice(index, 1);
-              saveStarredFunctionsToLocalStorage(state.starredFunctions);
-          }
-      },
-
-      updateFunction(state, newFunctionData){ // NEW: If managing functions in store
+      updateFunction(state, newFunctionData){
           const index = state.functions.findIndex(f => (f.id || f.full_path) === (newFunctionData.id || newFunctionData.full_path));
           if (index !== -1) {
               const updatedFunc = { ...state.functions[index], ...newFunctionData };
@@ -248,7 +244,6 @@ export const store = createStore({
           } else {
             console.warn("Couldn't update function (not found):", newFunctionData.full_path);
           }
-          // Maybe update mounted list if needed? For functions, this might not be necessary unless they are tied to config
       },
       updatePersonality(state, newPersonality){
         const index = state.personalities.findIndex(p => (p.id || p.full_path) === (newPersonality.id || newPersonality.full_path));
@@ -303,6 +298,7 @@ export const store = createStore({
       getIsReady: state => state.ready,
       getLoadingInfos: state => state.loading_infos,
       getLoadingProgress: state => state.loading_progress,
+      getProgressValue: state => state.progress_value,
       getVersion: state => state.version,
       getSettingsChanged: state => state.settingsChanged,
       getIsConnected: state => state.isConnected,
@@ -325,8 +321,9 @@ export const store = createStore({
       getCurrentModel: state => state.currentModel,
       getCurrentBinding: state => state.currentBinding,
       getDatabases: state => state.databases,
-      getFunctions: state => state.functions, // NEW: if managing functions in store
-      getStarredFunctions: state => state.starredFunctions, // NEW      
+      getFunctions: state => state.functions,
+      getStarredFunctions: state => state.starredFunctions,
+      getStarredDiscussions: state => state.starredDiscussions,
     },
     actions: {
       async fetchIsRtOn({ commit }) {
@@ -357,8 +354,7 @@ export const store = createStore({
           commit('setVersion', 'unknown (error)');
         }
       },
-        // NEW: Action to toggle function star status
-        toggleStarFunction({ commit, state, dispatch }, func) {
+        toggleStarFunction({ commit, state }, func) {
           if (!func || !func.full_path) {
               console.warn("Attempted to toggle star on invalid function:", func);
               return;
@@ -371,10 +367,37 @@ export const store = createStore({
           } else {
               commit('addStarredFunction', functionPath);
           }
-          // Update the isStarred status in the main functions list if managed by store
-          // If function list is local to component, component needs to handle its own state update
-          // dispatch('updateFunctionStarredStatus', { functionPath, isStarred: !isCurrentlyStarred }); // Uncomment if functions list is in store
       },
+      toggleStarPersonality({ commit, state, dispatch }, personality) {
+          if (!personality || !personality.full_path) {
+              console.warn("Attempted to toggle star on invalid personality:", personality);
+              return;
+          }
+          const personalityPath = personality.full_path;
+          const isCurrentlyStarred = state.starredPersonalities.includes(personalityPath);
+
+          if (isCurrentlyStarred) {
+              commit('removeStarredPersonality', personalityPath);
+          } else {
+              commit('addStarredPersonality', personalityPath);
+          }
+          dispatch('updatePersonalityStarredStatus', { personalityPath, isStarred: !isCurrentlyStarred });
+      },
+      toggleStarDiscussion({ commit, state }, discussion) {
+        if (!discussion || typeof discussion.id === 'undefined') {
+            console.warn("Attempted to toggle star on invalid discussion:", discussion);
+            return;
+        }
+        const discussionId = discussion.id;
+        const isCurrentlyStarred = state.starredDiscussions.includes(discussionId);
+
+        if (isCurrentlyStarred) {
+            commit('removeStarredDiscussion', discussionId);
+        } else {
+            commit('addStarredDiscussion', discussionId);
+        }
+        // No global discussion list update action needed unless discussions are managed in Vuex state
+    },
       async refreshConfig({ commit, state }) {
         console.log("Fetching configuration");
         try {
@@ -383,7 +406,6 @@ export const store = createStore({
           if (!configData) {
              throw new Error("Received null or undefined config file");
           }
-          // Make a deep copy to avoid modifying the original response object if needed elsewhere
           let configFile = copyObject(configData);
 
           if (!configFile.personalities || configFile.personalities.length === 0) {
@@ -412,7 +434,7 @@ export const store = createStore({
           commit('setSettingsChanged', false);
         } catch (error) {
           console.error('Error during refreshConfig:', error);
-          commit('setSettingsChanged', false); // Assume config is stale, revert changes
+          commit('setSettingsChanged', false);
         }
       },
 
@@ -483,7 +505,7 @@ export const store = createStore({
               let personalities = [];
               const catdictionary = await api_get_req("get_all_personalities");
               const mountedSet = new Set(state.config?.personalities || []);
-              const starredSet = new Set(state.starredPersonalities || []); // Use starred from state
+              const starredSet = new Set(state.starredPersonalities || []);
 
               if (!catdictionary) {
                    commit('setPersonalities', []);
@@ -502,7 +524,7 @@ export const store = createStore({
                       const full_path = `${catkey}/${item.folder}`;
                       const langPaths = Array.isArray(item.languages) ? item.languages.map(lang => `${full_path}:${lang}`) : [];
                       const isMounted = mountedSet.has(full_path) || langPaths.some(lp => mountedSet.has(lp));
-                      const isStarred = starredSet.has(full_path); // Check against store state
+                      const isStarred = starredSet.has(full_path);
 
                       return {
                           ...item,
@@ -510,7 +532,7 @@ export const store = createStore({
                           full_path: full_path,
                           id: item.id || full_path,
                           isMounted: isMounted,
-                          isStarred: isStarred, // Set initial starred status
+                          isStarred: isStarred,
                           isProcessing: false,
                       };
                   }).filter(item => item !== null);
@@ -549,7 +571,7 @@ export const store = createStore({
                 let pers = copyObject(personalitiesMap.get(basePath));
                 pers.language = typeof full_path_item === 'string' && full_path_item.includes(':') ? full_path_item.split(':')[1] : '';
                 pers.isMounted = true;
-                pers.isStarred = starredSet.has(basePath); // Ensure mounted also gets starred status
+                pers.isStarred = starredSet.has(basePath);
                 mountedPersArr.push(pers);
             } else {
                 indicesToRemove.push(i);
@@ -638,9 +660,6 @@ export const store = createStore({
       async refreshModels({ commit, state }) {
           try {
               let modelsArr = await api_get_req("list_models");
-              console.log(`modelsArr: ${modelsArr}`)
-              console.log(`state.modelsZoo:`)
-              console.log(state.modelsZoo)
               if (!Array.isArray(modelsArr)) modelsArr = [];
               commit('setModelsArr', modelsArr);
 
@@ -651,8 +670,6 @@ export const store = createStore({
               const modelsZoo = state.modelsZoo || [];
               const modelsArrSet = new Set(modelsArr);
               modelsZoo.forEach(item => {
-                  console.log("modelsArrSet")
-                  console.log(modelsArrSet)
                    if (item && item.name) item.isInstalled = modelsArrSet.has(item.name);
               });
               commit('setModelsZoo', [...modelsZoo]);
@@ -736,39 +753,6 @@ export const store = createStore({
         }
       },
 
-      toggleStarPersonality({ commit, state, dispatch }, personality) {
-          if (!personality || !personality.full_path) {
-              console.warn("Attempted to toggle star on invalid personality:", personality);
-              return;
-          }
-          const personalityPath = personality.full_path;
-          const isCurrentlyStarred = state.starredPersonalities.includes(personalityPath);
-
-          if (isCurrentlyStarred) {
-              commit('removeStarredPersonality', personalityPath);
-          } else {
-              commit('addStarredPersonality', personalityPath);
-          }
-          // Update the isStarred status in the main personalities list for immediate UI feedback
-          dispatch('updatePersonalityStarredStatus', { personalityPath, isStarred: !isCurrentlyStarred });
-      },
-      toggleStarDiscussion({ commit, state, dispatch }, discussion) {
-        if (!discussion) {
-            console.warn("Attempted to toggle star on invalid discussion:", discussion);
-            return;
-        }
-        const discussion_id = discussion.id;
-        const isCurrentlyStarred = state.starredDiscussions.includes(discussion_id);
-
-        if (isCurrentlyStarred) {
-            commit('removeStarredDiscussion', discussion_id);
-        } else {
-            commit('addStarredDiscussion', discussion_id);
-        }
-        // Update the isStarred status in the main personalities list for immediate UI feedback
-        dispatch('updateDiscussionStarredStatus', { discussion_id, isStarred: !isCurrentlyStarred });
-    },      
-
       updatePersonalityStarredStatus({ commit, state }, { personalityPath, isStarred }) {
          const personality = state.personalities.find(p => p.full_path === personalityPath);
          if (personality) {
@@ -777,13 +761,16 @@ export const store = createStore({
             console.warn("Could not find personality in main list to update starred status:", personalityPath);
          }
       },
-      
-      async applyConfiguration({ commit, state }) {
+
+      async applyConfiguration({ commit, state, dispatch }) {
           try {
               const res = await axios.post('/apply_settings', { client_id:state.client_id, config: state.config }, { headers: state.posts_headers });
               if (res.data.status) {
                  state.toast.showToast("Settings applied. Refreshing...", 4, true);
-                  await this.refreshConfigInView(); // Refreshes store, resets local state
+                  // Assuming refreshConfigInView exists in the component context where this action is called
+                  // If not, need to call refreshConfig directly or handle UI refresh differently
+                  // await this.refreshConfigInView(); // This line might cause issues if 'this' is not the component instance
+                  await dispatch('refreshConfig'); // Refresh store config state
               } else {
                  state.toast.showToast(`Apply failed: ${res.data.error || 'Error'}`, 4, false);
               }
@@ -791,15 +778,15 @@ export const store = createStore({
              state.toast.showToast(`Error applying settings: ${error.message || error}`, 4, false);
           }
       },
-      async saveConfiguration({ commit, state }) {
-            this.isLoading = true;
-            this.loading_text = "Saving configuration...";
+      async saveConfiguration({ state }) {
+            // Typically isLoading and loading_text are component-local state, not Vuex state
+            // We'll assume the component calling this action handles its own loading state
           try {
               const res = await axios.post('/save_settings', { client_id:state.client_id }, { headers: state.posts_headers });
-              if (res.data.status)state.toast.showToast("Settings saved successfully.", 4, true);
+              if (res.data.status) state.toast.showToast("Settings saved successfully.", 4, true);
               else state.messageBox.showMessage(`Error saving settings: ${res.data.error || 'Error'}`);
           } catch (error) {state.messageBox.showMessage(`Error saving settings: ${error.message}`);
-          } finally { this.isLoading = false; }
+          }
       },
     }
 })

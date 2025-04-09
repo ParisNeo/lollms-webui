@@ -1,6 +1,7 @@
 <template>
     <transition name="slide-right">
         <div v-if="showLeftPanel" class="relative flex flex-col no-scrollbar shadow-lg w-[16rem] panels-color scrollbar h-full">
+            <!-- Header -->
             <RouterLink :to="{ name: 'discussions' }" class="flex items-center space-x-2 p-2 border-b border-blue-200 dark:border-blue-700 hover:bg-blue-50 dark:hover:bg-blue-800 transition duration-150 ease-in-out">
                 <div class="logo-container w-12 h-12 flex-shrink-0">
                     <img class="w-full h-full rounded-full object-cover logo-image border-2 border-blue-300 dark:border-blue-600 shadow-sm"
@@ -21,6 +22,7 @@
                 </div>
             </RouterLink>
 
+            <!-- Toolbar -->
             <Toolbar
                 :loading="toolbarLoading"
                 :is-checkbox="isCheckbox"
@@ -45,6 +47,7 @@
                 @show-personality-list="$emit('show-personality-list')"
             />
 
+            <!-- Search & Sort -->
             <div class="w-full max-w-md mx-auto p-2 border-b border-blue-100 dark:border-blue-800">
                 <form @submit.prevent class="relative">
                     <div class="flex items-center space-x-1">
@@ -72,11 +75,13 @@
                 </form>
             </div>
 
+            <!-- Bulk Actions (Checkbox Mode) -->
             <div v-if="isCheckbox" class="w-full p-2 bg-blue-100 dark:bg-blue-900 border-b border-blue-200 dark:border-blue-700">
                 <div class="flex flex-col space-y-1">
                     <p v-if="selectedDiscussions.length > 0" class="text-sm text-blue-700 dark:text-blue-200">Selected: {{ selectedDiscussions.length }}</p>
-                    <div v-if="selectedDiscussions.length > 0" class="flex space-x-1 items-center">
-                        <button v-if="!showConfirmation" class="svg-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200" title="Remove selected" type="button" @click.stop="showConfirmation = true">
+                    <div class="flex space-x-1 items-center">
+                        <!-- Delete -->
+                        <button v-if="!showConfirmation && selectedDiscussions.length > 0" class="svg-button text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-200" title="Remove selected" type="button" @click.stop="showConfirmation = true">
                             <i data-feather="trash" class="w-5 h-5"></i>
                         </button>
                         <div v-if="showConfirmation" class="flex space-x-1 items-center">
@@ -87,24 +92,29 @@
                                 <i data-feather="x" class="w-5 h-5"></i>
                             </button>
                         </div>
-                    </div>
-                    <div class="flex space-x-1 items-center">
-                        <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 rotate-90" title="Export selected to a json file" type="button" @click.stop="$emit('export-discussions-as-json', selectedDiscussions)">
+                        <!-- Export -->
+                         <button v-if="selectedDiscussions.length > 0" class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 rotate-90" title="Export selected to a json file" type="button" @click.stop="$emit('export-discussions-as-json', selectedDiscussions)">
                             <i data-feather="codepen" class="w-5 h-5"></i>
                         </button>
-                        <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 rotate-90" title="Export selected to a folder" type="button" @click.stop="$emit('export-discussions-to-folder', selectedDiscussions)">
+                        <button v-if="selectedDiscussions.length > 0" class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200 rotate-90" title="Export selected to a folder" type="button" @click.stop="$emit('export-discussions-to-folder', selectedDiscussions)">
                             <i data-feather="folder" class="w-5 h-5"></i>
                         </button>
-                        <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200" title="Export selected to a markdown file" type="button" @click.stop="$emit('export-discussions-as-markdown', selectedDiscussions)">
+                        <button v-if="selectedDiscussions.length > 0" class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200" title="Export selected to a markdown file" type="button" @click.stop="$emit('export-discussions-as-markdown', selectedDiscussions)">
                             <i data-feather="bookmark" class="w-5 h-5"></i>
                         </button>
-                         <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200" title="Select/Deselect All" type="button" @click.stop="selectAllDiscussions">
+                         <!-- Select All / Deselect All -->
+                         <button class="svg-button text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200" :title="isAllSelected ? 'Deselect All Visible' : 'Select All Visible'" type="button" @click.stop="selectAllDiscussions">
                              <i :data-feather="isAllSelected ? 'minus-square' : 'check-square'" class="w-5 h-5"></i>
+                         </button>
+                         <!-- Star/Unstar Selected -->
+                          <button v-if="selectedDiscussions.length > 0" class="svg-button text-yellow-500 hover:text-yellow-700 dark:text-yellow-400 dark:hover:text-yellow-200" :title="selectedDiscussions.some(d=>d.isStarred) ? 'Unstar Selected':'Star Selected'" type="button" @click.stop="toggleStarSelectedDiscussions">
+                             <i :data-feather="selectedDiscussions.some(d=>d.isStarred) ? 'star' : 'star'" :fill="selectedDiscussions.some(d=>d.isStarred) ? 'currentColor' : 'none'" class="w-5 h-5"></i>
                          </button>
                     </div>
                 </div>
             </div>
 
+            <!-- Discussions List -->
             <div id="leftPanelScroll" class="flex flex-col flex-grow overflow-y-auto overflow-x-hidden scrollbar"
                  @dragover.prevent="isDragOverDiscussion = true" @dragleave="isDragOverDiscussion = false" @drop.prevent="handleDrop">
                  <div class="relative flex flex-col flex-grow mb-10 z-0 w-full">
@@ -112,16 +122,17 @@
                          <div id="dis-list" :class="(filterInProgress || toolbarLoading) ? 'opacity-20 pointer-events-none' : ''" class="flex flex-col flex-grow w-full pb-10">
                              <TransitionGroup name="discussionsList">
                                 <template v-for="item in groupedDiscussions" :key="item.key">
+                                    <!-- Group Header -->
                                     <div v-if="item.type === 'header'"
                                          class="sticky top-0 z-10 px-2 py-1 bg-gray-100 dark:bg-gray-800 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider shadow-sm flex items-center justify-between cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
                                          @click="toggleSection(item.key)">
                                         <span>{{ item.label }}</span>
                                         <i :data-feather="item.collapsed ? 'chevron-right' : 'chevron-down'" class="w-4 h-4"></i>
                                     </div>
-                                    <!-- Inside LeftPanel.vue's TransitionGroup -->
+                                    <!-- Discussion Item -->
                                     <Discussion
-                                        v-if="item.type === 'discussion'"
-                                        :id="`dis-${item.data.id}`"
+                                        v-if="item.type === 'discussion' && !item.collapsed"
+                                        :id="item.data.id"
                                         :title="item.data.title"
                                         :selected="currentDiscussion && currentDiscussion.id === item.data.id"
                                         :loading="item.data.loading"
@@ -151,6 +162,7 @@
                 </div>
             </div>
 
+            <!-- Footer -->
             <div class="flex flex-row items-center justify-center border-t border-blue-200 dark:border-blue-700 p-1">
                 <div class="chat-bar text-center flex items-center justify-center w-full cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 rounded transition duration-150 ease-in-out" @click="$emit('show-database-selector')">
                     <button class="svg-button p-1">
@@ -168,7 +180,7 @@
 <script>
 import feather from 'feather-icons';
 import { nextTick } from 'vue';
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex'; // Removed mapGetters
 import { RouterLink } from 'vue-router';
 import storeLogo from '@/assets/logo.png';
 import Discussion from './Discussion.vue';
@@ -194,7 +206,7 @@ export default {
     components: { Discussion, RouterLink, Toolbar },
     props: {
         showLeftPanel: Boolean,
-        discussionsList: Array,
+        discussionsList: Array, // Expects array with { id, title, created_at, loading, isStarred }
         currentDiscussion: Object,
         toolbarLoading: Boolean,
         formattedDatabaseName: String,
@@ -216,15 +228,14 @@ export default {
             showConfirmation: false,
             isDragOverDiscussion: false,
             searchTimeout: null,
-            localDiscussionsState: [],
+            localDiscussionsState: [], // Holds { id, checkBoxValue }
             sortBy: 'date',
             sortOrder: 'desc',
-            collapsedSections: { starred: false, today: false, yesterday: true, older: true },
+            collapsedSections: { starred: false, today: false, yesterday: true, older: true }, // Keep track of collapsed state for each group
         };
     },
     computed: {
         ...mapState(['config', 'theme_vars']),
-        ...mapGetters(['getStarredDiscussionsSet']),
 
         logoSrc() {
             return this.config?.app_custom_logo ? `/user_infos/${this.config.app_custom_logo}` : storeLogo;
@@ -238,9 +249,6 @@ export default {
         appSlogan() {
             return this.config?.app_custom_slogan || 'One tool to rule them all';
         },
-        starredSet() {
-            return this.getStarredDiscussionsSet || new Set();
-        },
         sortIcon() {
             return this.sortOrder === 'asc' ? 'arrow-up' : 'arrow-down';
         },
@@ -248,42 +256,43 @@ export default {
             const labels = { date: 'Date', title: 'Title' };
             return labels[this.sortBy] || 'Date';
         },
+        // Enhance the prop list with local checkbox state and parsed date
         enhancedDiscussions() {
             return (this.discussionsList || []).map(disc => {
                 const localState = this.localDiscussionsState.find(ld => ld.id === disc.id);
-                const creationDate = disc.created_at ? new Date(disc.created_at) : new Date(0); // Use created_at
+                const creationDate = disc.created_at ? new Date(disc.created_at) : new Date(0);
                 return {
-                    ...disc,
+                    ...disc, // Includes id, title, created_at, loading, isStarred (from prop)
                     checkBoxValue: localState ? localState.checkBoxValue : false,
-                    isStarred: this.starredSet.has(String(disc.id)),
-                    creationDate: creationDate,
+                    creationDate: creationDate, // Parsed date for sorting/grouping
                 };
             });
         },
-        filteredDiscussions() {
-            // This is primarily used for 'Select All' logic now, filtering happens inside groupedDiscussions
+        // Primarily used for 'Select All' logic and determining if all *visible* items are selected
+         filteredDiscussions() {
              if (!this.filterTitle.trim()) {
                 return this.enhancedDiscussions;
             }
             const query = this.filterTitle.toLowerCase();
             return this.enhancedDiscussions.filter(item => item.title && item.title.toLowerCase().includes(query));
         },
+        // Groups discussions by Starred, Today, Yesterday, Older, applies filtering and sorting
         groupedDiscussions() {
             const starred = [];
             const today = [];
             const yesterday = [];
             const older = [];
 
-            // Filter first based on search query
+            // Filter first based on search query using the enhanced list
             const filtered = this.enhancedDiscussions.filter(item => {
                 if (!this.filterTitle.trim()) return true;
                 const query = this.filterTitle.toLowerCase();
                 return item.title && item.title.toLowerCase().includes(query);
             });
 
-            // Separate starred from unstarred
+            // Separate into groups (Starred first, then by date)
             filtered.forEach(disc => {
-                if (disc.isStarred) {
+                if (disc.isStarred) { // Use isStarred from the enhanced list (which came from props)
                     starred.push(disc);
                 } else {
                     const creationDate = disc.creationDate;
@@ -305,7 +314,6 @@ export default {
                 } else if (this.sortBy === 'title') {
                     comparison = (a.title || '').localeCompare(b.title || ''); // Ascending by title default
                 }
-                // Apply sort order direction
                 const orderMultiplier = (this.sortBy === 'date' && this.sortOrder === 'asc') || (this.sortBy === 'title' && this.sortOrder === 'desc') ? -1 : 1;
                 return comparison * orderMultiplier;
             };
@@ -316,51 +324,32 @@ export default {
             older.sort(sortFn);
 
             const groups = [];
-
-            // Add Starred section
-            if (starred.length > 0) {
-                groups.push({ type: 'header', label: 'Starred', key: 'starred', collapsed: this.collapsedSections.starred });
-                if (!this.collapsedSections.starred) {
-                    starred.forEach(item => groups.push({ type: 'discussion', data: item, key: `disc-${item.id}` }));
-                }
+            const addGroup = (label, key, items) => {
+                 if (items.length > 0) {
+                     const isCollapsed = this.collapsedSections[key] || false;
+                     groups.push({ type: 'header', label: label, key: key, collapsed: isCollapsed });
+                     items.forEach(item => groups.push({ type: 'discussion', data: item, key: `disc-${item.id}`, collapsed: isCollapsed }));
+                 }
             }
 
-            // Add Today section
-            if (today.length > 0) {
-                groups.push({ type: 'header', label: 'Today', key: 'today', collapsed: this.collapsedSections.today });
-                 if (!this.collapsedSections.today) {
-                    today.forEach(item => groups.push({ type: 'discussion', data: item, key: `disc-${item.id}` }));
-                }
-            }
+            addGroup('Starred', 'starred', starred);
+            addGroup('Today', 'today', today);
+            addGroup('Yesterday', 'yesterday', yesterday);
+            addGroup('Older', 'older', older);
 
-            // Add Yesterday section
-            if (yesterday.length > 0) {
-                 groups.push({ type: 'header', label: 'Yesterday', key: 'yesterday', collapsed: this.collapsedSections.yesterday });
-                if (!this.collapsedSections.yesterday) {
-                    yesterday.forEach(item => groups.push({ type: 'discussion', data: item, key: `disc-${item.id}` }));
-                }
-            }
-
-            // Add Older section
-            if (older.length > 0) {
-                groups.push({ type: 'header', label: 'Older', key: 'older', collapsed: this.collapsedSections.older });
-                 if (!this.collapsedSections.older) {
-                    older.forEach(item => groups.push({ type: 'discussion', data: item, key: `disc-${item.id}` }));
-                }
-            }
             return groups;
         },
-
+        // Determines which discussions are currently selected based on local checkbox state
         selectedDiscussions() {
-            // Selected items are based on the local checkbox state, across all filtered items
-            return this.filteredDiscussions.filter(item => {
+            // We need to filter enhancedDiscussions based on local checkbox state
+             return this.enhancedDiscussions.filter(item => {
                  const localState = this.localDiscussionsState.find(ld => ld.id === item.id);
                  return localState && localState.checkBoxValue;
             });
         },
+        // Determines if all *visible* (filtered) discussions are currently selected
         isAllSelected() {
-            // Check if all items matching the current filter are selected
-            const targetList = this.filteredDiscussions;
+            const targetList = this.filteredDiscussions; // Discussions matching the current filter
             if (targetList.length === 0) return false;
             const selectedIds = new Set(this.selectedDiscussions.map(d => d.id));
             return targetList.every(item => selectedIds.has(item.id));
@@ -370,7 +359,8 @@ export default {
         toggleSection(key) {
             if (key in this.collapsedSections) {
                 this.collapsedSections[key] = !this.collapsedSections[key];
-                // Recompute groupedDiscussions implicitly updates the view
+                // Force reactivity update if needed, though computed should handle it
+                // this.$forceUpdate(); // Avoid if possible
                 this.$nextTick(() => feather.replace());
             }
         },
@@ -379,7 +369,6 @@ export default {
              clearTimeout(this.searchTimeout);
              this.searchTimeout = setTimeout(() => {
                  this.filterInProgress = false;
-                 // Vue reactivity handles the update, feather needs refresh
                  this.$nextTick(() => feather.replace());
              }, 300);
         },
@@ -397,26 +386,28 @@ export default {
         },
         deleteDiscussion(item) {
              this.localDiscussionsState = this.localDiscussionsState.filter(d => d.id !== item.id);
-             this.$emit('delete-discussion', item.id);
+             this.$emit('delete-discussion', item.id); // Emit ID to parent
         },
         checkUncheckDiscussion({ id, checked }) {
             const index = this.localDiscussionsState.findIndex(d => d.id === id);
             if (index !== -1) {
                 this.localDiscussionsState[index].checkBoxValue = checked;
             } else {
-                 // Ensure item exists in discussionsList before adding to local state if needed
+                 // Check if the item actually exists in the main list before adding local state
                  if (this.discussionsList.some(d => d.id === id)) {
                     this.localDiscussionsState.push({ id: id, checkBoxValue: checked });
+                 } else {
+                     console.warn("Tried to check/uncheck an item not present in discussionsList:", id);
                  }
             }
         },
         selectAllDiscussions() {
             const targetState = !this.isAllSelected;
-            const filteredIds = new Set(this.filteredDiscussions.map(d => d.id)); // Use filtered list
+            const filteredIds = new Set(this.filteredDiscussions.map(d => d.id)); // Get IDs of currently visible/filtered items
 
-            // Update local state for all items matching the filter
+             // Update local state only for visible items
              this.enhancedDiscussions.forEach(item => {
-                 if (filteredIds.has(item.id)) {
+                 if (filteredIds.has(item.id)) { // Apply only to filtered items
                      const index = this.localDiscussionsState.findIndex(d => d.id === item.id);
                      if (index !== -1) {
                          this.localDiscussionsState[index].checkBoxValue = targetState;
@@ -430,8 +421,9 @@ export default {
         },
         deleteSelectedDiscussions() {
              const idsToDelete = this.selectedDiscussions.map(d => d.id);
+             // Clear local checkbox state for deleted items
              this.localDiscussionsState = this.localDiscussionsState.filter(ld => !idsToDelete.includes(ld.id));
-             this.$emit('delete-selected', idsToDelete);
+             this.$emit('delete-selected', idsToDelete); // Emit array of IDs
              this.showConfirmation = false;
              this.isCheckbox = false; // Exit checkbox mode after deletion
         },
@@ -441,33 +433,33 @@ export default {
             if (files.length === 1 && files[0].type === 'application/json') {
                  this.$emit('import-discussion-file', files[0]);
             } else {
-                 // Consider using a more integrated notification system if available
-                 alert("Please drop a single JSON file to import.");
-                 // this.$store.dispatch('showToast', { message: "Please drop a single JSON file.", type: 'warning' });
+                 this.$store.state.toast.showToast("Please drop a single JSON file to import.", 4, false);
             }
         },
         toggleStarDiscussion(item) {
-             this.$emit('toggle-star-discussion', item);
-             // Assuming the parent/Vuex handles the actual state change and prop update
+             this.$emit('toggle-star-discussion', item); // Emit the discussion item itself
         },
         toggleStarSelectedDiscussions() {
             const selected = this.selectedDiscussions;
             if (selected.length === 0) return;
-            // Determine if we are starring or unstarring based on the first selected item's state
-            const isStarring = selected.length > 0 ? !selected[0].isStarred : true; // Default to starring if unsure
+            // Determine target state: if ANY selected are NOT starred, we STAR all. If ALL selected ARE starred, we UNSTAR all.
+            const shouldStar = selected.some(item => !item.isStarred);
+
              selected.forEach(item => {
-                 // Only emit toggle if the item's current state doesn't match the target state
-                 if (item.isStarred !== isStarring) {
+                 // Emit toggle only if the item's current state needs changing
+                 if (item.isStarred !== shouldStar) {
                     this.toggleStarDiscussion(item);
                  }
             });
+            this.$nextTick(() => feather.replace());
         },
+        // Syncs local checkbox state with the incoming discussions list prop
         syncLocalState(newList) {
-            // Ensure localDiscussionsState reflects the current discussionsList, preserving checkbox values
             const currentIds = new Set((newList || []).map(d => d.id));
-            const updatedLocalState = this.localDiscussionsState.filter(ld => currentIds.has(ld.id)); // Keep existing states for current items
+            // Keep state for items that still exist, discard state for removed items
+            const updatedLocalState = this.localDiscussionsState.filter(ld => currentIds.has(ld.id));
+            // Add default (unchecked) state for new items
             (newList || []).forEach(disc => {
-                 // Add state for new items if they don't exist
                 if (!updatedLocalState.some(ld => ld.id === disc.id)) {
                     updatedLocalState.push({ id: disc.id, checkBoxValue: false });
                 }
@@ -477,61 +469,43 @@ export default {
     },
     watch: {
         discussionsList: {
-            handler(newList, oldList) {
-                 // Check if lists differ significantly before syncing to avoid unnecessary updates
-                 if (JSON.stringify(newList) !== JSON.stringify(oldList)) {
-                     this.syncLocalState(newList);
-                 }
-                 // Always refresh icons after data changes that might affect layout/content
-                 this.$nextTick(() => feather.replace());
+            handler(newList) {
+                 this.syncLocalState(newList); // Keep local checkbox state aligned
+                 this.$nextTick(() => feather.replace()); // Refresh icons after list changes
             },
-            immediate: true,
-            deep: true // Watch for changes within discussion objects if necessary (e.g., title changes externally)
+            immediate: true, // Sync on initial load
+            deep: false // Shallow watch is enough if parent guarantees object identity changes
         },
         isCheckbox(newVal) {
              this.$nextTick(() => feather.replace());
              if (!newVal) {
                  this.showConfirmation = false;
-                 // Optionally clear local checkbox state when exiting checkbox mode
+                 // Optionally clear selections when exiting checkbox mode
                  // this.localDiscussionsState.forEach(state => state.checkBoxValue = false);
              }
         },
-        showConfirmation() {
-             this.$nextTick(() => feather.replace());
-        },
-        // Watch groupedDiscussions might be too expensive, rely on reactivity + nextTick in methods
-        // groupedDiscussions() {
-        //      this.$nextTick(() => feather.replace());
-        // }
-        filterTitle() {
-             // No need for explicit feather call here, handleSearchInput does it after debounce
-        },
-        sortBy() {
-            this.$nextTick(() => feather.replace());
-        },
-        sortOrder() {
-            this.$nextTick(() => feather.replace());
-        }
+        // Watch computed properties only if necessary, often nextTick in methods is better
+        // groupedDiscussions() { this.$nextTick(() => feather.replace()); },
+        // filterTitle() { /* handled by handleSearchInput */ },
+        // sortBy() { this.$nextTick(() => feather.replace()); },
+        // sortOrder() { this.$nextTick(() => feather.replace()); }
     },
     mounted() {
-        // Initial sync and icon replacement
-        this.syncLocalState(this.discussionsList);
+        this.syncLocalState(this.discussionsList); // Initial sync
         nextTick(() => {
             feather.replace();
         });
     },
     updated() {
-        // Ensure icons are replaced after any reactive update
-        // Be cautious with this, might cause performance issues if updates are frequent.
-        // Often better to call feather.replace() specifically after actions that change icons.
-        // nextTick(() => {
-        //     feather.replace();
-        // });
+        // Generally avoid feather.replace() here unless absolutely necessary.
+        // Prefer calling it specifically in methods/watchers after DOM changes.
+        // nextTick(() => { feather.replace(); });
     }
 };
 </script>
 
 <style scoped>
+/* Transitions for list items */
 .discussionsList-move,
 .discussionsList-enter-active,
 .discussionsList-leave-active {
@@ -541,19 +515,16 @@ export default {
 .discussionsList-enter-from,
 .discussionsList-leave-to {
   opacity: 0;
-  transform: translateX(-15px);
+  transform: translateX(-20px); /* Adjusted transform */
 }
 
-/* Ensure leaving items don't disrupt layout */
 .discussionsList-leave-active {
   position: absolute;
-  /* Adjust width based on actual panel width minus padding/margins if necessary */
-  width: calc(16rem - 1rem); /* Example: panel width 16rem, padding x 0.5rem each side */
-  /* Or use percentage if parent width is reliable */
-  /* width: 100%; */
+  width: calc(100% - 1rem); /* Adjust based on padding/margins inside the scroll container */
+  box-sizing: border-box;
 }
 
-
+/* Transition for the panel itself */
 .slide-right-enter-active,
 .slide-right-leave-active {
   transition: transform 0.3s ease-out;
@@ -562,5 +533,11 @@ export default {
 .slide-right-enter-from,
 .slide-right-leave-to {
   transform: translateX(-100%);
+}
+
+/* Ensure sticky headers work well */
+.sticky {
+    position: -webkit-sticky; /* For Safari */
+    position: sticky;
 }
 </style>

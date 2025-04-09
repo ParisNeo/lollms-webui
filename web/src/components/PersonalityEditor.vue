@@ -92,8 +92,8 @@ import axios from 'axios';
 export default {
   props: {
     personality: {
-      type: Object,
-      required: true
+      type: [Object, null],
+      default: null
     },
     config: {
       type: Object,
