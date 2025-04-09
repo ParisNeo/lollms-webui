@@ -41,6 +41,14 @@
                          <div class="flex-1 flex flex-col min-h-0 overflow-hidden p-4 space-y-4">
                              <div class="p-3 bg-blue-100 dark:bg-blue-800 rounded-lg border border-blue-200 dark:border-blue-700">
                                  <h4 class="label !mb-1">Live Preview:</h4>
+                                 <MarkdownRenderer
+                                    ref="mdRender"
+                                    :host="host"
+                                    v-model:markdown-text="previewPrompt"
+                                    :message_id="0"
+                                    :discussion_id="0"
+                                    :client_id="this.$store.state.client_id"
+                                />
                                  <!-- Use the specific content getter for preview -->
                                  <div class="flex-1 h-[150px] overflow-y-auto scrollbar bg-white dark:bg-blue-900 p-2 rounded text-sm">
                                      <span class="whitespace-pre-wrap text-blue-900 dark:text-blue-100">{{ getPromptContent(previewPrompt) }}</span>
@@ -111,6 +119,7 @@ import ChatBox from './ChatBox.vue';
 import WelcomeComponent from '@/components/WelcomeComponent.vue';
 import PromptExamples from './PromptExamples.vue'; // Import the new component
 import feather from 'feather-icons';
+import MarkdownRenderer from '../../components/MarkdownBundle/MarkdownRenderer.vue';
 
 // Keep parsePlaceholder function here as it's used for the modal
 const parsePlaceholder = (placeholder) => {
@@ -131,7 +140,7 @@ const parsePlaceholder = (placeholder) => {
 export default {
     name: 'ChatArea',
     // Register the new component
-    components: { Message, ChatBox, WelcomeComponent, PromptExamples },
+    components: { Message, ChatBox, WelcomeComponent, PromptExamples, MarkdownRenderer, },
     props: {
         isReady: Boolean,
         hasActiveDiscussion: Boolean,
