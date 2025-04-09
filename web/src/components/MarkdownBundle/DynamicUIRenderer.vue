@@ -28,6 +28,7 @@
     />
 
     <!-- Debugging output -->
+     <!--
     <pre style="background: #eee; padding: 10px; margin-top: 10px; font-size: 12px; border: 1px solid #ccc;">
       DEBUG [{{ instanceId }}]:
       --- Media State ---
@@ -42,7 +43,7 @@
       albumVideos: {{ JSON.stringify(albumVideos) }}
       albumAudios: {{ JSON.stringify(albumAudios) }}
     </pre>
-
+-->
   </div>
 </template>
 
@@ -66,8 +67,8 @@ export default {
   },
   props: {
     ui: {
-      type: String,
-      required: true
+      type: [String, null],
+      default: null
     },
     instanceId: {
       type: String,
