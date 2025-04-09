@@ -433,7 +433,7 @@ export default defineComponent({
                  sender: msgObj.sender, message_type: msgObj.message_type, sender_type: msgObj.sender_type, content: msgObj.content || (msgObj.sender_type === this.senderTypes.SENDER_TYPES_AI ? "" : ""),
                  id: msgObj.id, discussion_id: msgObj.discussion_id, parent_id: msgObj.parent_id, binding: msgObj.binding, model: msgObj.model, personality: msgObj.personality,
                  created_at: msgObj.created_at, finished_generating_at: msgObj.finished_generating_at, rank: msgObj.rank || 0, ui: msgObj.ui, steps: [], parameters: msgObj.parameters,
-                 metadata: msgObj.metadata || [], open: msgObj.open, status_message: msgObj.sender_type === this.senderTypes.SENDER_TYPES_AI ? "Generating..." : "Sent",
+                 nb_tokens: msgObj.nb_tokens?msgObj.nb_tokens:0,metadata: msgObj.metadata || [], open: msgObj.open, status_message: msgObj.sender_type === this.senderTypes.SENDER_TYPES_AI ? "Generating..." : "Sent",
              };
              this.discussionArr.push(newMessage);
              if (this.discussionArr.length === 2 && (!this.currentDiscussion.title || this.currentDiscussion.title === "untitled") && newMessage.sender_type === this.senderTypes.SENDER_TYPES_USER) {
