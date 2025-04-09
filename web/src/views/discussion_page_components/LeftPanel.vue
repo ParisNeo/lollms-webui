@@ -143,7 +143,7 @@
                                 <p>No discussions found.</p>
                                 <p v-if="filterTitle" class="text-sm">Try adjusting your search or filters.</p>
                             </div>
-                            <div v-if="filterInProgress || toolbarLoading" class="p-4 text-center text-blue-500 dark:text-blue-400">
+                            <div v-if="filterInProgress" class="p-4 text-center text-blue-500 dark:text-blue-400">
                                 <p>Loading discussions...</p>
                             </div>
                          </div>
