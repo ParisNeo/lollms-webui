@@ -992,33 +992,54 @@ html:not(.dark) .light\:inline { display: inline; } /* Utility to show only in l
   }
 }
 
-/* Animated Thought Bubble Component (Tooltip) */
-@layer components {
+/*
+ * Animated Thought Bubble Component (Tooltip) - Strawberry Milkshake Theme
+ * Retains original structure and functionality, applies a new visual theme.
+ */
+ @layer components {
   .animated-thought-bubble {
     @apply absolute top-full left-1/2 mt-1.5 /* Position BELOW parent + arrow space */
-           opacity-0 invisible pointer-events-none group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto
-           bg-slate-700 dark:bg-slate-200
-           text-white dark:text-slate-800
-           rounded-md shadow-lg px-2.5 py-2 text-xs z-50
-           w-auto max-w-[180px]
-           text-center
-           flex flex-col items-center
-           whitespace-normal break-words
-           transform -translate-x-1/2
-           origin-top
-           transition-opacity duration-150 /* Keep transition for fade out, or remove if animation handles everything */
-           /* Use the Tailwind animation utility defined in the config */
+           opacity-0 invisible pointer-events-none /* Initial state: hidden */
+           /* Interaction: Show on parent hover/focus using named group 'item' */
+           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto
+           /* --- Strawberry Milkshake Theme Start --- */
+           /* Background: Light pink/cream */
+           bg-pink-100
+           /* Dark Mode Background: Deep berry/purple */
+           dark:bg-purple-800
+           /* Text Color: Dark pink/berry */
+           text-pink-800
+           /* Dark Mode Text Color: Light pink/cream */
+           dark:text-pink-100
+           /* Appearance: Slightly softer rounding and shadow */
+           rounded-lg /* Softer than rounded-md */
+           shadow-md   /* Softer than shadow-lg */
+           /* --- Strawberry Milkshake Theme End --- */
+           px-2.5 py-2 /* Padding */
+           text-xs     /* Font size */
+           z-50        /* Stacking order */
+           w-auto max-w-[180px] /* Sizing constraints */
+           text-center /* Text alignment */
+           whitespace-normal break-words /* Text wrapping */
+           transform -translate-x-1/2 /* Centering transform */
+           origin-top /* Animation origin */
+           transition-opacity duration-150 /* Fade out transition */
+           /* Animation: Assumes 'bubble-in-up' is defined, maybe tweaked for theme */
            group-hover/item:animate-bubble-in-up;
   }
 
   .animated-thought-bubble::after { /* Arrow pointing UP */
-    content: '';
-    @apply absolute bottom-full left-1/2 transform -translate-x-1/2
-           border-[6px] border-solid border-transparent
-           border-b-slate-700 dark:border-b-slate-200;
+    content: ''; /* Required for pseudo-elements */
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2 /* Position arrow */
+           border-[6px] border-solid border-transparent /* Arrow shape setup */
+           /* --- Strawberry Milkshake Theme Start --- */
+           /* Arrow Color: Matches light background */
+           border-b-pink-100
+           /* Dark Mode Arrow Color: Matches dark background */
+           dark:border-b-purple-800;
+           /* --- Strawberry Milkshake Theme End --- */
   }
 }
-
 /* Line Clamp Utility */
 .line-clamp-4 {
   display: -webkit-box;

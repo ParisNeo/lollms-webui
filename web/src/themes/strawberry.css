@@ -526,3 +526,29 @@ button:hover {
   @apply text-green-500;
   text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
 }
+/* Animated Thought Bubble Component (Tooltip) */
+@layer components {
+  .animated-thought-bubble {
+    @apply absolute top-full left-1/2 mt-1.5 /* Position BELOW parent + arrow space */
+           opacity-0 invisible pointer-events-none group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto
+           bg-red-700 dark:bg-slate-200
+           text-white dark:text-slate-800
+           rounded-md shadow-lg px-2.5 py-2 text-xs z-50
+           w-auto max-w-[180px]
+           text-center
+           flex flex-col items-center
+           whitespace-normal break-words
+           transform -translate-x-1/2
+           origin-top
+           transition-opacity duration-150 /* Keep transition for fade out, or remove if animation handles everything */
+           /* Use the Tailwind animation utility defined in the config */
+           group-hover/item:animate-bubble-in-up;
+  }
+
+  .animated-thought-bubble::after { /* Arrow pointing UP */
+    content: '';
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2
+           border-[6px] border-solid border-transparent
+           border-b-slate-700 dark:border-b-slate-200;
+  }
+}

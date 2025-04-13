@@ -676,22 +676,41 @@ button:hover {
 /* Bubble animation keyframes - remains the same */
 @keyframes bubble-in-down { /* ... same keyframes ... */ }
 @layer utilities { .animate-bubble-in-down { /* ... same animation class ... */ } }
-
-/* Thought Bubble (Festive Color) */
+/* Previous Animated Thought Bubble Component (keep if needed) */
 @layer components {
   .animated-thought-bubble {
-    @apply absolute top-full left-1/2 mt-2 /* Position BELOW icon */
-           w-max max-w-[160px] opacity-0 invisible
-           bg-red-200 dark:bg-red-700 /* Red bubble background */
-           rounded-lg shadow-xl p-2 text-center z-20 text-red-800 dark:text-red-100 /* Red text */
-           pointer-events-none origin-top transition-opacity duration-150
-           group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto group-hover/item:animate-bubble-in-down;
+     /* ... your existing styles ... */
   }
-  .animated-thought-bubble::after { /* Arrow points up */
+  .animated-thought-bubble::after {
+     /* ... your existing styles ... */
+  }
+
+  /* --- Christmas Themed Tooltip --- */
+  .tooltip-christmas {
+    @apply absolute top-full left-1/2 mt-1.5 /* Position BELOW parent + arrow space */
+           opacity-0 invisible pointer-events-none group-hover/item:opacity-100 group-hover/item:visible group-hover/item:pointer-events-auto /* Hover logic */
+           /* --- Festive Styles --- */
+           bg-red-700 dark:bg-green-700    /* Christmas Red / Green background */
+           text-white                       /* White text for contrast */
+           border border-white/30 dark:border-white/40 /* Optional: Subtle white border */
+           /* --- End Festive Styles --- */
+           rounded-md shadow-lg px-2.5 py-2 text-xs z-50 /* Base styling */
+           w-auto max-w-[180px] text-center             /* Base sizing & text */
+           flex flex-col items-center                  /* Base layout */
+           whitespace-normal break-words               /* Base text wrapping */
+           transform -translate-x-1/2                  /* Base positioning */
+           origin-top                                  /* Animation origin */
+           transition-opacity duration-150             /* Fallback fade transition */
+           /* Use the same animation defined in tailwind.config.js */
+           group-hover/item:animate-bubble-in-up;
+  }
+
+  .tooltip-christmas::after { /* Arrow pointing UP */
     content: '';
-    @apply absolute bottom-full left-1/2 transform -translate-x-1/2
-           border-[7px] border-solid border-transparent
-           border-b-red-200 dark:border-b-red-700; /* Match bubble background */
+    @apply absolute bottom-full left-1/2 transform -translate-x-1/2 /* Position arrow ABOVE bubble */
+           border-[6px] border-solid border-transparent /* Base arrow shape */
+           /* --- Festive Arrow Color --- */
+           border-b-red-700 dark:border-b-green-700; /* Arrow color matches bubble */
   }
 }
 

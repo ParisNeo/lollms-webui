@@ -1930,85 +1930,13 @@ input[type='range']:is(.dark *)::-moz-range-track{
 /* Uses themed .link (red) */
 .dark .dark\:prose-invert { /* Keep for potential Tailwind prose usage elsewhere */
   }
-.tooltip.animated-thought-bubble > .tooltip-arrow:before{
-  visibility: hidden;
-}
-[role="tooltip"].animated-thought-bubble > [data-popper-arrow]:before{
-  visibility: hidden;
-}
-[role="tooltip"].animated-thought-bubble > [data-popper-arrow]:after{
-  visibility: hidden;
-}
-.animated-thought-bubble{
-  pointer-events: none;
-  visibility: hidden;
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  z-index: 20;
-  margin-top: 0.5rem;
-  width: -moz-max-content;
-  width: max-content;
-  max-width: 160px;
-  transform-origin: top;
-  border-radius: 0.5rem;
-  --tw-bg-opacity: 1;
-  background-color: rgb(251 213 213 / var(--tw-bg-opacity));
-  padding: 0.5rem;
-  text-align: center;
-  --tw-text-opacity: 1;
-  color: rgb(155 28 28 / var(--tw-text-opacity));
-  opacity: 0;
-  --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-  transition-property: opacity;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-.group\/item:hover .animated-thought-bubble{
-  pointer-events: auto;
-  visibility: visible;
-}
-@keyframes bubble-in-down{
-  0%{
-    opacity: 0;
-    transform: translate(-50%, 10px) scale(0.95);
+.animated-thought-bubble {
+     /* ... your existing styles ... */
   }
-  100%{
-    opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+.animated-thought-bubble::after {
+     /* ... your existing styles ... */
   }
-}
-.group\/item:hover .animated-thought-bubble{
-  animation: bubble-in-down 0.3s ease-out forwards;
-  opacity: 1; /* ... same animation class ... */
-}
-.animated-thought-bubble:is(.dark *){
-  --tw-bg-opacity: 1;
-  background-color: rgb(200 30 30 / var(--tw-bg-opacity));
-  --tw-text-opacity: 1;
-  color: rgb(253 232 232 / var(--tw-text-opacity));
-}
-.animated-thought-bubble::after { /* Arrow points up */
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    --tw-translate-x: -50%;
-    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-    border-width: 7px;
-    border-style: solid;
-    border-color: transparent;
-    --tw-border-opacity: 1;
-    border-bottom-color: rgb(251 213 213 / var(--tw-border-opacity));
-  }
-.animated-thought-bubble:is(.dark *)::after{
-  --tw-border-opacity: 1;
-  border-bottom-color: rgb(200 30 30 / var(--tw-border-opacity));
-}
-.animated-thought-bubble::after { /* Match bubble background */
-  }
+/* --- Christmas Themed Tooltip --- */
 .active-tab-button {
     /* Use primary button style (red) */
     font-size: 0.875rem;
@@ -8484,7 +8412,7 @@ button:hover{
 }
 /* Bubble animation keyframes - remains the same */
 @keyframes bubble-in-down { /* ... same keyframes ... */ }
-/* Thought Bubble (Festive Color) */
+/* Previous Animated Thought Bubble Component (keep if needed) */
 /* Playground Component Tabs */
 /* Remove Matrix Rain Keyframes if not used */
 /* @keyframes matrix-rain { ... } */
