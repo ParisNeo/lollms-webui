@@ -516,7 +516,24 @@
                     placeholder="Optional: Path to custom log file (e.g., /path/to/lollms.log)">
             </div>
         </div>
+        <!-- Automatic Updates Section -->
+        <div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
+            <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Code execution Engines</h3>
+             <div class="toggle-item">
+                <label for="auto_update" class="toggle-label">
+                    Latex compiler
+                </label>
+                <input
+                        type="text"
+                        id="pdf_latex_path"
+                        :value="config.pdf_latex_path"
+                        @input="updateValue('pdf_latex_path', $event.target.value)"
+                        class="input w-full"
+                        placeholder="key1,key2,key3">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">Required to build pdfs.</span>
 
+            </div>
+        </div>
         <!-- Automatic Updates Section -->
         <div class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg panels-color">
             <h3 class="text-lg font-medium text-blue-700 dark:text-blue-300 mb-3">Automatic Updates & Synchronization</h3>

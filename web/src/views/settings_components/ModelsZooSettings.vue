@@ -139,14 +139,36 @@
          </section>
 
         <ChoiceDialog
-            :show="variantSelectionDialog.visible"
-            :title="variantSelectionDialog.title"
-            :choices="variantSelectionDialog.choices"
-            @choice-selected="handleVariantSelected"
+            :show="showVariantDialog"
+            title="Select Your Model Variant"
+            :items="modelVariants"
+            itemDisplayField="name"  
+            :canEdit="true"
+            :canRemove="true"
+            :canAdd="true"
+            :choices="modelVariants"
+            addInputPlaceholder="Enter new variant name..."
+            :initialSelectedId="selectedVariantId"
+            @item-selected="handleVariantSelected"
             @choice-validated="handleVariantValidated"
-            @close-dialog="closeVariantDialog"
-        />
-
+            @close-dialog="showVariantDialog = false"
+            >
+            <!-- Custom Rendering via Scoped Slot -->
+            <template #choice-content="{ choice, isSelected }">
+                <div class="flex items-center justify-between w-full">
+                    <span
+                        :class="{ 'font-semibold text-blue-600 dark:text-blue-400': isSelected }"
+                        class="text-gray-800 dark:text-white truncate"
+                        :title="choice.name"
+                    >
+                        {{ choice.name }}
+                    </span>
+                    <span v-if="choice.size !== undefined" class="text-xs text-gray-500 dark:text-gray-400 ml-2 flex-shrink-0">
+                        ({{ formatFileSize(choice.size) }})
+                    </span>
+                </div>
+            </template>
+        </ChoiceDialog>
     </div>
 </template>
 
@@ -193,8 +215,12 @@ export default {
             itemsPerPage: 15,
             currentPage: 1,
             searchDebounceTimer: null,
+            showDialog:false,
             downloadProgress: { visible: false, name: '', progress: 0, speed: 0, total_size: 0, downloaded_size: 0, details: null },
-            variantSelectionDialog: { visible: false, title: "Select Model Variant", choices: [], modelToInstall: null, selectedVariant: null },
+            showVariantDialog: false,
+            selectedVariantId: null, // Store only the ID of the selected variant
+            // Example data - Parent owns and manages this list
+            modelVariants: [],        
             defaultIcon: defaultModelIcon,
             store: useStore() // Access store instance
         };
@@ -281,10 +307,6 @@ export default {
         }
     },
     methods: {
-        createModelId(model) {
-            // Simple ID generation, adjust if needed for more complex scenarios (e.g., variants)
-            return model.name || model.path || `${model.author || 'unknown'}-${Date.now()}`;
-        },
         processAndCombineModels() {
             if (!this.effectiveConfig.binding_name) {
                 this.allModels = [];
@@ -297,9 +319,11 @@ export default {
             const installedArray = this.storeInstalledModelsArr || [];
             const installedSet = new Set(installedArray);
             const currentProcessingModelId = this.downloadProgress.details?.model_id;
+            console.log("zooModels")
+            console.log(zooModels)
 
             const combined = zooModels.map(model => {
-                const modelId = this.createModelId(model);
+                const modelId = model.quantizer?model.quantizer+'/'+model.name:model.name;
                 const isInstalledCheck = installedSet.has(model.name) || (model.variants && model.variants.some(v => installedSet.has(v.name)));
                 return {
                     name: model.name,
@@ -329,7 +353,7 @@ export default {
 
             installedArray.forEach(installedName => {
                 if (!combinedNames.has(installedName)) {
-                    const customModelId = this.createModelId({ name: installedName }); // Use name for ID
+                    const customModelId = "Local_Custom/"+installedName; // Use name for ID
                     combined.push({
                          name: installedName,
                          author: 'Local/Custom',
@@ -437,8 +461,6 @@ export default {
         },
 
         handleSelect(payload) {
-            console.log(`payload:`)
-            console.log(payload)
             const model = payload;
             if (this.isDownloading || this.isLoadingModels) {
                 this.show_toast("Wait for current operation to finish.", 3, false);
@@ -459,19 +481,13 @@ export default {
              if (this.isDownloading) { this.show_toast("Another operation is already in progress.", 3, false); return; }
              const currentBinding = this.effectiveConfig.binding_name;
              if (!currentBinding) { this.show_toast("No binding selected.", 4, false); return; }
-
              if (model.variants && model.variants.length > 0) {
-                 this.variantSelectionDialog = {
-                     visible: true,
-                     title: `Select Variant for ${model.name}`,
-                     choices: model.variants.map(v => ({ id: v.name, text: `${v.name} (${filesize(v.size || 0)})` })),
-                     modelToInstall: model,
-                     selectedVariant: null
-                 };
+                this.modelVariants=model.variants.map(v => ({ id: model.id + "::" + v.name, name: `${v.name} (${filesize(v.size || 0)})` }))
+                this.showVariantDialog=true;
              } else {
                  const yes = await this.show_yes_no_dialog(`Install model "${model.name}"?`, 'Install', 'Cancel');
                  if (yes) {
-                     this.startDownload(model, model.path || model.name); // Use path or name as identifier
+                     this.startDownload(model.id); // Use path or name as identifier
                  }
              }
         },
@@ -481,60 +497,48 @@ export default {
         },
 
         async handleVariantValidated(choice) {
-            if (!this.variantSelectionDialog.modelToInstall || !choice) {
-                this.closeVariantDialog();
-                return;
-            }
-            const selectedVariantInfo = this.variantSelectionDialog.modelToInstall.variants.find(v => v.name === choice.id);
-            const modelToInstall = this.variantSelectionDialog.modelToInstall;
             this.closeVariantDialog(); // Close dialog first
 
-            const yes = await this.show_yes_no_dialog(`Install variant "${choice.id}" for model "${modelToInstall.name}"?`, 'Install', 'Cancel');
+            const yes = await this.show_yes_no_dialog(`Install variant "${choice.id.split('::')[1]}" for model "${choice.id.split('::')[0]}"?`, 'Install', 'Cancel');
             if (yes) {
                 // Pass variant info if needed, or just the name/path
-                this.startDownload(modelToInstall, selectedVariantInfo.path || choice.id, choice.id);
+                this.startDownload(choice.id);
             }
         },
 
         closeVariantDialog() {
-            this.variantSelectionDialog = { visible: false, title: "Select Model Variant", choices: [], modelToInstall: null, selectedVariant: null };
+            this.showVariantDialog = false;
         },
 
-        startDownload(model, path, variantName = null) {
-            const modelId = model.id || this.createModelId(model);
-            const nameToDisplay = variantName || model.name;
-
-            this.setModelProcessing(modelId, true);
+        startDownload(variant_id) {
+            const model_id = variant_id.split("::")[0]
+            this.setModelProcessing(variant_id, true);
             this.isDownloading = true;
             this.isLoadingModels = true; // Keep global loading indicator
             this.downloadProgress = {
                 visible: true,
-                name: `Installing ${nameToDisplay}...`,
+                name: `Installing ${model_id}...`,
                 progress: 0,
                 speed: 0,
                 total_size: 0,
                 downloaded_size: 0,
                 details: { // Store details needed for cancellation/progress
-                    model_id: modelId,
-                    model_name: nameToDisplay, // Use the name being installed
-                    path: path,
+                    model_id: model_id,
+                    model_name: model_id, // Use the name being installed
+                    path: model_id,
                     binding: this.effectiveConfig.binding_name,
                     client_id: this.client_id,
                  }
             };
 
             socket.emit('install_model', {
-                 model_path: path,
-                 binding: this.effectiveConfig.binding_name,
-                 client_id: this.client_id,
-                 model_id: modelId, // Pass the ID back for progress tracking
-                 model_name: nameToDisplay // Pass the specific name/variant being installed
+                 variant_id: variant_id
              });
         },
 
         async handleUninstall(payload) {
              const model = payload.model;
-             const modelId = model.id || this.createModelId(model);
+             const modelId = model.id ;
              if (this.isDownloading) {
                  this.show_toast("Another operation is in progress. Please wait.", 3, false);
                  return;
@@ -679,9 +683,10 @@ export default {
             event.target.src = this.defaultIcon;
         },
 
-        setModelProcessing(modelId, state) {
+        setModelProcessing(variant_id, state) {
             // Update allModels immutably to trigger watchers properly
-            const indexAll = this.allModels.findIndex(m => m.id === modelId);
+            const model_id = variant_id.split("::")[0]
+            const indexAll = this.allModels.findIndex(m => m.id === model_id);
             if (indexAll !== -1) {
                  const updatedModel = { ...this.allModels[indexAll], isProcessing: state };
                  const newAllModels = [...this.allModels];
@@ -693,7 +698,7 @@ export default {
             }
 
             // Update pagedModels directly for immediate UI feedback if visible
-            const indexPaged = this.pagedModels.findIndex(m => m.id === modelId);
+            const indexPaged = this.pagedModels.findIndex(m => m.id === model_id);
             if (indexPaged !== -1) {
                  // Avoid direct mutation if possible, but sometimes necessary for performance/simplicity
                  this.pagedModels[indexPaged].isProcessing = state;
@@ -722,7 +727,9 @@ export default {
         },
 
         installProgressListener(response) {
-            const modelId = response.model_id; // ID sent back from backend
+            console.log("installProgressListener")
+            console.log(response)
+            const modelId = response.model_name; // ID sent back from backend
             const currentTrackedId = this.downloadProgress.details?.model_id;
 
             if (!modelId || modelId !== currentTrackedId) {

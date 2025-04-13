@@ -3,9 +3,9 @@
     <div class="relative group/item">
         <!-- Main Personality Avatar Button -->
         <button
-            @click.prevent="onSettingsPersonality(mountedPers)" 
+            @click.prevent="onSettingsPersonality(mountedPers)"
             class="w-6 h-6 rounded-full overflow-hidden transition-transform duration-200 transform group-hover/item:scale-110 focus:outline-none relative"
-            :class="{'glow-effect': $store.state.config.activate_skills_lib, 'border-2 border-primary': isActive}" 
+            :class="{'glow-effect': $store.state.config.activate_skills_lib, 'border-2 border-primary': isActive}"
             :title="'Configure ' + mountedPers.name"
         >
             <img
@@ -17,48 +17,52 @@
         </button>
 
         <!-- Hover Action Bubble -->
-        <!-- 
-          - positioned absolutely relative to the root div
-          - bottom-full places its bottom edge at the top edge of the parent button
-          - mb-2 adds margin above the button
-          - left-1/2 -translate-x-1/2 centers it horizontally
-          - opacity controlled by group-hover
-          - z-10 to lift it above siblings if any (within its stacking context)
-          - w-auto allows it to size based on content
-          - Added background, padding, shadow, rounded corners for bubble appearance
-         -->
         <div
-            class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-auto
-                   flex items-center justify-center space-x-1
+            class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2
+                   w-auto max-w-xs /* Set a max-width (e.g., max-w-xs = 20rem). Adjust as needed */
+                   flex flex-col items-center /* Stack items vertically and center them */
                    opacity-0 group-hover/item:opacity-100 transition-opacity duration-200
                    p-2 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 z-10"
-            
         >
-            <!-- Settings Button -->
-            <button 
-                @click.prevent="onSettingsPersonality(mountedPers)" 
-                class="p-1 btn-secondary btn-xs rounded-full hover:scale-110 transition-transform duration-150" 
-                title="Configure"
-            >
-               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-            </button>
-             <!-- Remount Button -->
-            <button 
-                @click.prevent="remount_personality()" 
-                class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none btn-xs hover:scale-110 transition-transform duration-150" 
-                title="Remount"
-            >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            </button>
-            <!-- Talk Button -->
-            <button 
-                @click.prevent="handleOnTalk()" 
-                class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none btn-xs hover:scale-110 transition-transform duration-150" 
-                title="Talk"
-            >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-            </button>
-             <!-- Removed the "+N" button as it's likely not needed for the single active personality icon -->
+            <!-- Personality Name (Added) -->
+            <div class="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-1 text-center whitespace-normal break-words">
+                 <!--
+                    - text-xs font-semibold: Styling for the name
+                    - mb-1: Margin below the name
+                    - text-center: Center the name text
+                    - whitespace-normal: Allow text wrapping (default, but explicit)
+                    - break-words: Help break long words if necessary to prevent overflow
+                 -->
+                {{ mountedPers.name }}
+            </div>
+
+            <!-- Button Container (Added wrapper div) -->
+            <div class="flex items-center justify-center space-x-1">
+                <!-- Settings Button -->
+                <button
+                    @click.prevent="onSettingsPersonality(mountedPers)"
+                    class="p-1 btn-secondary btn-xs rounded-full hover:scale-110 transition-transform duration-150"
+                    title="Configure"
+                >
+                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826 3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </button>
+                 <!-- Remount Button -->
+                <button
+                    @click.prevent="remount_personality()"
+                    class="p-1 bg-blue-500 rounded-full text-white hover:bg-blue-600 focus:outline-none btn-xs hover:scale-110 transition-transform duration-150"
+                    title="Remount"
+                >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                </button>
+                <!-- Talk Button -->
+                <button
+                    @click.prevent="handleOnTalk()"
+                    class="p-1 bg-green-500 rounded-full text-white hover:bg-green-600 focus:outline-none btn-xs hover:scale-110 transition-transform duration-150"
+                    title="Talk"
+                >
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                </button>
+            </div>
         </div>
     </div>
     <UniversalForm ref="universalForm" class="z-50" />

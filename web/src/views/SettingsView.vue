@@ -221,7 +221,6 @@ export default {
                 
                 await this.$store.dispatch('refreshModels');
                 await this.$store.dispatch('refreshModelsZoo');
-                await this.$store.dispatch('refreshModelsArr'); // Or a combined action if you prefer
 
                 // 3. Reset local editable state
                 this.editableConfig = null;

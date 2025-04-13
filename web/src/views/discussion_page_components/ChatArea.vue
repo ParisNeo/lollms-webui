@@ -5,7 +5,7 @@
              :class="isDragOverChat ? 'opacity-50 border-2 border-dashed border-blue-500' : ''"
              @dragover.prevent="isDragOverChat = true" @dragleave="isDragOverChat = false" @drop.prevent="handleDrop">
 
-            <div class="container pt-4 pb-50 mb-50 w-full mx-auto px-4">
+            <div class="container pt-4 pb-10 mb-10 w-full mx-auto px-4">
                 <TransitionGroup v-if="discussionArr && discussionArr.length > 0" name="list">
                     <!-- Message components remain unchanged -->
                     <Message v-for="msg in discussionArr"
@@ -351,10 +351,10 @@ export default {
 
 <style scoped>
 /* Scoped styles for ChatArea remain unchanged */
-.pb-50 { /* Ensure enough padding at the bottom inside the scrollable area */
-    padding-bottom: 50px; /* Adjust as needed */
+.pb-10 { /* Ensure enough padding at the bottom inside the scrollable area */
+    padding-bottom: 10px; /* Adjust as needed */
 }
-.mb-50 { /* Ensure enough margin at the bottom inside the scrollable area if using margin instead */
-    margin-bottom: 50px; /* Adjust as needed */
+.mb-10 { /* Ensure enough margin at the bottom inside the scrollable area if using margin instead */
+    margin-bottom: 10px; /* Adjust as needed */
 }
 </style>

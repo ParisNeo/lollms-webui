@@ -70,6 +70,36 @@ module.exports = {
         'dark-start': '#0f2647',
         'dark-end': '#1e1b4b',
       },
+      keyframes: {
+        'bubble-in-up': { // Name of the keyframes
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(10px) translateX(-50%) scale(0.95)', // Match your CSS definition
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0) translateX(-50%) scale(1)', // Match your CSS definition
+          },
+        },
+        'bubble-in-down': { // Keep this if you might use it later
+          '0%': {
+            opacity: '0',
+            transform: 'translate(-50%, 10px) scale(0.95)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translate(-50%, 0) scale(1)',
+          },
+        }
+        // Add other custom keyframes here
+      },
+      animation: {
+        // -- Add this section --
+        'bubble-in-up': 'bubble-in-up 0.3s ease-out forwards', // Map utility name to keyframes name, duration, timing, fill-mode etc.
+                                                              // 'forwards' keeps the end state
+        'bubble-in-down': 'bubble-in-down 0.3s ease-out forwards', // Optional: if you need this too
+        // Add other custom animations here
+      },
     }
   },
   plugins: [

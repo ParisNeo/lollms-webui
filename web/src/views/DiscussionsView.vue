@@ -81,9 +81,11 @@
 
       <ChoiceDialog reference="database_selector" class="z-20"
         :show="database_selectorDialogVisible"
-        :choices="databases"
+        :choices="databases.map((name, id) => ({ id, name }))"
         :can-remove=true
+        :can-add="true"
         @choice-removed="ondatabase_selectorDialogRemoved"
+        @choice-added="ondatabase_selectorDialogAdded"
         @choice-selected="ondatabase_selectorDialogSelected"
         @close-dialog="onclosedatabase_selectorDialog"
         @choice-validated="onvalidatedatabase_selectorChoice"
@@ -667,6 +669,8 @@ export default defineComponent({
         showDatabaseSelector() { this.database_selectorDialogVisible = true; },
         onclosedatabase_selectorDialog() { this.database_selectorDialogVisible = false; },
         async ondatabase_selectorDialogRemoved(choice) { console.log("Database removal not implemented on backend:", choice); },
+        async ondatabase_selectorDialogAdded(choice) { this.databases.push(choice); this.$store.state.toast.showToast(`Added new database ${choice}`, 5, true); },
+        
         async ondatabase_selectorDialogSelected(choice) { /* Selection validated in next step */ },
         async onvalidatedatabase_selectorChoice(choice) {
              this.database_selectorDialogVisible = false; const dbName = typeof choice === 'string' ? choice : choice.name; if (dbName === this.config?.discussion_db_name) { this.$store.state.toast.showToast("Database already selected.", 3, true); return; }
