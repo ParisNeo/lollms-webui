@@ -321,7 +321,20 @@ parseAndRenderMarkdown() {
                 lastProcessedLine = endLine;
                 blockProcessed = true;
 
-            } else if (token.type === 'math_inline' || token.type === 'math_block') {
+            }
+            else if (token.type === 'code_block') { // <<< --- ADD THIS BLOCK --- >>> Handle INDENTED code blocks (4+ spaces / tab)
+                const rawCodeBlock = this.getRawMarkdownChunk(startLine, endLine);
+                newItems.push({
+                   type: 'code',
+                   raw: rawCodeBlock,
+                   language: 'plaintext', // Indented blocks have no language specifier
+                   code: token.content, // content already has final newline removed by parser
+                });
+                lastProcessedLine = endLine;
+                blockProcessed = true;
+                // <<< --- END OF ADDED BLOCK --- >>>
+            }             
+            else if (token.type === 'math_inline' || token.type === 'math_block') {
                 const isInline = token.type === 'math_inline';
                 const delimiter = isInline ? '$' : '$$';
                 const rawLatex = token.markup && token.content ? `${delimiter}${token.content}${delimiter}` : this.getRawMarkdownChunk(startLine, endLine);
