@@ -368,18 +368,63 @@ export default defineComponent({
       },
   },
   watch: {
-      code(newCode, oldCode) {
-          const currentEditorCode = this.cmView ? this.cmView.state.doc.toString() : this.safeCodeProp;
-          if (newCode === currentEditorCode || newCode === oldCode) return;
+    code(newCode, oldCode) {
+        // Ensure we have a CodeMirror instance and the code actually changed
+        const currentEditorCode = this.cmView ? this.cmView.state.doc.toString() : this.safeCodeProp;
+        if (!this.cmView || this.isFunctionLanguage || newCode === currentEditorCode || newCode === oldCode) {
+            return; // Exit if no CM, is function, or code hasn't changed relative to editor or previous prop
+        }
 
-          if (this.cmView && !this.isEditing && !this.isFunctionLanguage) {
-              this.updateEditorContent(newCode);
-          }
+        // --- Auto-scroll Logic ---
+        let shouldAutoScroll = false;
+        if (this.autoScrollOnContentChange && !this.isEditing) {
+            try {
+                // Get the scrollable element from CodeMirror
+                const scrollElement = this.cmView.scrollDOM;
+                if (scrollElement) {
+                    // Check if scrolled near the bottom before the update
+                    // Use a tolerance (e.g., 50px) so the user doesn't have to be *exactly* at the bottom
+                    const scrollThreshold = 50;
+                    shouldAutoScroll = (scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight) < scrollThreshold;
+                }
+            } catch (e) {
+                console.warn("CodeMirror: Could not access scrollDOM for auto-scroll check.", e);
+            }
+        }
 
-          if (this.autoScrollOnContentChange && !this.isEditing) {
-              nextTick(() => { this.$el?.scrollIntoView({ behavior: 'smooth', block: 'end' }); });
-          }
-      },
+        // Update the editor content (regardless of scroll position if not editing)
+        if (!this.isEditing) {
+            this.updateEditorContent(newCode); // This function handles the dispatch to change content
+        }
+
+        // Perform the scroll *after* the content update has been processed
+        if (shouldAutoScroll) {
+            nextTick(() => {
+                // Double-check cmView still exists (might be destroyed during quick updates)
+                if (this.cmView) {
+                    try {
+                        // Use CodeMirror's API to scroll the end of the document into view
+                        this.cmView.dispatch({
+                            effects: EditorView.scrollIntoView(this.cmView.state.doc.length, {
+                                y: "end", // Align the bottom of the line with the bottom of the viewport
+                                yMargin: 10 // Add a small margin below the last line
+                            })
+                        });
+                    } catch (e) {
+                        console.error("CodeMirror: Failed to scrollIntoView:", e);
+                    }
+                }
+            });
+        }
+
+        // --- IMPORTANT: Remove the old parent scroll logic ---
+        // if (this.autoScrollOnContentChange && !this.isEditing) {
+        //     nextTick(() => {
+        //         // OLD LOGIC - REMOVED:
+        //         // this.$el?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        //     });
+        // }
+    },
       isEditing(editing) {
           if (this.cmView) {
               this.cmView.dispatch({ effects: this.editableCompartment.reconfigure(EditorView.editable.of(editing)) });
@@ -491,12 +536,19 @@ export default defineComponent({
       openFolder() { this.postRequest('open_discussion_folder'); },
       toggleFunctionDetails() { this.isFunctionDetailsVisible = !this.isFunctionDetailsVisible; this.triggerIconUpdate(); },
       updateEditorContent(newCode) {
-          if (!this.cmView || this.isFunctionLanguage) return;
-          const currentDoc = this.cmView.state.doc.toString();
-          if (newCode !== currentDoc) {
-              this.cmView.dispatch({ changes: { from: 0, to: currentDoc.length, insert: newCode } });
-          }
-      },
+        // Ensure this check exists here too, just in case
+        if (!this.cmView || this.isFunctionLanguage) return;
+
+        const currentDoc = this.cmView.state.doc.toString();
+        if (newCode !== currentDoc) {
+            // This dispatch updates the content
+            this.cmView.dispatch({
+                changes: { from: 0, to: currentDoc.length, insert: newCode }
+                // DO NOT put scrollIntoView effect here, it should happen *after*
+                // the state update and DOM render triggered by this dispatch.
+            });
+        }
+    },
       createUpdateListener() {
           return EditorView.updateListener.of((update) => {
               const histState = update.state.field(historyField, false);
