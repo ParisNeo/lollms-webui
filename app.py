@@ -17,7 +17,7 @@ from lollms.utilities import PackageManager
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
-expected_ascii_colors_version = "0.5.2"
+expected_ascii_colors_version = "0.7.0"
 print(
     f"Checking ascii_colors ({expected_ascii_colors_version}) ...", end="", flush=True
 )
