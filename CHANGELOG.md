@@ -1,6 +1,7 @@
-# LoLLMs v19.2242 (tWINS) Changelog
+# LoLLMs v19.22.42 (tWINS) Changelog
 Date: April 09, 2025  
 - Added the possibility to star discussions
+- Enhanced and bunped all api based services to use more functionalities
 
 # LoLLMs v19.10 (Ghibli) Changelog
 Date: April 02, 2025  
