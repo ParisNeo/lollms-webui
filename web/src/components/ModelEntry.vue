@@ -57,10 +57,10 @@
          <div class="flex items-center" title="Hugging Face Model Card">
            <i data-feather="link" class="w-4 h-4 mr-2 flex-shrink-0"></i>
            <b class="mr-1 flex-shrink-0">Card:</b>
-            <a :href="'https://huggingface.co/'+model.quantizer+'/'+model.name" target="_blank" @click.stop
+            <a :href="model.provider?'https://huggingface.co/'+model.provider+'/'+model.name:model.name" target="_blank" @click.stop
               class="truncate hover:text-blue-600 dark:hover:text-blue-400 duration-150 underline"
               :class="{'text-red-500 pointer-events-none': linkNotValid}">
-               {{ linkNotValid ? 'Link Invalid' : `${model.quantizer}/${model.name}` }}
+               {{ linkNotValid ? 'Link Invalid' : model.provider?`${model.provider}/${model.name}`:`${model.name}` }}
             </a>
          </div>
 
@@ -76,12 +76,12 @@
             <span>{{ model.license || 'N/A' }}</span>
           </div>
 
-          <div v-if="model.quantizer && model.quantizer !== 'None' && model.type !== 'transformers'" class="flex items-center" title="Quantizer Profile">
+          <div v-if="model.provider && model.provider !== 'None' && model.type !== 'transformers'" class="flex items-center" title="Provider Profile">
             <i data-feather="user" class="w-4 h-4 mr-2 flex-shrink-0"></i>
-            <b class="mr-1">Quantizer:</b>
-            <a :href="'https://huggingface.co/'+model.quantizer" target="_blank" rel="noopener noreferrer" @click.stop
+            <b class="mr-1">Provider:</b>
+            <a :href="'https://huggingface.co/'+model.provider" target="_blank" rel="noopener noreferrer" @click.stop
               class="truncate hover:text-blue-600 dark:hover:text-blue-400 duration-150 underline">
-              {{ model.quantizer }}
+              {{ model.provider }}
             </a>
           </div>
 

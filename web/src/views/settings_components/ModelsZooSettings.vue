@@ -51,7 +51,7 @@
                      <option value="rank">Sort by Rank</option>
                      <option value="name">Sort by Name</option>
                      <option value="last_commit_time">Sort by Date</option>
-                     <option value="quantizer">Sort by Quantizer</option>
+                     <option value="provider">Sort by Quantizer</option>
                      <option value="license">Sort by License</option>
                  </select>
             </div>
@@ -323,13 +323,13 @@ export default {
             console.log(zooModels)
 
             const combined = zooModels.map(model => {
-                const modelId = model.quantizer?model.quantizer+'/'+model.name:model.name;
+                const modelId = model.provider?model.provider+'/'+model.name:model.name;
                 const isInstalledCheck = installedSet.has(model.name) || (model.variants && model.variants.some(v => installedSet.has(v.name)));
                 return {
                     name: model.name,
                     author: model.author,
                     rank: model.rank ?? 9999, // Default rank if missing
-                    quantizer: model.quantizer,
+                    provider: model.provider,
                     description: model.description,
                     license: model.license,
                     last_commit_time: model.last_commit_time,
@@ -358,7 +358,7 @@ export default {
                          name: installedName,
                          author: 'Local/Custom',
                          rank: -1, // Rank custom models high
-                         quantizer: '',
+                         provider: '',
                          description: 'Locally installed model reference.',
                          license: '',
                          last_commit_time: '',
@@ -392,7 +392,7 @@ export default {
                  result = result.filter(m =>
                      m.name?.toLowerCase().includes(lowerSearch) ||
                      m.author?.toLowerCase().includes(lowerSearch) ||
-                     m.quantizer?.toLowerCase().includes(lowerSearch) ||
+                     m.provider?.toLowerCase().includes(lowerSearch) ||
                      m.description?.toLowerCase().includes(lowerSearch) ||
                      m.license?.toLowerCase().includes(lowerSearch)
                  );
@@ -422,8 +422,8 @@ export default {
                           const dateA = a.last_commit_time || '0';
                           const dateB = b.last_commit_time || '0';
                           return dateB.localeCompare(dateA); // Reversed for newer first
-                     case 'quantizer':
-                          return (a.quantizer || '').localeCompare(b.quantizer || '');
+                     case 'provider':
+                          return (a.provider || '').localeCompare(b.provider || '');
                      case 'license':
                           return (a.license || '').localeCompare(b.license || '');
                      default:

@@ -25,7 +25,7 @@ if not PackageManager.check_package_installed_with_version(
     "ascii_colors", expected_ascii_colors_version
 ):
     PackageManager.install_or_update("ascii_colors")
-from ascii_colors import ASCIIColors
+from ascii_colors import ASCIIColors, LogLevel
 print()
 expected_pipmaster_version = "0.5.4"
 ASCIIColors.yellow(
@@ -499,6 +499,8 @@ if __name__ == "__main__":
         #   thread.start()
 
         # if autoshow
+        if config.debug:
+            ASCIIColors.set_log_level(LogLevel.DEBUG)
 
 
         if config.auto_show_browser and not config.headless_server_mode:
