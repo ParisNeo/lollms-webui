@@ -114,7 +114,7 @@ class TestHFBinding:
         info(f"Checking for local models in: {local_hf_root}")
         for model_name in sorted(list(local_model_names)):
             entry = {"category": "local", "datasets": "Unknown", "icon": default_icon, "last_commit_time": None,
-                     "license": "Unknown", "model_creator": "Unknown", "name": model_name, "provider": None,
+                     "license": "Unknown", "model_creator": None, "name": model_name, "provider": None,
                      "rank": 5.0, "type": "model", "variants": [{"name": model_name + " (Local)", "size": -1}],
                      "model_creator_link": f"https://huggingface.co/{model_name.split('/')[0]}" if '/' in model_name else "https://huggingface.co/"}
             model_path = local_hf_root / model_name
@@ -158,7 +158,7 @@ class TestHFBinding:
                 description = f"Downloads: {model.downloads or 'N/A'}" + (f", Updated: {model.lastModified.split('T')[0]}" if model.lastModified else "")
 
                 entry = {"category": category, "datasets": "Check card", "icon": default_icon, "last_commit_time": model.lastModified,
-                         "license": "Check card", "model_creator": model.author or "Unknown", "name": model_id, "provider": None,
+                         "license": "Check card", "model_creator": model.author or None, "name": model_id, "provider": None,
                          "rank": 1.0 + (model.downloads / 1e7 if model.downloads else 0), "type": "downloadable", "description": description,
                          "link": f"https://huggingface.co/{model_id}", "variants": [{"name": model_id + " (Hub)", "size": -1}],
                          "model_creator_link": f"https://huggingface.co/{model.author}" if model.author else "https://huggingface.co/"}
