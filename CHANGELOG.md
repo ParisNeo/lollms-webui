@@ -2,6 +2,7 @@
 Date: April 09, 2025  
 - Added the possibility to star discussions
 - Enhanced and bunped all api based services to use more functionalities
+- A brand new Hugging face binding for local models (access up to 200000 LLM models)
 
 # LoLLMs v19.10 (Ghibli) Changelog
 Date: April 02, 2025  

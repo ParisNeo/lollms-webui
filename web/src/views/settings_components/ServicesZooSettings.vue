@@ -238,6 +238,9 @@ export default {
         };
 
         const handleServiceSelect = ({ serviceType, serviceName }) => {
+            console.log("Service selected ")
+            console.log(serviceType)
+            console.log(serviceName)
             const configKeyMap = {
                 tts: 'active_tts_service',
                 stt: 'active_stt_service',

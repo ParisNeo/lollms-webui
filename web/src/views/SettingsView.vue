@@ -177,6 +177,10 @@ export default {
             }
         },
         handleSettingUpdated(payload) {
+            if(payload.value=='None'){
+                payload.value = null
+                console.log("service deactivated")
+            }
             if (!this.editableConfig) {
                  this.editableConfig = this.deepClone(this.$store.state.config);
             }

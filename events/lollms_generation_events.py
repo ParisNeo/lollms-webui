@@ -42,6 +42,7 @@ def add_events(sio: socketio):
     async def cancel_generation(sid):
         client_id = sid
         client = lollmsElfServer.session.get_client(client_id)
+        lollmsElfServer.model.stop_generation()
         lollmsElfServer.cancel_gen = True
         #kill thread
         ASCIIColors.error(f'Client {sid} requested cancelling generation')

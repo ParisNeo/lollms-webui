@@ -69,9 +69,7 @@
     },
     methods: {
       selectService() {
-          if (this.service.name !== 'None') {
-               this.$emit('select', { serviceType: this.serviceType, serviceName: this.service.name });
-          }
+          this.$emit('select', { serviceType: this.serviceType, serviceName: this.service.name });
       },
       configureService() {
          // Only emit if active, button is already disabled but this is belt-and-suspenders

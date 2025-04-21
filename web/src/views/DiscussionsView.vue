@@ -120,7 +120,6 @@ import SkillsLibraryViewer from "@/components/SkillsViewer.vue";
 import PersonalityEditor from "@/components/PersonalityEditor.vue";
 import PopupViewer from '@/components/PopupViewer.vue';
 import ChangelogPopup from "@/components/ChangelogPopup.vue";
-import modelImgPlaceholder from "@/assets/default_model.png";
 
 
 export default defineComponent({
@@ -499,6 +498,7 @@ export default defineComponent({
         },
 
         finalMsgEvent(msgObj) {
+            this.$store.commit('setIsGenerating', false);            
             if (this.currentDiscussion?.id !== msgObj.discussion_id) return;
             const index = this.discussionArr.findIndex(m => m.id === msgObj.id);
              if (index !== -1) {
