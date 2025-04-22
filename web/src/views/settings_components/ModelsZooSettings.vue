@@ -572,6 +572,7 @@ export default {
         },
 
         handleCancelInstall(details) {
+            console.log("received cancel request")
             if (!details || !this.isDownloading) return;
              // Send necessary info from 'details' for the backend to identify the process
              const payload = {
