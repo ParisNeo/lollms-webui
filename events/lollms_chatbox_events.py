@@ -28,11 +28,9 @@ from lollms.personality import AIPersonality
 from lollms.security import forbid_remote_access
 from lollms.server.elf_server import LOLLMSElfServer
 from lollms.types import MSG_OPERATION_TYPE, SENDER_TYPES
-from lollms.utilities import (PackageManager, convert_language_name,
-                              find_first_available_file_index, gc, load_config,
+from lollms.utilities import (find_first_available_file_index, gc, load_config,
                               run_async, trace_exception)
-from pydantic import BaseModel
-
+import pipmaster as pm
 from lollms_webui import LOLLMSWebUI
 
 router = APIRouter()
@@ -127,8 +125,7 @@ def add_events(sio: socketio):
                 lollmsElfServer.error("Client not recognized.\nTry refreshing the page")
                 return
             lollmsElfServer.info("Loading camera")
-            if not PackageManager.check_package_installed("cv2"):
-                PackageManager.install_package("opencv-python")
+            pm.ensure_packages({"opencv-python":""})
             import cv2
 
             cap = cv2.VideoCapture(0)

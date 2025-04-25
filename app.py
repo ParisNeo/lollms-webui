@@ -8,104 +8,31 @@ This file is the entry point to the webui.
 
 import os
 import sys
-import threading
-import time
-from typing import List, Tuple
-
-from fastapi.middleware.cors import CORSMiddleware
+# scheduled for deprication
 from lollms.utilities import PackageManager
-
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
-expected_ascii_colors_version = "0.8.0"
-print(
-    f"Checking ascii_colors ({expected_ascii_colors_version}) ...", end="", flush=True
-)
-if not PackageManager.check_package_installed_with_version(
-    "ascii_colors", expected_ascii_colors_version
-):
-    PackageManager.install_or_update("ascii_colors")
-from ascii_colors import ASCIIColors, LogLevel
-print()
+# replacement
 expected_pipmaster_version = "0.7.0"
-ASCIIColors.yellow(
-    f"Checking pipmaster ({expected_pipmaster_version}) ...", end="", flush=True
-)
+print("Checking pipmaster ...", end="")
 if not PackageManager.check_package_installed_with_version(
     "pipmaster", expected_pipmaster_version
 ):
     PackageManager.install_or_update("pipmaster")
-print()
 import pipmaster as pm
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
+pm.ensure_packages({
+    "ascii_colors":">=0.8.1",
+    "freedom_search": ">=0.2.2",
+    "scrapemaster": ">=0.2.1",
+    "lollms_client": ">=0.8.0",
+    "lollmsvectordb": ">=1.3.8",
+    "einops": "",
+    "datasets": "",
+    "Pillow":"",
+    "PyQt5":""
+})
 
-def animate(text: str, stop_event: threading.Event):
-    animation = "⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"
-    idx = 0
-    while not stop_event.is_set():
-        ASCIIColors.yellow(
-            f"\r{text} {animation[idx % len(animation)]}", end="", flush=True
-        )
-        idx += 1
-        time.sleep(0.1)
-    print("\r" + " " * 50, end="\r")  # Clear the line
-
-
-def check_and_install_package(package: str, version: str):
-    stop_event = threading.Event()
-    animation_thread = threading.Thread(
-        target=animate, args=(f"Checking {package} ({version})", stop_event)
-    )
-    animation_thread.start()
-
-    try:
-        installed = PackageManager.check_package_installed_with_version(
-            package, version
-        )
-
-        if not installed:
-            stop_event.set()
-            animation_thread.join()
-            print("\r" + " " * 50, end="\r")  # Clear the line
-            PackageManager.install_or_update(package)
-
-        stop_event.set()
-        animation_thread.join()
-
-        print("\r" + " " * 50, end="\r")  # Clear the line
-        ASCIIColors.yellow(f"Checking {package} ({version}) ...", end="")
-        ASCIIColors.success("OK")
-
-    except Exception as e:
-        stop_event.set()
-        animation_thread.join()
-        print("\r" + " " * 50, end="\r")  # Clear the line
-        ASCIIColors.red(f"Error checking/installing {package}: {str(e)}")
-
-
-packages: List[Tuple[str, str]] = [
-    ("freedom_search", "0.2.2"),
-    ("scrapemaster", "0.2.1"),
-    ("lollms_client", "0.8.0"),
-    ("lollmsvectordb", "1.3.8"),
-]
-
-if not pm.is_installed("einops"):
-    pm.install("einops")
-if not pm.is_installed("datasets"):
-    pm.install("datasets")
-# einops datasets
-
-
-def check_pn_libs():
-    ASCIIColors.cyan("Checking ParisNeo libraries installation")
-    print()
-
-    for package, version in packages:
-        check_and_install_package(package, version)
-        print()  # Add a newline for better readability between package checks
-
-    ASCIIColors.green("All packages have been checked and are up to date!")
+from ascii_colors import ASCIIColors, LogLevel
 
 
 import argparse
@@ -118,7 +45,7 @@ from pathlib import Path
 import psutil
 import socketio
 import uvicorn
-from ascii_colors import ASCIIColors
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
@@ -182,9 +109,6 @@ if __name__ == "__main__":
         force_local=True, custom_default_cfg_path="configs/config.yaml"
     )
     config = LOLLMSConfig.autoload(lollms_paths)
-
-    if config.auto_update:
-        check_pn_libs()
 
     if config.debug_log_file_path != "":
         ASCIIColors.log_path = config.debug_log_file_path

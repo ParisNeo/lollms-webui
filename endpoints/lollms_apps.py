@@ -23,17 +23,9 @@ from lollms_webui import LOLLMSWebUI
 if not pm.is_installed("httpx"):
     pm.install("httpx")
 import httpx
-from lollms.utilities import PackageManager
+import pipmaster as pm
 
-
-# Pull the repository if it already exists
-def check_lollms_models_zoo():
-    if not PackageManager.check_package_installed("zipfile"):
-        PackageManager.install_or_update("zipfile36")
-
-
-ASCIIColors.execute_with_animation("Checking zip library.", check_lollms_models_zoo)
-
+pm.ensure_packages({"zipfile36":""})
 
 import io
 import shutil

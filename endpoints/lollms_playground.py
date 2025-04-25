@@ -14,18 +14,13 @@ import platform
 from pathlib import Path
 
 import yaml
-from ascii_colors import ASCIIColors
+from ascii_colors import ASCIIColors, trace_exception
 from fastapi import APIRouter, HTTPException, Request
 from lollms.main_config import BaseConfig
 from lollms.security import (check_access, forbid_remote_access,
                              sanitize_path_from_endpoint, validate_path)
-from lollms.types import MSG_OPERATION_TYPE
-from lollms.utilities import (PackageManager, add_period, detect_antiprompt,
-                              find_first_available_file_index,
-                              remove_text_from_string, trace_exception)
-from pydantic import BaseModel, Field
-from starlette.responses import StreamingResponse
 
+from pydantic import BaseModel, Field
 from lollms_webui import LOLLMSWebUI
 
 # ----------------------- Defining router and main class ------------------------------

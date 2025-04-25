@@ -8,29 +8,10 @@ description:
 
 """
 
-import os
-import threading
-import time
-from datetime import datetime
-from functools import partial
-from pathlib import Path
-from typing import List
-
-import pkg_resources
 import socketio
-from ascii_colors import ASCIIColors
-from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import FileResponse
-from lollms.binding import BindingBuilder, InstallOption
-from lollms.databases.discussions_database import Discussion
-from lollms.personality import AIPersonality
+from ascii_colors import ASCIIColors, trace_exception
+from fastapi import APIRouter
 from lollms.security import check_access, forbid_remote_access
-from lollms.server.elf_server import LOLLMSElfServer
-from lollms.types import MSG_OPERATION_TYPE, SENDER_TYPES
-from lollms.utilities import (PackageManager, add_period,
-                              convert_language_name,
-                              find_first_available_file_index, gc, load_config,
-                              run_async, trace_exception)
 from pydantic import BaseModel
 
 from lollms_webui import LOLLMSWebUI

@@ -42,17 +42,15 @@ from lollms.personality import AIPersonality, PersonalityBuilder
 from lollms.server.elf_server import LOLLMSElfServer
 from lollms.types import (CONTENT_OPERATION_TYPES, MSG_OPERATION_TYPE,
                           MSG_TYPE, SENDER_TYPES)
-from lollms.utilities import (File64BitsManager, PackageManager,
-                              PromptReshaper, convert_language_name,
-                              find_first_available_file_index,
-                              is_asyncio_loop_running, process_ai_output,
-                              run_async, yes_or_no_input)
-from tqdm import tqdm
 
-if not PackageManager.check_package_installed("requests"):
-    PackageManager.install_package("requests")
-if not PackageManager.check_package_installed("bs4"):
-    PackageManager.install_package("beautifulsoup4")
+from tqdm import tqdm
+import pipmaster as pm
+
+pm.ensure_packages({
+    "requests":"",
+    "beautifulsoup4":"",
+})
+
 import requests
 
 
