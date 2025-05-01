@@ -11,7 +11,7 @@ import sys
 # scheduled for deprication
 from lollms.utilities import PackageManager
 # replacement
-expected_pipmaster_version = "0.7.0"
+expected_pipmaster_version = "0.7.1"
 print("Checking pipmaster ...", end="")
 if not PackageManager.check_package_installed_with_version(
     "pipmaster", expected_pipmaster_version
@@ -21,9 +21,9 @@ import pipmaster as pm
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 pm.ensure_packages({
-    "ascii_colors":">=0.8.1",
+    "ascii_colors":">=0.10.0",
     "freedom_search": ">=0.2.2",
-    "scrapemaster": ">=0.2.1",
+    "scrapemaster": ">=0.4.2",
     "lollms_client": ">=0.8.0",
     "lollmsvectordb": ">=1.3.8",
     "einops": "",

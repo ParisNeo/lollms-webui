@@ -46,10 +46,10 @@ from lollms.types import (CONTENT_OPERATION_TYPES, MSG_OPERATION_TYPE,
 from tqdm import tqdm
 import pipmaster as pm
 
-pm.ensure_packages({
-    "requests":"",
-    "beautifulsoup4":"",
-})
+pm.ensure_packages([
+    "requests",
+    "beautifulsoup4"
+])
 
 import requests
 
