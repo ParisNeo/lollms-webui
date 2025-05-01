@@ -265,13 +265,13 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_thinking import router as lollms_thinking
     
 
-    from endpoints.chat_bar import router as chat_bar_router
-    from endpoints.lollms_advanced import router as lollms_advanced_router
-    from endpoints.lollms_apps import router as lollms_apps_router
-    from endpoints.lollms_help import router as help_router
-    from endpoints.lollms_message import router as lollms_message_router
-    from endpoints.lollms_playground import router as lollms_playground_router
-    from endpoints.lollms_webui_infos import \
+    from lollms.server.endpoints.chat_bar import router as chat_bar_router
+    from lollms.server.endpoints.lollms_advanced import router as lollms_advanced_router
+    from lollms.server.endpoints.lollms_apps import router as lollms_apps_router
+    from lollms.server.endpoints.lollms_help import router as help_router
+    from lollms.server.endpoints.lollms_message import router as lollms_message_router
+    from lollms.server.endpoints.lollms_playground import router as lollms_playground_router
+    from lollms.server.endpoints.lollms_webui_infos import \
         router as lollms_webui_infos_router
     from events.lollms_chatbox_events import \
         add_events as lollms_chatbox_events_add
