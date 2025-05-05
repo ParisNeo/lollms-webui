@@ -8,6 +8,9 @@ This file is the entry point to the webui.
 
 import os
 import sys
+# verify pipmaster
+import verify_pipmaster
+
 # scheduled for deprication
 from lollms.utilities import PackageManager
 # replacement
