@@ -10,16 +10,6 @@ import os
 import sys
 # verify pipmaster
 import verify_pipmaster
-
-# scheduled for deprication
-from lollms.utilities import PackageManager
-# replacement
-expected_pipmaster_version = "0.7.1"
-print("Checking pipmaster ...", end="")
-if not PackageManager.check_package_installed_with_version(
-    "pipmaster", expected_pipmaster_version
-):
-    PackageManager.install_or_update("pipmaster")
 import pipmaster as pm
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
