@@ -111,7 +111,9 @@ source venv/bin/activate
 ```
 4. Install requirements
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
+pip install -e lollms_core
 ```
 
 5. Create global_paths_cfg.yaml
@@ -126,7 +128,7 @@ EOL
 You can set environment variables to select which bindings to install
 For example, to install ollama binding:
 ```bash
-python zoos/bindings_zoo/ollama/__init__.py
+python zoos/bindings_zoo/ollama_ai/__init__.py
 ```
 
 List of available bindings and their installation commands:
@@ -135,7 +137,7 @@ openrouter:    python zoos/bindings_zoo/openrouter/__init__.py
 openai:        python zoos/bindings_zoo/openai/__init__.py
 groq:          python zoos/bindings_zoo/groq/__init__.py
 mistralai:     python zoos/bindings_zoo/mistralai/__init__.py
-ollama:        python zoos/bindings_zoo/ollama/__init__.py
+ollama:        python zoos/bindings_zoo/ollama_ai/__init__.py
 vllm:          python zoos/bindings_zoo/vllm/__init__.py
 litellm:       python zoos/bindings_zoo/litellm/__init__.py
 exllamav2:     python zoos/bindings_zoo/exllamav2/__init__.py
