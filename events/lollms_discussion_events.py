@@ -16,7 +16,7 @@ import pipmaster as pm
 from ascii_colors import ASCIIColors, trace_exception
 from fastapi import APIRouter
 from lollms.databases.discussions_database import Discussion
-from lollms.security import forbid_remote_access
+from lollms.security import forbid_remote_access, require_localhost
 from lollms.types import MSG_OPERATION_TYPE, SENDER_TYPES
 
 from lollms_webui import LOLLMSWebUI
@@ -27,9 +27,10 @@ lollmsElfServer = LOLLMSWebUI.get_instance()
 
 # ----------------------------------- events -----------------------------------------
 def add_events(sio: socketio):
-    forbid_remote_access(lollmsElfServer)
+    #forbid_remote_access(lollmsElfServer)
 
     @sio.on("new_discussion")
+    @require_localhost(sio)
     async def new_discussion(sid, data):
         if lollmsElfServer.personality is None:
             lollmsElfServer.error("Please select a personality first")
@@ -207,6 +208,7 @@ def add_events(sio: socketio):
             )
 
     @sio.on("load_discussion")
+    @require_localhost(sio)
     async def load_discussion(sid, data):
         client_id = sid
         ASCIIColors.yellow(f"Loading discussion for client {client_id} ... ", end="")

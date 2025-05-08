@@ -21,7 +21,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
 from lollms.binding import BindingBuilder, InstallOption
 from lollms.personality import AIPersonality
-from lollms.security import forbid_remote_access
+from lollms.security import forbid_remote_access, require_localhost
 from lollms.server.elf_server import LOLLMSElfServer
 from lollms.types import MSG_OPERATION_TYPE, SENDER_TYPES
 from lollms.utilities import (convert_language_name,
@@ -37,8 +37,9 @@ lollmsElfServer = LOLLMSWebUI.get_instance()
 
 # ----------------------------------- events -----------------------------------------
 def add_events(sio: socketio):
-    forbid_remote_access(lollmsElfServer)
+    # forbid_remote_access(lollmsElfServer)
     @sio.on('cancel_generation')
+    @require_localhost(sio)
     async def cancel_generation(sid):
         client_id = sid
         client = lollmsElfServer.session.get_client(client_id)
@@ -58,6 +59,7 @@ def add_events(sio: socketio):
     
     
     @sio.on('cancel_text_generation')
+    @require_localhost(sio)
     async def cancel_text_generation(sid, data):
         client_id = sid
         client = lollmsElfServer.session.get_client(client_id)
@@ -68,6 +70,7 @@ def add_events(sio: socketio):
 
 
     @sio.on("generate_msg")
+    @require_localhost(sio)
     async def handle_generate_msg(sid, data, use_threading=True):
         client_id = sid
         lollmsElfServer.cancel_gen = False
@@ -110,6 +113,7 @@ def add_events(sio: socketio):
             lollmsElfServer.error("I am busy. Come back later.", client_id=client_id)
 
     @sio.on("generate_msg_with_internet")
+    @require_localhost(sio)
     async def generate_msg_with_internet(sid, data):
         client_id = sid
         lollmsElfServer.cancel_gen = False
@@ -157,6 +161,7 @@ def add_events(sio: socketio):
             lollmsElfServer.error("I am busy. Come back later.", client_id=client_id)
 
     @sio.on("generate_msg_from")
+    @require_localhost(sio)
     async def handle_generate_msg_from(sid, data):
         client_id = sid
         client = lollmsElfServer.session.get_client(client_id)
@@ -182,6 +187,7 @@ def add_events(sio: socketio):
         await lollmsElfServer.start_message_generation(message, message.id, client_id, False, generation_type)
 
     @sio.on("continue_generate_msg_from")
+    @require_localhost(sio)
     async def handle_continue_generate_msg_from(sid, data):
         client_id = sid
         client = lollmsElfServer.session.get_client(client_id)

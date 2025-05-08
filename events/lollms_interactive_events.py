@@ -11,7 +11,7 @@ description:
 import socketio
 from ascii_colors import ASCIIColors, trace_exception
 from fastapi import APIRouter
-from lollms.security import check_access, forbid_remote_access
+from lollms.security import check_access, forbid_remote_access, require_localhost
 from pydantic import BaseModel
 
 from lollms_webui import LOLLMSWebUI
@@ -22,9 +22,10 @@ lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 # ----------------------------------- events -----------------------------------------
 def add_events(sio: socketio):
-    forbid_remote_access(lollmsElfServer)
+    #forbid_remote_access(lollmsElfServer)
 
     @sio.on("start_webcam_video_stream")
+    @require_localhost(sio)
     def start_webcam_video_stream(sid):
         lollmsElfServer.info("Starting video capture")
         try:
@@ -38,11 +39,13 @@ def add_events(sio: socketio):
             )
 
     @sio.on("stop_webcam_video_stream")
+    @require_localhost(sio)
     def stop_webcam_video_stream(sid):
         lollmsElfServer.info("Stopping video capture")
         lollmsElfServer.webcam.stop_capture()
 
     @sio.on("start_bidirectional_audio_stream")
+    @require_localhost(sio)
     def start_bidirectional_audio_stream(sid):
         client = check_access(lollmsElfServer, sid)
         if lollmsElfServer.config.headless_server_mode:
@@ -122,6 +125,7 @@ def add_events(sio: socketio):
             )
 
     @sio.on("stop_bidirectional_audio_stream")
+    @require_localhost(sio)
     def stop_bidirectional_audio_stream(sid):
         client = check_access(lollmsElfServer, sid)
         lollmsElfServer.info("Stopping audio capture")

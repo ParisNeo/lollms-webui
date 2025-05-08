@@ -25,7 +25,7 @@ from lollms.binding import BindingBuilder, InstallOption
 from lollms.databases.discussions_database import Discussion
 from lollms.internet import scrape_and_save
 from lollms.personality import AIPersonality
-from lollms.security import forbid_remote_access
+from lollms.security import forbid_remote_access, require_localhost
 from lollms.server.elf_server import LOLLMSElfServer
 from lollms.types import MSG_OPERATION_TYPE, SENDER_TYPES
 from lollms.utilities import (find_first_available_file_index, gc, load_config,
@@ -39,9 +39,10 @@ lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
 
 # ----------------------------------- events -----------------------------------------
 def add_events(sio: socketio):
-    forbid_remote_access(lollmsElfServer)
+    # forbid_remote_access(lollmsElfServer)
 
     @sio.on("create_empty_message")
+    @require_localhost(sio)
     async def create_empty_message(sid, data):
         ASCIIColors.yellow("Creating empty user message")
         client_id = sid
@@ -74,6 +75,7 @@ def add_events(sio: socketio):
                 )
 
     @sio.on("add_webpage")
+    @require_localhost(sio)
     async def add_webpage(sid, data):
         lollmsElfServer.ShowBlockingMessage("Scraping web page\nPlease wait...")
         ASCIIColors.yellow("Scaping web page")
@@ -118,6 +120,7 @@ def add_events(sio: socketio):
             lollmsElfServer.HideBlockingMessage()
 
     @sio.on("take_picture")
+    @require_localhost(sio)
     def take_picture(sid):
         try:
             client = lollmsElfServer.session.get_client(sid)
