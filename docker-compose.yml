@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.10'
 
 services:
   lollms-webui:
@@ -11,6 +11,8 @@ services:
       - ./personal_data:/app/personal_data  # For configurations and user data
       - ./models:/app/models  # For model storage
       - ./custom_personalities:/app/custom_personalities  # For custom personalities
+    environment:    
+      - ALLOWED_CLIENT_IP=172.18.0.1
     restart: unless-stopped
     # Add GPU support if needed
     deploy:
