@@ -1,4 +1,4 @@
-import { createApp, ref } from 'vue'
+import { createApp } from 'vue'
 import { createStore } from 'vuex'
 import axios from "axios";
 import App from './App.vue'
@@ -10,6 +10,7 @@ const app = createApp(App)
 const STARRED_LOCAL_STORAGE_KEY = 'lollms_starred_personalities';
 const STARRED_FUNCTIONS_LOCAL_STORAGE_KEY = 'lollms_starred_functions';
 const STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY = 'lollms_starred_discussions';
+const STARRED_APPS_LOCAL_STORAGE_KEY = 'lollms_starred_apps';
 
 function copyObject(obj) {
   if (obj === null || typeof obj !== 'object') {
@@ -113,6 +114,7 @@ export const store = createStore({
         starredPersonalities: loadStarredFromLocalStorage(STARRED_LOCAL_STORAGE_KEY, 'personalities'),
         starredFunctions: loadStarredFromLocalStorage(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY, 'functions'),
         starredDiscussions: loadStarredFromLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, 'discussions'),
+        starredApps: loadStarredFromLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, 'apps'),
         diskUsage:null,
         ramUsage:null,
         vramUsage:null,
@@ -159,6 +161,11 @@ export const store = createStore({
           state.starredDiscussions = starredIds;
           saveStarredToLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, starredIds, 'discussions');
       },
+      setStarredApps(state, starredApps) {
+          state.starredApps = starredApps;
+          saveStarredToLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, starredApps, 'apps');
+      },
+    
       setYesNoDialog(state, dialog) { state.yesNoDialog = dialog; },
       setUniversalForm(state, form) { state.universalForm = form; },
       setSaveConfiguration(state, saveFn) { state.saveConfiguration = saveFn; },
@@ -225,6 +232,20 @@ export const store = createStore({
           if (index > -1) {
               state.starredDiscussions.splice(index, 1);
               saveStarredToLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, state.starredDiscussions, 'discussions');
+          }
+      },
+      addStarredApp(state, starredApp) {
+          if (!state.starredApps.includes(starredApp)) {
+              state.starredDiscussions.push(starredApp);
+              saveStarredToLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, state.starredDiscussions, 'apps');
+          }
+      },
+    
+      removeStarredApp(state, appPath) {
+          const index = state.starredApps.indexOf(appPath);
+          if (index > -1) {
+              state.starredApps.splice(index, 1);
+              saveStarredToLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, state.starredApps, 'apps');
           }
       },
       setDiskUsage(state, diskUsage) { state.diskUsage = diskUsage; },
@@ -324,6 +345,7 @@ export const store = createStore({
       getFunctions: state => state.functions,
       getStarredFunctions: state => state.starredFunctions,
       getStarredDiscussions: state => state.starredDiscussions,
+      setStarredApps: state => state.starredApps
     },
     actions: {
       async fetchIsRtOn({ commit }) {
@@ -398,6 +420,22 @@ export const store = createStore({
         }
         // No global discussion list update action needed unless discussions are managed in Vuex state
     },
+    toggleStarApp({ commit, state }, app) {
+      if (!app || typeof app.id === 'undefined') {
+          console.warn("Attempted to toggle star on invalid app:", app);
+          return;
+      }
+      const appId = app.id;
+      const isCurrentlyStarred = state.starredDiscussions.includes(appId);
+
+      if (isCurrentlyStarred) {
+          commit('removeStarredApp', appId);
+      } else {
+          commit('addStarredApp', appId);
+      }
+      // No global discussion list update action needed unless discussions are managed in Vuex state
+  },    
+      // eslint-disable-next-line no-unused-vars
       async refreshConfig({ commit, state }) {
         console.log("Fetching configuration");
         try {
@@ -762,6 +800,7 @@ export const store = createStore({
          }
       },
 
+      // eslint-disable-next-line no-unused-vars
       async applyConfiguration({ commit, state, dispatch }) {
           try {
               const res = await axios.post('/apply_settings', { client_id:state.client_id, config: state.config }, { headers: state.posts_headers });

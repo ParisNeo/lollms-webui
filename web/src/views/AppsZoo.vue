@@ -183,9 +183,10 @@
 
 <script>
 import axios from 'axios';
-import AppCard from '@/components/AppCard.vue'; // Create this component for individual app cards
+import AppCard from './apps_components/AppCard.vue'; // Create this component for individual app cards
 import { marked } from 'marked';
 
+import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
   components: {
@@ -217,7 +218,7 @@ export default {
       return this.selectedCategory === 'all' ? 'All Apps': this.selectedCategory;
     },    
     combinedApps() {
-      const installedAppNames = this.apps.map(app => app.name);
+      //const installedAppNames = this.apps.map(app => app.name);
       const localAppsMap = new Map(this.apps.map(app => [app.name, { ...app, installed: true, existsInFolder: true }]));
       
       this.githubApps.forEach(app => {
@@ -272,6 +273,20 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['refreshConfig', 'refreshDatabase', 'refreshBindings', 'refreshPersonalitiesZoo', 'refreshMountedPersonalities', 'refreshModelsZoo', 'refreshModels', 'fetchLanguages', 'fetchLanguage', 'fetchIsRtOn', 'toggleStarPersonality', 'toggleStarDiscussion', 'toggleStarApp', 'applyConfiguration', 'saveConfiguration', 'refreshModelStatus']),
+
+    ...mapState([
+            'ready', 'loading_infos', 'loading_progress', 'version', 'config',
+            'databases', 'isConnected', 'isGenerating', 'client_id', 'leftPanelCollapsed',
+            'rightPanelCollapsed', 'theme_vars', 'selectedPersonality',
+            'currentPersonConfig', 'personalities', 'personalities_ready',
+            'starredDiscussions', 'starredApps' // Make sure this is in mapState or mapGetters
+        ]),
+        ...mapGetters([
+            'getIsReady', 'getVersion', 'getConfig', 'getClientId', 'getDatabases',
+            'getIsConnected', 'getIsGenerating', 'getLeftPanelCollapsed',
+            'getRightPanelCollapsed', 'getStarredDiscussions', 'getStarredApps' // Use getter if defined
+        ]),
     getDateValue(dateString) {
         if (!dateString) return 0; // Gère les valeurs manquantes
         const date = new Date(dateString);
@@ -284,6 +299,8 @@ export default {
     toggleFavorite(appName) {
       console.log("Toggling favorite")
       console.log(appName)
+      this.toggleStarApp()
+
       const index = this.favorites.indexOf(appName);
       if (index === -1) {
         this.favorites.push(appName);
@@ -393,6 +410,7 @@ export default {
         const response = await axios.post(`/show_apps_folder`, {
           client_id: this.$store.state.client_id
         });
+        console.log(response)
       } catch (error) {
         this.showMessage('Failed to open apps folder.', false);
       } finally {
@@ -429,7 +447,7 @@ export default {
       this.$store.state.messageBox.showBlockingMessage(`Installing app ${appName}`)
 
       try {
-        await axios.post(`/install/${appName}`, {
+        await axios.post(`/install_app/${appName}`, {
           client_id: this.$store.state.client_id,
         });
         this.showMessage('Installation succeeded!', true);
@@ -445,7 +463,7 @@ export default {
     async uninstallApp(appName) {
       this.loading = true;
       try {
-        await axios.post(`/uninstall/${appName}`, {
+        await axios.post(`/uninstall_app/${appName}`, {
           client_id: this.$store.state.client_id,
         });
         this.showMessage('Uninstallation succeeded!', true);

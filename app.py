@@ -18,7 +18,7 @@ pm.ensure_packages({
     "freedom_search": ">=0.2.2",
     "scrapemaster": ">=0.4.2",
     "lollms_client": ">=0.8.0",
-    "lollmsvectordb": ">=1.3.8",
+    "safe_store": ">=1.3.8",
     "einops": "",
     "datasets": "",
     "Pillow":"",
