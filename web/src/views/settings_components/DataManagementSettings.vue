@@ -55,7 +55,7 @@
                                 @change="updateDataLake(index, 'type', $event.target.value)"
                                 class="input input-sm w-full"
                             >
-                                <option value="lollmsvectordb">LoLLMs VectorDB</option>
+                                <option value="safestore">Safe store db</option>
                                 <option value="lightrag">LightRAG</option>
                                 <option value="elasticsearch">Elasticsearch</option>
                             </select>
@@ -64,15 +64,15 @@
                          <!-- Conditional URL/Path Input -->
                         <div class="md:col-span-2">
                              <label :for="`dl-pathurl-${index}`" class="label mb-1">
-                                {{ source.type === 'lollmsvectordb' ? 'Database Path' : (source.type === 'lightrag' ? 'LightRAG URL' : 'Elasticsearch URL') }}
+                                {{ source.type === 'safestore' ? 'Database Path' : (source.type === 'lightrag' ? 'LightRAG URL' : 'Elasticsearch URL') }}
                             </label>
                             <input
                                 type="text"
                                 :id="`dl-pathurl-${index}`"
-                                :value="source.type === 'lollmsvectordb' ? source.path : source.url"
-                                @input="updateDataLake(index, source.type === 'lollmsvectordb' ? 'path' : 'url', $event.target.value)"
+                                :value="source.type === 'safestore' ? source.path : source.url"
+                                @input="updateDataLake(index, source.type === 'safestore' ? 'path' : 'url', $event.target.value)"
                                 class="input input-sm w-full"
-                                :placeholder="source.type === 'lollmsvectordb' ? 'Path to database folder' : 'http://host:port/'"
+                                :placeholder="source.type === 'safestore' ? 'Path to database folder' : 'http://host:port/'"
                              >
                         </div>
 
@@ -108,7 +108,7 @@
                          <!-- Type Specific Actions -->
                         <div class="flex flex-wrap gap-2">
                              <!-- Lollms VectorDB Actions -->
-                            <template v-if="source.type === 'lollmsvectordb'">
+                            <template v-if="source.type === 'safestore'">
                                 <button @click="vectorizeFolder(index)" class="btn btn-secondary btn-sm" title="Vectorize or re-vectorize the selected folder">
                                      <i data-feather="refresh-cw" class="w-4 h-4 mr-1"></i> Vectorize
                                  </button>
@@ -118,7 +118,7 @@
                             </template>
 
                             <!-- LightRAG Actions -->
-                             <template v-if="source.type === 'lightrag'">
+                             <template v-if="source.type === 'graphstore'">
                                  <button @click="triggerFileInput(index)" class="btn btn-success btn-sm" title="Upload supported files (.txt, .md, .pdf, .docx, .pptx, .xlsx)">
                                      <i data-feather="upload" class="w-4 h-4 mr-1"></i> Upload Files
                                 </button>
@@ -249,7 +249,7 @@
             </div>
         </section>
 
-        <!-- LollmsVectordb General Configuration Section -->
+        <!-- safe_store General Configuration Section -->
         <section class="space-y-4 p-4 border border-blue-300 dark:border-blue-600 rounded-lg bg-blue-50 dark:bg-blue-900/50">
              <h3 class="text-xl font-medium text-blue-600 dark:text-blue-300 mb-3">LoLLMs VectorDB Settings</h3>
 
@@ -258,80 +258,30 @@
                  <div>
                     <label for="rag_vectorizer" class="label mb-1">Vectorizer Engine</label>
                     <select id="rag_vectorizer" required :value="$store.state.config.rag_vectorizer" @change="$store.state.config.rag_vectorizer = $event.target.value" class="input input-sm w-full">
-                        <option value="semantic">Sentence Transformer (Recommended)</option>
-                        <option value="tfidf">TF-IDF (Fast, Less Accurate)</option>
-                        <option value="openai">OpenAI Ada</option>
-                        <option value="ollama">Ollama Embedding</option>
+                        <option value="st:all-MiniLM-L6-v2">Sentence Transformer MiniLM-L6-V2 (Recommended)</option>
+                        <option value="st:all-mpnet-base-v2">Sentence Transformer MPNet-Base-v2</option>
+                        <option value="st:sentence-t5-base">Sentence Transformer sentence-t5-base</option>
+                        <option value="tfidf:standard">TF-IDF (Fast, Less Accurate)</option>
+                        <option value="openai:text-embedding-3-small">OpenAI text embedding 3 small</option>
+                        <option value="ollama:bge-3m">Ollama Embedding bge-3m</option>
                     </select>
+                    
                  </div>
 
                 <!-- Execute Remote Code -->
                 <div class="flex items-end pb-1">
                     <div class="flex items-center space-x-2">
-                        <ToggleSwitch id="rag_vectorizer_execute_remote_code" :checked="$store.state.config.rag_vectorizer_execute_remote_code" @update:checked="$store.state.config.rag_vectorizer_execute_remote_code = Boolean($event)" />
+                        <ToggleSwitch id="rag_vectorizer_execute_remote_code" :checked="$store.state.config.rag_vectorizer_execute_remote_code" @update:checked="updateValue('rag_vectorizer_execute_remote_code', $event )" />
                         <label for="rag_vectorizer_execute_remote_code" class="label !mb-0 text-sm cursor-pointer">Allow Remote Code Execution</label>
                          <i data-feather="alert-triangle" class="w-4 h-4 text-red-500 dark:text-red-400 ml-1" title="Security Risk: Only enable if using a trusted custom vectorizer source."></i>
                     </div>
                 </div>
 
-                <!-- RAG Vectorizer Model -->
-                <div class="md:col-span-2">
-                     <label for="rag_vectorizer_model" class="label mb-1">Vectorizer Model</label>
-                     <select
-                        id="rag_vectorizer_model"
-                        :value="$store.state.config.rag_vectorizer_model"
-                        @change="$store.state.config.rag_vectorizer_model = $event.target.value"
-                        class="input input-sm w-full mb-1"
-                        :disabled="$store.state.config.rag_vectorizer === 'tfidf'"
-                    >
-                         <option v-if="$store.state.config.rag_vectorizer === 'tfidf'" disabled value="">N/A for TF-IDF</option>
-                         <optgroup v-if="$store.state.config.rag_vectorizer === 'semantic'" label="Sentence Transformer Models">
-                            <option value="BAAI/bge-m3">BAAI/bge-m3</option>
-                            <option value="nvidia/NV-Embed-v2">nvidia/NV-Embed-v2</option>
-                            <option value="sentence-transformers/all-MiniLM-L6-v2">all-MiniLM-L6-v2</option>
-                            <option value="sentence-transformers/all-mpnet-base-v2">all-mpnet-base-v2</option>
-                        </optgroup>
-                        <optgroup v-if="$store.state.config.rag_vectorizer === 'openai'" label="OpenAI Models">
-                             <option value="text-embedding-3-large">text-embedding-3-large</option>
-                             <option value="text-embedding-3-small">text-embedding-3-small</option>
-                            <option value="text-embedding-ada-002">text-embedding-ada-002 (Legacy)</option>
-                        </optgroup>
-                         <optgroup v-if="$store.state.config.rag_vectorizer === 'ollama'" label="Ollama Embeddings">
-                            <option value="mxbai-embed-large">mxbai-embed-large</option>
-                            <option value="nomic-embed-text">nomic-embed-text</option>
-                             <option value="all-minilm">all-minilm</option>
-                             <option value="snowflake-arctic-embed">snowflake-arctic-embed</option>
-                        </optgroup>
-                     </select>
-                    <input
-                        type="text"
-                        :value="$store.state.config.rag_vectorizer_model"
-                        @input="$store.state.config.rag_vectorizer_model = $event.target.value"
-                        class="input input-sm w-full"
-                        placeholder="Or enter custom model name/path"
-                        :disabled="$store.state.config.rag_vectorizer === 'tfidf'"
-                    >
-                </div>
-
-                 <!-- RAG Service URL (Ollama/OpenAI) -->
-                 <div v-if="$store.state.config.rag_vectorizer === 'ollama' || $store.state.config.rag_vectorizer === 'openai'" class="md:col-span-2">
-                    <label for="rag_service_url" class="label mb-1">
-                        {{ $store.state.config.rag_vectorizer === 'ollama' ? 'Ollama Server URL' : 'OpenAI API Base URL' }}
-                    </label>
-                    <input
-                        type="text"
-                        id="rag_service_url"
-                        :value="$store.state.config.rag_service_url"
-                        @input="$store.state.config.rag_service_url = $event.target.value"
-                        class="input input-sm w-full"
-                        :placeholder="$store.state.config.rag_vectorizer === 'ollama' ? 'http://localhost:11434' : 'https://api.openai.com/v1'"
-                    >
-                 </div>
              </div>
 
             <!-- Chunk Size -->
             <div class="setting-item border-t border-blue-200 dark:border-blue-700 pt-3 mt-3">
-                <label for="rag_chunk_size-range" class="setting-label">Chunk Size</label>
+                <label for="rag_chunk_size-range" class="setting-label">Chunk Size (characters)</label>
                 <div class="flex-1 flex items-center gap-4">
                     <input id="rag_chunk_size-range" :value="$store.state.config.rag_chunk_size" @input="$store.state.config.rag_chunk_size = parseInt($event.target.value)" type="range" min="100" max="2000" step="50" class="range-input flex-grow">
                     <input id="rag_chunk_size-number" :value="$store.state.config.rag_chunk_size" @input="$store.state.config.rag_chunk_size = parseInt($event.target.value)" type="number" min="100" max="2000" step="50" class="input input-sm w-24 text-center">
@@ -340,7 +290,7 @@
 
              <!-- Overlap Size -->
             <div class="setting-item">
-                <label for="rag_overlap_size-range" class="setting-label">Overlap Size</label>
+                <label for="rag_overlap_size-range" class="setting-label">Overlap Size (characters)</label>
                  <div class="flex-1 flex items-center gap-4">
                     <input id="rag_overlap_size-range" :value="$store.state.config.rag_overlap_size" @input="$store.state.config.rag_overlap_size = parseInt($event.target.value)" type="range" min="0" max="500" step="10" class="range-input flex-grow">
                     <input id="rag_overlap_size-number" :value="$store.state.config.rag_overlap_size" @input="$store.state.config.rag_overlap_size = parseInt($event.target.value)" type="number" min="0" max="500" step="10" class="input input-sm w-24 text-center">
@@ -349,7 +299,7 @@
 
              <!-- Clean Chunks Toggle -->
             <div class="toggle-item !justify-start gap-4 !border-t-0 !pt-0 !mt-0">
-                 <ToggleSwitch id="rag_clean_chunks" :checked="$store.state.config.rag_clean_chunks" @update:checked="$store.state.config.rag_clean_chunks = Boolean($event)" />
+                 <ToggleSwitch id="rag_clean_chunks" :checked="$store.state.config.rag_clean_chunks" @update:checked="updateValue('rag_clean_chunks', $event )" />
                 <label for="rag_clean_chunks" class="toggle-label !flex-none">
                     Clean Chunks
                      <span class="toggle-description">Attempt to remove redundant whitespace and formatting from text chunks before vectorization.</span>
@@ -368,7 +318,7 @@
                     Reformulate Query with Keywords
                      <span class="toggle-description">Let the AI extract keywords from your prompt to potentially improve database search relevance.</span>
                 </label>
-                <ToggleSwitch id="rag_build_keys_words" :checked="$store.state.config.rag_build_keys_words" @update:checked="$store.state.config.rag_build_keys_words = Boolean($event)" />
+                <ToggleSwitch id="rag_build_keys_words" :checked="$store.state.config.rag_build_keys_words" @update:checked="updateValue('rag_build_keys_words', $event )" />
             </div>
 
             <!-- Put Chunk Info -->
@@ -377,7 +327,7 @@
                     Include Chunk Source Info in Context
                      <span class="toggle-description">Prepend retrieved text chunks with source information (e.g., filename) when adding to the LLM context.</span>
                 </label>
-                <ToggleSwitch id="rag_put_chunk_informations_into_context" :checked="$store.state.config.rag_put_chunk_informations_into_context" @update:checked="$store.state.config.rag_put_chunk_informations_into_context = Boolean($event)" />
+                <ToggleSwitch id="rag_put_chunk_informations_into_context" :checked="$store.state.config.rag_put_chunk_informations_into_context" @update:checked="updateValue('rag_put_chunk_informations_into_context', $event )" />
             </div>
 
              <!-- Save DB -->
@@ -386,7 +336,7 @@
                     Persist Vector Database
                      <span class="toggle-description">Save the vectorized data to disk. If disabled, the database is in-memory only and lost on restart. (Applies mainly to LoLLMs VectorDB).</span>
                 </label>
-                 <ToggleSwitch id="data_vectorization_save_db" :checked="$store.state.config.data_vectorization_save_db" @update:checked="$store.state.config.data_vectorization_save_db = Boolean($event)" />
+                 <ToggleSwitch id="data_vectorization_save_db" :checked="$store.state.config.data_vectorization_save_db" @update:checked="updateValue('data_vectorization_save_db', $event )" />
             </div>
         </section>
 
@@ -412,7 +362,7 @@ export default {
         show_toast: { type: Function, required: true },
         client_id: { type: String, required: true }
     },
-    emits: ['settings-changed'], // Use standard emits option
+    emits: ['settings-updated'], // Use standard emits option
     data() {
         return {
             fileInputs: [], // Array to hold file input DOM elements
@@ -420,6 +370,9 @@ export default {
         };
     },
     methods: {
+        updateValue(key, value) {
+            this.$emit('setting-updated', { key, value });
+        },        
         // --- Data Lake Methods ---
         updateDataLake(index, field, value) {
             // Construct the correct key path for nested array update
@@ -429,7 +382,7 @@ export default {
                 currentDatalakes[index][field] = value;
                 // Handle type change potentially swapping between path/url
                 if(field === 'type') {
-                    if(value === 'lollmsvectordb') {
+                    if(value === 'safe_store') {
                         currentDatalakes[index].url = ""; // Clear URL if switching to path-based
                     } else {
                         currentDatalakes[index].path = ""; // Clear path if switching to URL-based
@@ -445,7 +398,7 @@ export default {
             const currentDatalakes = this.$store.state.config.datalakes ? [...this.$store.state.config.datalakes] : [];
             currentDatalakes.push({
                 alias: "New DataLake",
-                type: "lollmsvectordb",
+                type: "safe_store",
                 url: "",
                 path: "",
                 key: "",
@@ -459,12 +412,12 @@ export default {
         removeDataLake(index) {
             // Create a new array excluding the item at the index
             const currentDatalakes = this.$store.state.config.datalakes.filter((_, i) => i !== index);
-            this.$store.state.config.datalakes = currentDatalakes
+            this.updateValue("datalakes",currentDatalakes);
         },
 
         async vectorizeFolder(index) {
              const lake = this.$store.state.config.datalakes[index];
-             if (!lake || lake.type !== 'lollmsvectordb' || !lake.path) {
+             if (!lake || lake.type !== 'safe_store' || !lake.path) {
                  this.show_toast("Please ensure a valid path is set for the LoLLMs VectorDB.", 4, false);
                  return;
              }
@@ -496,7 +449,7 @@ export default {
                      socket.off("lollmsvectordb_datalake_added", listener);
                  };
                  socket.on("lollmsvectordb_datalake_added", listener);
-                 await this.api_post_req('select_lollmsvectordb_input_folder');
+                 await this.api_post_req('select_safe_store_input_folder');
              } catch (error) {
                  this.show_toast(`Failed to initiate folder selection: ${error.message || error}`, 4, false);
                  socket.off("lollmsvectordb_datalake_added"); // Ensure listener is removed on error
@@ -573,7 +526,7 @@ export default {
 
         removeDatabaseService(index) {
              const currentServers = this.$store.state.config.rag_local_services.filter((_, i) => i !== index);
-             this.$store.state.config.rag_local_services = currentServers
+             this.updateValue("rag_local_services",currentServers);
         },
 
         async startRagServer(index) {

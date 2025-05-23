@@ -1,3 +1,7 @@
+# LoLLMs v20.0 (Next) Changelog
+Date: Mai 21, 2025  
+Moved to safestore for RAG
+
 # LoLLMs v19.22.42 (tWINS) Changelog
 Date: April 09, 2025  
 - Added the possibility to star discussions

@@ -1,5 +1,5 @@
 # =================== Lord Of Large Language Multimodal Systems Configuration file =========================== 
-version: 161
+version: 163
 
 # topbar
 current_language: english
@@ -194,12 +194,10 @@ datalakes: []
 # Data vectorization
 rag_local_services: [] # This is the list of rag services served locally 
 
-rag_vectorizer: semantic # possible values semantic, tfidf, openai, ollama
-rag_service_url: "http://localhost:11434" # rag service url for ollama
-rag_vectorizer_model:  "BAAI/bge-m3" # The model name if applicable
+rag_vectorizer: "st:all-MiniLM-L6-v2" # possible values st, tfidf, openai, ollama, cohere
 rag_vectorizer_execute_remote_code:  false # do not execute remote code or do
 rag_vectorizer_parameters: null # Parameters of the model in json format
-rag_chunk_size: 512 # number of tokens per chunk
+rag_chunk_size: 5000 # number of characters per chunk
 rag_overlap: 0 # number of tokens of overlap
 rag_min_correspondance: 0 # minimum correspondance between the query and the content
 
@@ -217,7 +215,7 @@ rag_vectorizer_openai_key: "" # The open ai key (if not provided, this will use 
 
 contextual_summary: false #If activated this will completely replace the rag and instead will use contextual summary
 
-rag_put_chunk_informations_into_context: false # if true then each chunk will be preceded by its information which may waste some context space but allow the ai to point where it found th einformation
+rag_put_chunk_informations_into_context: true # if true then each chunk will be preceded by its information which may waste some context space but allow the ai to point where it found th einformation
 rag_build_keys_words: true # If true, when querrying the database, we use keywords generated from the user prompt instead of the prompt itself.
 
 # Activate internet search

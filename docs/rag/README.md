@@ -23,7 +23,7 @@ The LOLLMS RAG (Retrieval-Augmented Generation) System is a powerful tool that c
 - FastAPI
 - LOLLMS WebUI
 - Pydantic
-- lollmsvectordb
+- safe_store
 - JavaScript environment (for client-side usage)
 
 ## Installation

@@ -15,6 +15,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 pm.ensure_packages({
     "ascii_colors":">=0.10.0",
+    "safe_store":">=2.2.0",
     "freedom_search": ">=0.2.2",
     "scrapemaster": ">=0.4.2",
     "lollms_client": ">=0.8.0",
@@ -196,11 +197,11 @@ if __name__ == "__main__":
         ping_timeout=1200,
         ping_interval=30,
     )  # Enable CORS for selected origins
-
-    # A simple fix for v 11.0 to 12 alpha
-    if config.rag_vectorizer == "bert":
-        config.rag_vectorizer = "tfidf"
+    # Patch for V20
+    if config.rag_vectorizer in ["semantic", "tfidf", "ollama", "openai"]:
+        config.rag_vectorizer = "st:all-MiniLM-L6-v2"
         config.save_config()
+
 
     LOLLMSWebUI.build_instance(
         config=config, lollms_paths=lollms_paths, args=args, sio=sio
