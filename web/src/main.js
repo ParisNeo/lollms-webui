@@ -10,7 +10,7 @@ const app = createApp(App)
 const STARRED_LOCAL_STORAGE_KEY = 'lollms_starred_personalities';
 const STARRED_FUNCTIONS_LOCAL_STORAGE_KEY = 'lollms_starred_functions';
 const STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY = 'lollms_starred_discussions';
-const STARRED_APPS_LOCAL_STORAGE_KEY = 'lollms_starred_apps';
+const STARRED_APPS_LOCAL_STORAGE_KEY = 'lollms_starred_apps'; // Key for starred apps
 
 function copyObject(obj) {
   if (obj === null || typeof obj !== 'object') {
@@ -41,7 +41,7 @@ function loadStarredFromLocalStorage(key, description) {
         return stored ? JSON.parse(stored) : [];
     } catch (e) {
         console.error(`Failed to load starred ${description} from localStorage:`, e);
-        saveStarredToLocalStorage(key,[], description);
+        saveStarredToLocalStorage(key,[], description); // Initialize if loading fails
         return [];
     }
 }
@@ -114,7 +114,7 @@ export const store = createStore({
         starredPersonalities: loadStarredFromLocalStorage(STARRED_LOCAL_STORAGE_KEY, 'personalities'),
         starredFunctions: loadStarredFromLocalStorage(STARRED_FUNCTIONS_LOCAL_STORAGE_KEY, 'functions'),
         starredDiscussions: loadStarredFromLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, 'discussions'),
-        starredApps: loadStarredFromLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, 'apps'),
+        starredApps: loadStarredFromLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, 'apps'), // Correctly loads starred apps
         diskUsage:null,
         ramUsage:null,
         vramUsage:null,
@@ -161,9 +161,9 @@ export const store = createStore({
           state.starredDiscussions = starredIds;
           saveStarredToLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, starredIds, 'discussions');
       },
-      setStarredApps(state, starredApps) {
-          state.starredApps = starredApps;
-          saveStarredToLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, starredApps, 'apps');
+      setStarredApps(state, starredAppIdentifiers) { // Parameter name updated for clarity
+          state.starredApps = starredAppIdentifiers;
+          saveStarredToLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, starredAppIdentifiers, 'apps');
       },
     
       setYesNoDialog(state, dialog) { state.yesNoDialog = dialog; },
@@ -234,15 +234,14 @@ export const store = createStore({
               saveStarredToLocalStorage(STARRED_DISCUSSIONS_LOCAL_STORAGE_KEY, state.starredDiscussions, 'discussions');
           }
       },
-      addStarredApp(state, starredApp) {
-          if (!state.starredApps.includes(starredApp)) {
-              state.starredDiscussions.push(starredApp);
-              saveStarredToLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, state.starredDiscussions, 'apps');
+      addStarredApp(state, appIdentifier) { // Renamed parameter, fixed logic
+          if (!state.starredApps.includes(appIdentifier)) {
+              state.starredApps.push(appIdentifier); // Corrected: uses state.starredApps
+              saveStarredToLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, state.starredApps, 'apps'); // Corrected: saves state.starredApps
           }
       },
-    
-      removeStarredApp(state, appPath) {
-          const index = state.starredApps.indexOf(appPath);
+      removeStarredApp(state, appIdentifier) { // Renamed parameter for consistency
+          const index = state.starredApps.indexOf(appIdentifier);
           if (index > -1) {
               state.starredApps.splice(index, 1);
               saveStarredToLocalStorage(STARRED_APPS_LOCAL_STORAGE_KEY, state.starredApps, 'apps');
@@ -345,7 +344,7 @@ export const store = createStore({
       getFunctions: state => state.functions,
       getStarredFunctions: state => state.starredFunctions,
       getStarredDiscussions: state => state.starredDiscussions,
-      setStarredApps: state => state.starredApps
+      getStarredApps: state => state.starredApps, // Corrected getter name
     },
     actions: {
       async fetchIsRtOn({ commit }) {
@@ -418,23 +417,22 @@ export const store = createStore({
         } else {
             commit('addStarredDiscussion', discussionId);
         }
-        // No global discussion list update action needed unless discussions are managed in Vuex state
     },
-    toggleStarApp({ commit, state }, app) {
-      if (!app || typeof app.id === 'undefined') {
-          console.warn("Attempted to toggle star on invalid app:", app);
+    toggleStarApp({ commit, state }, app) { // Takes the app object
+      // Ensure app and app.folder_name are valid
+      if (!app || typeof app.folder_name !== 'string' || app.folder_name.trim() === '') {
+          console.warn("Attempted to toggle star on invalid app (missing folder_name):", app);
           return;
       }
-      const appId = app.id;
-      const isCurrentlyStarred = state.starredDiscussions.includes(appId);
+      const appIdentifier = app.folder_name; // Use folder_name as the unique identifier
+      const isCurrentlyStarred = state.starredApps.includes(appIdentifier); // Corrected: checks state.starredApps
 
       if (isCurrentlyStarred) {
-          commit('removeStarredApp', appId);
+          commit('removeStarredApp', appIdentifier); // Uses appIdentifier
       } else {
-          commit('addStarredApp', appId);
+          commit('addStarredApp', appIdentifier); // Uses appIdentifier
       }
-      // No global discussion list update action needed unless discussions are managed in Vuex state
-  },    
+    },    
       // eslint-disable-next-line no-unused-vars
       async refreshConfig({ commit, state }) {
         console.log("Fetching configuration");
@@ -806,10 +804,7 @@ export const store = createStore({
               const res = await axios.post('/apply_settings', { client_id:state.client_id, config: state.config }, { headers: state.posts_headers });
               if (res.data.status) {
                  state.toast.showToast("Settings applied. Refreshing...", 4, true);
-                  // Assuming refreshConfigInView exists in the component context where this action is called
-                  // If not, need to call refreshConfig directly or handle UI refresh differently
-                  // await this.refreshConfigInView(); // This line might cause issues if 'this' is not the component instance
-                  await dispatch('refreshConfig'); // Refresh store config state
+                  await dispatch('refreshConfig'); 
               } else {
                  state.toast.showToast(`Apply failed: ${res.data.error || 'Error'}`, 4, false);
               }
@@ -818,8 +813,6 @@ export const store = createStore({
           }
       },
       async saveConfiguration({ state }) {
-            // Typically isLoading and loading_text are component-local state, not Vuex state
-            // We'll assume the component calling this action handles its own loading state
           try {
               const res = await axios.post('/save_settings', { client_id:state.client_id }, { headers: state.posts_headers });
               if (res.data.status) state.toast.showToast("Settings saved successfully.", 4, true);

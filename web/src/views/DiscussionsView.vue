@@ -472,7 +472,8 @@ export default defineComponent({
              if (this.discussionArr.length === 2 && (!this.currentDiscussion.title || this.currentDiscussion.title === "untitled") && newMessage.sender_type === this.senderTypes.SENDER_TYPES_USER) {
                  this.autoChangeTitle(this.currentDiscussion.id, newMessage.content);
              }
-            this.extractHtml(); this.scrollToBottomMessages();
+            this.extractHtml();
+            this.scrollToBottomMessages(false); // Don't force, respect userHasScrolledUp
         },
 
         handleUpdateMessage(msgObj) {
@@ -495,6 +496,7 @@ export default defineComponent({
              if (msgObj.created_at) messageItem.created_at = msgObj.created_at; if (msgObj.started_generating_at) messageItem.started_generating_at = msgObj.started_generating_at;
              if (msgObj.nb_tokens) messageItem.nb_tokens = msgObj.nb_tokens; if (msgObj.finished_generating_at) messageItem.finished_generating_at = msgObj.finished_generating_at;
             this.extractHtml();
+            this.scrollToBottomMessages(false); // Don't force, respect userHasScrolledUp
         },
 
         finalMsgEvent(msgObj) {
@@ -519,6 +521,7 @@ export default defineComponent({
                  console.warn("Final message event received for non-existent message ID:", msgObj.id);
                  this.$store.commit('setIsGenerating', false); this.setDiscussionLoading(this.currentDiscussion?.id, false);
              }
+             this.scrollToBottomMessages(false); // Don't force, respect userHasScrolledUp
         },
 
         sendMsg({ message, type }) {
@@ -529,7 +532,7 @@ export default defineComponent({
              this.$store.commit('setIsGenerating', true); this.setDiscussionLoading(this.currentDiscussion.id, true);
              const emitEvent = type === 'internet' ? 'generate_msg_with_internet' : 'generate_msg';
             socket.emit(emitEvent, { prompt: message });
-            this.scrollToBottomMessages();
+            this.scrollToBottomMessages(true);
         },
 
         sendCmd(command) {
@@ -604,8 +607,12 @@ export default defineComponent({
             if (item && item.title && item.title !== "untitled") { discussionTitle = item.title; } else if (item) { discussionTitle = "New Discussion"; }
             document.title = `${baseTitle} - ${discussionTitle}`;
         },
-        scrollToBottomMessages() {
-             nextTick(() => { const msgList = document.getElementById('messages-list'); if (msgList) { msgList.scrollTop = msgList.scrollHeight; } });
+        scrollToBottomMessages(force = false) { // Pass force parameter
+            nextTick(() => {
+                if (this.$refs.chatArea) {
+                    this.$refs.chatArea.scrollToBottom(force); // Propagate force
+                }
+            });
         },
          scrollToDiscussionElement(id) {
             if (!id) return;

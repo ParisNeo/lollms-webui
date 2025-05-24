@@ -162,6 +162,10 @@ export default {
             placeholders: [], // Raw placeholder strings like "[placeholder::type]"
             placeholderValues: {}, // Values entered by the user for placeholders
             previewPrompt: '', // The prompt string used for live preview in the modal
+            userHasScrolledUp: false,
+            scrollDebounceTimer: null,
+            isProgrammaticScroll: false, // Flag to ignore scroll events triggered by scrollToBottom
+            manualScrollDetectionTimeout: null, // For distinguishing user scroll from programmatic
         };
     },
     computed: {
@@ -210,14 +214,53 @@ export default {
              const personality = this.personalityAvatars.find(p => p.name?.toLowerCase().trim() === senderLower);
              return personality?.avatar ? `/${personality.avatar}` : null; // Ensure leading slash if needed
         },
-        scrollToBottom() {
-             nextTick(() => {
-                 const msgList = document.getElementById('messages-list');
-                 if (msgList) {
-                     msgList.scrollTop = msgList.scrollHeight;
-                 }
-             });
-        },
+    handleScroll(event) {
+        if (this.isProgrammaticScroll) {
+            // If the scroll was triggered by our own scrollToBottom,
+            // reset the flag and do nothing else for this event.
+            // this.isProgrammaticScroll = false; // Resetting it here might be too soon
+            return;
+        }
+
+        // Clear any existing timeout to detect if this is a sustained manual scroll
+        clearTimeout(this.manualScrollDetectionTimeout);
+
+        const el = event.target;
+        const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 50; // 50px tolerance
+
+        if (atBottom) {
+            // User scrolled to bottom
+            this.userHasScrolledUp = false;
+        } else {
+            // User scrolled up. Set a timeout to confirm it's a manual scroll,
+            // not an intermediate state of a programmatic scroll.
+            this.manualScrollDetectionTimeout = setTimeout(() => {
+                this.userHasScrolledUp = true;
+            }, 150); // Adjust delay as needed (e.g., 100-200ms)
+        }
+    },
+
+    scrollToBottom(forceScroll = false) {
+        if (this.userHasScrolledUp && !forceScroll) {
+            console.log("ChatArea: User has scrolled up, not auto-scrolling.");
+            return;
+        }
+        console.log("ChatArea: Attempting to scroll to bottom. Force:", forceScroll);
+
+        nextTick(() => {
+            const msgList = document.getElementById('messages-list');
+            if (msgList) {
+                this.isProgrammaticScroll = true; // Set flag BEFORE scrolling
+                msgList.scrollTop = msgList.scrollHeight;
+                // Reset userHasScrolledUp *after* the scroll action and a brief delay
+                // to allow the scroll event to fire and be ignored by handleScroll
+                setTimeout(() => {
+                    this.userHasScrolledUp = false;
+                    this.isProgrammaticScroll = false; // Reset flag AFTER potential scroll event
+                }, 100); // Small delay
+            }
+        });
+    },
         handleDrop(event) {
             this.isDragOverChat = false;
             const files = Array.from(event.dataTransfer.files);
@@ -311,15 +354,41 @@ export default {
          // --- End Placeholder Logic ---
     },
     watch: {
-        // Watchers remain the same
-        discussionArr: {
-            handler() {
-                //this.scrollToBottom();
-                this.$nextTick(() => feather.replace());
+    discussionArr: {
+                handler(newVal, oldVal) {
+                const isNewMessageAdded = newVal.length > (oldVal?.length || 0);
+
+                // Determine if the update is primarily a new message vs. content streaming into an existing one
+                let significantChange = isNewMessageAdded;
+                if (!significantChange && newVal.length > 0 && oldVal?.length > 0 && newVal.length === oldVal.length) {
+                    // If lengths are same, check if the content of the last message changed
+                    // This is a heuristic; might need refinement if IDs change or messages are reordered
+                    if (newVal[newVal.length - 1].content !== oldVal[oldVal.length - 1].content) {
+                        // Content of last message changed (likely streaming)
+                    }
+                }
+
+
+                if (significantChange) { // e.g. user sent a message, or AI started a brand new message
+                    console.log("ChatArea: New message added, forcing scroll.");
+                    this.scrollToBottom(true);
+                } else if (!this.userHasScrolledUp) {
+                    // This will be called during streaming if user is at the bottom
+                    console.log("ChatArea: Content updated, user at bottom, attempting gentle scroll.");
+                    this.scrollToBottom(false);
+                } else {
+                    console.log("ChatArea: Content updated, but user has scrolled up. No auto-scroll.");
+                }
+
+                this.$nextTick(() => {
+                    try {
+                        feather.replace();
+                    } catch (e) { /* ignore */ }
+                });
             },
-            deep: true
+            deep: true // Necessary if message objects within discussionArr are mutated
         },
-         personality: {
+        personality: {
             handler(newVal, oldVal) {
                 if (newVal?.full_path !== oldVal?.full_path) {
                     // Reset placeholder state if personality changes
@@ -334,11 +403,21 @@ export default {
         }
     },
     mounted() {
-        // Mounted logic remains the same
+        const msgList = document.getElementById('messages-list');
+        if (msgList) {
+            msgList.addEventListener('scroll', this.handleScroll);
+        }
         // this.scrollToBottom();
          nextTick(() => {
             feather.replace();
          });
+    },
+    beforeUnmount() {
+        const msgList = document.getElementById('messages-list');
+        if (msgList) {
+            msgList.removeEventListener('scroll', this.handleScroll);
+        }
+        // ... existing beforeUnmount
     },
     updated() {
         // Updated logic remains the same

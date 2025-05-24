@@ -369,61 +369,72 @@ export default defineComponent({
   },
   watch: {
     code(newCode, oldCode) {
-        // Ensure we have a CodeMirror instance and the code actually changed
+        // Ensure we have a CodeMirror instance and that the code has actually changed.
         const currentEditorCode = this.cmView ? this.cmView.state.doc.toString() : this.safeCodeProp;
         if (!this.cmView || this.isFunctionLanguage || newCode === currentEditorCode || newCode === oldCode) {
-            return; // Exit if no CM, is function, or code hasn't changed relative to editor or previous prop
+            // Exit if:
+            // - CodeMirror view (this.cmView) isn't initialized.
+            // - It's a 'function' language block (which doesn't use CodeMirror for display).
+            // - The new code is identical to what's already in the editor or the previous prop value.
+            return;
         }
 
         // --- Auto-scroll Logic ---
+        // Determine if auto-scroll should occur *before* updating the editor's content.
         let shouldAutoScroll = false;
         if (this.autoScrollOnContentChange && !this.isEditing) {
             try {
-                // Get the scrollable element from CodeMirror
+                // Attempt to get CodeMirror's native scroll DOM element.
                 const scrollElement = this.cmView.scrollDOM;
                 if (scrollElement) {
-                    // Check if scrolled near the bottom before the update
-                    // Use a tolerance (e.g., 50px) so the user doesn't have to be *exactly* at the bottom
-                    const scrollThreshold = 50;
+                    // Define a threshold (in pixels) from the bottom. If the user is scrolled
+                    // within this threshold, we consider them "at the bottom".
+                    const scrollThreshold = 50; // px
+                    // Calculation: (total content height - current scroll position from top - visible height of editor)
+                    // This gives the distance from the bottom of the visible area to the actual bottom of the content.
+                    // If this distance is less than the threshold, we should auto-scroll.
                     shouldAutoScroll = (scrollElement.scrollHeight - scrollElement.scrollTop - scrollElement.clientHeight) < scrollThreshold;
+                } else {
+                    // If scrollElement is not available, default to not auto-scrolling.
+                    shouldAutoScroll = false;
+                    console.warn("CodeMirror: scrollDOM not available for auto-scroll check.");
                 }
             } catch (e) {
-                console.warn("CodeMirror: Could not access scrollDOM for auto-scroll check.", e);
+                // Catch any errors during scroll DOM access and default to no auto-scroll.
+                shouldAutoScroll = false;
+                console.warn("CodeMirror: Error accessing scrollDOM for auto-scroll check.", e);
             }
         }
 
-        // Update the editor content (regardless of scroll position if not editing)
+        // Update the editor's content with the new code, but only if not in editing mode.
+        // If in editing mode, the user is in control, and prop changes shouldn't override their input.
         if (!this.isEditing) {
-            this.updateEditorContent(newCode); // This function handles the dispatch to change content
+            this.updateEditorContent(newCode); // This method dispatches changes to CodeMirror.
         }
 
-        // Perform the scroll *after* the content update has been processed
+        // If it was determined (before the content update) that auto-scroll is needed,
+        // then proceed to scroll the editor to the new end of the document.
+        // This is done in `nextTick` to ensure the DOM has updated after the content change.
         if (shouldAutoScroll) {
             nextTick(() => {
-                // Double-check cmView still exists (might be destroyed during quick updates)
+                // Double-check that cmView still exists, as it might be destroyed during rapid updates.
                 if (this.cmView) {
                     try {
-                        // Use CodeMirror's API to scroll the end of the document into view
+                        // Use CodeMirror's effect to scroll the end of the document into view.
                         this.cmView.dispatch({
                             effects: EditorView.scrollIntoView(this.cmView.state.doc.length, {
-                                y: "end", // Align the bottom of the line with the bottom of the viewport
-                                yMargin: 10 // Add a small margin below the last line
+                                y: "end",    // Align the bottom of the new content with the bottom of the viewport.
+                                yMargin: 10  // Add a small margin below the last line for better visibility.
                             })
                         });
                     } catch (e) {
-                        console.error("CodeMirror: Failed to scrollIntoView:", e);
+                        console.error("CodeMirror: Failed to execute scrollIntoView effect.", e);
                     }
                 }
             });
         }
-
-        // --- IMPORTANT: Remove the old parent scroll logic ---
-        // if (this.autoScrollOnContentChange && !this.isEditing) {
-        //     nextTick(() => {
-        //         // OLD LOGIC - REMOVED:
-        //         // this.$el?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        //     });
-        // }
+        // Note: Any parent-level scrolling (e.g., this.$el.scrollIntoView) should be avoided here
+        // as we want to control scrolling *within* the CodeMirror editor itself.
     },
       isEditing(editing) {
           if (this.cmView) {
@@ -535,52 +546,62 @@ export default defineComponent({
       openVsCode() { this.postRequest('open_code_in_vs_code'); },
       openFolder() { this.postRequest('open_discussion_folder'); },
       toggleFunctionDetails() { this.isFunctionDetailsVisible = !this.isFunctionDetailsVisible; this.triggerIconUpdate(); },
-      updateEditorContent(newCode) {
-        // Ensure this check exists here too, just in case
-        if (!this.cmView || this.isFunctionLanguage) return;
+        updateEditorContent(newCode) {
+            // Ensure this check exists here too, just in case
+            if (!this.cmView || this.isFunctionLanguage) return;
 
-        const currentDoc = this.cmView.state.doc.toString();
-        if (newCode !== currentDoc) {
-            // This dispatch updates the content
-            this.cmView.dispatch({
-                changes: { from: 0, to: currentDoc.length, insert: newCode }
-                // DO NOT put scrollIntoView effect here, it should happen *after*
-                // the state update and DOM render triggered by this dispatch.
+            const currentDoc = this.cmView.state.doc.toString();
+            if (newCode !== currentDoc) {
+                // This dispatch updates the content
+                this.cmView.dispatch({
+                    changes: { from: 0, to: currentDoc.length, insert: newCode }
+                    // DO NOT put scrollIntoView effect here, it should happen *after*
+                    // the state update and DOM render triggered by this dispatch.
+                });
+            }
+        },
+        createUpdateListener() {
+            return EditorView.updateListener.of((update) => {
+                const histState = update.state.field(historyField, false);
+                if (histState) {
+                    this.undoDepth = histState.done.length;
+                    this.redoDepth = histState.undone.length;
+                }
+
+                // --- Robust Search State Update ---
+                if (this.isSearchVisible) { // Only process if search is active
+                    const currentCmQuery = getSearchQuery(update.state);
+                    // Ensure currentCmQuery and its spec property exist before trying to access .search
+                    const currentQueryString = currentCmQuery && currentCmQuery.spec ? currentCmQuery.spec.search : '';
+
+                    if (this.searchQuery && currentQueryString === this.searchQuery) {
+                        // If our internal searchQuery matches what's in CM,
+                        // try to update counts/index.
+                        // This part is an approximation as searchState is not directly exported.
+                        // We rely on findNext/Previous to update selection, and then
+                        // updateSearchMatchStateAfterFind will try to determine the index.
+                        // No direct count update here is perfectly reliable without searchState.
+                    } else if (this.searchQuery === '' && currentQueryString === '') {
+                        // If both are empty, reset our internal counts.
+                        this.searchMatchCount = 0;
+                        this.currentMatchIndex = -1;
+                    } else if (this.searchQuery && currentQueryString !== this.searchQuery) {
+                        // If our internal query differs from CM's (e.g., CM cleared it or changed it),
+                        // it's usually safer to re-evaluate the search state.
+                        // However, this listener is mostly for reacting to history changes and doc changes.
+                        // The primary search state update is handled by debouncedUpdateSearchQuery.
+                        // For now, if there's a mismatch and our searchQuery is set, we might
+                        // defer to updateSearchQueryState to re-sync if needed.
+                    }
+                }
+                // --- End Robust Search State Update ---
+
+
+                if (update.docChanged && this.isEditing) {
+                    this.debouncedEmitUpdate(update.state.doc.toString());
+                }
             });
-        }
-    },
-      createUpdateListener() {
-          return EditorView.updateListener.of((update) => {
-              const histState = update.state.field(historyField, false);
-              if (histState) {
-                  this.undoDepth = histState.done.length;
-                  this.redoDepth = histState.undone.length;
-              }
-
-              // Manual Search State Update (Approximation due to lack of searchState export)
-              const currentCmQuery = getSearchQuery(update.state);
-              const currentQueryString = currentCmQuery?.spec.search || '';
-
-              if (this.isSearchVisible && this.searchQuery && currentQueryString === this.searchQuery) {
-                  // Try to update counts/index if possible via selection changes after find/replace actions
-                  // This is imperfect without the searchState field.
-                  // We update counts more reliably in updateSearchQueryState
-                   const selection = update.state.selection.main;
-                   if (selection && !selection.empty) {
-                       // If something is selected, assume it *might* be a match. We can't know for sure.
-                       // Re-running findNext/Previous updates the selection reliably.
-                   }
-              } else if (!this.searchQuery && this.isSearchVisible) {
-                  this.searchMatchCount = 0;
-                  this.currentMatchIndex = -1;
-              }
-
-
-              if (update.docChanged && this.isEditing) {
-                  this.debouncedEmitUpdate(update.state.doc.toString());
-              }
-          });
-      },
+        },
       setupCodeMirror() {
         // Add a guard to prevent re-initialization if already done
         if (this.cmView) {
