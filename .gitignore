@@ -222,3 +222,6 @@ lollms_apps_zoo
 #environment folders
 env\
 lollms_env\
+*.sqlite3
+*.sqlite
+*-shm
