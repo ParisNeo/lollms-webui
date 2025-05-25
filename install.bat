@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableDelayedExpansion
 echo Starting Lollms WebUI Installation Script
 python --version 1>nul 2>&1
 if errorlevel 1 (
