@@ -9,26 +9,24 @@ import importlib # For checking module availability without immediate import
 # --- Bootstrap Dependencies ---
 # Ensure PyYAML is installed for the installer itself.
 # This block must be very early, before PyYAML is actually used.
-_INSTALLER_DEPENDENCIES = ["PyYAML"]
+# Structure: { "pip_package_name": "import_module_name" }
+_INSTALLER_DEPENDENCIES_MAP = {"PyYAML": "yaml"}
 _dependencies_installed_this_run = False
 
-for dep in _INSTALLER_DEPENDENCIES:
+for pip_package_name, module_to_import in _INSTALLER_DEPENDENCIES_MAP.items():
     try:
-        # PyYAML installs as 'yaml', requests installs as 'requests', etc.
-        # We assume the package name is lowercase for importlib check.
-        module_name = dep.lower()
-        importlib.import_module(module_name)
+        importlib.import_module(module_to_import)
     except ImportError:
-        print(f"Installer dependency '{dep}' not found. Attempting to install...")
+        print(f"Installer dependency '{pip_package_name}' (module '{module_to_import}') not found. Attempting to install...")
         try:
             # Use check_call to ensure pip command succeeds
-            subprocess.check_call([sys.executable, "-m", "pip", "install", dep])
-            print(f"Successfully installed '{dep}'.")
+            subprocess.check_call([sys.executable, "-m", "pip", "install", pip_package_name])
+            print(f"Successfully installed '{pip_package_name}'.")
             _dependencies_installed_this_run = True
         except subprocess.CalledProcessError as e:
-            print(f"ERROR: Failed to install '{dep}' using pip.")
+            print(f"ERROR: Failed to install '{pip_package_name}' using pip.")
             print(f"Please try installing it manually:")
-            print(f"  {sys.executable} -m pip install {dep}")
+            print(f"  {sys.executable} -m pip install {pip_package_name}")
             print(f"Error details: {e}")
             sys.exit(1)
         except FileNotFoundError:
@@ -282,7 +280,7 @@ def get_python_executable_path(env_base_path, env_manager, lollms_webui_root, en
             print_warning(f"Error determining Conda environment path: {e}. Attempting fallback structure.")
             # Fallback based on expected base structure if info commands fail
             conda_prefix_env_var = os.environ.get("CONDA_PREFIX")
-            conda_base = Path(conda_prefix_env_var).parent if conda_prefix_env_var else Path.home() / "miniconda3" # Very rough guess
+            conda_base = Path(conda_prefix_env_var).parent.parent if conda_prefix_env_var else Path.home() / "miniconda3" # Very rough guess
             env_path = conda_base / "envs" / env_name
             if is_windows:
                  python_exe_path = env_path / "python.exe"
@@ -350,7 +348,7 @@ def get_python_executable_path(env_base_path, env_manager, lollms_webui_root, en
         return python_exe_path.resolve() # Return resolved absolute path
     else:
         print_error(f"Could not find Python executable for environment '{env_name}' using {env_manager}.\n"
-                    f"Expected location based on detection: {python_exe_path}\n"
+                    f"Expected location based on detection: {python_exe_path if python_exe_path else 'unknown'}\n"
                     "Please check if the environment was created successfully and the path is correct.",
                     exit_code=None) # Let main function handle exit
         return None
@@ -461,7 +459,7 @@ def main():
                     version_result = run_command([str(temp_python_path), '--version'], capture_output=True, text=True, check=True)
                     output = version_result.stdout + version_result.stderr 
                     if f"Python {TARGET_PYTHON_VERSION}" not in output:
-                         print_warning(f"Existing env '{ENV_NAME}' has Python version {output.split()[1]}, not {TARGET_PYTHON_VERSION}.")
+                         print_warning(f"Existing env '{ENV_NAME}' has Python {output.split()[1]}, not {TARGET_PYTHON_VERSION}.")
                     else:
                         print(f"  Python version {TARGET_PYTHON_VERSION} confirmed.")
                 except Exception as e:
@@ -470,24 +468,27 @@ def main():
                  print_warning(f"Could not get Python path for existing env '{ENV_NAME}' to verify version.")
 
         python_exe_path = get_python_executable_path(None, env_manager, lollms_webui_path, ENV_NAME)
-        if python_exe_path:
-            env_dir_location = python_exe_path.parents[1] if not is_windows else python_exe_path.parent 
+        if python_exe_path: # env_dir_location is the directory *containing* the python executable
+            env_dir_path_for_conda = python_exe_path.parent 
+            if not is_windows: # for non-windows, python is in env_dir/bin/python
+                env_dir_path_for_conda = env_dir_path_for_conda.parent
+            env_dir_location = env_dir_path_for_conda
+
 
         activation_commands["Windows"] = [f"conda activate {ENV_NAME}"]
-        conda_base_path = ""
+        conda_base_path_str = ""
         try:
             conda_base_result = run_command(['conda', 'info', '--base'], capture_output=True, text=True, check=True, shell=is_windows)
-            conda_base_path = Path(conda_base_result.stdout.strip())
+            conda_base_path_str = conda_base_result.stdout.strip()
         except Exception: pass 
 
-        if not is_windows:
-            if conda_base_path:
-                 conda_activate_script = conda_base_path / "bin" / "activate"
-                 activation_commands["Linux"] = [f"source \"{conda_activate_script}\" {ENV_NAME}"]
-                 activation_commands["Darwin"] = [f"source \"{conda_activate_script}\" {ENV_NAME}"]
-            else: 
-                 activation_commands["Linux"] = [f"conda activate {ENV_NAME} # May require conda init in shell profile"]
-                 activation_commands["Darwin"] = [f"conda activate {ENV_NAME} # May require conda init in shell profile"]
+        if not is_windows and conda_base_path_str:
+             conda_activate_script = Path(conda_base_path_str) / "bin" / "activate"
+             activation_commands["Linux"] = [f"source \"{conda_activate_script}\" {ENV_NAME}"]
+             activation_commands["Darwin"] = [f"source \"{conda_activate_script}\" {ENV_NAME}"]
+        elif not is_windows: 
+             activation_commands["Linux"] = [f"conda activate {ENV_NAME} # May require conda init in shell profile"]
+             activation_commands["Darwin"] = [f"conda activate {ENV_NAME} # May require conda init in shell profile"]
 
 
     elif env_manager == "pyenv":
@@ -538,8 +539,11 @@ def main():
              print(f"  pyenv virtualenv '{ENV_NAME}' already exists. Skipping creation.")
 
         python_exe_path = get_python_executable_path(None, env_manager, lollms_webui_path, ENV_NAME)
-        if python_exe_path:
-             env_dir_location = python_exe_path.parents[1] if not is_windows else python_exe_path.parent
+        if python_exe_path: # env_dir_location is the directory *containing* the python executable
+             env_dir_path_for_pyenv = python_exe_path.parent 
+             if not is_windows: # for non-windows, python is in env_dir/bin/python
+                 env_dir_path_for_pyenv = env_dir_path_for_pyenv.parent
+             env_dir_location = env_dir_path_for_pyenv
 
         activation_commands["Windows"] = [f"pyenv activate {ENV_NAME} # May require pyenv-win shell integration"]
         pyenv_init_lines = [
@@ -588,7 +592,8 @@ def main():
 
         else:
             print(f"  {env_manager} virtual environment already exists at: {env_dir_location}. Checking Python version...")
-            temp_python_path = get_python_executable_path(env_dir_location, env_manager, lollms_webui_path, ENV_NAME) # ENV_NAME for venv/uv is not strictly used by get_python_executable_path but passed for consistency
+            # For venv/uv, env_dir_location *is* the env_base_path
+            temp_python_path = get_python_executable_path(env_dir_location, env_manager, lollms_webui_path, env_dir_location.name) 
             if temp_python_path:
                  try:
                     version_result = run_command([str(temp_python_path), '--version'], capture_output=True, text=True, check=True)
@@ -601,8 +606,9 @@ def main():
                      print_warning(f"Could not verify Python version in existing env '{env_dir_location.name}': {e}")
             else:
                 print_warning("Could not get Python path for existing env to verify version.")
-
-        python_exe_path = get_python_executable_path(env_dir_location, env_manager, lollms_webui_path, ENV_NAME)
+        
+        # For venv/uv, env_dir_location is the base path of the environment.
+        python_exe_path = get_python_executable_path(env_dir_location, env_manager, lollms_webui_path, env_dir_location.name)
 
         if is_windows:
             activate_script = env_dir_location / "Scripts" / "activate.bat"
@@ -615,7 +621,7 @@ def main():
     if not python_exe_path or not Path(python_exe_path).exists():
          print_error(f"Failed to create or locate the Python executable for environment '{ENV_NAME}'. Installation cannot proceed.")
     if not env_dir_location or not Path(env_dir_location).exists():
-         print_warning(f"Environment directory location ({env_dir_location}) seems invalid after setup attempt.")
+         print_warning(f"Environment directory location ({env_dir_location}) seems invalid after setup attempt. This might be okay if '{env_manager}' manages envs globally.")
 
 
     # 4. Repository Handling
@@ -667,11 +673,33 @@ def main():
     print(f"> Installing base packages from requirements.txt using {python_exe_path}...")
     pip_cmd_base = [str(python_exe_path), '-m', 'pip', 'install', '--upgrade'] 
     
-    uv_available = env_manager == "uv" # Already checked if uv command exists when selecting manager
-    # if using uv for env management, use uv for pip installs too if python_exe_path is set
-    uv_cmd_base = ['uv', 'pip', 'install', '--python', str(python_exe_path)] if uv_available and python_exe_path else None
+    # Check if 'uv' command exists and if we are using 'uv' as the env_manager
+    # This check_command_exists will print its own status messages
+    uv_is_available_for_pip = env_manager == "uv" and check_command_exists("uv")
     
-    install_cmd_base = uv_cmd_base if uv_cmd_base else pip_cmd_base
+    uv_cmd_base = ['uv', 'pip', 'install'] 
+    # If using uv, we need to specify the python interpreter for uv pip install if not activated
+    # However, if python_exe_path points to uv's python, this might not be strictly needed by uv,
+    # but it's safer to be explicit if uv supports a --python flag for its pip subcommand.
+    # Assuming uv pip install can use the environment context if python_exe_path is the env's python.
+    # If python_exe_path is correctly set up by uv env, then `str(python_exe_path) -m pip install` should work.
+    # If we want to use `uv pip install`, we should ensure it targets the correct environment.
+    # The `uv venv` command creates an env, then `uv pip install -p <path_to_python>` can target it.
+    # Or, if the env is activated, `uv pip install` might just work.
+    # For simplicity and robustness with python_exe_path:
+    
+    install_cmd_base = pip_cmd_base # Default to python -m pip
+    if uv_is_available_for_pip:
+        print("> 'uv' is available, will attempt to use 'uv pip install'.")
+        # Ensure uv targets the correct Python environment.
+        # If python_exe_path is from a uv-managed venv, uv might auto-detect or use it.
+        # Explicitly: 'uv pip install --python <path_to_python_in_uv_env>'
+        install_cmd_base = ['uv', 'pip', 'install', '--python', str(python_exe_path)]
+        # If --python is not supported by uv pip install or causes issues,
+        # one might need to ensure the environment is "active" for uv,
+        # or stick to `python_exe_path -m pip install`.
+        # Given `uv venv --python <version>` was used, this python_exe_path should be the target.
+
 
     req_install_cmd = install_cmd_base + ['-r', str(requirements_file)]
     print(f"  Using command: {' '.join(req_install_cmd)}")
@@ -788,7 +816,8 @@ exit 0
     print_notice("Installation Complete!")
     print(f"LoLLMs WebUI is installed/configured in: {lollms_webui_path}")
     print(f"Your personal data directory is set to: {lollms_personal_path}")
-    print(f"The Python environment '{ENV_NAME}' ({env_manager}, targeting Python {TARGET_PYTHON_VERSION}) is located at: {env_dir_location or 'Managed by '+env_manager}")
+    env_loc_display = str(env_dir_location) if env_dir_location else f"Managed by {env_manager} (e.g., check `conda env list` or `pyenv versions`)"
+    print(f"The Python environment '{ENV_NAME}' ({env_manager}, targeting Python {TARGET_PYTHON_VERSION}) is located at: {env_loc_display}")
     print(f"  Using Python executable: {python_exe_path}")
     print("\n--- How to Start LoLLMs WebUI ---")
     print(f"1. Open your terminal or command prompt.")
@@ -816,10 +845,10 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\n\nInstallation aborted by user.")
         sys.exit(0) 
-    except SystemExit as e:
+    except SystemExit as e: # Make sure SystemExit from print_error is handled cleanly
         sys.exit(e.code)
     except Exception as e:
-        print_error(f"A critical unexpected error occurred during installation: {e}", exit_code=None)
+        print_error(f"A critical unexpected error occurred during installation: {e}", exit_code=None) # Don't exit from here directly
         import traceback
         traceback.print_exc()
-        sys.exit(1)
+        sys.exit(1) # Exit with error code after printing traceback
