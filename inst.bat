@@ -90,12 +90,14 @@ set "lollms_path_val_yaml=!lollms_path_val:\=/!"
 
 :: Prompt for lollms_personal_path
 set "default_personal_path=%SCRIPT_DIR%\personal_data"
-set /p personal_data_input=Enter Lollms personal data path [!default_personal_path!]: 
+set "prompt_text=Enter Lollms personal data path [%default_personal_path%]: "
+call set /p personal_data_input=%%prompt_text%%
 if "!personal_data_input!"=="" (
     set "lollms_personal_path_val=!default_personal_path!"
 ) else (
     set "lollms_personal_path_val=!personal_data_input!"
 )
+
 :: Normalize path for YAML
 set "lollms_personal_path_val_yaml=!lollms_personal_path_val:\=/!"
 
