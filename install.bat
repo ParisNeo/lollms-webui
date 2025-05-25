@@ -126,7 +126,6 @@ if exist "%SCRIPT_DIR%\global_paths_cfg.yaml" (
     pause
 )
 
-call python installer.py
 
 echo.
 echo Lollms WebUI Installation and Setup Complete.
