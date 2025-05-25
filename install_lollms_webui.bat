@@ -2,8 +2,6 @@
 setlocal EnableDelayedExpansion
 
 echo Starting Lollms WebUI Installation Script
-
-:: Check if Python is installed and in PATH
 python --version 1>null 2>&1
 if errorlevel 1 (
     echo Python is not found in your PATH. Please install Python (https://www.python.org/downloads/) and ensure it's added to your PATH.
