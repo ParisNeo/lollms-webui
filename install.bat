@@ -3,7 +3,7 @@ setlocal EnableDelayedExpansion
 
 echo Starting Lollms WebUI Installation Script
 
-:: Check if Python is installed and in PATH
+REM Check if Python is installed and in PATH
 python --version >nul 2>&1
 if errorlevel 1 (
     echo Python is not found in your PATH. Please install Python (https://www.python.org/downloads/) and ensure it's added to your PATH.
@@ -12,11 +12,11 @@ if errorlevel 1 (
     goto :eof
 )
 
-:: Get the directory where this script is located
+REM Get the directory where this script is located
 set "SCRIPT_DIR=%cd%"
 set "PYTHON_EXECUTABLE=python"
 
-:: Create virtual environment if it doesn't exist
+REM Create virtual environment if it doesn't exist
 if not exist "venv" (
     echo Creating Python Virtual Environment in "%SCRIPT_DIR%\venv"...
     %PYTHON_EXECUTABLE% -m venv venv
@@ -50,7 +50,7 @@ if errorlevel 1 (
     )
 )
 
-:: Install requirements for lollms_webui (if a root requirements.txt exists)
+REM Install requirements for lollms_webui (if a root requirements.txt exists)
 if exist "requirements.txt" (
     echo Installing Python Dependencies from requirements.txt...
     pip install -r requirements.txt
@@ -64,7 +64,7 @@ if exist "requirements.txt" (
     echo (Dependencies for lollms-core will be handled next if defined in its setup.py)
 )
 
-:: Install lollms_core
+REM Install lollms_core
 if exist "lollms_core\setup.py" (
     echo Installing lollms-core package from subfolder...
     pip install -e ./lollms_core
@@ -83,12 +83,12 @@ if exist "lollms_core\setup.py" (
 echo.
 echo Configuring Lollms WebUI Paths...
 
-:: Determine lollms_path (absolute path to lollms_core/lollms)
+REM Determine lollms_path (absolute path to lollms_core/lollms)
 set "lollms_path_val=%SCRIPT_DIR%\lollms_core\lollms"
-:: Normalize path for YAML (replace backslashes with forward slashes)
+REM Normalize path for YAML (replace backslashes with forward slashes)
 set "lollms_path_val_yaml=!lollms_path_val:\=/!"
 
-:: Prompt for lollms_personal_path
+REM Prompt for lollms_personal_path
 set "default_personal_path=%SCRIPT_DIR%\personal_data"
 set "prompt_text=Enter Lollms personal data path [%default_personal_path%]: "
 call set /p personal_data_input=%%prompt_text%%
@@ -98,10 +98,10 @@ if "!personal_data_input!"=="" (
     set "lollms_personal_path_val=!personal_data_input!"
 )
 
-:: Normalize path for YAML
+REM Normalize path for YAML
 set "lollms_personal_path_val_yaml=!lollms_personal_path_val:\=/!"
 
-:: Create personal_data directory if it doesn't exist
+REM Create personal_data directory if it doesn't exist
 if not exist "!lollms_personal_path_val!" (
     echo Creating personal data directory: !lollms_personal_path_val!
     mkdir "!lollms_personal_path_val!"
@@ -111,7 +111,7 @@ if not exist "!lollms_personal_path_val!" (
     )
 )
 
-:: Create global_paths_cfg.yaml
+REM Create global_paths_cfg.yaml
 echo Writing configuration to global_paths_cfg.yaml...
 (
     echo lollms_path: '!lollms_path_val_yaml!'
