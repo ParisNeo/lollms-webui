@@ -590,7 +590,8 @@ exit 0
     print(f"  Python executable: {python_exe_path}")
     print("\n--- How to Start ---")
     print(f"1. cd \"{lollms_webui_path}\"")
-    print(f"2. Run: {'./' if not is_windows else '.\\'}{script_name}")
+    ad = './' if not is_windows else '.\\'
+    print(f"2. Run: {ad}{script_name}")
     print("-" * 30)
     print("If starter script fails (activation):")
     print("  1. Manually activate:")
