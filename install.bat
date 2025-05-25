@@ -114,8 +114,8 @@ if not exist "!lollms_personal_path_val!" (
 :: Create global_paths_cfg.yaml
 echo Writing configuration to global_paths_cfg.yaml...
 (
-    echo lollms_path: '!lollms_path_val_yaml!'
-    echo lollms_personal_path: '!lollms_personal_path_val_yaml!'
+    echo lollms_path: "!lollms_path_val_yaml!"
+    echo lollms_personal_path: "!lollms_personal_path_val_yaml!"
 ) > "%SCRIPT_DIR%\global_paths_cfg.yaml"
 
 if exist "%SCRIPT_DIR%\global_paths_cfg.yaml" (

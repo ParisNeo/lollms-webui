@@ -12,6 +12,6 @@ call .\venv\Scripts\activate.bat
 
 echo Running server
 :: Run the app
-python main.py
+python app.py
 
 :: Deactivate is automatic on script end
