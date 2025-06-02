@@ -581,7 +581,7 @@ export default {
       post_text:"",
       // Default Generation Parameters (can be loaded/saved)
       temperature: 0.8,
-      top_k: 50,
+      top_k: 40,
       top_p: 0.95,
       repeat_penalty: 1.1,
       repeat_last_n: 64,

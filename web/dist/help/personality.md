@@ -466,7 +466,7 @@ anti_prompts: []          # List of strings. If the LLM outputs any of these, ge
 # Default Model Parameters (can be overridden by main settings or dynamic config)
 model_temperature: 0.9
 model_n_predicts: 1024 # Max tokens to generate per turn
-model_top_k: 50
+model_top_k: 40
 model_top_p: 0.50
 model_repeat_penalty: 1.9
 model_repeat_last_n: 30
