@@ -8,6 +8,51 @@
             Adjust the core parameters that influence how the AI generates text. These settings can be overridden by specific personalities unless the option below is checked.
         </p>
 
+        <div class="setting-item">
+            <label for="ctx_size" class="setting-label flex items-center">
+                Context size
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </label>
+            <input
+                type="number"
+                id="ctx_size"
+                :value="config.ctx_size"
+                @input="handleNumberInput('ctx_size', $event.target.value, true)"
+                class="input-sm w-full md:w-32"
+                step="1"
+                placeholder="4096"
+                >
+        </div>
+        <div class="setting-item">
+            <label for="min_n_predict" class="setting-label flex items-center">
+                Context size
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </label>
+            <input
+                type="number"
+                id="min_n_predict"
+                :value="config.ctx_size"
+                @input="handleNumberInput('min_n_predict', $event.target.value, true)"
+                class="input-sm w-full md:w-32"
+                step="1"
+                placeholder="4096"
+                >
+        </div>       
+        <div class="setting-item">
+            <label for="max_n_predict" class="setting-label flex items-center">
+                Context size
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 ml-1 text-blue-400 dark:text-blue-500 cursor-help feather feather-info"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </label>
+            <input
+                type="number"
+                id="max_n_predict"
+                :value="config.ctx_size"
+                @input="handleNumberInput('max_n_predict', $event.target.value, true)"
+                class="input-sm w-full md:w-32"
+                step="1"
+                placeholder="4096"
+                >
+        </div>   
         <div class="toggle-item !justify-start gap-4 border border-blue-200 dark:border-blue-700 rounded-lg p-3 panels-color">
             <ToggleSwitch
                 id="override_personality_model_parameters"
@@ -18,8 +63,7 @@
                 Override Personality Parameters
                  <span class="toggle-description">Force the use of these global parameters, ignoring any settings defined within the selected personality.</span>
             </label>
-        </div>
-
+        </div>             
         <div :class="['space-y-5 pt-4', isDisabled ? 'opacity-50 pointer-events-none' : '']">
             <div class="setting-item">
                 <label for="seed" class="setting-label flex items-center">
