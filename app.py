@@ -53,7 +53,7 @@ from socketio import ASGIApp
 from starlette.responses import FileResponse
 
 from lollms_webui import LOLLMSWebUI
-
+import asyncio
 
 def get_ip_addresses():
     hostname = socket.gethostname()
@@ -395,10 +395,19 @@ if __name__ == "__main__":
                 ),  # Send the error details and the original request body
             )
 
+    @app.on_event("startup")
+    async def startup_event():
+        """
+        This function will be called when the application starts.
+        It's the perfect place to get the running event loop and pass it to our class.
+        """
+        loop = asyncio.get_running_loop()
+        lollmsElfServer.set_loop(loop)
+
+
     app = ASGIApp(socketio_server=sio, other_asgi_app=app)
 
     lollmsElfServer.app = app
-
     try:
         sio.reboot = False
         # if config.enable_lollms_service:
