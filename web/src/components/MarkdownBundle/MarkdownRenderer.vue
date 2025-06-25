@@ -518,7 +518,7 @@ parseAndRenderMarkdown() {
 }
 
 .markdown-content :deep(p) {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 /* Reduce margin for paragraphs immediately followed by LatexEditor */
 .markdown-content :deep(p + .latex-editor-container) {
@@ -526,8 +526,8 @@ parseAndRenderMarkdown() {
 }
 /* Adjust spacing around LatexEditor itself slightly */
 .markdown-content :deep(.latex-editor-container) {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
 }
 /* Make inline latex blend better */
 .markdown-content :deep(.latex-editor-container .latex-inline) {
@@ -548,17 +548,17 @@ parseAndRenderMarkdown() {
 }
 .markdown-content :deep(ul),
 .markdown-content :deep(ol) {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
     padding-left: 2em;
 }
 .markdown-content :deep(blockquote) {
-    margin: 1em 0;
+    margin: 0.5em 0;
     padding-left: 1em;
     border-left: 3px solid #ccc;
     color: #666;
 }
 .markdown-content :deep(hr) {
-    margin: 2em 0;
+    margin: 1em 0;
     border: 0;
     border-top: 1px solid #eee;
 }

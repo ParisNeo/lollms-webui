@@ -1,5 +1,5 @@
 <template>
-  <div :id="`code-block-container-${message_id}`" class="code-block-container bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm mb-4">
+  <div :id="`code-block-container-${message_id}`" class="code-block-container bg-bg-light-tone-panel dark:bg-bg-dark-tone-panel p-2 rounded-lg shadow-sm mb-2">
 
       <!-- == Function Call Display == -->
       <div v-if="isFunctionLanguage" ref="functionDisplayRef">
@@ -539,7 +539,7 @@ export default defineComponent({
                   const contentType = response.headers.get("content-type");
                   return (contentType?.includes("application/json")) ? response.json() : {};
               })
-              .then(data => { /* Optional success handling */ })
+              .then(data => { if(data){console.log("ok")}/* Optional success handling */ })
               .catch(error => { console.error(`Fetch error during ${endpointUrl}:`, error); alert(`Operation failed: ${error.message}`); });
       },
       openFolderVsCode() { this.postRequest('open_discussion_folder_in_vs_code'); },

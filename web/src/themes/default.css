@@ -349,11 +349,11 @@ button:not(:disabled):hover {
 .message {
   @apply relative w-full m-2 shadow-lg rounded-lg border
          border-blue-200 dark:border-slate-700 /* Subtle border */
-         flex flex-col overflow-visible p-4 /* Adjusted padding */
+         flex flex-col overflow-visible py-2 px-4 /* MODIFIED: Reduced vertical padding */
          bg-[color:var(--color-bg-light-discussion-odd)] dark:bg-[color:var(--color-bg-dark-discussion-odd)] /* Use odd color as base */
          text-slate-900 dark:text-[color:var(--color-dark-text)]
          transition-colors duration-200;
-  padding-bottom: 2.8rem; /* Ensure space for toolbar */
+  padding-bottom: 2.25rem; /* MODIFIED: Reduced bottom padding for toolbar */
 }
 .message:hover {
   @apply border-blue-300 dark:border-[color:var(--color-accent-sky-light)];

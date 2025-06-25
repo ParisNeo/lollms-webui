@@ -1,5 +1,5 @@
 <template>
-    <div class="latex-editor-container group relative border rounded-md p-2 bg-gray-100 dark:bg-gray-800 shadow-sm">
+    <div class="latex-editor-container group relative border rounded-md bg-gray-100 dark:bg-gray-800 shadow-sm" :class="[inline ? 'p-1' : 'p-2']">
         <button
             @click="toggleEditMode"
             :title="isEditing ? 'Finish Editing LaTeX' : 'Edit LaTeX'"
@@ -9,7 +9,7 @@
             <i :data-feather="isEditing ? 'check-circle' : 'edit-2'" class="w-4 h-4"></i>
         </button>
 
-        <div v-if="isEditing" class="latex-toolbar mt-8 mb-2 pb-2 border-b border-gray-300 dark:border-gray-600">
+        <div v-if="isEditing" class="latex-toolbar mt-6 mb-2 pb-2 border-b border-gray-300 dark:border-gray-600">
             <div class="flex flex-wrap items-start gap-x-4 gap-y-2">
 
                 <!-- Group: Structures -->
@@ -81,7 +81,12 @@
         </div>
 
         <div class="latex-content">
-            <div v-if="!isEditing" ref="displayContainerRef" class="latex-display p-2 min-h-[2.5em]" :class="{'latex-inline': inline}">
+            <div v-if="!isEditing" ref="displayContainerRef" class="latex-display"
+                 :class="{
+                    'latex-inline': inline,
+                    'p-2 min-h-[2em]': !inline,
+                    'p-0 min-h-0': inline
+                 }">
                 <span v-if="errorMessage" class="latex-error text-red-600 dark:text-red-400 text-sm"> Error: {{ errorMessage }} </span>
             </div>
 
@@ -99,8 +104,12 @@
                 <div class="latex-preview-label text-xs font-semibold uppercase text-gray-500 dark:text-gray-400 mt-2 mb-1">Live Preview:</div>
                 <div
                     ref="previewContainerRef"
-                    class="latex-preview p-2 border rounded-md bg-gray-50 dark:bg-gray-700 min-h-[2.5em]"
-                    :class="{'latex-inline': inline}"
+                    class="latex-preview border rounded-md bg-gray-50 dark:bg-gray-700"
+                    :class="{
+                        'latex-inline': inline,
+                        'p-2 min-h-[2em]': !inline,
+                        'p-0 min-h-0': inline
+                    }"
                     aria-live="polite"
                     >
                     <span v-if="previewErrorMessage" class="latex-error text-red-600 dark:text-red-400 text-sm"> Error: {{ previewErrorMessage }} </span>

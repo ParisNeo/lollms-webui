@@ -1,8 +1,8 @@
 <!-- ThinkingBlock.vue -->
 <template>
-  <div class="my-4 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
+  <div class="my-2 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
     <!-- Header / Toggle Area -->
-    <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-700">
       <button
         @click="toggle"
         :aria-expanded="isOpen"
@@ -56,7 +56,7 @@
       <div v-show="isOpen" class="content-wrapper" :id="contentId">
         <div
           ref="contentContainer"
-          class="p-4 text-gray-700 dark:text-gray-300 thinking-prose prose-sm max-w-none overflow-y-auto max-h-[400px] bg-gray-50 dark:bg-gray-800/50"
+          class="p-2 text-gray-700 dark:text-gray-300 thinking-prose prose-sm max-w-none overflow-y-auto max-h-[400px] bg-gray-50 dark:bg-gray-800/50"
         >
           <!-- Slot for potential custom rendering -->
           <slot v-if="$slots.default"></slot>
