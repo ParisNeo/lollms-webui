@@ -15,7 +15,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 pm.ensure_packages({
     "ascii_colors":">=0.10.0",
-    "safe_store":">=2.2.0",
+    "safe_store":">=2.6.0",
     "freedom_search": ">=0.2.2",
     "scrapemaster": ">=0.4.2",
     "lollms_client": ">=0.8.0",
