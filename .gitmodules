@@ -12,7 +12,7 @@
 	branch = main
 [submodule "lollms_core"]
 	path = lollms_core
-	url = https://github.com/ParisNeo/lollms.git
+	url = https://github.com/ParisNeo/lollms_legacy.git
 	branch = main
 [submodule "utilities/safe_store"]
 	path = utilities/safe_store
