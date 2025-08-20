@@ -56,7 +56,7 @@
     "marked": "^14.1.4",
     "mathjax": "^3.2.2",
     "mathjax-full": "^3.2.2",
-    "mermaid": "^11.2.1",
+    "mermaid": "^11.10.0",
     "monaco-editor-vue3": "^0.1.10",
     "papaparse": "^5.4.1",
     "prismjs": "^1.30.0",
