@@ -1,4 +1,5 @@
-# LoLLMs (Lord of Large Language Multimodal Systems) Web UI
+# LoLLMs WEBUI (DEPRICATED!!!)
+This repository is depricated. Please take a look at the new lollms system at : https://github.com/ParisNeo/lollms
 <div align="center">
   <img src="https://github.com/ParisNeo/lollms-webui/blob/main/assets/logo.png" alt="Logo" width="200" height="200">
 </div>
