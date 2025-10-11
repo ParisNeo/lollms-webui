@@ -9,7 +9,7 @@ This repository is depricated. Please take a look at the new lollms system at : 
 
 ![GitHub license](https://img.shields.io/github/license/ParisNeo/lollms-webui)
 ![GitHub issues](https://img.shields.io/github/issues/ParisNeo/lollms-webui)
-![GitHub stars](https://img.shields.io/github/stars/ParisNeo/lollms-webui)
+[![GitHub stars](https://img.shields.io/github/stars/ParisNeo/lollms-webui)](https://github.com/ParisNeo/lollms-webui/stargazers)
 ![GitHub forks](https://img.shields.io/github/forks/ParisNeo/lollms-webui)
 [![Discord](https://img.shields.io/discord/1092918764925882418?color=7289da&label=Discord&logo=discord&logoColor=ffffff)](https://discord.gg/4rR282WJb6)
 [![Follow me on X](https://img.shields.io/twitter/follow/ParisNeo_AI?style=social)](https://twitter.com/ParisNeo_AI)
