@@ -1,0 +1,1 @@
+from lollms.functions.web.google_search import google_search, google_search_function

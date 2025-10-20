@@ -1,0 +1,183 @@
+<div class="container mx-auto px-4 py-8">
+
+    <!-- Welcome Card -->
+    <div class="mb-8">
+        <div class="card bg-gradient-welcome p-8 rounded-lg shadow-xl transform hover:scale-101 hover:skew-x-1 transition-transform duration-300 border border-purple-500/30 matrix-pulse-subtle">
+            <h3 class="text-gradient-title text-4xl font-bold mb-4 animate-fade-in">
+                🌱 Welcome to v19.22.42 "tWINS" - Expanding Horizons! 🌱
+            </h3>
+            <p class="text-lg text-purple-300 dark:text-purple-400 mb-6 opacity-90 animate-fade-in anim-delay-200">
+                Welcome to the "tWINS" release! We're building on the Ghibli-inspired magic with powerful new features. Star your favorite chats, explore thousands of local models via Hugging Face, and enjoy enhanced service integrations. The journey of powerful, playful AI continues!
+            </p>
+
+            <!-- Feature Highlights -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+
+                <!-- Feature 1: Hugging Face Binding -->
+                <div class="feature-card matrix-glow p-5 rounded-lg bg-opacity-20 backdrop-blur-sm flex flex-col items-center text-center animate-fade-up anim-delay-400 border border-pink-500/20">
+                    <span class="text-4xl mb-3 animate-bounce">🤗</span>
+                    <h4 class="text-xl font-semibold mb-2 text-blue-500 dark:text-blue-400">Hugging Face Hub Access</h4>
+                    <p class="text-sm opacity-90 text-blue-700 dark:text-blue-300">
+                        Unlock local potential! Our new binding connects you to over 200,000 models directly from Hugging Face. Your next favorite LLM awaits!
+                    </p>
+                </div>
+
+                <!-- Feature 2: Star Discussions -->
+                <div class="feature-card matrix-glow p-5 rounded-lg bg-opacity-20 backdrop-blur-sm flex flex-col items-center text-center animate-fade-up anim-delay-600 border border-orange-500/20">
+                     <span class="text-4xl mb-3 text-yellow-400 dark:text-yellow-500 animate-pulse">⭐</span>
+                    <h4 class="text-xl font-semibold mb-2 text-blue-500 dark:text-blue-400">Star Your Discussions</h4>
+                    <p class="text-sm opacity-90 text-blue-700 dark:text-blue-300">
+                        Never lose track of important conversations again. Easily mark and find your key discussions with the new starring feature.
+                    </p>
+                </div>
+
+                <!-- Feature 3: Enhanced Services & Performance -->
+                <div class="feature-card matrix-glow p-5 rounded-lg bg-opacity-20 backdrop-blur-sm flex flex-col items-center text-center animate-fade-up anim-delay-800 border border-cyan-500/20">
+                    <span class="text-4xl mb-3">⚡</span>
+                    <h4 class="text-xl font-semibold mb-2 text-blue-500 dark:text-blue-400">Enhanced & Optimized</h4>
+                    <p class="text-sm opacity-90 text-blue-700 dark:text-blue-300">
+                        API services are smarter and more capable. Enjoy continued performance tuning across LoLLMs for a smoother, faster experience.
+                    </p>
+                </div>
+
+            </div>
+            <!-- P.S. Note Removed -->
+        </div>
+    </div>
+
+    <!-- Concluding Section -->
+    <div class="text-center mt-12 space-y-5 animate-fade-up anim-delay-1000">
+        <p class="text-2xl font-bold text-gradient-title matrix-text">
+            Thanks for being part of the LoLLMs evolution!
+        </p>
+        <p class="text-xl text-progress opacity-95">
+            Together, we’re building AI that’s powerful, adaptable, and maybe still a little bit magical. Explore the new possibilities!
+        </p>
+    </div>
+
+</div>
+
+<!-- CSS (Mostly Unchanged - Ensure your theme covers text-yellow-400/500 or add it below if needed) -->
+<style>
+/* --- Re-use most of the previous CSS --- */
+
+/* Assume TailwindCSS is handling base styles */
+
+/* Optional: Add yellow if not in theme/Tailwind setup */
+/*
+.text-yellow-400 { color: #facc15; }
+.dark .dark\:text-yellow-500 { color: #eab308; }
+*/
+
+/* Define Gradients (if not using Tailwind config) - These might conflict/override theme CSS */
+/* Using theme's bg-gradient-welcome class instead now */
+/*
+.bg-gradient-welcome {
+    background: linear-gradient(135deg, rgba(30, 10, 40, 0.9), rgba(10, 0, 15, 0.95));
+}
+*/
+/* Using theme's text-gradient-title class */
+/*
+.text-gradient-title {
+    background: linear-gradient(90deg, #00ffee, #ff00cc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
+}
+*/
+/* Using theme's text-progress class */
+/*
+.text-progress {
+    color: #88aadd;
+}
+*/
+/* These specific colors might override theme text colors, use with caution or map to theme vars/classes */
+.text-purple-300 { color: #c084fc; } /* Tailwind purple-300 approx */
+.dark .dark\:text-purple-400 { color: #a855f7; } /* Mapped dark variant */
+.text-cyan-300 { color: #67e8f9; } /* Tailwind cyan-300 approx */
+.dark .dark\:text-cyan-500 { color: #22d3ee; } /* Mapped dark variant */
+
+/* Keeping border colors as they are specific to the theme */
+.border-purple-500\/30 { border-color: rgba(168, 85, 247, 0.3); }
+.border-pink-500\/20 { border-color: rgba(236, 72, 153, 0.2); }
+.border-orange-500\/20 { border-color: rgba(249, 115, 22, 0.2); }
+.border-cyan-500\/20 { border-color: rgba(6, 182, 212, 0.2); }
+
+/* Matrix Effects (Keep as is or adjust colors) */
+.matrix-glow {
+    box-shadow: 0 0 8px rgba(100, 80, 220, 0.1), 0 0 15px rgba(100, 80, 220, 0.08);
+    border: 1px solid rgba(100, 80, 220, 0.15);
+    background: rgba(30, 10, 40, 0.2);
+}
+.matrix-text {
+    text-shadow: 0 0 8px rgba(74, 144, 226, 0.5);
+}
+
+/* Subtle Pulse for Welcome Card */
+.matrix-pulse-subtle {
+    animation: pulse-subtle 3s infinite ease-in-out;
+}
+@keyframes pulse-subtle {
+    0% { box-shadow: 0 0 10px rgba(74, 144, 226, 0.05); border-color: rgba(74, 144, 226, 0.1); }
+    50% { box-shadow: 0 0 18px rgba(74, 144, 226, 0.15); border-color: rgba(74, 144, 226, 0.25); }
+    100% { box-shadow: 0 0 10px rgba(74, 144, 226, 0.05); border-color: rgba(74, 144, 226, 0.1); }
+}
+
+/* Feature Card Enhancements */
+.feature-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+.feature-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 0 15px rgba(74, 144, 226, 0.2), 0 0 25px rgba(74, 144, 226, 0.15);
+}
+
+/* Base Animations & Delays */
+.animate-fade-in { animation: fadeIn 0.8s ease-in both; }
+.animate-fade-up { animation: fadeUp 1s ease-out both; }
+.anim-delay-200 { animation-delay: 0.2s; }
+.anim-delay-400 { animation-delay: 0.4s; }
+.anim-delay-600 { animation-delay: 0.6s; }
+.anim-delay-800 { animation-delay: 0.8s; }
+.anim-delay-1000 { animation-delay: 1.0s; } /* Adjusted delay for concluding section */
+/* Removed anim-delay-1200 as it's no longer needed */
+
+/* Ensure flex alignment for feature cards */
+.feature-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Add hover skew to welcome card */
+.hover\:skew-x-1:hover {
+  transform: skewX(-1deg) scale(1.01);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Add bounce and spin if not covered by Tailwind */
+.animate-bounce { animation: bounce 1s infinite; }
+@keyframes bounce {
+  0%, 100% { transform: translateY(-15%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+  50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+}
+.animate-spin { animation: spin 1s linear infinite; } /* Keep if needed elsewhere */
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* Add pulse animation if not covered by Tailwind/theme */
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+/* Add specific yellow color if needed */
+.text-yellow-400 { color: #facc15; } /* Tailwind yellow-400 */
+.dark .dark\:text-yellow-500 { color: #eab308; } /* Tailwind yellow-500 */
+
+</style>

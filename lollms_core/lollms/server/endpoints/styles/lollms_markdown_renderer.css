@@ -1,0 +1,214 @@
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+.fade-in.show {
+    opacity: 1;
+}
+.spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* Styles for rendered Markdown */
+.markdown-content h1 {
+    font-size: 2em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.markdown-content h2 {
+    font-size: 1.5em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.markdown-content h3 {
+    font-size: 1.17em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+.markdown-content p {
+    margin-bottom: 1em;
+}
+.markdown-content ul, .markdown-content ol {
+    margin-left: 1.5em;
+    margin-bottom: 1em;
+}
+.markdown-content code {
+    background-color: #f0f0f0;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: monospace;
+}
+.markdown-content pre {
+    background-color: #f0f0f0;
+    padding: 1em;
+    border-radius: 5px;
+    overflow-x: auto;
+}
+.dark .markdown-content code {
+    background-color: #2d3748;
+}
+.dark .markdown-content pre {
+    background-color: #2d3748;
+}
+.ascii-art {
+    font-family: monospace;
+    white-space: pre;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+}
+.code-block-wrapper {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.code-block-header {
+padding: 10px;
+background-color: #e0e0e0;
+border-top-left-radius: 4px;
+border-top-right-radius: 4px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.language-label {
+font-weight: bold;
+color: #333;
+}
+
+.copy-button {
+background-color: #4CAF50;
+border: none;
+color: white;
+padding: 5px 10px;
+text-align: center;
+text-decoration: none;
+font-size: 14px;
+cursor: pointer;
+border-radius: 3px;
+transition: background-color 0.3s ease;
+display: flex;
+flex-direction: row;
+align-items: center;
+}
+
+.copy-button:hover {
+background-color: #45a049;
+}
+
+.copy-button svg {
+margin-right: 5px;
+width: 16px;
+height: 16px;
+}
+
+.copy-button.copied {
+background-color: #2196F3;
+}
+
+pre.line-numbers {
+margin: 0;
+padding: 10px 0;
+font-family: 'Courier New', Courier, monospace;
+font-size: 14px;
+line-height: 1.5;
+overflow-x: auto;
+}
+
+code {
+display: block;
+padding: 0 10px;
+}
+
+.code-line {
+display: block;
+white-space: pre;
+}
+
+.line-number {
+display: inline-block;
+width: 30px;
+text-align: right;
+color: #999;
+padding-right: 10px;
+user-select: none;
+}
+
+.line-content {
+display: inline;
+}
+
+.code-line:hover {
+background-color: rgba(0, 0, 0, 0.05);
+}
+
+.math-display {
+    display: block;
+    margin: 1em 0;
+    text-align: center;
+  }
+  .math-inline {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+
+  .code-block {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 1em 0;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.code-header {
+    background-color: #e0e0e0;
+    padding: 0.5em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copy-button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.code-content {
+    padding: 0.5em 0;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.code-line {
+    display: flex;
+    padding: 0 0.5em;
+}
+
+.line-number {
+    color: #999;
+    text-align: right;
+    padding-right: 1em;
+    user-select: none;
+    min-width: 2em;
+}
+
+.line-content {
+    flex: 1;
+}

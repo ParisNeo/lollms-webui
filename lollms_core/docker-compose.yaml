@@ -1,0 +1,13 @@
+version: '3.10'
+services:
+  lollms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BASE_IMAGE=python:3.11
+    ports:
+      - 9601:9601
+    volumes:
+      - ./data:/app/data
+      
