@@ -115,14 +115,6 @@ class LollmsApplication(LoLLMsCom):
         if not free_mode:
             try:
                 if config.auto_update and self.is_internet_available:
-                    # Clone the repository to the target path
-                    if self.lollms_paths.lollms_core_path.exists():
-                        def check_lollms_core():
-                            subprocess.run(["git", "-C", self.lollms_paths.lollms_core_path, "checkout", "main"])            
-                            subprocess.run(["git", "-C", self.lollms_paths.lollms_core_path, "pull"]) 
-                        ASCIIColors.blue("Lollms_core found in the app space.")           
-                        ASCIIColors.execute_with_animation("Pulling last lollms_core", check_lollms_core)
-
                     def check_lollms_bindings_zoo():
                         subprocess.run(["git", "-C", self.lollms_paths.bindings_zoo_path, "checkout", "main"])            
                         subprocess.run(["git", "-C", self.lollms_paths.bindings_zoo_path, "pull"])

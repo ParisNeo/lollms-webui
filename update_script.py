@@ -79,36 +79,6 @@ def run_git_pull():
             error_message = f"Couldn't update submodules: {str(ex)}\nPlease report the error to ParisNeo either on Discord or on github."
             ASCIIColors.error(error_message)
             # show_error_dialog(error_message)
-        try:
-            # Update lollms_core
-            ASCIIColors.info("Updating lollms_core")
-            lollms_core_path = execution_path / "lollms_core"
-            if lollms_core_path.exists():
-                subprocess.run(
-                    ["git", "-C", str(lollms_core_path), "fetch", "origin"], check=True
-                )
-                subprocess.run(
-                    [
-                        "git",
-                        "-C",
-                        str(lollms_core_path),
-                        "reset",
-                        "--hard",
-                        "origin/main",
-                    ],
-                    check=True,
-                )
-                subprocess.run(
-                    ["git", "-C", str(lollms_core_path), "clean", "-fd"], check=True
-                )
-                ASCIIColors.success("Successfully updated lollms_core")
-            else:
-                ASCIIColors.warning("lollms_core directory not found")
-
-        except Exception as ex:
-            error_message = f"Couldn't update submodules: {str(ex)}"
-            ASCIIColors.error(error_message)
-            # show_error_dialog(error_message)
 
         return True
     except Exception as e:
