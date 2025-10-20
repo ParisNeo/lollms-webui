@@ -10,10 +10,6 @@
 	path = zoos/models_zoo
 	url = https://github.com/ParisNeo/models_zoo.git
 	branch = main
-[submodule "lollms_core"]
-	path = lollms_core
-	url = https://github.com/ParisNeo/lollms_legacy.git
-	branch = main
 [submodule "utilities/safe_store"]
 	path = utilities/safe_store
 	url = https://github.com/ParisNeo/safe_store.git
