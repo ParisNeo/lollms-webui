@@ -1,5 +1,7 @@
-# LoLLMs WEBUI (DEPRICATED!!!)
-This repository is depricated. Please take a look at the new lollms system at : https://github.com/ParisNeo/lollms
+# LoLLMs WEBUI (Local, single user, multi models/modal fully integrated webui)
+A new lollms project can be found at: https://github.com/ParisNeo/lollms
+This is a more advanced version with multi users and MCP compatibility.
+The lollms webui keeps a minimal support and will eventually be completely replaced by the new lollms project.
 <div align="center">
   <img src="https://github.com/ParisNeo/lollms-webui/blob/main/assets/logo.png" alt="Logo" width="200" height="200">
 </div>
