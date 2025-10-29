@@ -1,7 +1,10 @@
 from fastapi import HTTPException
 from ascii_colors import ASCIIColors
 import pipmaster as pm
-pm.ensure_packages("lxml")
+pm.ensure_packages(["lxml","defusedxml"])
+import defusedxml.ElementTree as ET
+from defusedxml import ElementTree as ET
+from io import StringIO
 
 from urllib.parse import urlparse
 import socket
@@ -200,12 +203,7 @@ def sanitize_after_whitelisted_command(line, command):
         # If rest_of_line starts directly with separators followed by malicious commands, sanitized_rest will be empty
         # This means we should only return the part up to the whitelisted command
         return line[:command_end_index + len(sanitized_rest)].strip()
-pm.ensure_packages({"defusedxml":""})
 
-import defusedxml.ElementTree as ET
-
-from defusedxml import ElementTree as ET
-from io import StringIO
 
 def sanitize_svg(svg_content):
     try:
