@@ -1,5 +1,8 @@
 from fastapi import HTTPException
 from ascii_colors import ASCIIColors
+import pipmaster as pm
+pm.ensure_packages("lxml")
+
 from urllib.parse import urlparse
 import socket
 from pathlib import Path

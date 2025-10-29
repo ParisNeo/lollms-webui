@@ -225,3 +225,6 @@ lollms_env\
 *.sqlite3
 *.sqlite
 *-shm
+
+# lollms vscoder
+.lollms
