@@ -38,3 +38,9 @@ lollms_client>=0.7.5
 aiofiles
 python-multipart
 zipfile36
+
+defusedxml
+PyQT5
+lxml
+einops
+datasets
