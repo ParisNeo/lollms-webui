@@ -228,3 +228,5 @@ lollms_env\
 
 # lollms vscoder
 .lollms
+*.sqlite
+*.db
