@@ -33,7 +33,7 @@ safe_store>=2.1.0
 freedom-search>=0.1.9
 scrapemaster>=0.2.0
 freedom_search
-lollms_client>=0.7.5
+lollms_client>=1.6.10
 
 aiofiles
 python-multipart
