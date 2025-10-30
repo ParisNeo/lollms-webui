@@ -308,7 +308,7 @@ class LOLLMSWebUI(LOLLMSElfServer):
             )
             file.write(arg_string)
 
-        os.system(f"python {restart_script}")
+        os.system(f"{sys.executable} {restart_script}")
         sys.exit(0)
 
     def audio_callback(self, text):
