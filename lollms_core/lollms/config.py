@@ -588,9 +588,11 @@ class TypedConfig:
                 elif entry_type == "bool":
                     entry_value = bool(entry_value)
                 elif entry_type == "list":
-                    entry_value = list(entry_value)
+                    import ast
+                    entry_value = list(ast.literal_eval(entry_value))
                 elif entry_type == "dict":
-                    entry_value = eval(entry_value)
+                    import ast
+                    entry_value = ast.literal_eval(entry_value)
                 else:
                     raise ValueError(f"Invalid field type '{entry_type}' for entry '{entry_name}'.")
 
