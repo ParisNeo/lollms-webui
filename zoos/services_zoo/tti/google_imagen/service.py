@@ -270,17 +270,17 @@ class LollmsGoogleGemini(LollmsTTI):
                 self.app.info(f"Generating image(s) with Imagen ({model_name_config})...\nPrompt: {short_desc(full_prompt)}")
                 ASCIIColors.info(f"Using client.models.generate_images with aspect_ratio: {aspect_ratio}")
 
-                # Config object as per example
+                # Config object as per example - aspect_ratio goes inside config
                 imagen_config = types.GenerateImagesConfig(
-                    number_of_images=num_images
+                    number_of_images=num_images,
+                    aspect_ratio=aspect_ratio  # Pass aspect_ratio inside config
                 )
 
-                # THE CALL FROM USER'S EXAMPLE - Use aspect_ratio as direct kwarg
+                # THE CALL FROM USER'S EXAMPLE
                 response = self.client.models.generate_images(
                     model=model_name_config, # Use short name
                     prompt=full_prompt,
-                    config=imagen_config,
-                    aspect_ratio=aspect_ratio # Pass aspect_ratio here
+                    config=imagen_config
                 )
 
                 elapsed_time = time.time() - start_time
