@@ -65,6 +65,10 @@ Happy April Fool's Day! While we did genuinely rework the settings page structur
 # LoLLMs v19.0 (alpha) Changelog
 *Date: March 06, 2025*
 
+## [2026-03-15 14:53]
+
+- feat(google_imagen): add fallback model name formats and update model options
+
 ## [2026-03-15 14:34]
 
 - fix(google_imagen): move aspect_ratio into config object
