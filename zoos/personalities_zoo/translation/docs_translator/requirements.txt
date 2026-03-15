@@ -1,0 +1,11 @@
+PyPDF2
+scikit-learn
+mplcursors
+matplotlib
+transformers
+python-docx
+beautifulsoup4
+python-pptx
+plotly
+seaborn
+tqdm

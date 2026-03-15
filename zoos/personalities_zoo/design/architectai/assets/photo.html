@@ -1,0 +1,392 @@
+<style>
+    .hidden {
+        display: none;
+    }
+
+    .floating-image-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    }
+
+    .content-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90%;
+    max-height: 90%;
+    }
+
+    #floatingImage {
+    max-width: 100%;
+    max-height: 100%;
+    }
+
+
+    .floating-image-container::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .floating-image-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .floating-image-container::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    .floating-image-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    .floating-image-container img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .infos {
+        background-color: #e2edff;
+        max-height: 250px;
+    }
+
+
+    
+    .close-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        font-weight: bold;
+        display: flex;
+        border-radius: 50%;
+        border-color: green;
+        background-color: white;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-button:hover {
+        color: red;
+    }
+
+    .close-button .leaf-icon {
+        font-size: 20px;
+    }
+
+    .close-button .leaf-icon:hover {
+        transform: rotate(45deg);
+    }
+
+    .save-button {
+        margin-top: 10px;
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .save-button:hover {
+        background-color: #45a049;
+    }
+    .variate-button {
+        margin-top: 10px;
+        padding: 8px 16px;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .variate-button:hover {
+        background-color: #0e81ce;
+    }
+
+    .buttons-bar {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .buttons-bar button{
+        margin-right: 10px;
+    }
+
+    </style>
+    
+    <div class="flex items-center justify-content: space-around">
+        <img id="img_{image_id}" src="{image_source}" alt="Artbot generated image" class="cursor-pointer" style="width:{thumbneil_width}px;height:{thumbneil_height}px"  onclick="openFloatingImage('{image_id}',infoData_{image_id})">
+        <button id="copy_prompt" onclick="copy_to_clipboard(infoData_{image_id})"><i data-feather='copy'></i></button>
+    </div>
+    
+    <script>
+        // Parse the inline JSON code
+        const infoData_{image_id} = {__infos__};
+        
+        function copy_to_clipboard(infoData){
+            text = `${infoData["prompt"]}\n${infoData["negative_prompt"]}`
+            navigator.clipboard.writeText(text)
+            .then(() => {
+            console.log('Text copied to clipboard successfully!');
+            })
+            .catch((error) => {
+            console.error('Error copying text to clipboard:', error);
+            });
+        }
+
+        function openFloatingImage(imageId, infoData) {
+            const imageElement = document.getElementById(`img_${imageId}`);
+            const imageSource = imageElement.src;
+
+            // Create a new div for the floating image container
+            const floatingImageContainer = document.createElement('div');
+            floatingImageContainer.id = `floatingImageContainer_${imageId}`;
+            floatingImageContainer.className = 'hidden floating-image-container';
+
+            // Create a new image element for the floating image
+            const floatingImage = new Image();
+            floatingImage.src = imageSource;
+            floatingImage.id = `floatingImage_${imageId}`;
+            floatingImage.className = 'cursor-pointer';
+
+            // Create a new close button
+            const closeButton = document.createElement('div');
+            closeButton.className = 'close-button';
+            closeButton.innerHTML = '<i class="leaf-icon">X</i>';
+            closeButton.addEventListener('click', function() {
+                closeFloatingImage(imageId, infoData);
+            });
+
+            // Create a new save button
+            const saveButton = document.createElement('button');
+            saveButton.className = 'save-button';
+            saveButton.innerHTML = 'Save Image';
+            saveButton.addEventListener('click', function() {
+                saveImage(imageId, infoData);
+            });
+
+            // Create a new save metadata button
+            const saveMetadataButton = document.createElement('button');
+            saveMetadataButton.className = 'save-button';
+            saveMetadataButton.innerHTML = 'Save Metadata';
+            saveMetadataButton.addEventListener('click', function() {
+                saveMetadata(imageId, infoData);
+            });
+
+            // Create a new variate button
+            const variateButton = document.createElement('button');
+            variateButton.className = 'variate-button';
+            variateButton.innerHTML = 'Variate';
+            variateButton.addEventListener('click', function() {
+                postToPersonality(imageId, infoData);
+            });
+
+
+            // Create a new variate button
+            const setAsCurrentImageButton = document.createElement('button');
+            setAsCurrentImageButton.className = 'variate-button';
+            setAsCurrentImageButton.innerHTML = 'Set as current image';
+            setAsCurrentImageButton.addEventListener('click', function() {
+                setAsCurrentImageButtonFN(imageId, infoData);
+            });
+
+            // Create a new buttons bar
+            const buttonsBar = document.createElement('div');
+            buttonsBar.className = 'buttons-bar';
+            // Create a new div for the information box
+            const infosDiv = document.createElement('div');
+            infosDiv.className = 'infos bg-light dark:hover:border-primary hover:border-solid hover:border-2 border-2 border-transparent p-4 pb-2 rounded-lg m-2 shadow-lgz-0 flex flex-col flex-grow overflow-y-auto scrollbar-thin scrollbar-track-bg-light-tone scrollbar-thumb-bg-light-tone-panel hover:scrollbar-thumb-primary dark:scrollbar-track-bg-dark-tone dark:scrollbar-thumb-bg-dark-tone-panel dark:hover:scrollbar-thumb-primary active:scrollbar-thumb-secondary';
+            
+            // Loop through the JSON data and create paragacraphs for eh entry
+            
+            const infosDivTable = document.createElement('table');
+            for (const [key, value] of Object.entries(infoData)) {
+                const infoParagraph = document.createElement('tr');
+                infoParagraph.innerHTML = `<td><strong>${key}:</strong></td><td>${value}</td>`;
+                infosDivTable.appendChild(infoParagraph);
+            }
+            infosDiv.appendChild(infosDivTable);
+            // Append the save button and variate button to the buttons bar
+            buttonsBar.appendChild(saveButton);
+            buttonsBar.appendChild(saveMetadataButton);
+            buttonsBar.appendChild(variateButton);       
+            buttonsBar.appendChild(setAsCurrentImageButton);
+            
+            // Create a new div for the container of image, buttons bar, and infos
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'content-container';
+
+            // Append the floating image, close button, buttons bar, and infos to the content container
+            contentContainer.appendChild(floatingImage);
+            contentContainer.appendChild(closeButton);
+            contentContainer.appendChild(buttonsBar);
+            contentContainer.appendChild(infosDiv);
+
+            // Append the content container to the floating image container
+            floatingImageContainer.appendChild(contentContainer);
+            
+            // Add the container to the body
+            document.body.appendChild(floatingImageContainer);
+
+            // Show the floating image container
+            floatingImageContainer.classList.remove('hidden');
+            // Add event listener for mouse wheel
+            floatingImage.addEventListener('wheel', zoomImage);
+
+            // Function to handle zooming of the image
+            function zoomImage(event) {
+                event.preventDefault();
+                const floatingImage = document.getElementById('floatingImage');
+
+                // Get the current scale of the image
+                const currentScale = parseFloat(floatingImage.style.transform.replace('scale(', '').replace(')', ''));
+
+                // Calculate the new scale based on the mouse wheel delta
+                const scaleDelta = event.deltaY > 0 ? 0.9 : 1.1;
+                const newScale = currentScale * scaleDelta;
+
+                // Update the transform style of the image to apply the new scale
+                floatingImage.style.transform = `scale(${newScale})`;
+
+
+                console.log(`scale(${newScale})`)
+                console.log(floatingImage.style.transform)
+            }
+        }
+        function setAsCurrentImageButtonFN(imageId, infoData){
+            const floatingImage = document.getElementById(`floatingImage_${imageId}`);
+            const imageSource = floatingImage.src;
+            const name = 'set_as_current';
+
+            // Create a data object with the image path and name
+            const data = {
+                imagePath: imageSource,
+                name: "set_as_current",
+                prompt: infoData["prompt"],
+                negative_prompt: infoData["negative_prompt"]
+            };
+
+            // Send a POST request to the "post_to_personality" endpoint
+            fetch('/post_to_personality', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server
+                console.log(data);
+            })
+            .catch(error => {
+                // Handle any errors
+                console.error(error);
+            });
+            const floatingImageContainer = document.getElementById(`floatingImageContainer_${imageId}`);
+            floatingImageContainer.remove(); // Remove the floating image container            
+        }
+
+
+        function postToPersonality(imageId, infoData) {
+            const floatingImage = document.getElementById(`floatingImage_${imageId}`);
+            const imageSource = floatingImage.src;
+            const name = 'variate';
+
+            // Create a data object with the image path and name
+            const data = {
+                imagePath: imageSource,
+                name: "variate",
+                prompt: infoData["prompt"],
+                negative_prompt: infoData["negative_prompt"]
+            };
+
+            // Send a POST request to the "post_to_personality" endpoint
+            fetch('/post_to_personality', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response from the server
+                console.log(data);
+            })
+            .catch(error => {
+                // Handle any errors
+                console.error(error);
+            });
+            const floatingImageContainer = document.getElementById(`floatingImageContainer_${imageId}`);
+            floatingImageContainer.remove(); // Remove the floating image container
+        }
+        
+        function saveMetadata(imageId, infoData) {
+            const json = JSON.stringify(infoData);
+  
+            // Create a Blob with the JSON string
+            const blob = new Blob([json], { type: 'application/json' });
+            
+            // Create a temporary URL for the Blob
+            const url = URL.createObjectURL(blob);
+            
+            // Create a link element
+            const link = document.createElement('a');
+            link.href = url;
+
+            // Get default name
+            const title = infoData.title || 'Untitled'; // Use 'Untitled' if title is empty
+            
+            // Remove any incompatible characters from the title
+            const sanitizedTitle = title.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '');
+            link.download = sanitizedTitle + '.json';
+            
+            // Programmatically click on the link to trigger the download
+            link.click();
+            
+            // Clean up the temporary URL
+            URL.revokeObjectURL(url);
+        }
+
+        function saveImage(imageId, infoData) {
+            const floatingImage = document.getElementById(`floatingImage_${imageId}`);
+            const imageSource = floatingImage.src;
+            
+            // Create a link element
+            const link = document.createElement('a');
+            link.href = imageSource;
+            // Get default name
+            const title = infoData.title || 'Untitled'; // Use 'Untitled' if title is empty
+            
+            // Remove any incompatible characters from the title
+            const sanitizedTitle = title.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '');
+            link.download = sanitizedTitle + '.png';
+            console.log(link.download)
+            
+            // Programmatically click on the link to trigger the download
+            link.click();
+        }
+
+
+    
+        function closeFloatingImage(imageId, infoData) {
+            const floatingImageContainer = document.getElementById(`floatingImageContainer_${imageId}`);
+            floatingImageContainer.remove(); // Remove the floating image container
+        }
+    </script>
+    

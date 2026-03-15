@@ -1,0 +1,78 @@
+    <style>
+        .cursor-pointer {
+            cursor: pointer;
+        }
+        .w-120 {
+            width: 30rem;
+        }
+        .h-85 {
+            height: 21.25rem;
+        }
+        .w-46 {
+            width: 11.5925rem;
+        }
+        .z-9 {
+            z-index: 9;
+        }
+        .mr-sm {
+            margin-right: 0.25rem;
+        }
+        .lg\:lg-sm {
+            /* Replace with your specific LG styles */
+            font-size: 24px;
+            color: #333;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #hidden {
+            visibility: hidden;
+        }
+
+        #floatingImageContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #floatingImage {
+            max-width: 80%;
+            max-height: 80%;
+        }
+
+        .hidden {
+            display: none;
+        }     
+    </style>
+    <script>
+        function image_clicked(id_) {
+            // Recover element using id_
+            var img = document.getElementById("img_" + id_)  // Get the image object from ID "img_1", etc.
+            // Create a full-screen image with a close button that deletes it
+            
+            var newImg = document.createElement("IMG");
+            // Copy image source from img to newImg
+            newImg.setAttribute('src', img.getAttribute('src'));
+            newImg.setAttribute('alt', 'Close button for full-screen image with ID img_' + id_);
+            newImg.setAttribute('title', 'Close full-screen image with ID img_' + id_);
+            // Apply inline styles
+            newImg.style.width = '30rem';
+            newImg.style.height = '21.25rem';
+            newImg.style.zIndex = '9';
+            newImg.style.marginRight = '0.25rem';
+            // Add the image to a div with some text and an anchor tag for more information on the image source
+            const imgDiv = document.createElement("DIV");
+            imgDiv.innerHTML = "Image: <a href='" + newImg.getAttribute('src')+ "' target=\"_blank\">Link to image source</a>";
+            newImg.style.width = '1024px'; // Set width to full-screen size, or whatever you want it to be in pixels
+            document.body.appendChild(imgDiv); // Add the new image object as a child of the body element so that it is displayed on top of all other elements and fills up full-screen space
+            console.log("done")
+        }
+    </script>
+    {{photos}}

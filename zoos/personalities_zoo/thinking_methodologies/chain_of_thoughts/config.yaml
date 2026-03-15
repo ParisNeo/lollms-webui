@@ -1,0 +1,44 @@
+#
+## GPT4All Chatbot conditionning file
+## Author : @ParisNeo
+## Version : 1.1
+## Description :
+## An NLP needs conditionning to instruct it to be whatever we want it to be.
+## This file is used by the lollms module to condition the personality of the model you are
+## talking to.
+#
+#
+ai_message_prefix: 'T'
+author: ParisNeo
+category: Art
+dependencies: []
+disclaimer: ''
+
+link_text: '\n'
+name: Chain Of Thoughts
+personality_conditioning: ''
+personality_description: 'A tool that uses a chain of thoughts to answer your questions.'
+user_message_prefix: 'User'
+user_name: user
+version: 1.0.0
+welcome_message: |
+  Welcome to Tree of thought AI. I use a tree of thoughts sequence to help solve your problems!
+  This technique makes my answers way more relevant and allows me to help you in a more efficient manner.
+
+include_welcome_message_in_discussion: False
+
+# A list of texts to be used to detect that the model is hallucinating and stop the generation if any one of these is output by the model
+anti_prompts: []
+
+# Here are default model parameters
+model_temperature: 0.9 # higher: more creative, lower more deterministic
+model_n_predicts: 1024 # higher: generates many words, lower generates
+model_top_k: 40
+model_top_p: 0.50
+model_repeat_penalty: 1.3
+model_repeat_last_n: 6
+
+processor_cfg:
+  custom_workflow: true
+  process_model_input: false
+  process_model_output: false

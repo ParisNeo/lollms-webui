@@ -14,18 +14,19 @@ import pipmaster as pm
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 pm.ensure_packages({
-    "ascii_colors":">=0.10.0",
+    "ascii_colors":">=0.11.20",
     "safe_store":">=2.6.0",
     "freedom_search": ">=0.2.2",
     "scrapemaster": ">=0.4.2",
-    "lollms_client": ">=0.8.0",
+    "lollms_client": ">=1.12.5",
     "einops": "",
     "datasets": "",
     "Pillow":"",
-    "PyQt5":""
+    "PyQt5":"",
 })
 
 from ascii_colors import ASCIIColors, LogLevel
+from typing import TYPE_CHECKING, Any
 
 
 import argparse
@@ -104,7 +105,7 @@ if __name__ == "__main__":
     config = LOLLMSConfig.autoload(lollms_paths)
 
     if config.debug_log_file_path != "":
-        ASCIIColors.log_path = config.debug_log_file_path
+        ASCIIColors.set_log_path(config.debug_log_file_path)
     if args.host:
         config.host = args.host
     if args.port:
@@ -205,7 +206,7 @@ if __name__ == "__main__":
     LOLLMSWebUI.build_instance(
         config=config, lollms_paths=lollms_paths, args=args, sio=sio
     )
-    lollmsElfServer: LOLLMSWebUI = LOLLMSWebUI.get_instance()
+    lollmsElfServer = LOLLMSWebUI.get_instance()
     lollmsElfServer.verbose = True
 
     # Import all endpoints
@@ -266,15 +267,27 @@ if __name__ == "__main__":
     from lollms.server.endpoints.lollms_playground import router as lollms_playground_router
     from lollms.server.endpoints.lollms_webui_infos import \
         router as lollms_webui_infos_router
-    from events.lollms_chatbox_events import \
-        add_events as lollms_chatbox_events_add
-    from events.lollms_discussion_events import \
-        add_events as lollms_webui_discussion_events_add
+    try:
+        from events.lollms_chatbox_events import \
+            add_events as lollms_chatbox_events_add
+    except ImportError:
+        lollms_chatbox_events_add = None  # type: ignore
+    try:
+        from events.lollms_discussion_events import \
+            add_events as lollms_webui_discussion_events_add
+    except ImportError:
+        lollms_webui_discussion_events_add = None  # type: ignore
     # from lollms.server.events.lollms_rag_events import add_events as lollms_rag_events_add
-    from events.lollms_generation_events import \
-        add_events as lollms_webui_generation_events_add
-    from events.lollms_interactive_events import \
-        add_events as lollms_interactive_events_add
+    try:
+        from events.lollms_generation_events import \
+            add_events as lollms_webui_generation_events_add
+    except ImportError:
+        lollms_webui_generation_events_add = None  # type: ignore
+    try:
+        from events.lollms_interactive_events import \
+            add_events as lollms_interactive_events_add
+    except ImportError:
+        lollms_interactive_events_add = None  # type: ignore
 
     # endpoints for remote access
     app.include_router(lollms_generator_router)
@@ -326,20 +339,24 @@ if __name__ == "__main__":
         ASCIIColors.yellow(f"Message from {sid}: {data}")
         await sio.send(sid, "Message received!")
 
-    lollms_generation_events_add(sio)
+    lollms_generation_events_add(sio)  # type: ignore
 
     if (
         not config.headless_server_mode
     ) or config.force_accept_remote_access:  # Be aware that forcing force_accept_remote_access can expose the server to attacks
-        lollms_personality_events_add(sio)
-        lollms_files_events_add(sio)
-        lollms_model_events_add(sio)
+        lollms_personality_events_add(sio)  # type: ignore
+        lollms_files_events_add(sio)  # type: ignore
+        lollms_model_events_add(sio)  # type: ignore
         # lollms_rag_events_add(sio)
 
-        lollms_webui_generation_events_add(sio)
-        lollms_webui_discussion_events_add(sio)
-        lollms_chatbox_events_add(sio)
-        lollms_interactive_events_add(sio)
+        if lollms_webui_generation_events_add:
+            lollms_webui_generation_events_add(sio)  # type: ignore
+        if lollms_webui_discussion_events_add:
+            lollms_webui_discussion_events_add(sio)  # type: ignore
+        if lollms_chatbox_events_add:
+            lollms_chatbox_events_add(sio)  # type: ignore
+        if lollms_interactive_events_add:
+            lollms_interactive_events_add(sio)  # type: ignore
 
     app.mount(
         "/extensions",
@@ -380,20 +397,17 @@ if __name__ == "__main__":
     @app.exception_handler(ValidationError)
     async def validation_exception_handler(request: Request, exc: ValidationError):
         print(f"Error: {exc.errors()}")  # Print the validation error details
-        if hasattr(exc, "body"):
-            return JSONResponse(
-                status_code=422,
-                content=jsonable_encoder(
-                    {"detail": exc.errors(), "body": await exc.body}
-                ),  # Send the error details and the original request body
-            )
-        else:
-            return JSONResponse(
-                status_code=422,
-                content=jsonable_encoder(
-                    {"detail": exc.errors(), "body": ""}
-                ),  # Send the error details and the original request body
-            )
+        body: Any = ""
+        try:
+            body = await request.body()
+        except Exception:
+            pass
+        return JSONResponse(
+            status_code=422,
+            content=jsonable_encoder(
+                {"detail": exc.errors(), "body": body.decode() if isinstance(body, bytes) else str(body)}
+            ),  # Send the error details and the original request body
+        )
 
     @app.on_event("startup")
     async def startup_event():
@@ -407,9 +421,9 @@ if __name__ == "__main__":
 
     app = ASGIApp(socketio_server=sio, other_asgi_app=app)
 
-    lollmsElfServer.app = app
+    setattr(lollmsElfServer, "app", app)
     try:
-        sio.reboot = False
+        setattr(sio, "reboot", False)
         # if config.enable_lollms_service:
         #     ASCIIColors.yellow("Starting Lollms service")
         #     #uvicorn.run(app, host=config.host, port=6523)
@@ -450,8 +464,8 @@ if __name__ == "__main__":
                 app,
                 host=config.host,
                 port=config.port,
-                ssl_certfile=cert_file_path,
-                ssl_keyfile=key_file_path,
+                ssl_certfile=str(cert_file_path),
+                ssl_keyfile=str(key_file_path),
             )
         else:
             uvicorn.run(app, host=config.host, port=config.port)

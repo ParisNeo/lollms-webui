@@ -1,0 +1,1 @@
+git+https://github.com/facebookresearch/audiocraft#egg=audiocraft

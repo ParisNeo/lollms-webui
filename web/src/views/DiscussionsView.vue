@@ -323,7 +323,7 @@ export default defineComponent({
             connection_recovered_audio: new Audio("/connection_recovered.wav"),
             chime: new Audio("/chime_aud.wav"),
              msgTypes: {
-                MSG_TYPE_CONTENT                   : 1, MSG_TYPE_CONTENT_INVISIBLE_TO_AI   : 2, MSG_TYPE_CONTENT_INVISIBLE_TO_USER : 3,
+                MSG_TYPE_CONTENT                   : 0, MSG_TYPE_CONTENT_INVISIBLE_TO_AI   : 1, MSG_TYPE_CONTENT_INVISIBLE_TO_USER : 2,
             },
             operationTypes: {
                 MSG_OPERATION_TYPE_ADD_CHUNK    : 0, MSG_OPERATION_TYPE_SET_CONTENT  : 1, MSG_OPERATION_TYPE_SET_CONTENT_INVISIBLE_TO_AI      : 2,
@@ -596,15 +596,21 @@ export default defineComponent({
              this.loading = true; this.setDiscussionLoading(id, true); this.discussionArr = [];
              socket.off('discussion');
              socket.on('discussion', (data) => {
+                 console.log("Discussion data received:", data); // Debug log
                  socket.off('discussion'); this.loading = false; this.setDiscussionLoading(id, false);
                  if (data && Array.isArray(data)) {
                      this.discussionArr = data.filter(item => item.message_type === this.msgTypes.MSG_TYPE_CONTENT || item.message_type === this.msgTypes.MSG_TYPE_CONTENT_INVISIBLE_TO_AI)
                                              .map(item => ({ ...item, status_message: "Done" }));
+                     console.log("Processed discussionArr:", this.discussionArr); // Debug log
                      if (this.discussionArr.length > 1 && (!this.currentDiscussion.title || this.currentDiscussion.title === "untitled")) {
                           this.autoChangeTitle(id, this.discussionArr[1].content);
                      }
                      this.extractHtml(); this.recoverFiles(); if (callback) callback();
-                 } else { console.warn("Received invalid discussion data for ID:", id); this.discussionArr = []; this.extractHtml(); }
+                 } else { 
+                     console.warn("Received invalid discussion data for ID:", id, "Data:", data); 
+                     this.discussionArr = []; 
+                     this.extractHtml(); 
+                 }
                  this.scrollToBottomMessages();
              });
              socket.emit('load_discussion', { id: id });

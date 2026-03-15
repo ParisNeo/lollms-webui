@@ -65,6 +65,14 @@ Happy April Fool's Day! While we did genuinely rework the settings page structur
 # LoLLMs v19.0 (alpha) Changelog
 *Date: March 06, 2025*
 
+## [2026-03-15 14:24]
+
+- refactor!: remove lollms_core library and update dependencies
+
+## [2026-03-15 03:31]
+
+- Remove personalities_zoo submodule
+
 ## [2026-03-15 00:08]
 
 - chore(web): rebuild frontend assets and update changelog

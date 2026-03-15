@@ -24,14 +24,24 @@
                              :avatar="getAvatar(msg.sender)"
                     />
                 </TransitionGroup>
+                
+                <!-- Debug info -->
+                <div v-else-if="hasActiveDiscussion" class="text-center text-gray-500 py-8">
+                    <p>No messages in this discussion (discussionArr is empty)</p>
+                    <p class="text-sm">discussionArr length: {{ discussionArr?.length }}</p>
+                    <p class="text-sm">hasActiveDiscussion: {{ hasActiveDiscussion }}</p>
+                </div>
 
-                 <!-- Use the new PromptExamples component -->
-                 <PromptExamples
-                     v-if="showPromptExamples"
-                     :prompts="personality?.prompts_list || []"
-                     @prompt-selected="handlePromptSelection"
-                     class="my-4"
-                 />
+                <!-- Show prompt examples when discussion has few messages -->
+                <PromptExamples
+                    v-if="showPromptExamples"
+                    :prompts="personality?.prompts_list || []"
+                    @prompt-selected="handlePromptSelection"
+                    class="my-4"
+                />
+
+                <!-- Show welcome when no active discussion -->
+                <WelcomeComponent v-if="!hasActiveDiscussion" />
 
                  <!-- Placeholder Modal (Remains the same) -->
                  <div v-if="showPlaceholderModal" class="fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-70 flex items-center justify-center z-50 p-4">

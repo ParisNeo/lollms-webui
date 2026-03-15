@@ -1,0 +1,254 @@
+<div class="card scrollbar-thin">
+    <div class="card-content">
+        <div class="relative group">
+            <!-- Image Container with hover effects -->
+            <div class="rounded-lg overflow-hidden shadow-lg transition-all duration-300 hover:shadow-2xl">
+                <img 
+                    id="img_{{image_id}}" 
+                    src="{{image_source}}" 
+                    width="{{thumbneil_width}}" 
+                    height="{{thumbneil_height}}" 
+                    alt="Artbot generated image" 
+                    class="cursor-pointer transition-all duration-300 hover:brightness-110"
+                    onclick="openFloatingImage('{{image_id}}',infoData_{{image_id}})"
+                >
+                <!-- Fancy copy button with tooltip -->
+                <button 
+                    id="copy_prompt" 
+                    class="btn btn-secondary absolute top-2 right-2 p-2 rounded-full transition-all duration-300 transform hover:scale-110 group-hover:opacity-100 opacity-0"
+                    onclick="copy_to_clipboard(infoData_{{image_id}})"
+                    title="Copy Prompt"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const infoData_{{image_id}} = {{__infos__}};
+
+    function copy_to_clipboard(infoData) {
+        const text = `${infoData["prompt"]}\n${infoData["negative_prompt"]}`;
+        navigator.clipboard.writeText(text)
+            .then(() => {
+                showToast('Prompt copied to clipboard!');
+            })
+            .catch((error) => {
+                console.error('Error copying text to clipboard:', error);
+            });
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-4 right-4 btn btn-primary px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    function openFloatingImage(imageId, infoData) {
+        const floatingImageContainer = document.createElement('div');
+        floatingImageContainer.id = `floatingImageContainer_${imageId}`;
+        floatingImageContainer.className = 'fixed inset-0 background-color z-50 flex items-center justify-center p-4 h-100';
+
+        const contentContainer = document.createElement('div');
+        contentContainer.className = 'container app-card max-w-5xl w-full h-full relative overflow-y-auto scrollbar-thin';
+
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'relative h-[60vh] overflow-auto scrollbar-thin';
+
+        const floatingImage = new Image();
+        floatingImage.src = document.getElementById(`img_${imageId}`).src;
+        floatingImage.id = `floatingImage_${imageId}`;
+        floatingImage.className = 'w-full h-auto object-contain transition-transform duration-300 hover:cursor-move';
+        
+        imageContainer.appendChild(floatingImage);
+        
+        // Close button with animation
+        const closeButton = document.createElement('button');
+        closeButton.className = 'btn btn-secondary absolute z-50 top-4 right-4 transition-colors duration-300 transform hover:scale-110';
+        closeButton.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+        closeButton.onclick = () => closeFloatingImage(imageId, infoData);
+
+        // Enhanced buttons bar
+        const buttonsBar = document.createElement('div');
+        buttonsBar.className = 'flex justify-center space-x-4 p-6 border-t border-gray-200';
+
+        const buttons = [
+            { text: 'Save Image', class: 'btn btn-primary', handler: () => saveImage(imageId, infoData) },
+            { text: 'Save Metadata', class: 'btn btn-secondary', handler: () => saveMetadata(imageId, infoData) },
+            { text: 'Variate', class: 'btn btn-primary', handler: () => postToPersonality(imageId, infoData, {{client_id}}) },
+            { text: 'Set as Current', class: 'btn btn-secondary', handler: () => setAsCurrentImageButtonFN(imageId, infoData) }
+        ];
+
+        buttons.forEach(btn => {
+            const button = createButton(btn.text, btn.class, btn.handler);
+            buttonsBar.appendChild(button);
+        });
+
+        // Enhanced info section
+        const infosDiv = document.createElement('div');
+        infosDiv.className = 'subcard max-h-60 overflow-y-auto scrollbar-thin';
+
+        const infoTable = document.createElement('table');
+        infoTable.className = 'w-full border-collapse';
+        
+        for (const [key, value] of Object.entries(infoData)) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="py-2 px-4 font-semibold">${key}:</td>
+                <td class="py-2 px-4">${value}</td>
+            `;
+            infoTable.appendChild(row);
+        }
+        infosDiv.appendChild(infoTable);
+
+        contentContainer.append(closeButton, imageContainer, buttonsBar, infosDiv);
+        floatingImageContainer.appendChild(contentContainer);
+        document.body.appendChild(floatingImageContainer);
+
+        // Enhanced zoom functionality
+        let scale = 1;
+        let panning = false;
+        let pointX = 0;
+        let pointY = 0;
+        let start = { x: 0, y: 0 };
+
+        imageContainer.addEventListener('wheel', zoomImage);
+        imageContainer.addEventListener('mousedown', startPan);
+        imageContainer.addEventListener('mousemove', pan);
+        imageContainer.addEventListener('mouseup', endPan);
+
+        function zoomImage(e) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? 0.9 : 1.1;
+            scale *= delta;
+            scale = Math.min(Math.max(0.5, scale), 4); // Limit scale between 0.5 and 4
+            floatingImage.style.transform = `scale(${scale})`;
+        }
+
+        function startPan(e) {
+            panning = true;
+            start = { x: e.clientX - pointX, y: e.clientY - pointY };
+        }
+
+        function pan(e) {
+            if (!panning) return;
+            pointX = e.clientX - start.x;
+            pointY = e.clientY - start.y;
+            floatingImage.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
+        }
+
+        function endPan(e) {
+            panning = false;
+        }
+    }
+
+    function createButton(text, classes, clickHandler) {
+        const button = document.createElement('button');
+        button.className = classes;
+        button.textContent = text;
+        button.addEventListener('click', clickHandler);
+        return button;
+    }
+
+    function setAsCurrentImageButtonFN(imageId, infoData){
+        const floatingImage = document.getElementById(`floatingImage_${imageId}`);
+        const imageSource = floatingImage.src;
+        const name = 'set_as_current';
+
+        const data = {
+            imagePath: imageSource,
+            name: "set_as_current",
+            prompt: infoData["prompt"],
+            negative_prompt: infoData["negative_prompt"]
+        };
+
+        fetch('/post_to_personality', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+        const floatingImageContainer = document.getElementById(`floatingImageContainer_${imageId}`);
+        floatingImageContainer.remove();
+    }
+
+    function postToPersonality(imageId, infoData, client_id) {
+        const floatingImage = document.getElementById(`floatingImage_${imageId}`);
+        const imageSource = floatingImage.src;
+        const name = 'variate';
+
+        const data = {
+            client_id:"",
+            data:{
+                "imagePath": imageSource,
+                "name": "variate",
+                "prompt": infoData["prompt"],
+                "negative_prompt": infoData["negative_prompt"]
+            }
+        };
+
+        fetch('/post_to_personality', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+        const floatingImageContainer = document.getElementById(`floatingImageContainer_${imageId}`);
+        floatingImageContainer.remove();
+    }
+    
+    function saveMetadata(imageId, infoData) {
+        const json = JSON.stringify(infoData);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const title = infoData.title || 'Untitled';
+        const sanitizedTitle = title.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '');
+        link.download = sanitizedTitle + '.json';
+        link.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function saveImage(imageId, infoData) {
+        const floatingImage = document.getElementById(`floatingImage_${imageId}`);
+        const imageSource = floatingImage.src;
+        const link = document.createElement('a');
+        link.href = imageSource;
+        const title = infoData.title || 'Untitled';
+        const sanitizedTitle = title.replace(/[<>:"\/\\|?*\x00-\x1F]/g, '');
+        link.download = sanitizedTitle + '.png';
+        link.click();
+    }
+
+    function closeFloatingImage(imageId, infoData) {
+        const floatingImageContainer = document.getElementById(`floatingImageContainer_${imageId}`);
+        floatingImageContainer.remove();
+    }    
+</script>

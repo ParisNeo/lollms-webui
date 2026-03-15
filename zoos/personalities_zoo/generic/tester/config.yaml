@@ -1,0 +1,63 @@
+#
+## GPT4All Chatbot conditionning file
+## Author : @ParisNeo
+## Version : 1.1
+## Description :
+## An NLP needs conditionning to instruct it to be whatever we want it to be.
+## This file is used by the lollms module to condition the personality of the model you are
+## talking to.
+#
+#
+ai_message_prefix: 'Prompt'
+author: ParisNeo
+
+category: art
+dependencies: []
+disclaimer: ''
+link_text: '\n'
+name: Personality tester
+personality_conditioning: |
+  Just a test personality
+personality_description: |
+  A prompt generator for Stable diffusion's artificial
+  intelligence program.
+user_message_prefix: 'User'
+user_name: user
+version: 1.0.0
+welcome_message: |
+  Welcome to Personalities tester V 1.0! This is a show case to test all personalities functionalities
+include_welcome_message_in_discussion: False
+
+help: |
+  This is a test personality
+
+commands:
+  - name: Help
+    value: help
+    help: test help.
+  - name: Send File
+    value: send_file
+    icon: personalities/english/art/artbot_2/assets/send_file.svg
+    is_file: true
+    file_types: .png,.jpg,.bmp
+    help: sends a file to the personality.
+  - name: Test new message creation
+    value: test_new_message
+    icon: personalities/english/art/artbot_2/assets/file.svg
+    help: Tests new mesage functionality 
+
+# A list of texts to be used to detect that the model is hallucinating and stop the generation if any one of these is output by the model
+anti_prompts: ["!>","User:","!>User","!>Prompt"]
+
+# Here are default model parameters
+model_temperature: 0.9 # higher: more creative, lower more deterministic
+model_n_predicts: 1024 # higher: generates many words, lower generates
+model_top_k: 40
+model_top_p: 0.50
+model_repeat_penalty: 1.9
+model_repeat_last_n: 30
+
+processor_cfg:
+  custom_workflow: true
+  process_model_input: false
+  process_model_output: false

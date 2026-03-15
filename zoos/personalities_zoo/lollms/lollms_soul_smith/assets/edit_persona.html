@@ -1,0 +1,191 @@
+<style>
+    /* Add some margins and padding to the form */
+    form {
+      margin: 20px 0;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  
+    /* Use display: flex to align the labels and inputs */
+    label,
+    input,
+    textarea,
+    .ai-icon-preview {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 10px;
+    }
+  
+    /* Style the labels */
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  
+    /* Add some styles to the input and textarea elements */
+    input,
+    textarea {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      width: 100%;
+    }
+  
+    /* Style the submit button */
+    button[type="submit"] {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+  
+    /* Add some hover effect to the submit button */
+    button[type="submit"]:hover {
+      background-color: #45a049;
+    }
+  
+    /* Style the AI icon preview */
+    .ai-icon-preview {
+      width: 100px;
+      height: 100px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+  
+    /* Style the AI icon image */
+    .ai-icon-preview img {
+      width: 100%;
+      height: auto;
+    }
+
+    #temperature {
+      width: 100%;
+      -webkit-appearance: none;
+      margin: 10px 0;
+    }
+    #temperature::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 5px;
+      background: #ddd;
+      border: none;
+      border-radius: 3px;
+    }
+    #temperature::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #4CAF50;
+      box-shadow: 0 0 5px #4CAF50;
+    }
+    #temperature::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #4CAF50;
+    }    
+  </style>
+  
+  <form action="/post_to_personality" method="post" enctype="multipart/form-data">
+    <label for="ai_name">AI Name:</label>
+    <input type="text" id="ai_name" name="ai_name" required><br>
+  
+    <label for="ai_author">AI Author:</label>
+    <input type="text" id="ai_author" name="ai_author" required><br>
+    
+    <label for="ai_version">AI Version:</label>
+    <input type="text" id="ai_version" name="ai_version" required value="1.0"><br>
+    
+    <label for="ai_category">AI Category:</label>
+    <input type="text" id="ai_category" name="ai_category" required><br>
+  
+    <label for="ai_language">AI Language:</label>
+    <input type="text" id="ai_language" name="ai_language" required><br>
+  
+    <label for="ai_description">AI Description:</label>
+    <textarea id="ai_description" name="ai_description" required></textarea><br>
+  
+    <label for="ai_conditionning">AI Conditionning:</label>
+    <textarea id="ai_conditionning" name="ai_conditionning" required></textarea><br>
+
+    <label for="ai_welcome_message">AI Welcome Message:</label>
+    <textarea id="ai_welcome_message" name="ai_welcome_message" required></textarea><br>
+
+    <label for="ai_temperature">Ai Temperature:</label>
+    <input type="range" id="ai_temperature" name="ai_temperature" min="0.1" max="1" step="0.1">
+      
+    <label for="ai_disclaimer">AI Disclaimer:</label>
+    <textarea id="ai_disclaimer" name="ai_disclaimer" required></textarea><br>
+  
+    <!-- AI Icon -->
+    <div class="ai-icon-container">
+        <label for="ai_icon">AI Icon:</label>
+        <div class="ai-icon-preview" onclick="document.getElementById('ai_icon').click()">
+        <img src="/personalities/generic/lollms/assets/logo.png" alt="AI Icon Preview">
+        </div>
+        <input type="file" id="ai_icon" name="ai_icon" onchange="previewIcon(this)" style="display: none;">
+    </div>
+  
+    <button type="submit">Commit AI to Server</button>
+  </form>
+  
+  <script>
+    // Function to preview the AI icon image
+    function previewIcon(input) {
+    const aiIconPreview = document.querySelector('.ai-icon-preview img');
+    const aiIcon = input.files[0];
+    const reader = new FileReader();
+
+    if (aiIcon) {
+        reader.onload = function(e) {
+        aiIconPreview.src = e.target.result;
+        }
+
+        reader.readAsDataURL(aiIcon);
+    } else {
+        aiIconPreview.src = '/personalities/generic/lollms/assets/logo.png';
+    }
+    }
+
+    // Function to submit the form via AJAX
+    async function submitForm() {
+    const form = document.getElementById('aiForm');
+    const formData = new FormData(form);
+
+    // Get the preview image and append it to the form data
+    const aiIconPreview = document.querySelector('.ai-icon-preview img');
+    const aiIconBlob = await (await fetch(aiIconPreview.src)).blob();
+    formData.set('ai_icon', aiIconBlob, 'ai_icon.png');
+
+    try {
+        const response = await fetch('/post_to_personality', {
+        method: 'POST',
+        body: formData,
+        });
+
+        if (!response.ok) {
+        throw new Error('Network response was not ok');
+        }
+
+        // Handle successful response here, e.g., display a message or reset the form
+        console.log('AI committed to the server successfully');
+    } catch (error) {
+        // Handle error here, e.g., display an error message
+        console.error('Error committing AI to the server:', error);
+    }
+    }
+
+    // Add an event listener to the form submit button
+    document.querySelector('button[type="submit"]').addEventListener('click', (event) => {
+      event.preventDefault();
+      submitForm();
+    });
+
+  </script>
+  

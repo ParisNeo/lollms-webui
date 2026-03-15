@@ -1,0 +1,10 @@
+scikit-learn
+mplcursors
+matplotlib
+transformers
+beautifulsoup4
+PyPDF2
+python-docx
+python-pptx
+plotly
+seaborn

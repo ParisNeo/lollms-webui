@@ -168,13 +168,19 @@ class LOLLMSWebUI(LOLLMSElfServer):
         self.discussion_db_name = config["discussion_db_name"]
 
         # Create database object
-        self.db = DiscussionsDB(self, self.lollms_paths, self.discussion_db_name)
-
-        # If the database is empty, populate it with tables
-        ASCIIColors.info("Checking discussions database... ", end="")
-        self.db.create_tables()
-        self.db.add_missing_columns()
-        ASCIIColors.success("ok")
+        try:
+            self.db = DiscussionsDB(self, self.lollms_paths, self.discussion_db_name)
+            
+            # If the database is empty, populate it with tables
+            ASCIIColors.info("Checking discussions database... ", end="")
+            self.db.create_tables()
+            self.db.add_missing_columns()
+            ASCIIColors.success("ok")
+        except Exception as ex:
+            ASCIIColors.error(f"Failed to initialize database: {ex}")
+            trace_exception(ex)
+            # Create a minimal database object to prevent crashes
+            self.db = None
 
         # This is used to keep track of messages
         self.download_infos = {}
@@ -201,6 +207,60 @@ class LOLLMSWebUI(LOLLMSElfServer):
                 pass
 
             ASCIIColors.error(f"Client {sid} disconnected")
+
+        @sio.event
+        async def load_discussion(sid, data):
+            """Load a discussion and send its messages to the client."""
+            try:
+                discussion_id = data.get('id')
+                if discussion_id is None:
+                    await self.sio.emit('discussion', [], to=sid)
+                    return
+                
+                # Get the client and set the discussion
+                client = self.session.get_client(sid)
+                if client is None:
+                    await self.sio.emit('discussion', [], to=sid)
+                    return
+                
+                # Load the discussion
+                from lollms.databases.discussions_database import Discussion
+                discussion = Discussion(self, discussion_id, self.db)
+                client.discussion = discussion
+                
+                # Get all messages
+                messages = discussion.get_messages()
+                
+                # Format messages for frontend
+                formatted_messages = []
+                for msg in messages:
+                    formatted_messages.append({
+                        'id': msg.id,
+                        'sender': msg.sender,
+                        'content': msg.content,
+                        'message_type': msg.message_type,
+                        'sender_type': msg.sender_type,
+                        'rank': msg.rank,
+                        'parent_message_id': msg.parent_message_id,
+                        'binding': msg.binding,
+                        'model': msg.model,
+                        'personality': msg.personality,
+                        'created_at': msg.created_at,
+                        'started_generating_at': msg.started_generating_at,
+                        'finished_generating_at': msg.finished_generating_at,
+                        'nb_tokens': msg.nb_tokens,
+                        'metadata': msg.metadata,
+                        'ui': msg.ui,
+                        'steps': msg.steps,
+                        'discussion_id': discussion_id
+                    })
+                
+                await self.sio.emit('discussion', formatted_messages, to=sid)
+                ASCIIColors.success(f"Loaded discussion {discussion_id} with {len(formatted_messages)} messages for client {sid}")
+            except Exception as ex:
+                ASCIIColors.error(f"Error loading discussion: {ex}")
+                trace_exception(ex)
+                await self.sio.emit('discussion', [], to=sid)
 
         # generation status
         self.generating = False
