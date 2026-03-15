@@ -1,0 +1,16 @@
+author: ParisNeo
+category: utility
+class_name: Calculator
+creation_date_time: '2025-03-09T00:32:32.679228'
+description: Evaluates a Python expression and returns the result as text.
+last_update_date_time: '2025-03-09T00:32:32.679228'
+name: calculator
+parameters:
+- description: The Python expression to evaluate.
+  name: expression
+  type: str
+returns:
+  status:
+    description: The result of the calculation or an error message.
+    type: str
+version: 1.0.0

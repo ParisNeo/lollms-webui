@@ -1,0 +1,39 @@
+author: ParisNeo
+category: generation
+class_name: MusicGen
+creation_date_time: '2024-07-28T10:00:00.000000'
+description: Generates music from a text prompt using the configured Text-to-Music
+  (TTM) service.
+examples:
+- Generate a funky disco track with a strong bassline, 15 seconds long.
+- Create a calming ambient soundscape suitable for meditation.
+- Compose an 8-bit chiptune theme for a retro video game, seed 12345.
+last_update_date_time: '2024-07-28T10:00:00.000000'
+name: music_gen
+parameters:
+- description: The positive prompt describing the desired music (e.g., 'Epic cinematic
+    orchestral music for a space battle').
+  name: prompt
+  type: str
+- description: A prompt describing elements to avoid (e.g., 'vocals, choir, silence,
+    low quality'). Default is empty string.
+  name: negative_prompt
+  type: str
+- description: The desired duration of the generated audio in seconds (default 10.0).
+  name: duration_s
+  type: float
+- description: An optional seed for reproducibility. If None, a random seed might
+    be used.
+  name: seed
+  type: int
+- description: Optional desired name for the output audio file (without extension).
+    If None, a unique name will be generated.
+  name: output_file_name
+  type: str
+returns:
+  status:
+    description: A message indicating the success or failure of the music generation,
+      potentially including the filename.
+    type: str
+static_parameters: []
+version: 1.0.0

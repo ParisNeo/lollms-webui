@@ -1,0 +1,20 @@
+class_name: LollmsDiffusersClient
+caption: Diffusers (API)
+help: |
+  Diffusers Client is an API-based generation engine that uses Hugging Face's Inference API to run diffusion models. This service allows you to generate images from text prompts without managing local model installations.
+
+  **Key Features:**
+  - Access to a wide range of pre-trained diffusion models via API.
+  - No need for local hardware with high computational power.
+  - Easy integration with API keys.
+
+  **Usage Instructions:**
+  - Obtain an API key from Hugging Face.
+  - Set the API key in the lollms configuration.
+  - Provide text prompts to generate images using the selected model.
+
+  **Limitations:**
+  - Requires a Hugging Face account and API key.
+  - Subject to usage limits and possible costs.
+
+  For more details, refer to [Inference API docs](https://huggingface.co/docs/inference-endpoints/index).

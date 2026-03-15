@@ -1,0 +1,8 @@
+class_name: LollmsStableDiffusion
+caption: Stable Diffusion
+help: |
+  Stable Diffusion Text-to-Video generation engine powered by the Stable Diffusion API. This service allows users to generate videos from text prompts with customizable options such as video length (in seconds) and negative prompts to exclude unwanted elements. The API uses a scheduler (e.g., UniPCMultistepScheduler) to control the generation process, though parameters like resolution, inference steps, and seed are managed internally by the API and cannot be directly customized in this implementation. 
+
+  To use this service, you must provide a valid Stable Diffusion API key, which can be set via the STABLEDIFFUSION_API_KEY environment variable or manually in the lollms configuration interface. Videos are saved as MP4 files in the specified output folder. Note that the actual resolution and frame rate may vary depending on the API's internal settings, and the default video length is 2 seconds unless specified otherwise via the nb_frames parameter (assuming 8 fps).
+
+  Ideal for generating short, creative video clips from descriptive text inputs. Refer to https://stablediffusionapi.com/docs/text-to-video/texttovideo/ for more details on the underlying API capabilities.

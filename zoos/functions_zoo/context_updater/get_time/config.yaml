@@ -1,0 +1,18 @@
+author: ParisNeo
+category: context_updater
+class_name: GetTimeFunction
+creation_date_time: '2025-02-09T23:05:21.407756'
+description: Get the current server time
+examples:
+- What time is it right now?
+- Can you tell me the current time?
+last_update_date_time: '2025-02-09T23:05:21.407756'
+name: get_time
+parameters: []
+returns:
+  current_time:
+    description: ISO format timestamp of current server time
+    format: date-time
+    type: string
+static_parameters: []
+version: 1.0.0

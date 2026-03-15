@@ -1,0 +1,21 @@
+author: ParisNeo
+category: context_updater
+class_name: OutlookAgendaContext
+creation_date_time: '2025-02-22T01:54:19.810754'
+description: Syncs with Outlook calendar and adds events to the context
+last_update_date_time: '2025-02-22T01:54:19.810754'
+name: outlook_agenda_context
+parameters:
+- description: The date to fetch events for (defaults to current date)
+  name: date
+  type: str
+static_parameters:
+- default: 7
+  description: Number of days ahead to sync (default 7)
+  name: sync_days_ahead
+  type: int
+- default: 15
+  description: Duration in minutes to cache the calendar data (default 15)
+  name: cache_duration
+  type: int
+version: 1.0.0

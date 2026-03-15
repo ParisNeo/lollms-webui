@@ -1,0 +1,20 @@
+class_name: LollmsDiffusers
+caption: Diffusers (Local)
+help: |
+  Diffusers is a local generation engine from Hugging Face, providing state-of-the-art diffusion models for image generation. This service uses the Diffusers library to run Stable Diffusion models locally.
+
+  **Key Features:**
+  - Access to a variety of pre-trained Stable Diffusion models.
+  - Flexibility to customize and fine-tune models.
+  - Runs entirely on your local machine.
+
+  **Usage Instructions:**
+  - Install the Diffusers library and download a Stable Diffusion model.
+  - Configure the lollms application to use the local Diffusers setup.
+  - Generate images from text prompts using the selected model.
+
+  **Limitations:**
+  - Requires significant computational resources.
+  - Users must handle model management and updates.
+
+  For more information, visit [Diffusers docs](https://huggingface.co/docs/diffusers/index).

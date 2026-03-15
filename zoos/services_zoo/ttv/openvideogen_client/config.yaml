@@ -1,0 +1,3 @@
+class_name: LollmsOpenVideoGenClient
+caption: OpenVideoGen client for Text to Video Generation
+help: First install and run  OpenVideoGen API for text-to-video generation using various diffusion models

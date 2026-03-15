@@ -1,0 +1,23 @@
+class_name: LollmsWhisper
+caption: "Lollms Whisper: Convert Speech to Text"
+help: >
+  This service uses the Whisper model from OpenAI to perform speech-to-text transcription. 
+  It supports various model sizes for transcription:
+  - **tiny**: Suitable for quick, less accurate transcription.
+  - **tiny.en**: English-only version of tiny model.
+  - **base**: General purpose model with moderate accuracy.
+  - **base.en**: English-only version of base model.
+  - **small**: Improved accuracy for general use.
+  - **small.en**: English-only version of small model.
+  - **medium**: High accuracy, larger model for more detailed transcription.
+  - **medium.en**: English-only version of medium model.
+  - **large**: Very high accuracy for complex audio scenarios.
+  - **large-v2**: Updated large model with better performance.
+  - **large-v3**: Further refinement of the large model.
+  - **turbo**: Optimized for speed.
+
+  **Usage**: 
+  - Transcribe audio files by providing the path to the audio file. 
+  - If Whisper model fails to load, transcription will not be available.
+  
+  **Note**: Ensure the system has ffmpeg installed for audio processing capabilities.

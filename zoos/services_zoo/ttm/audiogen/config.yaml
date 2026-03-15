@@ -1,0 +1,15 @@
+# -----------------------------------------------------
+# AudioGen TTM Binding Configuration for Lollms
+# -----------------------------------------------------
+
+class_name: AudioGenTTM
+caption: AudioGen TTM
+help: |
+  AudioGen Text-to-Audio Binding
+
+  Generates audio and sound effects based on text prompts using Facebook's AudioGen models.
+  This binding utilizes the Hugging Face `transformers` library.
+  Good for sound effects and general audio generation.
+
+  Dependencies (torch, transformers, scipy, numpy) are installed automatically if missing.
+  Requires RAM/VRAM depending on the model size.

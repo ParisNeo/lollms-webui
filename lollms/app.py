@@ -128,21 +128,6 @@ class LollmsApplication(LoLLMsCom):
                     ASCIIColors.blue("Models zoo found in your personal space.")
                     ASCIIColors.execute_with_animation("Pulling last Models zoo", check_lollms_models_zoo)
 
-                    # Pull the repository if it already exists
-                    def check_lollms_function_calling_zoo():
-                        subprocess.run(["git", "-C", self.lollms_paths.functions_zoo_path, "checkout", "main"])            
-                        subprocess.run(["git", "-C", self.lollms_paths.functions_zoo_path, "pull"])            
-                    ASCIIColors.blue("Function calling zoo found in your personal space.")
-                    ASCIIColors.execute_with_animation("Pulling last Function calling zoo", check_lollms_function_calling_zoo)
-
-                    # Pull the repository if it already exists
-                    def check_lollms_services_zoo():
-                        subprocess.run(["git", "-C", self.lollms_paths.services_zoo_path, "checkout", "main"])            
-                        subprocess.run(["git", "-C", self.lollms_paths.services_zoo_path, "pull"])            
-                    ASCIIColors.blue("Services zoo found in your personal space.")
-                    ASCIIColors.execute_with_animation("Pulling last services zoo", check_lollms_services_zoo)
-
-
             except Exception as ex:
                 ASCIIColors.error("Couldn't pull zoos. Please contact the main dev on our discord channel and report the problem.")
                 trace_exception(ex)

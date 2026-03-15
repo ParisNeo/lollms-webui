@@ -1,0 +1,25 @@
+author: ParisNeo
+category: utility
+class_name: InternetContextEnhancer
+creation_date_time: '2025-02-24T22:15:53.979424'
+description: Enhances the context with relevant data from the internet based on the
+  user's prompt.
+last_update_date_time: '2025-02-24T22:15:53.979424'
+name: add_internet_data_to_context
+parameters:
+- description: The user's query to search the internet for relevant information.
+  name: prompt
+  type: str
+returns:
+  status:
+    description: A message indicating the success or failure of the internet data
+      integration.
+    type: str
+static_parameters:
+- description: The API key for the search engine service.
+  name: search_engine_api_key
+  type: str
+- description: The Custom Search Engine ID for Google Custom Search API.
+  name: search_engine_cx
+  type: str
+version: 1.0.0

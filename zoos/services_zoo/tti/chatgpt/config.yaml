@@ -1,0 +1,33 @@
+# LollmsOpenAIGPTImage Service Configuration
+# File: config.yaml
+# Author: Your Name/AI based on Lollms structure
+
+class_name: LollmsOpenAIGPTImage
+caption: OpenAI GPT Image
+category: Image Generation
+requirements:
+  - openai
+help: |
+  OpenAI GPT Image utilizes the OpenAI Responses API, leveraging powerful multimodal models like GPT-4o, GPT-4.1-mini, or GPT-Image-1 to generate images directly from text prompts. This method allows the models to use their broad world knowledge for more contextually aware and instruction-following image creation.
+
+  Unlike the dedicated DALL-E models (which use the Images API), this approach integrates image generation as a 'tool' within a conversational API, potentially offering different nuances in generation.
+
+  **Key Features:**
+  - Image generation using advanced GPT models (e.g., GPT-4o, gpt-image-1).
+  - Leverages the model's understanding of text and world knowledge for contextual generation.
+  - Integration via the standard OpenAI API key and client.
+
+  **Usage Instructions:**
+  - Obtain an API key from OpenAI.
+  - Set the API key in the lollms configuration for this service.
+  - Provide text prompts to generate images.
+  - Note: Parameters like negative prompt, seed, steps, and specific samplers are not directly supported by this API endpoint for image generation. Width and height can be hinted at in the prompt but are ultimately model-dependent.
+
+  **Limitations:**
+  - Requires an OpenAI account and a valid API key.
+  - Subject to OpenAI's usage policies, rate limits, and content restrictions.
+  - Costs are associated with API usage, billed per OpenAI's pricing.
+  - Image-to-image variations or edits (like DALL-E 2's capabilities) are not supported through this specific "Responses API" image generation tool.
+  - The number of images generated per request is typically one.
+
+  For more details on OpenAI models and their capabilities, refer to the [OpenAI API documentation](https://platform.openai.com/docs/overview).

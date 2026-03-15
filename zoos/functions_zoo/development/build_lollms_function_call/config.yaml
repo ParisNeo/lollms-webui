@@ -1,0 +1,72 @@
+author: YourName/AI
+category: development
+class_name: FunctionCallBuilder
+creation_date_time: '2024-07-29T10:00:00.000000'
+description: 'Generates the ''config.yaml'' and ''function.py'' files for a new LoLLMs
+  function call based on user-provided specifications. Can use a ''boost mode'' for
+  self-correction. The new function will be saved in the ''personal_data/custom_function_calls/''
+  directory.
+
+  '
+last_update_date_time: '2024-07-30T11:00:00.000000'
+name: build_lollms_function_call
+parameters:
+- description: The desired snake_case name for the new function (e.g., 'get_stock_price').
+    This will also be the folder name.
+  name: new_function_name
+  required: true
+  type: str
+- description: A detailed description of what the new function will do. This goes
+    into its config.yaml.
+  name: new_function_description
+  required: true
+  type: str
+- description: 'The type of the new function: ''CLASSIC'' or ''CONTEXT_UPDATE''. In
+    boost mode, the LLM might refine this choice.'
+  name: new_function_type
+  options:
+  - CLASSIC
+  - CONTEXT_UPDATE
+  required: true
+  type: str
+- description: 'A natural language description of the parameters the new CLASSIC function
+    should take. For example: ''It needs a city name (string) and a temperature unit
+    (string, default celsius)''. Ignored if function type is CONTEXT_UPDATE.
+
+    '
+  name: new_function_parameters_description
+  required: false
+  type: str
+- description: 'A natural language description of the Python logic for the new function''s
+    ''execute'' (for CLASSIC) or ''update_context''/''process_output'' (for CONTEXT_UPDATE)
+    method. Describe what it should compute, what external libraries it might need,
+    and what it should return or how it should modify context/output.
+
+    '
+  name: new_function_core_logic
+  required: true
+  type: str
+- default: generated
+  description: The category folder (e.g., 'utility', 'data_fetcher') under 'custom_function_calls'
+    where the new function should be placed. Defaults to 'generated'.
+  name: target_category
+  required: false
+  type: str
+returns:
+  status:
+    description: A message indicating success or failure, and the path to the new
+      function. May include details about correction iterations if boost mode was
+      used.
+    type: str
+static_parameters:
+- help: Enable self-correction loops for YAML and Python generation (slower, uses
+    more tokens).
+  name: boost_mode_enabled
+  type: bool
+  value: false
+- help: Maximum number of self-correction attempts per file if boost mode is enabled
+    (e.g., 1-5).
+  name: max_correction_iterations
+  type: int
+  value: 3
+version: 1.1.0

@@ -1,0 +1,21 @@
+author: YourName
+category: domotic
+class_name: HueLampControl
+creation_date_time: '2025-02-19T23:49:39.806101'
+description: Control Philips Hue lamps (turn on/off and set brightness)
+last_update_date_time: '2025-02-19T23:49:39.806101'
+name: hue_lamp_control
+parameters:
+- default: true
+  description: True to turn on, False to turn off
+  name: state
+  type: bool
+- default: 254
+  description: Brightness level (1-254)
+  name: brightness
+  type: int
+returns:
+  status:
+    description: JSON string containing status and message
+    type: str
+version: 1.0.0

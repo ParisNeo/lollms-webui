@@ -1,0 +1,60 @@
+# Unique Class Name
+class_name: LollmsXAI
+
+# Display Name
+caption: xAI
+
+# Author
+author: Paris Neo
+
+# Version
+version: 1.0.0
+
+# Description for the user
+help: |
+  This binding uses the xAI API (compatible with OpenAI's SDK) for image generation. It utilizes the `grok-2-image` model.
+
+  **Key Features:**
+  - Generates images from text prompts using xAI's `grok-2-image` model.
+  - Returns the `revised_prompt` used by the model for generation.
+  - Supports returning images as URLs or Base64 JSON.
+
+  **Usage Instructions:**
+  - Obtain an API key from xAI.
+  - Set the API key in the binding configuration below or set the `XAI_API_KEY` environment variable.
+  - Provide text prompts to generate images.
+
+  **Limitations:**
+  - Requires an xAI account and API key.
+  - Subject to xAI's usage policies and potential costs.
+  - The API **does not** currently support:
+    - Custom image dimensions (width/height)
+    - Negative prompts
+    - Specific samplers, seeds, steps, or guidance scale
+    - Image-to-image generation
+    - Style or quality parameters
+  - The `paint` function currently saves only the first generated image, even if `n` > 1 is requested.
+
+  For more details, refer to the [xAI API documentation](https://docs.x.ai/api-reference/images/create).
+
+# Category for grouping bindings
+category: Image Generation
+
+# A list of required packages
+requirements:
+  - openai # xAI uses an OpenAI-compatible API endpoint
+
+# Binding icon (optional, path relative to the binding root)
+icon: xai_icon.png # You'll need to create/find an appropriate icon
+
+# Installation script (optional)
+# install: |
+#   pip install openai
+
+# Script to run on binding selection (optional)
+# selected: |
+#   echo "xAI binding selected"
+
+# Script to run on binding deselection (optional)
+# deselected: |
+#   echo "xAI binding deselected"

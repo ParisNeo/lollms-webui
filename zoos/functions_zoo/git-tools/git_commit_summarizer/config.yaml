@@ -1,0 +1,18 @@
+author: ParisNeo
+category: git_tools
+class_name: GitCommitSummarizer
+creation_date_time: '2025-04-26T10:00:00.000000'
+description: Analyzes changes (staged and unstaged) in a local Git repository and
+  uses the LLM to generate a suggested commit message.
+last_update_date_time: '2025-04-26T10:00:00.000000'
+name: git_commit_summarizer
+parameters:
+- description: The absolute or relative path to the local Git repository.
+  name: repo_path
+  required: true
+  type: str
+returns:
+  status:
+    description: A suggested commit message summarizing the changes, or an error message.
+    type: str
+version: 1.0.0

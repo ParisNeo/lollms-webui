@@ -1,0 +1,19 @@
+# -----------------------------------------------------
+# Suno API TTM Binding Configuration for Lollms
+# -----------------------------------------------------
+
+class_name: SunoApiTTM
+caption: Suno API TTM
+help: |
+  Suno API Text-to-Music Binding
+
+  Generates music (often with vocals) using the Suno API.
+  Requires a Suno API Key configured in the settings.
+  The prompt should typically include style description and optionally lyrics.
+
+  Note: This binding assumes a specific (potentially unofficial or hypothetical)
+  API structure. You may need to adjust URLs and request formats based on the
+  actual available Suno API.
+
+  Dependencies (requests, scipy, numpy) are installed automatically if missing.
+  Requires an internet connection.

@@ -1,0 +1,22 @@
+class_name: LollmsOpenAIWhisper
+caption: "Lollms OpenAI Whisper: Cloud-Based Speech to Text"
+help: >
+  This service leverages OpenAI's Whisper API for cloud-based speech-to-text transcription:
+
+  **Features**:
+  - Uses **OpenAI's Whisper model** for high-quality transcription.
+  - Supports only the **whisper-1** model at the moment for transcription tasks.
+
+  **Configuration**:
+  - **api_key**: Requires an OpenAI API key to access the transcription service.
+  - **model**: The model name, currently fixed to "whisper-1".
+
+  **Usage**: 
+  - Provide an audio file path to transcribe the speech to text. 
+  - The output can be specified or defaults to a predetermined output path.
+
+  **Notes**: 
+  - Ensure that the API key is set as an environment variable (`OPENAI_KEY`) or directly in the configuration for authentication.
+  - Audio files must be in a format compatible with OpenAI's Whisper API, typically WAV files.
+
+  **Important**: This service uses cloud computing resources, which means internet connectivity is required, and usage might incur costs based on OpenAI's pricing model.

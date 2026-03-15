@@ -1,0 +1,61 @@
+author: ParisNeo
+category: data_search
+class_name: DeepSearch
+creation_date_time: '2025-03-25T18:16:14.205794'
+description: Performs an iterative deep search across multiple internet engines, analyzing
+  results and refining searches until sufficient information is gathered.
+last_update_date_time: '2025-03-25T18:16:14.205794'
+name: deep_search
+parameters:
+- description: Initial search query provided by the user.
+  name: query
+  type: str
+- default: ddg
+  description: 'Search engine to use (options: ''ddg'', ''google'', ''bing'', ''wikipedia'',
+    ''arxiv'', ''scholar'').'
+  name: engine
+  type: str
+- default: 3
+  description: Maximum number of search iterations to perform.
+  name: max_iterations
+  type: int
+- default: 5
+  description: Number of results to fetch per search.
+  name: depth
+  type: int
+- default: 30
+  description: Timeout in seconds for each search operation.
+  name: timeout
+  type: int
+returns:
+  status:
+    description: Summary of findings and analysis from the deep search process.
+    type: str
+static_parameters:
+- default:
+    bing: ''
+    google: ''
+    serp: ''
+  description: Dictionary containing API keys for various search engines.
+  name: api_keys
+  type: dict
+- default: ddg
+  description: Default search engine to use when none specified.
+  name: default_engine
+  type: str
+- default:
+  - ddg
+  - wikipedia
+  - arxiv
+  description: List of available engines that don't require API keys.
+  name: free_engines
+  type: list
+- default:
+  - google
+  - bing
+  - serp
+  - scholar
+  description: List of available engines that require API keys.
+  name: paid_engines
+  type: list
+version: 1.0.0

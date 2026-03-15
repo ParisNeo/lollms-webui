@@ -1,0 +1,32 @@
+class_name: LollmsGoogleGemini
+caption: Google Gemini
+help: |
+  This binding utilizes Google Cloud's Vertex AI platform to generate images using the powerful Imagen family of models. It allows generating high-quality images directly from text prompts by leveraging Google's infrastructure.
+
+  **Key Features:**
+  - Access to Google's state-of-the-art Imagen text-to-image models.
+  - Generates high-resolution and contextually relevant images.
+  - Configuration options for aspect ratio, guidance scale, and model selection.
+  - Integrates with Google Cloud's authentication mechanisms.
+
+  **Usage Instructions:**
+  1.  **Google Cloud Account:** You need an active Google Cloud Platform (GCP) account.
+  2.  **Enable API:** Ensure the "Vertex AI API" is enabled in your GCP project: [https://console.cloud.google.com/apis/library/aiplatform.googleapis.com](https://console.cloud.google.com/apis/library/aiplatform.googleapis.com)
+  3.  **Install Google Cloud SDK:** If not already installed, install the `gcloud` command-line tool: [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
+  4.  **Authentication:** Authenticate your environment using Application Default Credentials (ADC). The easiest way is usually:
+      ```bash
+      gcloud auth application-default login
+      ```
+      Alternatively, create a service account key, download the JSON file, and set the `GOOGLE_APPLICATION_CREDENTIALS` environment variable to the path of that file before running lollms.
+  5.  **Configure Binding:** In the lollms settings for this binding:
+      - Set your **`project_id`**: The ID of your Google Cloud project.
+      - Set your **`location`**: The GCP region where you want to run Vertex AI jobs (e.g., `us-central1`).
+      - (Optional) Adjust `model_id`, `guidance_scale`, `aspect_ratio`, etc., as needed.
+
+  **Limitations:**
+  - Requires a Google Cloud account and appropriate permissions for Vertex AI.
+  - Usage incurs costs based on Google Cloud Vertex AI pricing. See [Vertex AI Pricing](https://cloud.google.com/vertex-ai/pricing#generative_ai_models).
+  - Subject to Google Cloud's terms of service and responsible AI policies.
+  - Image-to-Image/Editing features are available in Vertex AI but are *not* implemented in this specific lollms binding using the `ImageGenerationModel`.
+
+  For more details on Vertex AI Imagen, refer to the [Google Cloud Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/image/generate-images).

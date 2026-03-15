@@ -1,0 +1,15 @@
+# -----------------------------------------------------
+# Stable Audio API TTM Binding Configuration for Lollms
+# -----------------------------------------------------
+
+class_name: StableAudioApiTTM
+caption: Stable Audio API TTM
+help: |
+  Stable Audio API Text-to-Audio Binding
+
+  Generates music loops and sound effects using Stability AI's Stable Audio API.
+  Requires a Stability AI API Key configured in the settings.
+
+  Dependencies (requests, scipy, numpy) are installed automatically if missing.
+  Requires an internet connection.
+  Check Stability AI pricing and usage terms.

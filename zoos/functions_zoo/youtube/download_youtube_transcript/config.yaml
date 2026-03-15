@@ -1,0 +1,20 @@
+author: ParisNeo
+category: youtube
+class_name: DownloadYoutubeTranscript
+creation_date_time: '2025-02-20T02:18:21.941201'
+description: This function goes online to YouTube and downloads the transcript from
+  any video
+last_update_date_time: '2025-02-20T02:18:21.941201'
+name: download_youtube_transcript
+parameters:
+- description: The ID of the YouTube video
+  name: video_id
+  type: str
+- description: The language code for the transcript (e.g., 'en' for English)
+  name: language_code
+  type: str
+returns:
+  status:
+    description: The transcript text from the YouTube video
+    type: str
+version: 1.0.0

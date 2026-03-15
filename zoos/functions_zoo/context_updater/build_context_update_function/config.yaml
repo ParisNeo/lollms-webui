@@ -1,0 +1,14 @@
+category: context_updater
+class_name: BuildAFunction
+creation_date_time: '2025-02-19T23:01:37.849192'
+description: A function that helps the AI build other functions by generating Python
+  and YAML files.
+last_update_date_time: '2025-02-19T23:01:37.849192'
+name: build_context_update_function
+parameters: []
+returns:
+  status:
+    description: The status of the function creation process.
+    type: str
+static_parameters: []
+version: 1.0.0

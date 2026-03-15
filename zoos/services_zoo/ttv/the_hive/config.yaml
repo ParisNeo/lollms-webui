@@ -1,0 +1,8 @@
+class_name: LollmsTheHive
+caption: TheHive.ai
+help: |
+  TheHive.ai Text-to-Video generation engine, utilizing TheHive.ai's Video Generation API. This service generates short, 2-second videos at a fixed resolution of 512x512 pixels and 8 frames per second (16 frames total) based on text prompts. It includes built-in visual moderation to filter out explicit or violent content, which may cause generation to fail if the prompt is flagged. The API does not support negative prompts, custom resolutions, inference steps, seeds, or variable video lengths in this implementation.
+
+  To enable this service, you must obtain an API key from TheHive.ai by contacting support at contact@thehive.ai, as the endpoint is not publicly accessible without organization-specific enablement. Set the key via the THEHIVE_API_KEY environment variable or in the lollms configuration. Generated videos are saved as MP4 files in the output folder. Prompts are limited to 250 characters, so keep descriptions concise.
+
+  Best suited for quick, moderated video generation tasks where content safety is a priority. See https://docs.thehive.ai/docs/video-generation for additional API information.

@@ -1,0 +1,21 @@
+author: ParisNeo
+category: coding
+class_name: GitHubRepoManager
+creation_date_time: '2025-03-16T14:28:25.550403'
+description: Creates a new GitHub repository, ties it to the discussion folder, stages
+  content, commits changes, and pushes them. If it is already a repository, it just
+  commits new changes and pushes.
+last_update_date_time: '2025-03-16T14:28:25.550403'
+name: manage_github_repo
+parameters:
+- description: The name of the GitHub repository.
+  name: repo_name
+  type: str
+- description: The commit message for the changes.
+  name: commit_message
+  type: str
+returns:
+  status:
+    description: The output of the function.
+    type: str
+version: 1.0.0

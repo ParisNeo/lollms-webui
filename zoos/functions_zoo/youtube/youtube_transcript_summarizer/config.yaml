@@ -1,0 +1,17 @@
+author: ParisNeo
+category: custom
+class_name: YoutubeTranscriptSummarizer
+creation_date_time: '2025-02-20T22:01:04.719192'
+description: Detects if the user wants to summarize a YouTube video, fetches its transcript,
+  and adds it to the context for summarization.
+last_update_date_time: '2025-02-20T22:01:04.719192'
+name: youtube_transcript_summarizer
+parameters:
+- description: The YouTube video ID to process
+  name: video_id
+  type: str
+- default: en
+  description: The language code for the transcript (e.g., 'en', 'fr', etc.)
+  name: language_code
+  type: str
+version: 1.0.0

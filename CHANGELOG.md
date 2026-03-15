@@ -65,6 +65,14 @@ Happy April Fool's Day! While we did genuinely rework the settings page structur
 # LoLLMs v19.0 (alpha) Changelog
 *Date: March 06, 2025*
 
+## [2026-03-15 14:30]
+
+- chore: remove functions_zoo and services_zoo submodule pull logic
+
+## [2026-03-15 14:28]
+
+- Remove functions_zoo and services_zoo submodules
+
 ## [2026-03-15 14:24]
 
 - refactor!: remove lollms_core library and update dependencies

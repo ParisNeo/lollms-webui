@@ -1,0 +1,45 @@
+author: ParisNeo
+category: generation
+class_name: ImageGen
+creation_date_time: '2025-02-09T23:05:21.407756'
+description: Generates a game asset image out of a prompt. Dont forget to specify
+  the key color in the prompt if you need transparency. For example magenta background.
+examples:
+- Make a surreal depiction of a clock
+- Generate an icon for a banc account application
+last_update_date_time: '2025-02-09T23:05:21.407756'
+name: game_asset_gen
+parameters:
+- description: the prompt to be passed to the generation app. Make sure it contains
+    a detailed description of the image. The style can be isometric, pixel art or
+    anything relevant to the asset being built. It is important to be specific and
+    detailed in the desciption.
+  name: prompt
+  type: str
+- description: the negative prompt to be passed to the generation app. Make sure it
+    contains a list of things you don't want to see in the generated image like blurry,
+    deformed, ugly, badly rendered, low res, mutilated, watermak etc
+  name: negative_prompt
+  type: str
+- description: the width of the image to generate (default 1024)
+  name: width
+  type: int
+- description: the height of the image to generate (default 512)
+  name: height
+  type: int
+- description: the height of the image to generate (default 512)
+  name: height
+  type: int
+- description: the color to use for transparency (use magenta for transparency when
+    needed (255, 0, 255))
+  name: transparency_color
+  type: List[int]
+- description: the filename with .png extention if requested
+  name: output_file_name
+  type: str
+returns:
+  status:
+    description: The status of the generation
+    type: str
+static_parameters: []
+version: 1.0.0

@@ -1,0 +1,35 @@
+# -----------------------------------------------------
+# MusicGen TTM Binding Configuration for Lollms
+# -----------------------------------------------------
+
+# The actual Python class name implementing the binding.
+# Lollms uses this to dynamically load the correct class.
+class_name: MusicGenTTM
+
+# A short, user-friendly caption for the binding.
+# This is often displayed in UI lists or dropdowns.
+caption: MusicGen TTM
+
+# A multi-line help text or description for the binding.
+# This provides users with more information about what the binding does,
+# its requirements, or its source.
+# The '|' preserves newlines.
+help: |
+  MusicGen Text-to-Music Binding
+
+  Generates music based on text prompts using Facebook's MusicGen models (e.g., small, medium, large).
+  This binding utilizes the Hugging Face `transformers` library.
+
+  Dependencies (torch, transformers, scipy) are installed automatically using pipmaster if they are not found.
+  Ensure you have sufficient RAM/VRAM, especially for larger models.
+
+# Optional: You could add more metadata if Lollms supports it,
+# such as author, version, dependencies list, etc.
+# For now, sticking to the example structure.
+# author: YourName/Handle
+# version: 1.0
+# requirements:
+#   - torch
+#   - transformers
+#   - scipy
+#   - pipmaster

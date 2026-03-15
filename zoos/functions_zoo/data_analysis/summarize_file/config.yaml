@@ -1,0 +1,20 @@
+author: ParisNeo
+block_rag: true
+category: data_analysis
+class_name: SummarizeFile
+creation_date_time: '2025-03-09T15:11:20.296926'
+description: This function reads a file and summarizes its content using sequential
+  summarization.
+last_update_date_time: '2025-03-09T15:11:20.296926'
+name: summarize_file
+parameters:
+- description: (Optional) Path to the file to be summarized if provided by the user.
+    If not we'll use the currently uploaded document. Do not fill it if the user did
+    not give an explicit file path
+  name: file_path
+  type: str
+returns:
+  summary:
+    description: Summary of the file's content in markdown format.
+    type: str
+version: 1.0.0

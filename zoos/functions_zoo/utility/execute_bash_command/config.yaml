@@ -1,0 +1,21 @@
+author: ParisNeo
+category: utility
+class_name: ExecuteBashCommand
+creation_date_time: '2025-02-26T21:39:34.163142'
+description: Executes a bash command and returns the output.
+last_update_date_time: '2025-02-26T21:39:34.164145'
+name: execute_bash_command
+parameters:
+- description: The bash command to execute.
+  name: command
+  type: str
+returns:
+  status:
+    description: The output of the bash command or error message.
+    type: str
+static_parameters:
+- default: 0
+  description: Timeout in seconds for the command execution. Default is 60 seconds.
+  name: timeout
+  type: int
+version: 1.0.0

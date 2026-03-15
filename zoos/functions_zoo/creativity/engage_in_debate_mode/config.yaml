@@ -1,0 +1,26 @@
+author: ParisNeo
+category: creativity
+class_name: EngageInDebateMode
+creation_date_time: '2025-02-27T01:01:53.025848'
+description: A function to engage in a playful debate mode.
+last_update_date_time: '2025-02-27T01:01:53.025848'
+name: engage_in_debate_mode
+parameters:
+- description: The topic for the debate.
+  name: topic
+  type: str
+- description: The user's stance on the topic.
+  name: user_position
+  type: str
+- description: The AI's stance, opposite of the user's.
+  name: ai_position
+  type: str
+returns:
+  debate_result:
+    description: The humorous summary or result of the debate.
+    type: str
+static_parameters:
+- description: The maximum number of debate rounds before calling it a tie.
+  name: max_rounds
+  type: int
+version: 1.0.0

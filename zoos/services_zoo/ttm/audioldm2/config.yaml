@@ -1,0 +1,14 @@
+# -----------------------------------------------------
+# AudioLDM 2 TTM Binding Configuration for Lollms
+# -----------------------------------------------------
+
+class_name: AudioLdm2TTM
+caption: AudioLDM 2 TTM
+help: |
+  AudioLDM 2 Text-to-Audio/Music Binding
+
+  Generates audio or music based on text prompts using AudioLDM models (e.g., audioldm2-music, audioldm-m-full).
+  This binding utilizes the Hugging Face `diffusers` library.
+
+  Dependencies (torch, diffusers, transformers, scipy, numpy, accelerate) are installed automatically if missing.
+  Requires significant RAM/VRAM depending on the model.

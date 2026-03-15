@@ -1,0 +1,16 @@
+author: ParisNeo
+category: coding
+class_name: CreateReadme
+creation_date_time: '2025-03-16T14:45:40.476895'
+description: Creates a README.md file in the current discussion folder.
+last_update_date_time: '2025-03-16T14:45:40.476895'
+name: create_readme
+parameters:
+- description: The content to write in the README.md file.
+  name: content
+  type: str
+returns:
+  status:
+    description: Confirmation message after creating the README.md file.
+    type: str
+version: 1.0.0

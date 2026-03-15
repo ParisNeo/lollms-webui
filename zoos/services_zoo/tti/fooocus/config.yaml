@@ -1,0 +1,20 @@
+class_name: LollmsFooocus
+caption: Fooocus
+help: |
+  Fooocus is an API-based generation engine for text-to-image generation, inspired by Stable Diffusion and Midjourney. This service uses Fooocus via its API to generate images from text prompts.
+
+  **Key Features:**
+  - Combines the best of Stable Diffusion and Midjourney's designs.
+  - User-friendly with a focus on ease of use and accessibility.
+  - Supports various generation methods and parameters.
+
+  **Usage Instructions:**
+  - Set up a Fooocus instance with an API or use a third-party service providing Fooocus API access.
+  - Configure the lollms application with the Fooocus API endpoint and credentials.
+  - Generate images by providing text prompts and adjusting parameters as needed.
+
+  **Limitations:**
+  - May require setting up your own Fooocus instance or relying on third-party services.
+  - Dependencies and setup can be complex for some users.
+
+  For more information on Fooocus, visit [Fooocus GitHub](https://github.com/mrhan1993/Fooocus).

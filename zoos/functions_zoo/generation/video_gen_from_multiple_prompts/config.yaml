@@ -1,0 +1,37 @@
+author: ParisNeo
+category: generation
+class_name: VideoGen
+creation_date_time: '2025-02-09T23:05:21.407756'
+description: Generates a video out of multiple prompts ansd stitch together a full
+  video
+examples:
+- Make a surreal depiction of a clock
+- Generate an icon for a banc account application
+last_update_date_time: '2025-03-01T23:05:21.407756'
+name: video_gen_from_multiple_prompts
+parameters:
+- description: the prompt to be passed to the generation app. Make sure it contains
+    a detailed description of the video. Also do include a style or even an artist
+    name. Use adjectives like beautiful, High res, detailed etc..
+  name: prompts
+  type: str
+- description: the negative prompt to be passed to the generation app. Make sure it
+    contains a list of things you don't want to see in the generated image like blurry,
+    deformed, ugly, badly rendered, low res, mutilated, watermak etc
+  name: negative_prompt
+  type: str
+- description: the width of the image to generate (default 1024)
+  name: width
+  type: int
+- description: the height of the image to generate (default 512)
+  name: height
+  type: int
+- description: the filename with .mp4 extention if requested
+  name: output_file_name
+  type: str
+returns:
+  status:
+    description: The status of the generation
+    type: str
+static_parameters: []
+version: 1.0.0

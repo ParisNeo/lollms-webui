@@ -1,0 +1,34 @@
+# -----------------------------------------------------
+# XTTS Binding Configuration for Lollms
+# -----------------------------------------------------
+
+# The actual Python class name implementing the binding.
+# Lollms uses this to dynamically load the correct class.
+class_name: LollmsXTTS
+
+# A short, user-friendly caption for the binding.
+# This is often displayed in UI lists or dropdowns.
+caption: XTTS Text-to-Speech
+
+# A multi-line help text or description for the binding.
+# This provides users with more information about what the binding does,
+# its requirements, or its source.
+# The '|' preserves newlines.
+help: |
+  XTTS Text-to-Speech Binding
+
+  Converts text prompts into spoken audio using the XTTS model.
+  This binding leverages advanced text-to-speech capabilities, likely powered by a framework like Hugging Face `transformers` or a similar library.
+
+  Dependencies (e.g., torch, transformers, soundfile) are installed automatically using pipmaster if not present.
+  Ensure sufficient computational resources (CPU/GPU) and storage for model weights.
+
+# Optional metadata for additional context.
+# Uncomment and customize if Lollms supports these fields.
+# author: YourName/Handle
+# version: 1.0
+# requirements:
+#   - torch
+#   - transformers
+#   - soundfile
+#   - pipmaster

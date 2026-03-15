@@ -1,0 +1,38 @@
+author: ParisNeo
+category: utility
+class_name: FolderStructureToText
+creation_date_time: '2025-03-03T12:54:40.629959'
+description: 'Takes a folder path and generates a **two-part Markdown-formatted**
+  text representation. **Part 1:** Displays the folder structure as a tree view (`|-`,
+  `L-`) inside a text code block. **Part 2:** Lists each included text file with its
+  relative path, followed by its full content within correctly tagged Markdown code
+  blocks. Allows specifying additional files or folders to exclude using wildcard
+  patterns.
+
+  '
+function_name: folder_structure_to_text
+last_update_date_time: '2024-05-22T11:30:00.000000'
+name: Folder Structure and Content to Markdown
+parameters:
+- description: The mandatory path to the folder to analyze.
+  name: folder_path
+  required: true
+  type: str
+- default: []
+  description: '(Optional) A list of filename/foldername patterns to exclude (supports
+    wildcards like *.log, temp*, build?, etc.). These are in addition to built-in
+    exclusions (.git, node_modules, etc.).
+
+    '
+  name: exclude_patterns
+  required: false
+  type: list[str]
+returns:
+  status:
+    description: "A **Markdown formatted string** containing two sections: 1. The\
+      \ folder structure tree within a text code block. 2. A list of included text\
+      \ files, each with its relative path and content\n   in a separate code block.\
+      \ Returns a Markdown formatted error message on failure."
+    type: str
+static_parameters: []
+version: 1.3.0

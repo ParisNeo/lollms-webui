@@ -1,0 +1,21 @@
+class_name: LollmsNovitaAi
+caption: Novita AI
+help: |
+  Novita AI is an API-based generation engine provided by OpenAI for creating images from text prompts. This service uses the DALL-E API to generate high-quality images based on user-provided descriptions.
+
+  **Key Features:**
+  - Generates realistic and accurate images from text descriptions.
+  - Supports various image sizes and styles.
+  - Easy integration via API key.
+
+  **Usage Instructions:**
+  - Obtain an API key from OpenAI.
+  - Set the API key in the lollms configuration.
+  - Provide text prompts to generate images.
+
+  **Limitations:**
+  - Requires an OpenAI account and API key.
+  - Subject to OpenAI's usage policies and content restrictions.
+  - May have rate limits and costs associated with usage.
+
+  For more details on DALL-E and its capabilities, refer to [OpenAI DALL-E docs](https://openai.com/dall-e-2/).

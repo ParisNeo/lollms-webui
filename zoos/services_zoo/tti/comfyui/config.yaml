@@ -1,0 +1,20 @@
+class_name: LollmsComfyUI
+caption: ComfyUI
+help: |
+  ComfyUI is a local generation engine for text-to-image models, providing a user-friendly interface for creating custom workflows with Stable Diffusion. To use this service, you must have ComfyUI and a Stable Diffusion model installed on your machine. This implementation allows you to generate images from text prompts using the local ComfyUI setup.
+
+  **Key Features:**
+  - Customizable workflows for text-to-image generation.
+  - Support for various Stable Diffusion models.
+  - Local execution, requiring no API keys or external dependencies.
+
+  **Usage Instructions:**
+  - Ensure ComfyUI is installed and running on your local machine.
+  - Configure the lollms application to point to your ComfyUI instance if necessary.
+  - Generate images by providing text prompts and adjusting parameters as needed.
+
+  **Limitations:**
+  - Requires significant computational resources (GPU with sufficient VRAM).
+  - Users must manage model downloads and updates themselves.
+
+  For more information on setting up and using ComfyUI, visit [ComfyUI documentation](https://www.runcomfy.com/).

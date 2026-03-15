@@ -1,0 +1,21 @@
+class_name: LollmsMidjourney
+caption: Midjourney
+help: |
+  Midjourney is an API-based generation engine that provides access to Midjourney's text-to-image capabilities through third-party APIs. This service allows you to generate images from text prompts using Midjourney's models.
+
+  **Key Features:**
+  - Generates high-quality, artistic images from text descriptions.
+  - Access to Midjourney's unique style and capabilities.
+  - Integration via third-party APIs.
+
+  **Usage Instructions:**
+  - Sign up with a third-party service that offers Midjourney API access.
+  - Obtain API credentials from the service.
+  - Configure the lollms application with the API endpoint and credentials.
+  - Provide text prompts to generate images.
+
+  **Limitations:**
+  - Relies on third-party services, which may have their own terms and limitations.
+  - May require a Midjourney account or subscription through the third-party service.
+
+  For more information on Midjourney and third-party APIs, explore services like [ImagineAPI](https://www.imagineapi.dev/) or [MyMidjourney](https://www.mymidjourney.ai/).

@@ -1,0 +1,8 @@
+class_name: LollmsRunway
+caption: Runway AI
+help: |
+  Runway AI Text-to-Video generation engine, leveraging Runway's advanced video generation models such as Gen-3 Alpha Turbo. This service generates high-quality videos from text prompts, with potential support for customization options like camera control and motion settings (depending on the API version). In this implementation, parameters like negative prompts, resolution, inference steps, and seeds are not fully customizable, though video length can be estimated via the nb_frames parameter (assuming 8 fps). The API requires attribution ("Powered by Runway") in applications using it.
+
+  To use this service, sign up at Runway's developer portal (https://docs.dev.runwayml.com/) to obtain an API key, which can be set via the RUNWAY_API_KEY environment variable or in the lollms configuration interface. Videos are saved as MP4 files in the specified output directory. Pricing is credit-based (e.g., 5 credits per second of video), so monitor usage according to your plan (Build or Enterprise).
+
+  Perfect for creating professional-grade video content from text descriptions. Consult Runway's developer documentation for exact API endpoints and advanced features.
