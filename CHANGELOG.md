@@ -65,6 +65,14 @@ Happy April Fool's Day! While we did genuinely rework the settings page structur
 # LoLLMs v19.0 (alpha) Changelog
 *Date: March 06, 2025*
 
+## [2026-03-15 00:08]
+
+- chore(web): rebuild frontend assets and update changelog
+
+## [2026-03-14 22:38]
+
+- fix(config): replace unsafe `eval()` with `ast.literal_eval()` for dict parsing
+
 ## [2026-01-24 00:37]
 
 - chore(personalities_zoo): update submodule reference

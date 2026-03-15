@@ -42,7 +42,7 @@
     "dompurify": "^3.3.2",
     "feather-icons": "^4.29.2",
     "flowbite": "^1.6.5",
-    "flowbite-vue": "^0.0.7",
+    "flowbite-vue": "^0.2.2",
     "highlight.js": "^11.11.1",
     "lodash-es": "^4.17.23",
     "markdown-it": "^14.1.1",
