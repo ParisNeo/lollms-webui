@@ -6,9 +6,8 @@
              @dragover.prevent="isDragOverChat = true" @dragleave="isDragOverChat = false" @drop.prevent="handleDrop">
 
             <div class="container pt-4 pb-10 mb-10 w-full mx-auto px-4">
-                <TransitionGroup v-if="discussionArr && discussionArr.length > 0" name="list">
-                    <!-- Message components remain unchanged -->
-                    <Message v-for="msg in discussionArr"
+                <TransitionGroup v-if="safeDiscussionArr.length > 0" name="list">
+                    <Message v-for="msg in safeDiscussionArr"
                              :key="msg.id"
                              :message="msg"
                              :id="'msg-' + msg.id"
@@ -25,11 +24,8 @@
                     />
                 </TransitionGroup>
                 
-                <!-- Debug info -->
                 <div v-else-if="hasActiveDiscussion" class="text-center text-gray-500 py-8">
-                    <p>No messages in this discussion (discussionArr is empty)</p>
-                    <p class="text-sm">discussionArr length: {{ discussionArr?.length }}</p>
-                    <p class="text-sm">hasActiveDiscussion: {{ hasActiveDiscussion }}</p>
+                    <p>No messages in this discussion</p>
                 </div>
 
                 <!-- Show prompt examples when discussion has few messages -->
@@ -180,21 +176,25 @@ export default {
     },
     computed: {
         ...mapState(['config']),
+        // Safe getter that always returns an array
+        safeDiscussionArr() {
+            if (!this.discussionArr) return [];
+            if (Array.isArray(this.discussionArr)) return this.discussionArr;
+            console.warn("discussionArr is not array:", this.discussionArr);
+            return [];
+        },
         personality() {
-            // Personality computation logic remains the same
             if (!this.config || !this.config.personalities || this.config.active_personality_id < 0 || this.config.active_personality_id >= this.config.personalities.length) {
                 return null;
             }
             const activePersPath = this.config.personalities[this.config.active_personality_id];
-            // Make sure this logic correctly finds the personality object containing `prompts_list`
             const fullPersonality = this.$store.state.personalities.find(p => p.full_path === activePersPath);
-             return fullPersonality || { prompts_list: [] }; // Ensure it returns an object, even if empty
+            return fullPersonality || { prompts_list: [] };
         },
         showPromptExamples() {
-            // Condition to show prompt examples
-            return this.hasActiveDiscussion && // Show only if a discussion exists
-                   this.discussionArr &&
-                   this.discussionArr.length < 2 && // Show only at the start of a conversation (e.g., 0 or 1 message)
+            const arr = this.safeDiscussionArr;
+            return this.hasActiveDiscussion &&
+                   arr.length < 2 &&
                    this.personality &&
                    this.personality.prompts_list &&
                    this.personality.prompts_list.length > 0;
@@ -364,39 +364,27 @@ export default {
          // --- End Placeholder Logic ---
     },
     watch: {
-    discussionArr: {
-                handler(newVal, oldVal) {
-                const isNewMessageAdded = newVal.length > (oldVal?.length || 0);
-
-                // Determine if the update is primarily a new message vs. content streaming into an existing one
+        discussionArr: {
+            handler(newVal, oldVal) {
+                const newArr = Array.isArray(newVal) ? newVal : [];
+                const oldArr = Array.isArray(oldVal) ? oldVal : [];
+                
+                const isNewMessageAdded = newArr.length > oldArr.length;
                 let significantChange = isNewMessageAdded;
-                if (!significantChange && newVal.length > 0 && oldVal?.length > 0 && newVal.length === oldVal.length) {
-                    // If lengths are same, check if the content of the last message changed
-                    // This is a heuristic; might need refinement if IDs change or messages are reordered
-                    if (newVal[newVal.length - 1].content !== oldVal[oldVal.length - 1].content) {
-                        // Content of last message changed (likely streaming)
-                    }
-                }
 
-
-                if (significantChange) { // e.g. user sent a message, or AI started a brand new message
-                    console.log("ChatArea: New message added, forcing scroll.");
+                if (significantChange) {
+                    console.log("ChatArea: New message, forcing scroll.");
                     this.scrollToBottom(true);
                 } else if (!this.userHasScrolledUp) {
-                    // This will be called during streaming if user is at the bottom
-                    console.log("ChatArea: Content updated, user at bottom, attempting gentle scroll.");
+                    console.log("ChatArea: Content updated, gentle scroll.");
                     this.scrollToBottom(false);
-                } else {
-                    console.log("ChatArea: Content updated, but user has scrolled up. No auto-scroll.");
                 }
 
                 this.$nextTick(() => {
-                    try {
-                        feather.replace();
-                    } catch (e) { /* ignore */ }
+                    try { feather.replace(); } catch (e) {}
                 });
             },
-            deep: true // Necessary if message objects within discussionArr are mutated
+            deep: true
         },
         personality: {
             handler(newVal, oldVal) {

@@ -474,24 +474,49 @@ export default defineComponent({
 
         async createNewDiscussion() {
              try {
-                 this.loading = true; this.$store.state.toast.showToast("Creating new discussion...", 2, true);
-                 socket.emit('new_discussion', { title: null });
+                 this.loading = true; 
+                 this.$store.state.toast.showToast("Creating new discussion...", 2, true);
+                 
+                 // Clean up any stale listeners
+                 socket.off('discussion_created');
+                 
                  socket.once('discussion_created', async (data) => {
+                     console.log("discussion_created received:", data);
+                     socket.off('discussion_created');
+                     
                      if (data && data.id) {
+                         // Small delay to ensure backend transaction completes
+                         await new Promise(resolve => setTimeout(resolve, 150));
                          await this.list_discussions();
+                         
                          const newItem = this.discussionsList.find(d => d.id === data.id);
-                         if (newItem) { this.selectDiscussion(newItem); }
-                         else { console.error("Newly created discussion not found in list:", data.id); this.$store.state.toast.showToast("Error: Couldn't find new discussion.", 4, false); }
-                     } else { console.error("Invalid discussion_created data:", data); this.$store.state.toast.showToast("Error creating discussion.", 4, false); }
+                         if (newItem) { 
+                             this.selectDiscussion(newItem); 
+                             this.$store.state.toast.showToast("Discussion created.", 3, true);
+                         } else { 
+                             console.error("Created discussion not in list:", data.id); 
+                             this.$store.state.toast.showToast("Error: Discussion created but not found.", 4, false); 
+                         }
+                     } else { 
+                         console.error("Invalid discussion_created:", data); 
+                         this.$store.state.toast.showToast("Error: Invalid server response.", 4, false); 
+                     }
                      this.loading = false;
                  });
+                 
+                 socket.emit('new_discussion', { title: null });
+                 
                  setTimeout(() => {
-                     if (this.loading && !this.currentDiscussion?.id) {
-                        socket.off('discussion_created'); this.loading = false; this.$store.state.toast.showToast("Timeout creating discussion.", 4, false);
+                     if (this.loading) {
+                        socket.off('discussion_created'); 
+                        this.loading = false; 
+                        this.$store.state.toast.showToast("Timeout creating discussion.", 4, false);
                      }
-                 }, 10000);
+                 }, 15000);
              } catch (error) {
-                 console.error("Error initiating new discussion:", error); this.$store.state.toast.showToast(`Error: ${error.message}`, 4, false); this.loading = false;
+                 console.error("Error creating discussion:", error); 
+                 this.$store.state.toast.showToast(`Error: ${error.message}`, 4, false); 
+                 this.loading = false;
              }
         },
 
@@ -592,31 +617,57 @@ export default defineComponent({
         },
 
         load_discussion(id, callback) {
-             if (!id) { this.discussionArr = []; this.lastMessageHtml = this.defaultMessageHtml; this.extractHtml(); if(callback) callback(); return; };
-             this.loading = true; this.setDiscussionLoading(id, true); this.discussionArr = [];
+             if (!id) { 
+                 this.discussionArr = []; 
+                 this.lastMessageHtml = this.defaultMessageHtml; 
+                 this.extractHtml(); 
+                 if(callback) callback(); 
+                 return; 
+             }
+             this.loading = true; 
+             this.setDiscussionLoading(id, true); 
+             this.discussionArr = [];
              socket.off('discussion');
              socket.on('discussion', (data) => {
-                 console.log("Discussion data received:", data); // Debug log
-                 socket.off('discussion'); this.loading = false; this.setDiscussionLoading(id, false);
-                 if (data && Array.isArray(data)) {
-                     this.discussionArr = data.filter(item => item.message_type === this.msgTypes.MSG_TYPE_CONTENT || item.message_type === this.msgTypes.MSG_TYPE_CONTENT_INVISIBLE_TO_AI)
-                                             .map(item => ({ ...item, status_message: "Done" }));
-                     console.log("Processed discussionArr:", this.discussionArr); // Debug log
-                     if (this.discussionArr.length > 1 && (!this.currentDiscussion.title || this.currentDiscussion.title === "untitled")) {
-                          this.autoChangeTitle(id, this.discussionArr[1].content);
-                     }
-                     this.extractHtml(); this.recoverFiles(); if (callback) callback();
-                 } else { 
-                     console.warn("Received invalid discussion data for ID:", id, "Data:", data); 
-                     this.discussionArr = []; 
-                     this.extractHtml(); 
+                 console.log("Discussion data received:", data);
+                 socket.off('discussion'); 
+                 this.loading = false; 
+                 this.setDiscussionLoading(id, false);
+                 
+                 // Handle multiple possible response formats from server
+                 let messagesArray = [];
+                 if (data === null || data === undefined) {
+                     messagesArray = [];
+                 } else if (Array.isArray(data)) {
+                     messagesArray = data;
+                 } else if (typeof data === 'object' && data.messages !== undefined) {
+                     messagesArray = Array.isArray(data.messages) ? data.messages : [];
+                 } else {
+                     console.warn("Unexpected discussion data format:", data);
+                     messagesArray = [];
                  }
+                 
+                 this.discussionArr = messagesArray
+                     .filter(item => item && (item.message_type === this.msgTypes.MSG_TYPE_CONTENT || item.message_type === this.msgTypes.MSG_TYPE_CONTENT_INVISIBLE_TO_AI))
+                     .map(item => ({ ...item, status_message: "Done" }));
+                 
+                 console.log("Processed discussionArr:", this.discussionArr);
+                 
+                 if (this.discussionArr.length > 1 && (!this.currentDiscussion.title || this.currentDiscussion.title === "untitled")) {
+                      this.autoChangeTitle(id, this.discussionArr[1].content);
+                 }
+                 this.extractHtml(); 
+                 this.recoverFiles(); 
+                 if (callback) callback();
                  this.scrollToBottomMessages();
              });
              socket.emit('load_discussion', { id: id });
              setTimeout(() => {
                  if (this.loading && this.currentDiscussion?.id === id) {
-                     socket.off('discussion'); this.loading = false; this.setDiscussionLoading(id, false); this.$store.state.toast.showToast(`Timeout loading discussion ${id}.`, 5, false);
+                     socket.off('discussion'); 
+                     this.loading = false; 
+                     this.setDiscussionLoading(id, false); 
+                     this.$store.state.toast.showToast(`Timeout loading discussion ${id}.`, 5, false);
                  }
              }, 15000);
         },
