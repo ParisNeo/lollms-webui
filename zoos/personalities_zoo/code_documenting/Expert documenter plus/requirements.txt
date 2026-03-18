@@ -6,7 +6,7 @@ pudb
 invisible-watermark
 imageio
 imageio-ffmpeg
-pytorch-lightning==1.6.5
+pytorch-lightning==2.4.0
 omegaconf
 test-tube>=0.7.5
 streamlit>=0.73.1
