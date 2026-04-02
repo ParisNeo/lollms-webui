@@ -44,7 +44,7 @@
     "flowbite": "^1.6.5",
     "flowbite-vue": "^0.2.2",
     "highlight.js": "^11.11.1",
-    "lodash-es": "^4.17.23",
+    "lodash-es": "^4.18.1",
     "markdown-it": "^14.1.1",
     "markdown-it-anchor": "^8.6.7",
     "markdown-it-attrs": "^4.1.6",
