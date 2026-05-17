@@ -1,6 +1,7 @@
 # LoLLMs v20.0 (Next) Changelog
 Date: Mai 21, 2025  
 Moved to safestore for RAG
+- security: `turn_on_code_execution` now defaults to `false` in `configs/config.yaml` so code execution is opt-in (closes #675)
 
 # LoLLMs v19.22.42 (tWINS) Changelog
 Date: April 09, 2025  
