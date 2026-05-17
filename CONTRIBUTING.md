@@ -1,6 +1,6 @@
 # Contributing to lollms-webui
 
-Thank you for your interest in contributing to [Your Repository Name]! We appreciate your efforts to help make our project better.
+Thank you for your interest in contributing to lollms-webui! We appreciate your efforts to help make our project better.
 
 ## Contributing Guidelines
 
@@ -10,7 +10,7 @@ Before you start contributing, please take a moment to review our guidelines:
 
 2. Please ensure that your contributions are well-documented and include comments where necessary.
 
-3. Please follow our coding standards and best practices, as outlined in our [style guide](link-to-style-guide).
+3. Please follow our coding standards and best practices. Where this guide is silent, match the style of the surrounding code.
 
 4. If you have any questions or need assistance, please feel free to reach out to the project maintainers.
 
