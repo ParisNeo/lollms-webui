@@ -324,8 +324,12 @@ def sanitize_path(path: str, allow_absolute_path: bool = False, allow_current_fo
         raise HTTPException(status_code=400, detail=exception_text)
 
 
-    # Regular expression to detect patterns like "....", multiple forward slashes, and command injection attempts like $(whoami)
-    suspicious_patterns = re.compile(r'(\.\.+)|(/+/)|(\$\(.*\))')
+    # Detect path traversal (2+ consecutive dots, e.g. "..", "...", "...."),
+    # collapsed-separator tricks ("//"), and shell command substitution ("$(...)").
+    # The {2,} quantifier is used explicitly rather than the equivalent shorthand
+    # \.\.+ to keep the intent unambiguous and prevent off-by-one regressions
+    # (see issue #641).
+    suspicious_patterns = re.compile(r'(\.{2,})|(/+/)|(\$\(.*\))')
 
     if suspicious_patterns.search(str(path)) or ((not allow_absolute_path) and Path(path).is_absolute()):
         ASCIIColors.error(error_text)
@@ -371,8 +375,9 @@ def sanitize_path_from_endpoint(path: str, error_text: str = "A suspected LFI at
     if path.strip().startswith("/"):
         raise HTTPException(status_code=400, detail=exception_text)
 
-    # Regular expression to detect patterns like "...." and multiple forward slashes
-    suspicious_patterns = re.compile(r'(\.\.+)|(/+/)')
+    # Detect path traversal (2+ consecutive dots) and collapsed-separator tricks.
+    # See note in sanitize_path() about the explicit {2,} quantifier.
+    suspicious_patterns = re.compile(r'(\.{2,})|(/+/)')
 
     # Detect if any unauthorized characters, excluding the dot character, are present in the path
     unauthorized_chars = set('!"#$%&\'()*+,;<=>?@[]^`{|}~')
