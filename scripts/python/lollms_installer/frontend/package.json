@@ -14,7 +14,7 @@
     "feather-icons": "^4.29.1",
     "flowbite": "^2.2.1",
     "postcss": "^8.5.10",
-    "socket.io-client": "^4.7.3",
+    "socket.io-client": "^4.8.3",
     "tailwind-scrollbar": "^3.0.5",
     "tailwindcss": "^3.4.0",
     "vue": "^3.3.11",
