@@ -16,12 +16,13 @@ from lollms.main_config import BaseConfig
 from lollms.utilities import detect_antiprompt, remove_text_from_string
 from ascii_colors import ASCIIColors
 from lollms.databases.discussions_database import DiscussionsDB
-from lollms.security import check_access
+from lollms.security import check_access, forbid_remote_access
 from pathlib import Path
 import tqdm
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 import shutil
 import uuid
+import io
 import os
 from PIL import Image
 
@@ -53,12 +54,20 @@ def switch_personal_path(data:PersonalPathParameters):
 """
 
         
+# Maximum accepted upload sizes (bytes). Enforced server-side to prevent
+# unauthenticated disk-exhaustion via oversized/repeated uploads
+# (GHSA-fg6g-3g87-wr8f).
+MAX_AVATAR_SIZE = 1 * 1024 * 1024  # 1 MB
+MAX_LOGO_SIZE = 2 * 1024 * 1024  # 2 MB
+
+
 @router.post("/upload_avatar")
-async def upload_avatar(avatar: UploadFile = File(...)):
+async def upload_avatar(client_id: str = Form(...), avatar: UploadFile = File(...)):
     """
     Uploads a user avatar file to a dedicated directory, preventing path traversal attacks.
 
     Parameters:
+        - client_id: Session client id used to authenticate the caller.
         - avatar: UploadFile object representing the user avatar file.
 
     Returns:
@@ -66,37 +75,47 @@ async def upload_avatar(avatar: UploadFile = File(...)):
 
     Raises:
         - HTTPException with a 400 status code and an error message if the file is invalid or has an invalid type.
+        - HTTPException with a 413 status code if the file exceeds the allowed size.
     """
+    forbid_remote_access(lollmsElfServer)
+    check_access(lollmsElfServer, client_id)
+
     # Only allow certain file types
-    if avatar.filename.endswith((".jpg", ".png")):
+    if avatar.filename.lower().endswith((".jpg", ".jpeg", ".png")):
+        # Reject the upload before it is fully buffered/written if it exceeds the size limit
+        data = await avatar.read(MAX_AVATAR_SIZE + 1)
+        if len(data) > MAX_AVATAR_SIZE:
+            raise HTTPException(status_code=413, detail="File too large.")
+
         # Create a random file name
         random_filename = str(uuid.uuid4())
-        
+
         # Use the file extension of the uploaded file
-        extension = os.path.splitext(avatar.filename)[1]
-        
+        extension = os.path.splitext(avatar.filename)[1].lower()
+
         # Create the new file path in a dedicated directory
         file_location = os.path.join(lollmsElfServer.lollms_paths.personal_user_infos_path, f"{random_filename}{extension}")
 
         try:
             # Open the image to check if it's a valid image
-            img = Image.open(avatar.file)
-            
+            img = Image.open(io.BytesIO(data))
+
             # Save the file
             img.save(file_location)
         except Exception as e:
             raise HTTPException(status_code=400, detail="Invalid image file.")
     else:
         raise HTTPException(status_code=400, detail="Invalid file type.")
-        
+
     return {"status": True,"fileName": f"{random_filename}{extension}"}
 
 @router.post("/upload_logo")
-async def upload_logo(logo: UploadFile = File(...)):
+async def upload_logo(client_id: str = Form(...), logo: UploadFile = File(...)):
     """
     Uploads a user avatar file to a dedicated directory, preventing path traversal attacks.
 
     Parameters:
+        - client_id: Session client id used to authenticate the caller.
         - logo: UploadFile object representing the user avatar file.
 
     Returns:
@@ -104,29 +123,38 @@ async def upload_logo(logo: UploadFile = File(...)):
 
     Raises:
         - HTTPException with a 400 status code and an error message if the file is invalid or has an invalid type.
+        - HTTPException with a 413 status code if the file exceeds the allowed size.
     """
+    forbid_remote_access(lollmsElfServer)
+    check_access(lollmsElfServer, client_id)
+
     # Only allow certain file types
-    if logo.filename.endswith((".jpg", ".png")):
+    if logo.filename.lower().endswith((".jpg", ".jpeg", ".png")):
+        # Reject the upload before it is fully buffered/written if it exceeds the size limit
+        data = await logo.read(MAX_LOGO_SIZE + 1)
+        if len(data) > MAX_LOGO_SIZE:
+            raise HTTPException(status_code=413, detail="File too large.")
+
         # Create a random file name
         random_filename = str(uuid.uuid4())
-        
+
         # Use the file extension of the uploaded file
-        extension = os.path.splitext(logo.filename)[1]
-        
+        extension = os.path.splitext(logo.filename)[1].lower()
+
         # Create the new file path in a dedicated directory
         file_location = os.path.join(lollmsElfServer.lollms_paths.personal_user_infos_path, f"{random_filename}{extension}")
 
         try:
             # Open the image to check if it's a valid image
-            img = Image.open(logo.file)
-            
+            img = Image.open(io.BytesIO(data))
+
             # Save the file
             img.save(file_location)
         except Exception as e:
             raise HTTPException(status_code=400, detail="Invalid image file.")
     else:
         raise HTTPException(status_code=400, detail="Invalid file type.")
-        
+
     return {"status": True,"fileName": f"{random_filename}{extension}"}
 
 @router.post("/remove_logo")
