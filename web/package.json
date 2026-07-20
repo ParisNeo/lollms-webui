@@ -36,7 +36,7 @@
     "@codemirror/view": "^6.36.5",
     "@monaco-editor/loader": "^1.4.0",
     "@popperjs/core": "^2.11.8",
-    "axios": "^1.17.0",
+    "axios": "^1.18.1",
     "baklavajs": "^1.10.2",
     "codemirror": "^6.0.1",
     "dompurify": "^3.4.1",
