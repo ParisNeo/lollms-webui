@@ -1,0 +1,7 @@
+name: llmman
+author: llmmanorg
+version: 1.0
+link: https://github.com/llmmanorg/llmman
+description: This binding uses a llmman server (local model runner serving the Ollama API on port 17434)
+accepted_models: 
+  - llmman
