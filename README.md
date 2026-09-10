@@ -53,6 +53,7 @@ As an all-encompassing tool with access to over 500 AI expert conditioning acros
   - GGUF/GGML local models
   - EXLLama v2 local models (EXT/AWQ/GPTQ)
   - Ollama service
+  - llmman service
   - vllm service
   - Openai service
   - Anthropic service
@@ -141,6 +142,7 @@ openai:        python zoos/bindings_zoo/openai/__init__.py
 groq:          python zoos/bindings_zoo/groq/__init__.py
 mistralai:     python zoos/bindings_zoo/mistralai/__init__.py
 ollama:        python zoos/bindings_zoo/ollama_ai/__init__.py
+llmman:        python zoos/bindings_zoo/llmman/__init__.py
 vllm:          python zoos/bindings_zoo/vllm/__init__.py
 litellm:       python zoos/bindings_zoo/litellm/__init__.py
 exllamav2:     python zoos/bindings_zoo/exllamav2/__init__.py
