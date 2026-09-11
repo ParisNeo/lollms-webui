@@ -1,14 +1,14 @@
 ######
 # Project       : lollms
 # File          : binding.py
-# Author        : ParisNeo with the help of the community
+# Author        : Thibaultjaigu
 # Underlying
 # engine author : Requesty
 # license       : Apache 2.0
 # Description   :
 # This binding provides an interface to the Requesty API, routing requests
 # to various AI models. Supports dynamic model fetching and auto-routing.
-# Update date   : 19/07/2024
+# Update date   : 11/09/2026
 ######
 from pathlib import Path
 from typing import Callable, Any, Optional, List, Dict, Union, Tuple
@@ -50,9 +50,9 @@ except ImportError as e:
     print("Please ensure 'openai' and 'requests' are installed (`pip install openai requests`)")
     raise e # Re-raise the exception
 
-__author__ = "parisneo"
+__author__ = "Thibaultjaigu"
 __github__ = "https://github.com/ParisNeo/lollms_bindings_zoo"
-__copyright__ = "Copyright 2023-2024, ParisNeo"
+__copyright__ = "Copyright 2026, Requesty"
 __license__ = "Apache 2.0"
 
 binding_name = "Requesty"
