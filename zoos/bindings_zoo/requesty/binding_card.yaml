@@ -1,0 +1,7 @@
+name: Requesty
+author: Requesty
+version: 1.0
+link: https://requesty.ai/
+description: This binding uses the Requesty OpenAI-compatible router to give you access to multiple AI models
+accepted_models: 
+  - requesty
