@@ -185,7 +185,10 @@ def get_model_info(url, authorization_key, verify_ssl_certificate=True):
 
     return model_info
 class Ollama(LLMBinding):
-    
+    # Overridable by bindings that reuse this class for other Ollama-API-compatible servers
+    binding_path = Path(__file__).parent
+    default_address = "http://127.0.0.1:11434"
+
     def __init__(self, 
                 config: LOLLMSConfig, 
                 lollms_paths: LollmsPaths = None, 
@@ -206,7 +209,7 @@ class Ollama(LLMBinding):
 
         binding_config = TypedConfig(
             ConfigTemplate([
-                {"name":"address","type":"str","value":"http://127.0.0.1:11434","help":"The server address"},
+                {"name":"address","type":"str","value":self.default_address,"help":"The server address"},
                 {"name":"verify_ssl_certificate","type":"bool","value":True,"help":"Deactivate if you don't want the client to verify the SSL certificate"},
                 {"name":"max_image_width","type":"int","value":1024, "help":"The maximum width of the image in pixels. If the mimage is bigger it gets shrunk before sent to ollama model"},
                 {"name":"completion_format","type":"str","value":"instruct","options":["instruct"], "help":"The format supported by the server"},
@@ -218,7 +221,7 @@ class Ollama(LLMBinding):
             ])
         )
         super().__init__(
-                            Path(__file__).parent, 
+                            self.binding_path, 
                             lollms_paths, 
                             config, 
                             binding_config, 
