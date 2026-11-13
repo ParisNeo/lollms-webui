@@ -43,6 +43,24 @@ class DeepSearch(FunctionCall):
                     "help": "JSON string containing API keys for various search engines"
                 },
                 {
+                    "name": "google_cx",
+                    "type": "str",
+                    "value": "",
+                    "help": "Google Programmable Search Engine ID (cx) used by the google engine"
+                },
+                {
+                    "name": "google_api_url",
+                    "type": "str",
+                    "value": "https://www.googleapis.com/customsearch/v1",
+                    "help": "Address of the Custom Search JSON API used by the google engine"
+                },
+                {
+                    "name": "bing_api_url",
+                    "type": "str",
+                    "value": "https://api.bing.microsoft.com/v7.0/search",
+                    "help": "Address of the Bing Web Search API used by the bing engine"
+                },
+                {
                     "name": "default_engine",
                     "type": "str",
                     "value": "ddg",
@@ -333,14 +351,14 @@ class DeepSearch(FunctionCall):
     def _search_google(self, query: str, depth: int, timeout: int) -> List[Dict[str, str]]:
         """Search using Google Custom Search API."""
         api_key = self.api_keys.get("google", "")
-        if not api_key:
+        cx = self.static_parameters.google_cx
+        if not api_key or not cx:
             return []
             
         results = []
         try:
-            # Google Custom Search API endpoint
-            cx = "YOUR_CUSTOM_SEARCH_ENGINE_ID"  # This should ideally be in static params
-            url = f"https://www.googleapis.com/customsearch/v1"
+            # Google Custom Search API endpoint (configurable in static params)
+            url = self.static_parameters.google_api_url or "https://www.googleapis.com/customsearch/v1"
             
             params = {
                 "key": api_key,
@@ -378,7 +396,7 @@ class DeepSearch(FunctionCall):
                 "Content-Type": "application/json"
             }
             
-            search_url = "https://api.bing.microsoft.com/v7.0/search"
+            search_url = self.static_parameters.bing_api_url or "https://api.bing.microsoft.com/v7.0/search"
             params = {
                 "q": query,
                 "count": depth,

@@ -39,6 +39,18 @@ static_parameters:
   description: Dictionary containing API keys for various search engines.
   name: api_keys
   type: dict
+- default: ''
+  description: Google Programmable Search Engine ID (cx) used by the google engine.
+  name: google_cx
+  type: str
+- default: https://www.googleapis.com/customsearch/v1
+  description: Address of the Custom Search JSON API used by the google engine.
+  name: google_api_url
+  type: str
+- default: https://api.bing.microsoft.com/v7.0/search
+  description: Address of the Bing Web Search API used by the bing engine.
+  name: bing_api_url
+  type: str
 - default: ddg
   description: Default search engine to use when none specified.
   name: default_engine
