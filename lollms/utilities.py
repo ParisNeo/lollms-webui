@@ -38,7 +38,8 @@ import mimetypes
 import sys
 import platform
 import subprocess
-import pkg_resources
+from importlib.metadata import version as _dist_version
+from packaging.version import parse as parse_version
 from functools import partial
 import sys
 import pipmaster as pm
@@ -1303,7 +1304,7 @@ def check_torch_version(min_version="2.0.0", min_cuda_version=12):
         import torch
         current_version = torch.__version__
         
-        if pkg_resources.parse_version(current_version) < pkg_resources.parse_version(min_version):
+        if parse_version(current_version) < parse_version(min_version):
             print(f"PyTorch version {current_version} is lower than minimum required version {min_version}")
             return False
             
@@ -1391,7 +1392,7 @@ def check_and_install_torch(enable_gpu: bool, version: float = 2.2):
         system = platform.system().lower()
         
         # Check if current installation meets requirements
-        if pkg_resources.parse_version(current_version) >= pkg_resources.parse_version(str(version)):
+        if parse_version(current_version) >= parse_version(str(version)):
             if enable_gpu:
                 if system == 'darwin':
                     # For Mac, MPS is the GPU solution
@@ -1605,11 +1606,10 @@ class PackageManager:
     @staticmethod
     def check_package_installed_with_version(package_name: str, min_version: Optional[str] = None) -> bool:
         try:
-            import pkg_resources
             package = importlib.import_module(package_name)
             if min_version:
-                installed_version = pkg_resources.get_distribution(package_name).version
-                if pkg_resources.parse_version(installed_version) < pkg_resources.parse_version(min_version):
+                installed_version = _dist_version(package_name)
+                if parse_version(installed_version) < parse_version(min_version):
                     raise ImportError(f"Version {installed_version} is less than the required {min_version}.")
             return True
         except ImportError as ex:
